@@ -190,7 +190,7 @@ func updateFileContent(
 
 // MARK: - Starting point
 
-print("Enter layer name\n(Feature | Domain | Core | Shared)", terminator: " : ")
+print("Enter layer name\n(Feature | Service | Network | Shared)", terminator: " : ")
 var layerInput = readLine()!.map { String($0) }
 let firstCharacter: String = layerInput.removeFirst().uppercased()
 let result: String = firstCharacter + layerInput.joined()
