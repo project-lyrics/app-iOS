@@ -30,7 +30,7 @@ let appTargets: [Target] = [
                     ]
                 ]
             ]),
-            entitlements: "Lyrics.entitlements",
+            entitlements: "Feelin.entitlements",
             dependencies: [
                 .feature
             ]
@@ -39,7 +39,7 @@ let appTargets: [Target] = [
 ]
 
 let appProject: Project = .makeModule(
-    name: "Lyrics",
+    name: "Feelin",
     packages: [
         .package(url: "https://github.com/onevcat/Kingfisher.git", .upToNextMajor(from: "7.0.0")),
         .package(url: "https://github.com/layoutBox/PinLayout", .upToNextMajor(from: "1.10.5")),

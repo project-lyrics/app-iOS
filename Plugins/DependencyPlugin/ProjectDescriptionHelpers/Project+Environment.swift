@@ -9,9 +9,9 @@ import ProjectDescription
 
 public extension Project {
     enum Environment {
-        public static let appName = "Lyrics"
+        public static let appName = "Feelin"
         public static let deploymentTargets = DeploymentTargets.iOS("15.0")
-        public static let bundleId = "com.project.lyrics"
+        public static let bundleId = "com.project.feelin"
         public static let defaultSettings: Settings = .settings(
             configurations: [
                 .debug(

@@ -12,11 +12,7 @@ import DependencyPlugin
 let targets: [Target] = [
     .feature(
         interface: .Onboarding,
-        factory: .init(
-            dependencies: [
-                .service
-            ]
-        )
+        factory: .init()
     ),
     .feature(
         implements: .Onboarding,

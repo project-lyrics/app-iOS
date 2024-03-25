@@ -10,8 +10,7 @@ import ProjectDescription
 
 public enum ModulePath {
     case feature(Feature)
-    case service(Service)
-    case network(Network)
+    case core(Core)
     case shared(Shared)
 }
 
@@ -32,18 +31,10 @@ public extension ModulePath {
 }
 
 public extension ModulePath {
-    enum Service: String, CaseIterable {
-        case User
+    enum Core: String, CaseIterable {
+		case Network
 
-        public static let name: String = "Service"
-    }
-}
-
-public extension ModulePath {
-    enum Network: String, CaseIterable {
-        case Onboarding
-
-        public static let name: String = "Network"
+        public static let name: String = "Core"
     }
 }
 

@@ -1,4 +1,4 @@
 import ProjectDescription
 import DependencyPlugin
 
-let workspace = Workspace(name: "Lyrics", projects: ["Projects/*"])
+let workspace = Workspace(name: "Feelin", projects: ["Projects/*"])

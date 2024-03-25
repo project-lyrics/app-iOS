@@ -1,8 +1,8 @@
 //
-//  NetworkRoot.swift
-//  Network
+// CoreRoot.swift
+//  Feature
 //
 //  Created by Derrick kim on 2/19/24.
 //
 
-// NetworkRoot
+import Foundation

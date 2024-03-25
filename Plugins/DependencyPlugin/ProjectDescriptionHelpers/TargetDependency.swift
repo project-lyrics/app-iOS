@@ -40,47 +40,25 @@ public extension TargetDependency {
 }
 
 public extension TargetDependency {
-    static var service: Self {
-        return .project(target: ModulePath.Service.name, path: .service)
+	static var core: Self {
+		return .project(target: ModulePath.Core.name, path: .core)
+	}
+
+    static func core(implements module: ModulePath.Core) -> Self {
+        return .project(target: ModulePath.Core.name + module.rawValue, path: .core(implementation: module))
     }
 
-    static func service(implements module: ModulePath.Service) -> Self {
-        return .project(target: ModulePath.Service.name + module.rawValue, path: .service(implementation: module))
-    }
+	static func core(interface module: ModulePath.Core) -> Self {
+		return .project(target: ModulePath.Core.name + module.rawValue + "Interface", path: .core(implementation: module))
+	}
 
-    static func service(interface module: ModulePath.Service) -> Self {
-        return .project(target: ModulePath.Service.name + module.rawValue + "Interface", path: .service(implementation: module))
-    }
+	static func core(tests module: ModulePath.Core) -> Self {
+		return .project(target: ModulePath.Core.name + module.rawValue + "Tests", path: .core(implementation: module))
+	}
 
-    static func service(tests module: ModulePath.Service) -> Self {
-        return .project(target: ModulePath.Service.name + module.rawValue + "Tests", path: .service(implementation: module))
-    }
-
-    static func service(testing module: ModulePath.Service) -> Self {
-        return .project(target: ModulePath.Service.name + module.rawValue + "Testing", path: .service(implementation: module))
-    }
-}
-
-public extension TargetDependency {
-    static var network: Self {
-        return .project(target: ModulePath.Network.name, path: .network)
-    }
-
-    static func network(implements module: ModulePath.Network) -> Self {
-        return .project(target: ModulePath.Network.name + module.rawValue, path: .network(implementation: module))
-    }
-
-    static func network(interface module: ModulePath.Network) -> Self {
-        return .project(target: ModulePath.Network.name + module.rawValue + "Interface", path: .network(implementation: module))
-    }
-
-    static func network(tests module: ModulePath.Network) -> Self {
-        return .project(target: ModulePath.Network.name + module.rawValue + "Tests", path: .network(implementation: module))
-    }
-
-    static func network(testing module: ModulePath.Network) -> Self {
-        return .project(target: ModulePath.Network.name + module.rawValue + "Testing", path: .network(implementation: module))
-    }
+	static func core(testing module: ModulePath.Core) -> Self {
+		return .project(target: ModulePath.Core.name + module.rawValue + "Testing", path: .core(implementation: module))
+	}
 }
 
 public extension TargetDependency {
