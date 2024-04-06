@@ -14,8 +14,6 @@ public enum NetworkError: Error, Equatable {
     case forbiddenError
     case notFoundError
     case serverError
-    case error4xx(_ code: Int)
-    case error5xx(_ code: Int)
     case decodingError( _ description: String)
     case badRequestError
     case authorizationError
@@ -43,10 +41,6 @@ public enum NetworkError: Error, Equatable {
             return "Bad Request From Client"
         case .unknownError:
             return "Unknown Error"
-        case .error4xx(let code):
-            return "error 4xx: \(code)"
-        case .error5xx(let code):
-            return "error 5xx: \(code)"
         }
     }
 

@@ -26,8 +26,8 @@ public final class NetworkProvider: NetworkProviderProtocol {
             return session
                 .dataTaskPublisher(for: urlRequest)
                 .validateStatusCode()
-                .validateJsonValue(to: T.self)
                 .receive(on: DispatchQueue.main)
+                .validateJSONValue(to: T.self)
                 .eraseToAnyPublisher()
         } catch let error {
             if let networkError = error as? NetworkError {

@@ -34,14 +34,8 @@ public extension Publisher where Output == DataTaskResult {
             case 404:
                 throw NetworkError.notFoundError
 
-            case 402, 405...499:
-                throw NetworkError.error4xx(response.statusCode)
-
             case 500:
                 throw NetworkError.serverError
-
-            case 501...599:
-                throw NetworkError.error5xx(response.statusCode)
 
             default:
                 throw NetworkError.unknownError
@@ -57,7 +51,7 @@ public extension Publisher where Output == DataTaskResult {
         .eraseToAnyPublisher()
     }
 
-    func validateJsonValue<Output: Decodable>(to outputType: Output.Type) -> AnyPublisher<Output, NetworkError> {
+    func validateJSONValue<Output: Decodable>(to outputType: Output.Type) -> AnyPublisher<Output, NetworkError> {
         return tryMap {
             try JSONDecoder().decode(outputType, from: $0.data)
         }
