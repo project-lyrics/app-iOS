@@ -15,7 +15,7 @@ public final class MockNetworkProvider: NetworkProviderProtocol {
 
     public var appSearchResponseDTO: AppSearchResponseDTO = {
         let data = AppSearchItemResponseDTO.completeDataMock
-        
+
         return AppSearchResponseDTO(
             resultCount: 1,
             results: [data]
@@ -23,7 +23,7 @@ public final class MockNetworkProvider: NetworkProviderProtocol {
     }()
 
     public var networkError = NetworkError.unknownError
-    
+
     public func request<N, T>(
         _ endpoint: N
     ) -> AnyPublisher<T, NetworkError> where N: HTTPNetworking, T: Decodable, T == N.Response {
@@ -31,7 +31,7 @@ public final class MockNetworkProvider: NetworkProviderProtocol {
             return Fail(error: networkError)
                 .eraseToAnyPublisher()
         }
-        
+
         switch scenario {
         case .success:
             return Just(data)

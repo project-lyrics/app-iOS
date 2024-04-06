@@ -13,10 +13,10 @@ import SharedUtilInterface
 public extension HTTPRequestConfiguring {
     var queryParameters: Encodable? { return nil }
     var bodyParameters: Encodable? { return nil }
-    
+
     func makeURLRequest() throws -> URLRequest {
         guard var urlComponent = try makeURLComponents() else {
-            throw NetworkError.URLRequestError.urlComponentError
+            throw NetworkError.urlRequestError(.makeURLError)
         }
 
         if let queryItems = try getQueryParameters() {
@@ -24,7 +24,7 @@ public extension HTTPRequestConfiguring {
         }
 
         guard let url = urlComponent.url else {
-            throw NetworkError.URLRequestError.urlComponentError
+            throw NetworkError.urlRequestError(.urlComponentError)
         }
 
         var urlRequest = URLRequest(url: url)
@@ -43,7 +43,7 @@ public extension HTTPRequestConfiguring {
 extension HTTPRequestConfiguring {
     func makeURLComponents() throws -> URLComponents? {
         guard let url = baseURL else {
-            throw NetworkError.URLRequestError.makeURLError
+            throw  NetworkError.urlRequestError(.makeURLError)
         }
 
         return URLComponents(string: url + path)
@@ -55,7 +55,7 @@ extension HTTPRequestConfiguring {
         }
 
         guard let queryDictionary = try? queryParameters.toDictionary() else {
-            throw NetworkError.URLRequestError.queryEncodingError
+            throw NetworkError.urlRequestError(.queryEncodingError)
         }
 
         var queryItemList: [URLQueryItem]
@@ -80,11 +80,11 @@ extension HTTPRequestConfiguring {
         }
 
         guard let bodyDictionary = try? bodyParameters.toDictionary() else {
-            throw NetworkError.URLRequestError.bodyEncodingError
+            throw NetworkError.urlRequestError(.bodyEncodingError)
         }
 
         guard let encodedBody = try? JSONSerialization.data(withJSONObject: bodyDictionary) else {
-            throw NetworkError.URLRequestError.bodyEncodingError
+            throw NetworkError.urlRequestError(.bodyEncodingError)
         }
 
         return encodedBody
