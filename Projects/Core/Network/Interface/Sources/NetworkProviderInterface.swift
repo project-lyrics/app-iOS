@@ -9,6 +9,6 @@ import Foundation
 import Combine
 import SharedUtilInterface
 
-public protocol NetworkProviderProtocol {
+public protocol NetworkProviderProtocol: AnyObject {
     func request<N: HTTPNetworking, T: Decodable>(_ endpoint: N) -> AnyPublisher<T, NetworkError> where N.Response == T
 }
