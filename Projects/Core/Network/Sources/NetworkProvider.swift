@@ -32,10 +32,10 @@ public final class NetworkProvider: NetworkProviderProtocol {
             if let networkError = error as? NetworkError {
                 return Fail(error: networkError)
                     .eraseToAnyPublisher()
-            } else {
-                return Fail(error: NetworkError.unknownError)
-                    .eraseToAnyPublisher()
             }
+
+            return Fail(error: NetworkError.unknownError(error.localizedDescription))
+                .eraseToAnyPublisher()
         }
     }
 }
