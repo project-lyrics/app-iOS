@@ -48,6 +48,7 @@ public enum NetworkError: Error, Equatable {
         case forbiddenError = 403
         case notFoundError = 404
         case methodNotAllowed = 405
+        case proxyAuthenticationRequired = 407
         case requestTimeout = 408
         case conflict = 409
         case gone = 410
@@ -58,6 +59,7 @@ public enum NetworkError: Error, Equatable {
         case unsupportedMediaType = 415
         case requestedRangeNotSatisfiable = 416
         case expectationFailed = 417
+        case imATeapot = 418
         case misdirectedRequest = 421
         case unprocessableEntity = 422
         case locked = 423
@@ -73,6 +75,7 @@ public enum NetworkError: Error, Equatable {
             case .forbiddenError:                           return "Forbidden Error"
             case .notFoundError:                            return "Not Found Error"
             case .methodNotAllowed:                         return "Method Not Allowed"
+            case .proxyAuthenticationRequired:              return "Proxy Authentication Required"
             case .requestTimeout:                           return "Request Timeout"
             case .conflict:                                 return "Conflict"
             case .authorizationError:                       return "Authorization Error"
@@ -85,6 +88,7 @@ public enum NetworkError: Error, Equatable {
             case .unsupportedMediaType:                     return "Unsupported Media Type"
             case .requestedRangeNotSatisfiable:             return "Requested Range Not Satisfiable"
             case .expectationFailed:                        return "Expectation Failed"
+            case .imATeapot:                                return "I'm a teapot"
             case .misdirectedRequest:                       return "Misdirected Request"
             case .unprocessableEntity:                      return "Unprocessable Entity"
             case .locked:                                   return "Locked"
