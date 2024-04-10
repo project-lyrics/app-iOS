@@ -9,14 +9,14 @@ import Foundation
 import CoreNetworkInterface
 
 public enum SampleAPI<R> {
-    case search(_ requestDTO: AppSearchRequestDTO)
+    case search
 }
 
 extension SampleAPI: HTTPNetworking {
     public typealias Response = R
 
     public var baseURL: String? {
-        let baseURL = "https://itunes.apple.com"
+        let baseURL = "https://example.com"
         return baseURL
     }
 
@@ -35,10 +35,7 @@ extension SampleAPI: HTTPNetworking {
     }
 
     public var queryParameters: Encodable? {
-        switch self {
-        case .search(let requestDTO):
-            return requestDTO
-        }
+        return nil
     }
 
     public var bodyParameters: Encodable? {
