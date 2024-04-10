@@ -8,7 +8,6 @@
 import Foundation
 import CoreNetworkInterface
 import SharedUtil
-import SharedUtilInterface
 
 public extension HTTPRequestConfiguring {
     var queryParameters: Encodable? { return nil }
@@ -33,7 +32,10 @@ public extension HTTPRequestConfiguring {
             urlRequest.httpBody = httpBody
         }
 
-        urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        urlRequest.setValue(
+            "application/json",
+            forHTTPHeaderField: "Content-Type"
+        )
         urlRequest.httpMethod = httpMethod.rawValue
 
         return urlRequest
@@ -41,7 +43,7 @@ public extension HTTPRequestConfiguring {
 }
 
 extension HTTPRequestConfiguring {
-    func makeURLComponents() throws -> URLComponents? {
+    private func makeURLComponents() throws -> URLComponents? {
         guard let url = baseURL else {
             throw  NetworkError.urlRequestError(.makeURLError)
         }
@@ -74,7 +76,7 @@ extension HTTPRequestConfiguring {
         return queryItemList
     }
 
-    func getBodyParameters() throws -> Data? {
+    private func getBodyParameters() throws -> Data? {
         guard let bodyParameters else {
             return nil
         }
