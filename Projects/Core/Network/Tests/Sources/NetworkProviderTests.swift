@@ -13,10 +13,6 @@ import Combine
 @testable import CoreNetworkInterface
 @testable import CoreNetwork
 
-struct MockData: Decodable {
-    let key: String
-}
-
 final class NetworkProviderTests: XCTestCase {
     var networkProvider: NetworkProviderProtocol!
     var cancellables: Set<AnyCancellable>!
