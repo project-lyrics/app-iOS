@@ -42,8 +42,8 @@ public extension HTTPRequestConfiguring {
     }
 }
 
-extension HTTPRequestConfiguring {
-    private func makeURLComponents() throws -> URLComponents? {
+private extension HTTPRequestConfiguring {
+    func makeURLComponents() throws -> URLComponents? {
         guard let url = baseURL else {
             throw  NetworkError.urlRequestError(.makeURLError)
         }
@@ -51,7 +51,7 @@ extension HTTPRequestConfiguring {
         return URLComponents(string: url + path)
     }
 
-    private func getQueryParameters() throws -> [URLQueryItem]? {
+    func getQueryParameters() throws -> [URLQueryItem]? {
         guard let queryParameters else {
             return nil
         }
@@ -76,7 +76,7 @@ extension HTTPRequestConfiguring {
         return queryItemList
     }
 
-    private func getBodyParameters() throws -> Data? {
+    func getBodyParameters() throws -> Data? {
         guard let bodyParameters else {
             return nil
         }
