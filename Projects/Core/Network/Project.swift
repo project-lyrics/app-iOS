@@ -38,6 +38,8 @@ let targets: [Target] = [
 		tests: .Network,
 		factory: .init(
 			dependencies: [
+                .core(interface: .Network),
+                .core(implements: .Network),
 				.core(testing: .Network)
 			]
 		)
