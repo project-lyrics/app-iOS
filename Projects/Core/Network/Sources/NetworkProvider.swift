@@ -13,7 +13,7 @@ import SharedUtilInterface
 public final class NetworkProvider: NetworkProviderProtocol {
     private let session: URLSession
 
-    init(session: URLSession = URLSession.shared) {
+    public init(session: URLSession = URLSession.shared) {
         self.session = session
     }
 
