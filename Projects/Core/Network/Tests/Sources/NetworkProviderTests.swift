@@ -96,7 +96,7 @@ final class NetworkProviderTests: XCTestCase {
         config.protocolClasses = [MockURLProtocol.self]
         let urlSession = URLSession(configuration: config)
 
-        let expectation = XCTestExpectation(description: "Fetch sample data")
+        let expectation = XCTestExpectation(description: "badRequestError")
         let networkManager: NetworkProviderProtocol = NetworkProvider(session: urlSession)
 
         networkManager.request(endpoint)
