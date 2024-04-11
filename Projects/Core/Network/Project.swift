@@ -12,7 +12,11 @@ import DependencyPlugin
 let targets: [Target] = [
 	.core(
 		interface: .Network,
-		factory: .init()
+		factory: .init(
+            dependencies: [
+                .shared(implements: .Util)
+            ]
+        )
 	),
 	.core(
 		implements: .Network,
@@ -34,6 +38,8 @@ let targets: [Target] = [
 		tests: .Network,
 		factory: .init(
 			dependencies: [
+                .core(interface: .Network),
+                .core(implements: .Network),
 				.core(testing: .Network)
 			]
 		)
