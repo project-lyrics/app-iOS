@@ -32,6 +32,7 @@ public extension ModulePath {
 
 public extension ModulePath {
     enum Core: String, CaseIterable {
+        case DependencyInjection
 		case Network
 
         public static let name: String = "Core"
