@@ -11,7 +11,7 @@ import CoreNetworkInterface
 
 public extension InjectIdentifier {
     static var networkService: InjectIdentifier<NetworkProviderProtocol> {
-        .by(type: NetworkProviderProtocol.self, key: "networkService")
+        .by(type: NetworkProviderProtocol.self, key: "networkProvider")
     }
 }
 
