@@ -10,6 +10,7 @@ import ProjectDescription
 
 public enum ModulePath {
     case feature(Feature)
+    case domain(Domain)
     case core(Core)
     case shared(Shared)
 }
@@ -27,6 +28,14 @@ public extension ModulePath {
         case Onboarding
 
         public static let name: String = "Feature"
+    }
+}
+
+public extension ModulePath {
+    enum Domain: String, CaseIterable {
+        case PostTextUseCase
+
+        public static let name: String = "Domain"
     }
 }
 
