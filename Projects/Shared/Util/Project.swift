@@ -11,16 +11,8 @@ import DependencyPlugin
 
 let targets: [Target] = [
     .shared(
-        interface: .Util,
-        factory: .init()
-    ),
-    .shared(
         implements: .Util,
-        factory: .init(
-            dependencies: [
-                .shared(interface: .Util)
-            ]
-        )
+        factory: .init()
     )
 ]
 
