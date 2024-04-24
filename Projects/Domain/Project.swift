@@ -15,7 +15,7 @@ let targets: [Target] = [
             dependencies: [
                 .domain(implements: .PostTextUseCase),
                 .core(implements: .DependencyInjection),
-                .core(implements: .Network),
+                .core(interface: .Network),
                 .shared(implements: .Util)
             ]
         )
