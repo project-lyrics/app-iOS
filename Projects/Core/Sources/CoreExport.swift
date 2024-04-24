@@ -8,4 +8,3 @@
 @_exported import CoreNetwork
 @_exported import CoreNetworkInterface
 @_exported import CoreDependencyInjection
-@_exported import CoreDependencyInjectionInterface

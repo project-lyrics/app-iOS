@@ -1,11 +1,18 @@
 //
 //  Injectable.swift
-//  Feature
+//  CoreDependencyInjection
 //
 //  Created by Derrick kim on 4/17/24.
 //
 
-import CoreDependencyInjectionInterface
+public protocol Injectable: Resolvable, AnyObject {
+    init()
+    var dependencies: [AnyHashable: Any] { get set }
+
+    func register<Value>(_ identifier: InjectIdentifier<Value>, _ resolve: (Resolvable) throws -> Value)
+    func remove<Value>(_ identifier: InjectIdentifier<Value>)
+}
+
 
 public extension Injectable {
     func register<Value>(

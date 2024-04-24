@@ -1,13 +1,28 @@
 //
 //  InjectIdentifier.swift
-//  Feature
+//  CoreDependencyInjection
 //
-//  Created by Derrick kim on 4/17/24.
+//  Created by Derrick kim on 4/18/24.
 //
 
-import Foundation
-import CoreDependencyInjectionInterface
 import CoreNetworkInterface
+
+public struct InjectIdentifier<T> {
+    private (set) var type: T.Type? = nil
+    private (set) var key: String? = nil
+
+    private init(
+        type: T.Type? = nil,
+        key: String? = nil
+    ) {
+        self.type = type
+        self.key = key
+    }
+
+    public static func by(type: T.Type? = nil, key: String? = nil) -> InjectIdentifier {
+        return .init(type: type, key: key)
+    }
+}
 
 public extension InjectIdentifier {
     static var networkService: InjectIdentifier<NetworkProviderProtocol> {

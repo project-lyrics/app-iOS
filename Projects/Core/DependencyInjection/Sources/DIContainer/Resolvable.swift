@@ -1,6 +1,6 @@
 //
-//  ResolvableInterface.swift
-//  CoreDependencyInjectionInterface
+//  Resolvable.swift
+//  CoreDependencyInjection
 //
 //  Created by Derrick kim on 4/18/24.
 //

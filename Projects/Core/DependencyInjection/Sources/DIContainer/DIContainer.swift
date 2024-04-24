@@ -1,6 +1,6 @@
 //
 //  DIContainer.swift
-//  Feature
+//  CoreDependencyInjection
 //
 //  Created by Derrick kim on 4/17/24.
 //

@@ -4,16 +4,8 @@ import DependencyPlugin
 
 let targets: [Target] = [
     .core(
-        interface: .DependencyInjection,
-        factory: .init()
-    ),
-    .core(
         implements: .DependencyInjection,
-        factory: .init(
-            dependencies: [
-                .core(interface: .DependencyInjection)
-            ]
-        )
+        factory: .init()
     )
 ]
 
