@@ -108,7 +108,7 @@ final class NetworkProviderTests: XCTestCase {
                     XCTAssertEqual(error, result)
                     expectation.fulfill()
                 }
-            }, receiveValue: { data in })
+            }, receiveValue: { _ in })
             .store(in: &cancellables)
         wait(for: [expectation], timeout: 2.0)
     }

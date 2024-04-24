@@ -137,7 +137,7 @@ public extension Target {
         var newFactory = factory
         newFactory.name = ModulePath.Feature.name
         newFactory.sources = .sources
-        
+
         return make(factory: newFactory)
     }
 
@@ -185,6 +185,58 @@ public extension Target {
 }
 
 public extension Target {
+    static func domain(factory: TargetFactory) -> Self {
+        var newFactory = factory
+        newFactory.name = ModulePath.Domain.name
+        newFactory.sources = .sources
+
+        return make(factory: newFactory)
+    }
+
+    static func domain(implements module: ModulePath.Domain, factory: TargetFactory) -> Self {
+        var newFactory = factory
+        newFactory.name = ModulePath.Domain.name + module.rawValue
+        newFactory.sources = .sources
+
+        return make(factory: newFactory)
+    }
+
+    static func domain(tests module: ModulePath.Domain, factory: TargetFactory) -> Self {
+        var newFactory = factory
+        newFactory.name = ModulePath.Domain.name + module.rawValue + "Tests"
+        newFactory.sources = .tests
+        newFactory.product = .unitTests
+
+        return make(factory: newFactory)
+    }
+
+    static func domain(testing module: ModulePath.Domain, factory: TargetFactory) -> Self {
+        var newFactory = factory
+        newFactory.name = ModulePath.Domain.name + module.rawValue + "Testing"
+        newFactory.sources = .testing
+
+        return make(factory: newFactory)
+    }
+
+    static func domain(interface module: ModulePath.Domain, factory: TargetFactory) -> Self {
+        var newFactory = factory
+        newFactory.name = ModulePath.Domain.name + module.rawValue + "Interface"
+        newFactory.sources = .interface
+        newFactory.scripts = [.SwiftLintString]
+        return make(factory: newFactory)
+    }
+
+    static func domain(example module: ModulePath.Domain, factory: TargetFactory) -> Self {
+        var newFactory = factory
+        newFactory.name = ModulePath.Domain.name + module.rawValue + "Example"
+        newFactory.sources = .exampleSources
+        newFactory.product = .app
+        newFactory.scripts = [.SwiftLintString]
+        return make(factory: newFactory)
+    }
+}
+
+public extension Target {
     static func core(factory: TargetFactory) -> Self {
         var newFactory = factory
         newFactory.name = ModulePath.Core.name
@@ -200,40 +252,40 @@ public extension Target {
 
         return make(factory: newFactory)
     }
-	
-	static func core(tests module: ModulePath.Core, factory: TargetFactory) -> Self {
-		var newFactory = factory
-		newFactory.name = ModulePath.Core.name + module.rawValue + "Tests"
-		newFactory.sources = .tests
-		newFactory.product = .unitTests
 
-		return make(factory: newFactory)
-	}
+    static func core(tests module: ModulePath.Core, factory: TargetFactory) -> Self {
+        var newFactory = factory
+        newFactory.name = ModulePath.Core.name + module.rawValue + "Tests"
+        newFactory.sources = .tests
+        newFactory.product = .unitTests
 
-	static func core(testing module: ModulePath.Core, factory: TargetFactory) -> Self {
-		var newFactory = factory
-		newFactory.name = ModulePath.Core.name + module.rawValue + "Testing"
-		newFactory.sources = .testing
+        return make(factory: newFactory)
+    }
 
-		return make(factory: newFactory)
-	}
+    static func core(testing module: ModulePath.Core, factory: TargetFactory) -> Self {
+        var newFactory = factory
+        newFactory.name = ModulePath.Core.name + module.rawValue + "Testing"
+        newFactory.sources = .testing
 
-	static func core(interface module: ModulePath.Core, factory: TargetFactory) -> Self {
-		var newFactory = factory
-		newFactory.name = ModulePath.Core.name + module.rawValue + "Interface"
-		newFactory.sources = .interface
-		newFactory.scripts = [.SwiftLintString]
-		return make(factory: newFactory)
-	}
+        return make(factory: newFactory)
+    }
 
-	static func core(example module: ModulePath.Core, factory: TargetFactory) -> Self {
-		var newFactory = factory
-		newFactory.name = ModulePath.Core.name + module.rawValue + "Example"
-		newFactory.sources = .exampleSources
-		newFactory.product = .app
-		newFactory.scripts = [.SwiftLintString]
-		return make(factory: newFactory)
-	}
+    static func core(interface module: ModulePath.Core, factory: TargetFactory) -> Self {
+        var newFactory = factory
+        newFactory.name = ModulePath.Core.name + module.rawValue + "Interface"
+        newFactory.sources = .interface
+        newFactory.scripts = [.SwiftLintString]
+        return make(factory: newFactory)
+    }
+
+    static func core(example module: ModulePath.Core, factory: TargetFactory) -> Self {
+        var newFactory = factory
+        newFactory.name = ModulePath.Core.name + module.rawValue + "Example"
+        newFactory.sources = .exampleSources
+        newFactory.product = .app
+        newFactory.scripts = [.SwiftLintString]
+        return make(factory: newFactory)
+    }
 }
 
 public extension Target {
@@ -248,19 +300,11 @@ public extension Target {
         var newFactory = factory
         newFactory.name = ModulePath.Shared.name + module.rawValue
         newFactory.sources = .sources
-        
+
         if module == .DesignSystem {
             newFactory.resources = ["Resources/**"]
             newFactory.product = .staticFramework
         }
-
-        return make(factory: newFactory)
-    }
-
-    static func shared(interface module: ModulePath.Shared, factory: TargetFactory) -> Self {
-        var newFactory = factory
-        newFactory.name = ModulePath.Shared.name + module.rawValue + "Interface"
-        newFactory.sources = .interface
 
         return make(factory: newFactory)
     }
