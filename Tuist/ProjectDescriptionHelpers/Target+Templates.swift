@@ -185,6 +185,49 @@ public extension Target {
 }
 
 public extension Target {
+    static func coordinator(factory: TargetFactory) -> Self {
+        var newFactory = factory
+        newFactory.name = ModulePath.Coordinator.name
+        newFactory.sources = .sources
+
+        return make(factory: newFactory)
+    }
+
+    static func coordinator(implements module: ModulePath.Coordinator, factory: TargetFactory) -> Self {
+        var newFactory = factory
+        newFactory.name = ModulePath.Coordinator.name + module.rawValue
+        newFactory.sources = .sources
+
+        return make(factory: newFactory)
+    }
+
+    static func coordinator(interface module: ModulePath.Coordinator, factory: TargetFactory) -> Self {
+        var newFactory = factory
+        newFactory.name = ModulePath.Coordinator.name + module.rawValue + "Interface"
+        newFactory.sources = .interface
+        newFactory.scripts = [.SwiftLintString]
+        return make(factory: newFactory)
+    }
+
+    static func coordinator(tests module: ModulePath.Coordinator, factory: TargetFactory) -> Self {
+        var newFactory = factory
+        newFactory.name = ModulePath.Coordinator.name + module.rawValue + "Tests"
+        newFactory.sources = .tests
+        newFactory.product = .unitTests
+
+        return make(factory: newFactory)
+    }
+
+    static func coordinator(testing module: ModulePath.Coordinator, factory: TargetFactory) -> Self {
+        var newFactory = factory
+        newFactory.name = ModulePath.Coordinator.name + module.rawValue + "Testing"
+        newFactory.sources = .testing
+
+        return make(factory: newFactory)
+    }
+}
+
+public extension Target {
     static func domain(factory: TargetFactory) -> Self {
         var newFactory = factory
         newFactory.name = ModulePath.Domain.name
@@ -222,15 +265,6 @@ public extension Target {
         var newFactory = factory
         newFactory.name = ModulePath.Domain.name + module.rawValue + "Interface"
         newFactory.sources = .interface
-        newFactory.scripts = [.SwiftLintString]
-        return make(factory: newFactory)
-    }
-
-    static func domain(example module: ModulePath.Domain, factory: TargetFactory) -> Self {
-        var newFactory = factory
-        newFactory.name = ModulePath.Domain.name + module.rawValue + "Example"
-        newFactory.sources = .exampleSources
-        newFactory.product = .app
         newFactory.scripts = [.SwiftLintString]
         return make(factory: newFactory)
     }

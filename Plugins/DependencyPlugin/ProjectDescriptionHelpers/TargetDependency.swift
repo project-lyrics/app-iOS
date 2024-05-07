@@ -39,6 +39,29 @@ public extension TargetDependency {
     }
 }
 
+
+public extension TargetDependency {
+    static var coordinator: Self {
+        return .project(target: ModulePath.Coordinator.name, path: .coordinator)
+    }
+
+    static func coordinator(implements module: ModulePath.Coordinator) -> Self {
+        return .project(target: ModulePath.Coordinator.name + module.rawValue, path: .coordinator(implementation: module))
+    }
+
+    static func coordinator(interface module: ModulePath.Coordinator) -> Self {
+        return .project(target: ModulePath.Coordinator.name + module.rawValue + "Interface", path: .coordinator(implementation: module))
+    }
+
+    static func coordinator(tests module: ModulePath.Coordinator) -> Self {
+        return .project(target: ModulePath.Coordinator.name + module.rawValue + "Tests", path: .coordinator(implementation: module))
+    }
+
+    static func coordinator(testing module: ModulePath.Coordinator) -> Self {
+        return .project(target: ModulePath.Coordinator.name + module.rawValue + "Testing", path: .coordinator(implementation: module))
+    }
+}
+
 public extension TargetDependency {
     static var domain: Self {
         return .project(target: ModulePath.Domain.name, path: .core)
