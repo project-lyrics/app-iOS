@@ -43,10 +43,6 @@ let targets: [Target] = [
                 .domain(testing: .PostTextUseCase)
             ]
         )
-    ),
-    .domain(
-        example: .PostTextUseCase,
-        factory: .init()
     )
 ]
 
