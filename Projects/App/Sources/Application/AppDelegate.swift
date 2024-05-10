@@ -1,6 +1,6 @@
 //
 //  AppDelegate.swift
-//  Lyrics
+//  Feelin
 //
 //  Created by Derrick kim on 2/19/24.
 //
@@ -16,8 +16,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
          return true
      }
 
-     // MARK: UISceneSession Lifecycle
-
      func application(
          _ application: UIApplication,
          configurationForConnecting connectingSceneSession: UISceneSession,
@@ -25,9 +23,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
      ) -> UISceneConfiguration {
          return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
      }
-
-     func application(
-         _ application: UIApplication,
-         didDiscardSceneSessions sceneSessions: Set<UISceneSession>
-     ) { }
 }
