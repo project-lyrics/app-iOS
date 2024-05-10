@@ -34,8 +34,6 @@ let targets: [Target] = [
         tests: .App,
         factory: .init(
             dependencies: [
-                .coordinator(interface: .App),
-                .coordinator(implements: .App),
                 .coordinator(testing: .App)
             ]
         )
