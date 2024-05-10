@@ -9,3 +9,5 @@
 @_exported import CoordinatorAppInterface
 @_exported import CoordinatorOnboarding
 @_exported import CoordinatorOnboardingInterface
+@_exported import CoordinatorTabBar
+@_exported import CoordinatorTabBarInterface
