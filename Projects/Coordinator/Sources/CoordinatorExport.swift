@@ -7,3 +7,5 @@
 
 @_exported import CoordinatorApp
 @_exported import CoordinatorAppInterface
+@_exported import CoordinatorOnboarding
+@_exported import CoordinatorOnboardingInterface
