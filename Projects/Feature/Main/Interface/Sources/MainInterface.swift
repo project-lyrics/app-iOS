@@ -1,13 +1,6 @@
-//
-//  OnboardingRootViewController.swift
-//  FeatureOnboardingInterface
-//
-//  Created by Derrick kim on 4/20/24.
-//
-
 import UIKit
 
-public final class OnboardingRootViewController: UIViewController {
+public final class MainRootViewController: UIViewController {
     public init() {
         super.init(nibName: nil, bundle: nil)
     }

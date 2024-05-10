@@ -13,7 +13,8 @@ let targets: [Target] = [
     .feature(
         factory: .init(
             dependencies: [
-                .feature(implements: .Onboarding)
+                .feature(implements: .Onboarding),
+                .feature(implements: .Main)
             ]
         )
     )
