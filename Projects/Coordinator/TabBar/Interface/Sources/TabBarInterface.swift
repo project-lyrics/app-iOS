@@ -32,7 +32,7 @@ extension TabBarCoordinator: CoordinatorDelegate {
 
 private extension TabBarCoordinator {
     func configureTabBarController(with viewControllers: [UIViewController]) {
-        tabBarController.selectedIndex = 0
+        tabBarController.selectedIndex = TabBarPageType.main.index
         tabBarController.tabBar.tintColor = .systemBlue
 
         tabBarController.setViewControllers(
