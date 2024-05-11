@@ -9,7 +9,8 @@ let project = Project.makeModule(
             interface: .TabBar,
             factory: .init(
                 dependencies: [
-                    .coordinator(interface: .App)
+                    .coordinator(interface: .App),
+                    .coordinator(interface: .Main)
                 ]
             )
         ),
@@ -36,7 +37,6 @@ let project = Project.makeModule(
                     .coordinator(testing: .TabBar)
                 ]
             )
-        ),
-
+        )
     ]
 )

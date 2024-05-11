@@ -7,7 +7,11 @@ let project = Project.makeModule(
     targets: [
         .coordinator(
             interface: .Onboarding,
-            factory: .init()
+            factory: .init(
+                dependencies: [
+                    .feature(interface: .Onboarding)
+                ]
+            )
         ),
         .coordinator(
             implements: .Onboarding,
@@ -32,7 +36,6 @@ let project = Project.makeModule(
                     .coordinator(testing: .Onboarding)
                 ]
             )
-        ),
-
+        )
     ]
 )
