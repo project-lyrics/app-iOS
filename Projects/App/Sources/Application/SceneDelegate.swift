@@ -1,14 +1,16 @@
 //
 //  SceneDelegate.swift
-//  Lyrics
+//  Feelin
 //
 //  Created by Derrick kim on 2/19/24.
 //
 
 import UIKit
+import CoordinatorAppInterface
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
+    var coordinator: Coordinator?
 
     func scene(
         _ scene: UIScene,
@@ -20,10 +22,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
 
         window = UIWindow(windowScene: windowScene)
-        let viewController = UIViewController()
-        viewController.view.backgroundColor = .red
-        window?.rootViewController = viewController
+
+        let navigationController = UINavigationController()
+        coordinator = AppCoordinator(rootViewController: navigationController)
+
+        window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
+
+        coordinator?.start()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) { }

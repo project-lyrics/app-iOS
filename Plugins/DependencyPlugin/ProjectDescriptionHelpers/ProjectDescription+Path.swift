@@ -17,9 +17,19 @@ public extension ProjectDescription.Path {
     static var feature: Self {
         return .relativeToRoot("Projects/\(ModulePath.Feature.name)")
     }
+    
+    static func feature(implementation module: ModulePath.Feature) -> Self {
+        return .relativeToRoot("Projects/\(ModulePath.Feature.name)/\(module.rawValue)")
+    }
+}
+
+public extension ProjectDescription.Path {
+    static var coordinator: Self {
+        return .relativeToRoot("Projects/\(ModulePath.Coordinator.name)")
+    }
 	
-	static func feature(implementation module: ModulePath.Feature) -> Self {
-		return .relativeToRoot("Projects/\(ModulePath.Feature.name)/\(module.rawValue)")
+	static func coordinator(implementation module: ModulePath.Coordinator) -> Self {
+		return .relativeToRoot("Projects/\(ModulePath.Coordinator.name)/\(module.rawValue)")
 	}
 }
 

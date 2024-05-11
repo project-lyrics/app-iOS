@@ -32,7 +32,8 @@ let appTargets: [Target] = [
             ]),
             entitlements: "Feelin.entitlements",
             dependencies: [
-                .feature
+                .feature,
+                .coordinator
             ]
         )
     )

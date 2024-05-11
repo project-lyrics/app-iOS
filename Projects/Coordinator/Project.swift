@@ -2,7 +2,7 @@
 //  Project.swift
 //  ProjectDescriptionHelpers
 //
-//  Created by Derrick kim on 2/16/24.
+//  Created by Derrick kim on 5/6/24.
 //
 
 import ProjectDescription
@@ -10,17 +10,19 @@ import ProjectDescriptionHelpers
 import DependencyPlugin
 
 let targets: [Target] = [
-    .feature(
+    .coordinator(
         factory: .init(
             dependencies: [
-                .feature(implements: .Onboarding),
-                .feature(implements: .Main)
+                .coordinator(implements: .App),
+                .coordinator(implements: .TabBar),
+                .coordinator(implements: .Onboarding),
+                .coordinator(implements: .Main),
             ]
         )
     )
 ]
 
 let project: Project = .makeModule(
-    name: "Feature",
+    name: "Coordinator",
     targets: targets
 )
