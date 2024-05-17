@@ -1,5 +1,5 @@
 //
-//  Images.swift
+//  FeelinImages.swift
 //  SharedDesignSystem
 //
 //  Created by Derrickkim on 2024/02/18.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-public struct Images {
+public struct FeelinImages {
     public static let logo = SharedDesignSystemAsset.Images.logo.image
     public static let backDark = SharedDesignSystemAsset.Images.backDark.image
     public static let backLight = SharedDesignSystemAsset.Images.backLight.image
