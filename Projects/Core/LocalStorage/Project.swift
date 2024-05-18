@@ -17,6 +17,29 @@ let project = Project.makeModule(
                 ]
             )
         ),
-
+		.core(
+			example: .LocalStorage,
+			factory: .init(
+				infoPlist: .extendingDefault(with: [
+					"CFBundleShortVersionString": "1.0",
+					"CFBundleVersion": "1",
+					"NSAppTransportSecurity": ["NSAllowsArbitraryLoads": true],
+					"UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"],
+					"UIUserInterfaceStyle": "Light",
+					"UIApplicationSceneManifest": [
+						"UIApplicationSupportsMultipleScenes": true,
+						"UISceneConfigurations": [
+							"UIWindowSceneSessionRoleApplication": [[
+								"UISceneConfigurationName": "Default Configuration",
+								"UISceneDelegateClassName": "$(PRODUCT_MODULE_NAME).SceneDelegate"
+							]]
+						]
+					]
+				]),
+				dependencies: [
+					.core(implements: .LocalStorage)
+				]
+			)
+		)
     ]
 )
