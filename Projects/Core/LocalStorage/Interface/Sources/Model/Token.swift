@@ -14,13 +14,23 @@ public protocol TokenType: Codable {
 }
 
 // MARK: - AccessToken
-struct AccessToken: TokenType {
-	let token: String
-	let expiration: Date
+public struct AccessToken: TokenType {
+	public let token: String
+	public let expiration: Date
+	
+	public init(token: String, expiration: Date) {
+		self.token = token
+		self.expiration = expiration
+	}
 }
 
 // MARK: - RefreshToken
-struct RefreshToken: Codable {
-	let token: String
-	let expiration: Date
+public struct RefreshToken: TokenType {
+	public let token: String
+	public let expiration: Date
+	
+	public init(token: String, expiration: Date) {
+		self.token = token
+		self.expiration = expiration
+	}
 }
