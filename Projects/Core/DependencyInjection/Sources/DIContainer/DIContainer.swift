@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import CoreDependencyInjectionInterface
 
 public final class DIContainer: Injectable {
     public var dependencies: [AnyHashable : Any] = [:]
