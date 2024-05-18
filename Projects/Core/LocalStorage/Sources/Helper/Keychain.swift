@@ -8,17 +8,25 @@
 import Foundation
 import CoreLocalStorageInterface
 
-struct Keychain {
-	struct Option {
-		var service: String = ""
+public struct Keychain {
+	public struct Option {
+		public var service: String
+		
+		public init(service: String) {
+			self.service = service
+		}
+		
+		public init() {
+			self.service = ""
+		}
 	}
 	private let option: Option
 	
-	init(option: Option) {
+	public init(option: Option) {
 		self.option = option
 	}
 	
-	init() {
+	public init() {
 		var option = Option()
 		if let bundleIdentifier = Bundle.main.bundleIdentifier {
 			option.service = bundleIdentifier
@@ -27,11 +35,10 @@ struct Keychain {
 		self.init(option: option)
 	}
 	
-	@discardableResult
 	func save(
 		key: String,
 		data: Data
-	) throws -> Bool {
+	) throws {
 		var query = option.query()
 		query[kSecValueData] = data
 		query[kSecAttrAccount] = key
@@ -41,7 +48,7 @@ struct Keychain {
 		
 		switch addStatus {
 		case errSecSuccess:
-			return true
+			return
 			
 		case errSecDuplicateItem:
 			return try update(key: key, data: data)
@@ -54,7 +61,7 @@ struct Keychain {
 	private func update(
 		key: String,
 		data: Data
-	) throws -> Bool {
+	) throws {
 		var updateQuery = option.query()
 		updateQuery[kSecAttrAccount] = key
 		
@@ -63,14 +70,14 @@ struct Keychain {
 		
 		switch updateStatus {
 		case errSecSuccess:
-			return true
+			return
 			
 		default:
 			throw KeychainError(osStatus: updateStatus)
 		}
 	}
 	
-	func read(key: String) throws -> Data {
+	func read(key: String) throws -> Data? {
 		var query = option.query()
 		query[kSecAttrAccount] = key
 		query[kSecReturnData] = true
@@ -85,6 +92,9 @@ struct Keychain {
 				throw KeychainError.other(readStatus)
 			}
 			return data
+			
+		case errSecItemNotFound:
+			return nil
 			
 		default:
 			throw KeychainError(osStatus: readStatus)
@@ -101,6 +111,9 @@ struct Keychain {
 		switch deleteStatus {
 		case errSecSuccess:
 			return true
+			
+		case errSecItemNotFound:
+			return false
 			
 		default:
 			throw KeychainError(osStatus: deleteStatus)

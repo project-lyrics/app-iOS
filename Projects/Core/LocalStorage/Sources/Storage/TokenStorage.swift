@@ -8,37 +8,44 @@
 import CoreLocalStorageInterface
 import Foundation
 
-protocol TokenStorageInterface {
-	func read<T: TokenType>(key: String) throws -> T
-	@discardableResult
-	func save<T: TokenType>(
-		token: T,
-		for key: String
-	) throws -> Bool
-	@discardableResult
-	func delete(for key: String) throws -> Bool
-}
-
 // MARK: - TokenStorage
-struct TokenStorage: TokenStorageInterface {
-	private let keychain: Keychain
+public struct TokenStorage: TokenStorageInterface {
+	public let keychain: Keychain
 	
-	func read<T: TokenType>(key: String) throws -> T {
-		let data = try keychain.read(key: key)
-		return try JSONDecoder().decode(T.self, from: data)
+	public init(keychain: Keychain) {
+		self.keychain = keychain
+	}
+	
+	public init() {
+		self.keychain = .init()
+	}
+	
+	public init(option: Keychain.Option) {
+		self.keychain = Keychain(option: option)
+	}
+	
+	public func read<T: TokenType>(key: String) throws -> T? {
+		do {
+			guard let data = try keychain.read(key: key) else {
+				return nil
+			}
+			return try JSONDecoder().decode(T.self, from: data)
+		} catch {
+			throw error
+		}
 	}
 	
 	@discardableResult
-	func save<T: TokenType>(
+	public func save<T: TokenType>(
 		token: T,
 		for key: String
-	) throws -> Bool {
+	) throws {
 		let data = try JSONEncoder().encode(token)
-		return try keychain.save(key: key, data: data)
+		try keychain.save(key: key, data: data)
 	}
 	
 	@discardableResult
-	func delete(for key: String) throws -> Bool {
+	public func delete(for key: String) throws -> Bool {
 		return try keychain.delete(key: key)
 	}
 }
