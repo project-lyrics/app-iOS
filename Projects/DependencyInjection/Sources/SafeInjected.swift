@@ -5,6 +5,8 @@
 //  Created by Derrick kim on 4/17/24.
 //
 
+import Foundation
+
 @propertyWrapper public struct SafeInjected<Value> {
     private let identifier: InjectIdentifier<Value>
     private let container: Resolvable

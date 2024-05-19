@@ -11,6 +11,7 @@ import ProjectDescription
 public enum ModulePath {
     case feature(Feature)
     case coordinator(Coordinator)
+    case dependencyInjection(DependencyInjection)
     case domain(Domain)
     case core(Core)
     case shared(Shared)
@@ -45,6 +46,12 @@ public extension ModulePath {
 }
 
 public extension ModulePath {
+    struct DependencyInjection {
+        public static let name: String = "DependencyInjection"
+    }
+}
+
+public extension ModulePath {
     enum Domain: String, CaseIterable {
         case PostTextUseCase
 
@@ -55,7 +62,6 @@ public extension ModulePath {
 public extension ModulePath {
     enum Core: String, CaseIterable {
         case LocalStorage
-        case DependencyInjection
 		case Network
 
         public static let name: String = "Core"

@@ -63,6 +63,12 @@ public extension TargetDependency {
 }
 
 public extension TargetDependency {
+    static var dependencyInjection: Self {
+        return .project(target: ModulePath.DependencyInjection.name, path: .dependencyInjection)
+    }
+}
+
+public extension TargetDependency {
     static var domain: Self {
         return .project(target: ModulePath.Domain.name, path: .domain)
     }

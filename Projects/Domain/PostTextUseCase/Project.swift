@@ -15,6 +15,7 @@ let targets: [Target] = [
         factory: .init(
             dependencies: [
                 .core
+                .dependencyInjection,
             ]
         )
     ),

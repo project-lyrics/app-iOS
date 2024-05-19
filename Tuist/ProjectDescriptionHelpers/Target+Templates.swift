@@ -234,6 +234,16 @@ public extension Target {
 }
 
 public extension Target {
+    static func dependencyInjection(factory: TargetFactory) -> Self {
+        var newFactory = factory
+        newFactory.name = ModulePath.DependencyInjection.name
+        newFactory.sources = .sources
+        
+        return make(factory: newFactory)
+    }
+}
+
+public extension Target {
     static func domain(factory: TargetFactory) -> Self {
         var newFactory = factory
         newFactory.name = ModulePath.Domain.name

@@ -7,4 +7,3 @@
 
 @_exported import CoreNetwork
 @_exported import CoreNetworkInterface
-@_exported import CoreDependencyInjection
