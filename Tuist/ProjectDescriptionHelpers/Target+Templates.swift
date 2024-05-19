@@ -315,6 +315,7 @@ public extension Target {
     static func core(example module: ModulePath.Core, factory: TargetFactory) -> Self {
         var newFactory = factory
         newFactory.name = ModulePath.Core.name + module.rawValue + "Example"
+		newFactory.bundleId = Project.Environment.bundleId + newFactory.name
         newFactory.sources = .exampleSources
         newFactory.product = .app
         newFactory.scripts = [.SwiftLintString]
