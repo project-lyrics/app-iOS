@@ -137,7 +137,7 @@ public extension Target {
         var newFactory = factory
         newFactory.name = ModulePath.Feature.name
         newFactory.sources = .sources
-
+		
         return make(factory: newFactory)
     }
 

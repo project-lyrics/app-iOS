@@ -28,7 +28,11 @@ let appTargets: [Target] = [
                             "UISceneDelegateClassName": "$(PRODUCT_MODULE_NAME).SceneDelegate"
                         ]]
                     ]
-                ]
+                ],
+				"LSApplicationQueriesSchemes": [
+					"kakaokompassauth",
+					"kakaolink"
+				]
             ]),
             entitlements: "Feelin.entitlements",
             dependencies: [
