@@ -45,5 +45,34 @@ public extension Project {
                 "GCC_PREPROCESSOR_DEFINITIONS": "$(inherited) FLEXLAYOUT_SWIFT_PACKAGE=1"
             ]
         )
+        
+        public static let defaultInfoPlist: InfoPlist = .extendingDefault(with: [
+            "CFBundleShortVersionString": "1.0",
+            "CFBundleVersion": "1",
+            "UILaunchStoryboardName": "LaunchScreen",
+            "NSAppTransportSecurity": ["NSAllowsArbitraryLoads": true],
+            "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"],
+            "UIUserInterfaceStyle": "Light",
+            "UIApplicationSceneManifest": [
+                "UIApplicationSupportsMultipleScenes": true,
+                "UISceneConfigurations": [
+                    "UIWindowSceneSessionRoleApplication": [[
+                        "UISceneConfigurationName": "Default Configuration",
+                        "UISceneDelegateClassName": "$(PRODUCT_MODULE_NAME).SceneDelegate"
+                    ]]
+                ]
+            ],
+            "CFBundleURLTypes": [
+                [
+                    "CFBundleURLName": "",
+                    "CFBundleURLSchemes": ["kakao{KAKAO_NATIVE_APP_KEY}"]
+                ]
+            ],
+            "KAKAO_NATIVE_APP_KEY": "${KAKAO_NATIVE_APP_KEY}",
+            "LSApplicationQueriesSchemes": [
+                "kakaokompassauth",
+                "kakaolink"
+            ]
+        ])
     }
 }
