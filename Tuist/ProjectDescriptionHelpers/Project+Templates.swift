@@ -1,4 +1,5 @@
 import ProjectDescription
+import DependencyPlugin
 
 public extension Project {
     static func makeModule(
@@ -6,7 +7,7 @@ public extension Project {
         organizationName: String? = nil,
         options: Project.Options = .options(),
         packages: [Package] = [],
-        settings: Settings? = nil,
+        settings: Settings? = Project.Environment.defaultSettings,
         targets: [Target],
         schemes: [Scheme] = [],
         fileHeaderTemplate: FileHeaderTemplate? = nil,

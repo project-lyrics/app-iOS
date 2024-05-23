@@ -113,21 +113,25 @@ public extension Target {
 }
 
 public extension Target {
-    static func app(implements module: ModulePath.App, factory: TargetFactory) -> Self {
+    static func app(
+        implements module: ModulePath.App,
+        deploymentTarget: ProjectDeploymentTarget,
+        factory: TargetFactory
+    ) -> Self {
         var newFactory = factory
         newFactory.name = ModulePath.App.name + module.rawValue
         switch module {
         case .iOS:
             newFactory.product = .app
-            newFactory.name = Project.Environment.appName
-            newFactory.bundleId = Project.Environment.bundleId
+            newFactory.name = Project.Environment.appName + "-\(deploymentTarget.rawValue)"
+            newFactory.bundleId = Project.Environment.bundleId + "-\(deploymentTarget.rawValue)"
             newFactory.resources = ["Resources/**"]
             newFactory.sources = .sources
             newFactory.productName = Project.Environment.appName
             newFactory.scripts = [.SwiftLintString]
-            newFactory.settings = Project.Environment.appDefaultSettings
             newFactory.dependencies = factory.dependencies
         }
+        
         return make(factory: newFactory)
     }
 }

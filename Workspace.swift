@@ -1,4 +1,7 @@
 import ProjectDescription
 import DependencyPlugin
 
-let workspace = Workspace(name: "Feelin", projects: ["Projects/*"])
+let workspace = Workspace(
+    name: Project.Environment.appName,
+    projects: ["Projects/*"]
+)
