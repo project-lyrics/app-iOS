@@ -46,33 +46,45 @@ public extension Project {
             ]
         )
         
-        public static let defaultInfoPlist: InfoPlist = .extendingDefault(with: [
-            "CFBundleShortVersionString": "1.0",
-            "CFBundleVersion": "1",
-            "UILaunchStoryboardName": "LaunchScreen",
-            "NSAppTransportSecurity": ["NSAllowsArbitraryLoads": true],
-            "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"],
-            "UIUserInterfaceStyle": "Light",
-            "UIApplicationSceneManifest": [
-                "UIApplicationSupportsMultipleScenes": true,
-                "UISceneConfigurations": [
-                    "UIWindowSceneSessionRoleApplication": [[
-                        "UISceneConfigurationName": "Default Configuration",
-                        "UISceneDelegateClassName": "$(PRODUCT_MODULE_NAME).SceneDelegate"
-                    ]]
+        public static func infoPlist(deploymentTarget: ProjectDeploymentTarget) -> InfoPlist {
+            var kakaoNativeAppKey: String = ""
+            switch deploymentTarget {
+            case .dev:
+                kakaoNativeAppKey = "${KAKAO_NATIVE_APP_KEY_DEV}"
+            case .qa:
+                kakaoNativeAppKey =  "${KAKAO_NATIVE_APP_KEY_QA}"
+            case .prod:
+                kakaoNativeAppKey =  "${KAKAO_NATIVE_APP_KEY_PROD}"
+            }
+            
+            return .extendingDefault(with: [
+                "CFBundleShortVersionString": "1.0",
+                "CFBundleVersion": "1",
+                "UILaunchStoryboardName": "LaunchScreen",
+                "NSAppTransportSecurity": ["NSAllowsArbitraryLoads": true],
+                "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"],
+                "UIUserInterfaceStyle": "Light",
+                "UIApplicationSceneManifest": [
+                    "UIApplicationSupportsMultipleScenes": true,
+                    "UISceneConfigurations": [
+                        "UIWindowSceneSessionRoleApplication": [[
+                            "UISceneConfigurationName": "Default Configuration",
+                            "UISceneDelegateClassName": "$(PRODUCT_MODULE_NAME).SceneDelegate"
+                        ]]
+                    ]
+                ],
+                "CFBundleURLTypes": [
+                    [
+                        "CFBundleURLName": "",
+                        "CFBundleURLSchemes": ["kakao\(kakaoNativeAppKey)"]
+                    ]
+                ],
+                "KAKAO_NATIVE_APP_KEY": "\(kakaoNativeAppKey)",
+                "LSApplicationQueriesSchemes": [
+                    "kakaokompassauth",
+                    "kakaolink"
                 ]
-            ],
-            "CFBundleURLTypes": [
-                [
-                    "CFBundleURLName": "",
-                    "CFBundleURLSchemes": ["kakao{KAKAO_NATIVE_APP_KEY}"]
-                ]
-            ],
-            "KAKAO_NATIVE_APP_KEY": "${KAKAO_NATIVE_APP_KEY}",
-            "LSApplicationQueriesSchemes": [
-                "kakaokompassauth",
-                "kakaolink"
-            ]
-        ])
+            ])
+        }
     }
 }

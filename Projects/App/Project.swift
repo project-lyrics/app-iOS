@@ -13,32 +13,37 @@ let appTargets: [Target] = [
     .app(
         implements: .iOS,
         factory: .init(
-            infoPlist: .extendingDefault(with: [
-                "CFBundleShortVersionString": "1.0",
-                "CFBundleVersion": "1",
-                "UILaunchStoryboardName": "",
-				"NSAppTransportSecurity": ["NSAllowsArbitraryLoads": true],
-                "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"],
-                "UIUserInterfaceStyle": "Light",
-                "UIApplicationSceneManifest": [
-                    "UIApplicationSupportsMultipleScenes": true,
-                    "UISceneConfigurations": [
-                        "UIWindowSceneSessionRoleApplication": [[
-                            "UISceneConfigurationName": "Default Configuration",
-                            "UISceneDelegateClassName": "$(PRODUCT_MODULE_NAME).SceneDelegate"
-                        ]]
-                    ]
-                ],
-				"LSApplicationQueriesSchemes": [
-					"kakaokompassauth",
-					"kakaolink"
-				]
-            ]),
+            infoPlist: Project.Environment.infoPlist(deploymentTarget: .dev),
             entitlements: "Feelin.entitlements",
             dependencies: [
                 .coordinator,
-                .SPM.FlexLayout
-            ]
+                .shared
+            ], 
+            settings: Project.Environment.devSetting
+        )
+    ),
+    .app(
+        implements: .iOS,
+        deploymentTarget: .qa,
+        factory: .init(
+            infoPlist: Project.Environment.infoPlist(deploymentTarget: .qa),
+            entitlements: "Feelin.entitlements",
+            dependencies: [
+                .coordinator,
+            ],
+            settings: Project.Environment.qaSetting
+        )
+    ),
+    .app(
+        implements: .iOS,
+        deploymentTarget: .prod,
+        factory: .init(
+            infoPlist: Project.Environment.infoPlist(deploymentTarget: .prod),
+            entitlements: "Feelin.entitlements",
+            dependencies: [
+                .coordinator,
+            ],
+            settings: Project.Environment.prodSetting
         )
     )
 ]
@@ -50,6 +55,6 @@ let appProject: Project = .makeModule(
     schemes: appSchemes,
     additionalFiles: [
         "./xcconfigs/Shared.xcconfig",
-        "./xcconfigs/KakaoSecretKey.xcconfig"
+        "./xcconfigs/KakaoSecretKeys.xcconfig"
     ]
 )
