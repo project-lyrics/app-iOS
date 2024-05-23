@@ -120,3 +120,6 @@ Derived/
 *.xcodeproj
 *.p12
 master.key
+
+### xcconfig ###
+Projects/App/xcconfigs/KakaoSecretKeys.xcconfig
