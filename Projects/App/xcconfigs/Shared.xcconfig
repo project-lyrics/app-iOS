@@ -8,9 +8,8 @@
 // Configuration settings file format documentation can be found at:
 // https://help.apple.com/xcode/#/dev745c5c974
 
+#include "./KakaoSecretKey.xcconfig"
+
 OTHER_SWIFT_FLAGS[config=DEV][sdk=*] = $(inherited) -DDEV
 OTHER_SWIFT_FLAGS[config=QA][sdk=*] = $(inherited) -DQA
 OTHER_SWIFT_FLAGS[config=PROD][sdk=*] = $(inherited) -DPROD
-
-// 카카오 네이티브 앱 키를 하단에 주입해야 합니다. ↓↓
-KAKAO_NATIVE_APP_KEY = 
