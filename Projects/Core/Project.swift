@@ -15,8 +15,7 @@ let targets: [Target] = [
 			dependencies: [
                 .shared,
                 .core(implements: .Network),
-				.core(implements: .LocalStorage),
-                .shared(implements: .Util)
+				.core(implements: .LocalStorage)
 			]
 		)
 	)

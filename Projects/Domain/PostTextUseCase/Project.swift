@@ -39,7 +39,8 @@ let targets: [Target] = [
         tests: .PostTextUseCase,
         factory: .init(
             dependencies: [
-                .domain(testing: .PostTextUseCase)
+                .domain(testing: .PostTextUseCase),
+                .domain(implements: .PostTextUseCase)
             ]
         )
     )
