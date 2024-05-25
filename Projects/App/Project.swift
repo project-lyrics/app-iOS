@@ -16,7 +16,7 @@ let appTargets: [Target] = [
             infoPlist: .extendingDefault(with: [
                 "CFBundleShortVersionString": "1.0",
                 "CFBundleVersion": "1",
-                "UILaunchStoryboardName": "LaunchScreen",
+                "UILaunchStoryboardName": "",
 				"NSAppTransportSecurity": ["NSAllowsArbitraryLoads": true],
                 "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"],
                 "UIUserInterfaceStyle": "Light",
@@ -32,7 +32,6 @@ let appTargets: [Target] = [
             ]),
             entitlements: "Feelin.entitlements",
             dependencies: [
-                .feature,
                 .coordinator
             ]
         )
