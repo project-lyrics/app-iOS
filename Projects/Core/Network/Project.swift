@@ -17,36 +17,36 @@ let targets: [Target] = [
                 .shared(implements: .Util)
             ]
         )
-	),
-	.core(
-		implements: .Network,
-		factory: .init(
-			dependencies: [
-				.core(interface: .Network)
-			]
-		)
-	),
-	.core(
-		testing: .Network,
-		factory: .init(
-			dependencies: [
-				.core(interface: .Network)
-			]
-		)
-	),
-	.core(
-		tests: .Network,
-		factory: .init(
-			dependencies: [
+    ),
+    .core(
+        implements: .Network,
+        factory: .init(
+            dependencies: [
+                .core(interface: .Network)
+            ]
+        )
+    ),
+    .core(
+        testing: .Network,
+        factory: .init(
+            dependencies: [
+                .core(interface: .Network)
+            ]
+        )
+    ),
+    .core(
+        tests: .Network,
+        factory: .init(
+            dependencies: [
                 .core(interface: .Network),
                 .core(implements: .Network),
-				.core(testing: .Network)
-			]
-		)
-	)
+                .core(testing: .Network)
+            ]
+        )
+    )
 ]
 
 let project = Project.makeModule(
-	name: ModulePath.Core.Network.rawValue,
-	targets: targets
+    name: ModulePath.Core.Network.rawValue,
+    targets: targets
 )

@@ -5,8 +5,6 @@
 //  Created by Derrick kim on 4/17/24.
 //
 
-import CoreDependencyInjectionInterface
-
 @propertyWrapper public struct SafeInjected<Value> {
     private let identifier: InjectIdentifier<Value>
     private let container: Resolvable
