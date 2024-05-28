@@ -14,6 +14,7 @@ let targets: [Target] = [
         factory: .init(
             dependencies: [
                 .shared(implements: .Util),
+                .shared(implements: .DesignSystem)
             ]
         )
     )

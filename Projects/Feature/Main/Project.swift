@@ -5,7 +5,12 @@ import DependencyPlugin
 let targets: [Target] = [
     .feature(
         interface: .Main,
-        factory: .init()
+        factory: .init(
+            dependencies: [
+                .domain,
+                .SPM.FlexLayout
+            ]
+        )
     ),
     .feature(
         implements: .Main,
@@ -33,11 +38,18 @@ let targets: [Target] = [
     ),
     .feature(
         example: .Main,
-        factory: .init()
+        factory: .init(
+            dependencies: [
+                .feature(interface: .Main)
+            ]
+        )
     )
 ]
 
 let project = Project.makeModule(
     name: ModulePath.Feature.name + ModulePath.Feature.Main.rawValue,
+    packages: [
+        .remote(url: "https://github.com/layoutBox/FlexLayout", requirement: .upToNextMajor(from: "2.0.7"))
+    ],
     targets: targets
 )

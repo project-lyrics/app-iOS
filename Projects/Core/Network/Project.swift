@@ -10,11 +10,11 @@ import ProjectDescriptionHelpers
 import DependencyPlugin
 
 let targets: [Target] = [
-	.core(
-		interface: .Network,
-		factory: .init(
+    .core(
+        interface: .Network,
+        factory: .init(
             dependencies: [
-                .shared(implements: .Util)
+                .shared
             ]
         )
     ),
