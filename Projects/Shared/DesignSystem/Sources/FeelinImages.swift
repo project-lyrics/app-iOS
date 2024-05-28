@@ -41,4 +41,6 @@ public struct FeelinImages {
     public static let profilePoopHair = SharedDesignSystemAsset.Images.profilePoopHair.image
     public static let profileShortHair = SharedDesignSystemAsset.Images.profileShortHair.image
     public static let logoBelt = SharedDesignSystemAsset.Images.logoBelt.image
+    public static let kakao = SharedDesignSystemAsset.Images.kakao.image
+    public static let apple = SharedDesignSystemAsset.Images.apple.image
 }
