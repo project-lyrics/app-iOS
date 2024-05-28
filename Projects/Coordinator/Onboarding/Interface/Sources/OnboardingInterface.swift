@@ -20,6 +20,5 @@ public final class OnboardingCoordinator: Coordinator {
 private extension OnboardingCoordinator {
     func configureOnboardingController() {
         let viewController = OnboardingRootViewController()
-        navigationController.pushViewController(viewController, animated: true)
     }
 }

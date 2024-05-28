@@ -8,7 +8,7 @@
 import Foundation
 import CoreNetworkInterface
 import Combine
-import SharedUtilInterface
+import SharedUtil
 
 public final class NetworkProvider: NetworkProviderProtocol {
     private let session: URLSession
