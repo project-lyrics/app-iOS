@@ -7,22 +7,27 @@
 
 import UIKit
 import CoordinatorAppInterface
+import CoordinatorTabBarInterface
+import FeatureOnboardingInterface
 import CoordinatorOnboardingInterface
 
-public final class AppCoordinator: Coordinator {
-    public var delegate: CoordinatorDelegate?
-    public var navigationController: UINavigationController
-    public var childCoordinators: [Coordinator]
+final class AppCoordinator: Coordinator {
+    var delegate: CoordinatorDelegate?
+    var navigationController: UINavigationController
+    var childCoordinators: [Coordinator]
 
-    public init(rootViewController: UINavigationController) {
+    init(rootViewController: UINavigationController) {
         self.navigationController = rootViewController
         self.childCoordinators = []
     }
 }
 
-public extension AppCoordinator {
+extension AppCoordinator {
     func start() {
-        connectOnboardingCoordinator()
+        let viewController = SplashViewController()
+        viewController.coordinator = self
+        navigationController.setNavigationBarHidden(true, animated: false)
+        navigationController.pushViewController(viewController, animated: false)
     }
 
     func connectOnboardingCoordinator() {
@@ -36,7 +41,7 @@ public extension AppCoordinator {
     }
 
     func connectTabBarCoordinator() {
-        let onboardingCoordinator = OnboardingCoordinator(
+        let onboardingCoordinator = TabBarCoordinator(
             navigationController: navigationController
         )
 
@@ -44,10 +49,19 @@ public extension AppCoordinator {
         onboardingCoordinator.start()
         childCoordinators.append(onboardingCoordinator)
     }
+
+    func didFinish() {
+        didFinish(childCoordinator: self)
+    }
 }
 
-extension AppCoordinator: CoordinatorDelegate {
-    public func didFinish(childCoordinator: Coordinator) {
-        navigationController.popToRootViewController(animated: true)
+extension AppCoordinator: CoordinatorDelegate, SplashViewControllerDelegate  {
+    func didFinish(childCoordinator: Coordinator) {
+        navigationController.popToRootViewController(animated: false)
+        if childCoordinator is OnboardingCoordinator {
+            connectTabBarCoordinator()
+        } else {
+            connectOnboardingCoordinator()
+        }
     }
 }
