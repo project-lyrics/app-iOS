@@ -8,7 +8,10 @@ let targets: [Target] = [
         factory: .init(
             dependencies: [
                 .core(interface: .Network),
-                .core(interface: .LocalStorage)
+                .core(interface: .LocalStorage),
+                .SPM.KakaoSDKCommon,
+                .SPM.KakaoSDKAuth,
+                .SPM.KakaoSDKUser,
             ]
         )
     ),
@@ -17,7 +20,9 @@ let targets: [Target] = [
         factory: .init(
             dependencies: [
                 .domain(interface: .OAuth),
-                .SPM.KakaoSDKUser
+                .SPM.KakaoSDKCommon,
+                .SPM.KakaoSDKAuth,
+                .SPM.KakaoSDKUser,
             ]
         )
     ),
@@ -25,7 +30,10 @@ let targets: [Target] = [
         testing: .OAuth,
         factory: .init(
             dependencies: [
-                .domain(interface: .OAuth)
+                .domain(interface: .OAuth),
+                .SPM.KakaoSDKCommon,
+                .SPM.KakaoSDKAuth,
+                .SPM.KakaoSDKUser,
             ]
         )
     ),
@@ -34,10 +42,14 @@ let targets: [Target] = [
         factory: .init(
             dependencies: [
                 .domain(testing: .OAuth),
-                .domain(implements: .OAuth)
+                .domain(implements: .OAuth),
+                .domain(interface: .OAuth),
+                .SPM.KakaoSDKCommon,
+                .SPM.KakaoSDKAuth,
+                .SPM.KakaoSDKUser,
             ]
         )
-    ),
+    )
 ]
 
 let project = Project.makeModule(

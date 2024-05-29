@@ -13,12 +13,13 @@ let appTargets: [Target] = [
     .app(
         implements: .iOS,
         factory: .init(
-            infoPlist: Project.Environment.infoPlist(deploymentTarget: .dev),
+            infoPlist: Project.Environment.appInfoPlist(deploymentTarget: .dev),
             entitlements: "Feelin.entitlements",
             dependencies: [
                 .coordinator,
-                .shared
-            ], 
+                .shared(implements: .ThirdPartyLib),
+                .shared(implements: .Util)
+            ],
             settings: Project.Environment.devSetting
         )
     ),
@@ -26,7 +27,7 @@ let appTargets: [Target] = [
         implements: .iOS,
         deploymentTarget: .qa,
         factory: .init(
-            infoPlist: Project.Environment.infoPlist(deploymentTarget: .qa),
+            infoPlist: Project.Environment.appInfoPlist(deploymentTarget: .qa),
             entitlements: "Feelin.entitlements",
             dependencies: [
                 .coordinator,
@@ -38,7 +39,7 @@ let appTargets: [Target] = [
         implements: .iOS,
         deploymentTarget: .prod,
         factory: .init(
-            infoPlist: Project.Environment.infoPlist(deploymentTarget: .prod),
+            infoPlist: Project.Environment.appInfoPlist(deploymentTarget: .prod),
             entitlements: "Feelin.entitlements",
             dependencies: [
                 .coordinator,

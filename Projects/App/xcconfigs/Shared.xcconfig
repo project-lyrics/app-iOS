@@ -13,3 +13,8 @@
 OTHER_SWIFT_FLAGS[config=DEV][sdk=*] = $(inherited) -DDEV
 OTHER_SWIFT_FLAGS[config=QA][sdk=*] = $(inherited) -DQA
 OTHER_SWIFT_FLAGS[config=PROD][sdk=*] = $(inherited) -DPROD
+
+
+BASE_SERVER_URL_DEV = www.example-dev.com
+BASE_SERVER_URL_QA = www.example-qa.com
+BASE_SERVER_URL_PROD = www.example-prod.com

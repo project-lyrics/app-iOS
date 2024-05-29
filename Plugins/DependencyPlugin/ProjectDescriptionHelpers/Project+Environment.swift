@@ -46,15 +46,19 @@ public extension Project {
             ]
         )
         
-        public static func infoPlist(deploymentTarget: ProjectDeploymentTarget) -> InfoPlist {
+        public static func appInfoPlist(deploymentTarget: ProjectDeploymentTarget) -> InfoPlist {
             var kakaoNativeAppKey: String = ""
+            var baseServerURL: String = ""
             switch deploymentTarget {
             case .dev:
                 kakaoNativeAppKey = "${KAKAO_NATIVE_APP_KEY_DEV}"
+                baseServerURL = "${BASE_SERVER_URL_DEV}"
             case .qa:
                 kakaoNativeAppKey =  "${KAKAO_NATIVE_APP_KEY_QA}"
+                baseServerURL = "${BASE_SERVER_URL_QA}"
             case .prod:
                 kakaoNativeAppKey =  "${KAKAO_NATIVE_APP_KEY_PROD}"
+                baseServerURL = "${BASE_SERVER_URL_PROD}"
             }
             
             return .extendingDefault(with: [
@@ -80,6 +84,7 @@ public extension Project {
                     ]
                 ],
                 "KAKAO_NATIVE_APP_KEY": "\(kakaoNativeAppKey)",
+                "BASE_SERVER_URL": "\(baseServerURL)",
                 "LSApplicationQueriesSchemes": [
                     "kakaokompassauth",
                     "kakaolink"
