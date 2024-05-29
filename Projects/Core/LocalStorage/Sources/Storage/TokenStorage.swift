@@ -35,7 +35,6 @@ public struct TokenStorage: TokenStorageInterface {
         }
     }
     
-    @discardableResult
     public func save<T: TokenType>(
         token: T,
         for key: String
