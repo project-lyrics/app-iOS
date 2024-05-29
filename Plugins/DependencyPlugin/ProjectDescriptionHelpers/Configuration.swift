@@ -15,19 +15,27 @@ extension Configuration {
         case .dev:
             return .debug(
                 name: type.configurationName,
-                settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "$(inherited) MOCKING"],
+                settings: [
+                    "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "$(inherited) MOCKING",
+                    "ENABLE_TESTABILITY": true
+                ],
                 xcconfig: .relativeToXCConfig(target: .dev)
             )
         case .qa:
             return .debug(
                 name: type.configurationName,
-                settings: ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "$(inherited) MOCKING"],
+                settings: [
+                    "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "$(inherited) MOCKING",
+                    "ENABLE_TESTABILITY": true
+                ],
                 xcconfig: .relativeToXCConfig(target: .qa)
             )
         case .prod:
             return .release(
                 name: type.configurationName,
-                settings: [:],
+                settings: [
+                    "ENABLE_TESTABILITY": true
+                ],
                 xcconfig: .relativeToXCConfig(target: .prod)
             )
         }
