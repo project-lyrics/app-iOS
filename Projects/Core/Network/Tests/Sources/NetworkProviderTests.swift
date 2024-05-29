@@ -12,6 +12,7 @@ import Combine
 @testable import CoreNetworkTesting
 @testable import CoreNetworkInterface
 @testable import CoreNetwork
+@testable import SharedUtil
 
 final class NetworkProviderTests: XCTestCase {
     var networkProvider: NetworkProviderProtocol!
@@ -111,5 +112,52 @@ final class NetworkProviderTests: XCTestCase {
             }, receiveValue: { _ in })
             .store(in: &cancellables)
         wait(for: [expectation], timeout: 2.0)
+    }
+    
+    func test_서버로부터_잘못된_요청_에러수신시_정상적으로_에러를_내뱉는다() throws {
+        // given
+        let mockData =
+        """
+            {
+                "errorCode" : "00400",
+                "errorMessage" : "잘못된 요청입니다.",
+            }
+        """.data(using: .utf8)!
+        let endpoint = FeelinAPI<UserLoginResponse>.login(oauthProvider: .kakao)
+        let expectedError = NetworkError.customServerError(
+            .init(
+                errorCode: "00400",
+                errorMessage: "잘못된 요청입니다."
+            )
+        )
+        
+        MockURLProtocol.requestHandler = { request in
+            let mockResponse = HTTPURLResponse(
+                url: request.url!,
+                statusCode: 400,
+                httpVersion: nil,
+                headerFields: nil
+            )!
+
+            return Just((mockResponse, mockData))
+                .setFailureType(to: Error.self)
+                .eraseToAnyPublisher()
+        }
+
+        let config = URLSessionConfiguration.ephemeral
+        config.protocolClasses = [MockURLProtocol.self]
+        let urlSession = URLSession(configuration: config)
+
+        let sut: NetworkProviderProtocol = NetworkProvider(session: urlSession)
+        
+        // when
+        XCTAssertThrowsError(try awaitPublisher(sut.request(endpoint)), "서버커스텀에러") { error in
+            // then
+            if let error = error as? NetworkError {
+                XCTAssertEqual(error, expectedError)
+            } else {
+                XCTFail("received unexpected error")
+            }
+        }
     }
 }
