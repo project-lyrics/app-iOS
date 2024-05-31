@@ -9,18 +9,41 @@
 import Foundation
 
 public enum FeelinAPI<R> {
-    case login(oauthProvider: OAuthProvider)
+    case login(
+        oauthProvider: OAuthProvider,
+        oauthAccessToken: String
+    )
 }
 
 extension FeelinAPI: HTTPNetworking {
+    public var headers: [String : String]? {
+        var defaultHeader = [ "application/json": "Content-Type"]
+        
+        switch self {
+        case .login(_, oauthAccessToken: let oAuthAccessToken):
+            defaultHeader["Authorization"] = "Bearer \(oAuthAccessToken)"
+            
+        case .reissueAccessToken(refreshToken: let refreshToken):
+            defaultHeader["Authorization"] = "Bearer \(refreshToken)"
+        
+        default:
+            return defaultHeader
+        }
+        
+        return defaultHeader
+    }
+    
     public var queryParameters: Encodable? {
         return nil
     }
     
     public var bodyParameters: Encodable? {
         switch self {
-        case .login(let oauthProvider):
+        case .login(let oauthProvider, _):
             return ["auth_provider": oauthProvider.rawValue]
+        
+        default:
+            return nil
         }
     }
     

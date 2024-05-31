@@ -31,6 +31,12 @@ public extension HTTPRequestConfiguring {
         if let httpBody = try getBodyParameters() {
             urlRequest.httpBody = httpBody
         }
+        
+        if let headers = self.headers {
+            for (key, value) in headers {
+                urlRequest.setValue(value, forHTTPHeaderField: key)
+            }
+        }
 
         urlRequest.setValue(
             "application/json",

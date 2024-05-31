@@ -33,6 +33,7 @@ public enum NetworkError: Error, Equatable {
     }
 
     public enum URLRequestError: Error {
+        case headerError(reason: String)
         case urlComponentError
         case queryEncodingError
         case bodyEncodingError
@@ -40,6 +41,7 @@ public enum NetworkError: Error, Equatable {
 
         public var errorMessage: String {
             switch self {
+            case .headerError(let reason):  return "headerError. Reason: \(reason)"
             case .urlComponentError:        return "urlComponentError"
             case .queryEncodingError:       return "queryEncodingError"
             case .bodyEncodingError:        return "queryEncodingError"

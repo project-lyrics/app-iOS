@@ -33,6 +33,10 @@ extension SampleAPI: HTTPNetworking {
             return .get
         }
     }
+    
+    public var headers: [String : String]? {
+        return nil
+    }
 
     public var queryParameters: Encodable? {
         return nil
