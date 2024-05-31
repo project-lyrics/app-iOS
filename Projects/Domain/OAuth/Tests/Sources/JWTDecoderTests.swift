@@ -7,8 +7,8 @@
 
 import XCTest
 
-@testable import DomainOAuthInterface
 @testable import CoreLocalStorageInterface
+@testable import CoreNetworkInterface
 @testable import SharedUtil
 
 final class JWTDecoderTests: XCTestCase {
