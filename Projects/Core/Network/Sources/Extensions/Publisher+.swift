@@ -67,7 +67,16 @@ public extension Publisher where Output == DataTaskResult {
     func tryDecodeAPIFailResponse(decoder: JSONDecoder = .init()) -> AnyPublisher<DataTaskResult, NetworkError> {
         return tryMap { output in
             if let apiFailResponse = try? decoder.decode(APIFailResponse.self, from: output.data) {
-                throw NetworkError.customServerError(apiFailResponse)
+                switch apiFailResponse.errorCode {
+                case "00401":
+                    throw NetworkError.clientError(.authorizationError)
+                    
+                case "00500":
+                    throw NetworkError.serverError(.internalServerError)
+                    
+                default:
+                    throw NetworkError.customServerError(apiFailResponse)
+                }
             } else {
                 return output
             }
