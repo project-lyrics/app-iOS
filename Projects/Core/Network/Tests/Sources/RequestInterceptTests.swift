@@ -8,6 +8,7 @@
 import Combine
 import XCTest
 
+@testable import CoreLocalStorageInterface
 @testable import CoreNetwork
 @testable import CoreNetworkInterface
 @testable import CoreNetworkTesting
@@ -15,75 +16,39 @@ import XCTest
 
 final class RequestInterceptTest: XCTestCase {
     var sut: NetworkProviderProtocol!
-    var mockURLSession: URLSession!
-    var mockOAuthInterceptor: MockTokenInterceptor!
+    var fakeTokenStorage: FakeTokenStorage!
+    var tokenInterceptor: MockTokenInterceptor!
+    var urlSession: URLSession!
     
-    private let expectedOauthToken: String = "oauthTokenForUnitTest"
-    private let expectedAccessToken: String = "accessTokenForUnitTest"
-    private let expectedRefreshToken: String = "refreshTokenForUnitTest"
+    
 
     override func setUpWithError() throws {
         try super.setUpWithError()
+        fakeTokenStorage = .init()
+        tokenInterceptor = MockTokenInterceptor(tokenStorage: fakeTokenStorage)
         
         let configuration = URLSessionConfiguration.default
         configuration.protocolClasses = [MockURLProtocol.self]
-        self.mockURLSession = URLSession(configuration: configuration)
-        
-        mockOAuthInterceptor = MockTokenInterceptor(
-            oauthToken: expectedOauthToken
-        )
+        urlSession = URLSession(configuration: configuration)
     }
 
     override func tearDownWithError() throws {
         try super.tearDownWithError()
         self.sut = nil
-        self.mockURLSession = nil
-        self.mockOAuthInterceptor = nil
+        tokenInterceptor = nil
+        urlSession = nil
     }
     
-    func test_login_api_호출시_TokenInterceptor가_header에_필요한_토큰을_주입한다() throws {
+    func test_토큰유효성_검증_과정에서_401에러발생시_oAuthInterceptor의_retry_method가_호출된다() throws {
         // given
-        MockURLProtocol.requestHandler = { request in
-            let mockResponse = HTTPURLResponse(
-                url: request.url!,
-                statusCode: 201,
-                httpVersion: nil,
-                headerFields: nil
-            )!
-            
-            let mockData = """
-            {
-                "status": 201,
-                "data": {
-                    "accessToken": "\(self.expectedAccessToken)",
-                    "refreshToken": "\(self.expectedRefreshToken)"
-                }
-            }
-            """.data(using: .utf8)!
-
-            return Just((mockResponse, mockData))
-                .setFailureType(to: Error.self)
-                .eraseToAnyPublisher()
-        }
-        
-        sut = NetworkProvider(
-            session: self.mockURLSession,
-            requestInterceptor: mockOAuthInterceptor
+        try fakeTokenStorage.save(
+            token: AccessToken(
+                token: "fakeAccessToken",
+                expiration: .init()
+            ),
+            for: tokenInterceptor.dummyAccessTokenKey
         )
         
-        let endpoint = FeelinAPI<UserLoginResponse>.login(oauthProvider: .kakao)
-        
-        // when
-        let result = try awaitPublisher(sut.request(endpoint))
-        
-        // then
-        XCTAssertEqual(mockOAuthInterceptor.adaptMethodCalled, true)
-        XCTAssertEqual(mockOAuthInterceptor.retryMethodCalled, false)
-        XCTAssertEqual(mockOAuthInterceptor.request?.value(forHTTPHeaderField: "Authorization"), "Bearer \(self.expectedOauthToken)")
-    }
-    
-    func test_login_처리중_401에러발생시_oAuthInterceptor의_retry_method가_호출된다() throws {
-        // given
         MockURLProtocol.requestHandler = { request in
             let mockResponse = HTTPURLResponse(
                 url: request.url!,
@@ -94,8 +59,8 @@ final class RequestInterceptTest: XCTestCase {
             
             let mockData = """
             {
-                "accessToken": "\(self.expectedAccessToken)",
-                "refreshToken": "\(self.expectedRefreshToken)"
+                "errorCode" : "00401",
+                "errorMessage" : "액세스 토큰이 유효하지 않습니다."
             }
             """.data(using: .utf8)!
 
@@ -104,12 +69,17 @@ final class RequestInterceptTest: XCTestCase {
                 .eraseToAnyPublisher()
         }
         
-        sut = NetworkProvider(
-            session: self.mockURLSession,
-            requestInterceptor: mockOAuthInterceptor
+        let mockNetworkSession = NetworkSession(
+            urlSession: urlSession,
+            requestInterceptor: tokenInterceptor
         )
         
-        let endpoint = FeelinAPI<UserLoginResponse>.login(oauthProvider: .kakao)
+        sut = NetworkProvider(
+            networkSession: mockNetworkSession
+        )
+        
+        let endpoint = FeelinAPI<UserValidityResponse>.checkUserValidity
+        
         
         // when
         XCTAssertThrowsError(try awaitPublisher(sut.request(endpoint)), "") { error in
@@ -119,11 +89,12 @@ final class RequestInterceptTest: XCTestCase {
                 XCTFail("unexpected error")
             }
             
-            XCTAssertEqual(mockOAuthInterceptor.retryMethodCalled, true)
+            // then
+            XCTAssertEqual(tokenInterceptor.retryMethodCalled, true)
         }
     }
     
-    func test_login_처리중_401에러외에는_oAuthInterceptor의_retry_method가_호출되지_않는다() throws {
+    func test_토큰유효성_검증_과정에서_401에러외에는_oAuthInterceptor의_retry_method가_호출되지_않는다() throws {
         // given
         MockURLProtocol.requestHandler = { request in
             let mockResponse = HTTPURLResponse(
@@ -135,8 +106,8 @@ final class RequestInterceptTest: XCTestCase {
             
             let mockData = """
             {
-                "accessToken": "\(self.expectedAccessToken)",
-                "refreshToken": "\(self.expectedRefreshToken)"
+                "errorCode" : "00404",
+                "errorMessage" : "요청한 데이터가 없습니다."
             }
             """.data(using: .utf8)!
 
@@ -145,22 +116,26 @@ final class RequestInterceptTest: XCTestCase {
                 .eraseToAnyPublisher()
         }
         
-        sut = NetworkProvider(
-            session: self.mockURLSession,
-            requestInterceptor: mockOAuthInterceptor
+        let mockNetworkSession = NetworkSession(
+            urlSession: urlSession,
+            requestInterceptor: tokenInterceptor
         )
         
-        let endpoint = FeelinAPI<UserLoginResponse>.login(oauthProvider: .kakao)
+        sut = NetworkProvider(
+            networkSession: mockNetworkSession
+        )
+        
+        let endpoint = FeelinAPI<UserLoginResponse>.checkUserValidity
         
         // when
         XCTAssertThrowsError(try awaitPublisher(sut.request(endpoint)), "") { error in
             if let error = error as? NetworkError {
-                XCTAssertNotEqual(error, NetworkError.clientError(.authorizationError))
+                XCTAssertNotEqual(error, NetworkError.clientError(.badRequestError))
             } else {
                 XCTFail("unexpected error")
             }
             
-            XCTAssertEqual(mockOAuthInterceptor.retryMethodCalled, false)
+            XCTAssertEqual(tokenInterceptor.retryMethodCalled, false)
         }
     }
 }

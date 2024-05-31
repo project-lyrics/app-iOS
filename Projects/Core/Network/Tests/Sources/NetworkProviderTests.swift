@@ -24,8 +24,12 @@ final class NetworkProviderTests: XCTestCase {
         let configuration = URLSessionConfiguration.default
         configuration.protocolClasses = [MockURLProtocol.self]
         let mockURLSession = URLSession(configuration: configuration)
+        let mockNetworkSession = NetworkSession(
+            urlSession: mockURLSession,
+            requestInterceptor: nil
+        )
 
-        networkProvider = NetworkProvider(session: mockURLSession)
+        networkProvider = NetworkProvider(networkSession: mockNetworkSession)
         cancellables = Set<AnyCancellable>()
     }
 
@@ -96,9 +100,10 @@ final class NetworkProviderTests: XCTestCase {
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [MockURLProtocol.self]
         let urlSession = URLSession(configuration: config)
+        let mockNetworkSesison = NetworkSession(urlSession: urlSession, requestInterceptor: nil)
 
         let expectation = XCTestExpectation(description: "badRequestError")
-        let networkManager: NetworkProviderProtocol = NetworkProvider(session: urlSession)
+        let networkManager: NetworkProviderProtocol = NetworkProvider(networkSession: mockNetworkSesison)
 
         networkManager.request(endpoint)
             .sink(receiveCompletion: { completion in
@@ -114,8 +119,9 @@ final class NetworkProviderTests: XCTestCase {
         wait(for: [expectation], timeout: 2.0)
     }
     
-    func test_서버로부터_잘못된_요청_에러수신시_정상적으로_에러를_내뱉는다() throws {
+    func test_login_api_호출_실패시_400_에러메세지를_내뱉는다() throws {
         // given
+        let expectedOauthToken: String = "oauthTokenForUnitTest"
         let mockData =
         """
             {
@@ -123,13 +129,11 @@ final class NetworkProviderTests: XCTestCase {
                 "errorMessage" : "잘못된 요청입니다.",
             }
         """.data(using: .utf8)!
-        let endpoint = FeelinAPI<UserLoginResponse>.login(oauthProvider: .kakao)
-        let expectedError = NetworkError.customServerError(
-            .init(
-                errorCode: "00400",
-                errorMessage: "잘못된 요청입니다."
-            )
+        let endpoint = FeelinAPI<UserLoginResponse>.login(
+            oauthProvider: .kakao,
+            oauthAccessToken: expectedOauthToken
         )
+        let expectedError = NetworkError.clientError(.badRequestError)
         
         MockURLProtocol.requestHandler = { request in
             let mockResponse = HTTPURLResponse(
@@ -147,17 +151,73 @@ final class NetworkProviderTests: XCTestCase {
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [MockURLProtocol.self]
         let urlSession = URLSession(configuration: config)
+        let mockNetworkSession = NetworkSession(urlSession: urlSession, requestInterceptor: nil)
 
-        let sut: NetworkProviderProtocol = NetworkProvider(session: urlSession)
+        let sut: NetworkProviderProtocol = NetworkProvider(networkSession: mockNetworkSession)
         
         // when
-        XCTAssertThrowsError(try awaitPublisher(sut.request(endpoint)), "서버커스텀에러") { error in
+        XCTAssertThrowsError(try awaitPublisher(sut.request(endpoint)), "") { error in
             // then
             if let error = error as? NetworkError {
                 XCTAssertEqual(error, expectedError)
             } else {
                 XCTFail("received unexpected error")
             }
+        }
+    }
+    
+    func test_login_api_호출_성공시_accessToken과_refreshToken을_반환한다() throws {
+        // given
+        let expectedOauthToken: String = "oauthTokenForUnitTest"
+        let expectedAccessToken: String = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.dQw4w9WgXcQ"
+        let expectedRefreshToken: String = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.RmlZaDFvSG1NeUQ"
+        
+        MockURLProtocol.requestHandler = { request in
+            let mockResponse = HTTPURLResponse(
+                url: request.url!,
+                statusCode: 201,
+                httpVersion: nil,
+                headerFields: nil
+            )!
+            
+            let mockData = """
+            {
+                "status": "소셜 로그인이 완료되었습니다.",
+                "data": {
+                    "accessToken": "\(expectedAccessToken)",
+                    "refreshToken": "\(expectedRefreshToken)"
+                }
+            }
+            """.data(using: .utf8)!
+
+            return Just((mockResponse, mockData))
+                .setFailureType(to: Error.self)
+                .eraseToAnyPublisher()
+        }
+        
+        let configuration = URLSessionConfiguration.default
+        configuration.protocolClasses = [MockURLProtocol.self]
+        let urlSession = URLSession(configuration: configuration)
+        let mockNetworkSession = NetworkSession(
+            urlSession: urlSession,
+            requestInterceptor: nil
+        )
+        
+        networkProvider = NetworkProvider(networkSession: mockNetworkSession)
+        
+        let endpoint = FeelinAPI<UserLoginResponse>.login(
+            oauthProvider: .kakao,
+            oauthAccessToken: expectedOauthToken
+        )
+        
+        // when
+        do {
+            let result = try awaitPublisher(networkProvider.request(endpoint))
+            // then
+            XCTAssertEqual(result.data.accessToken, expectedAccessToken)
+            XCTAssertEqual(result.data.refreshToken, expectedRefreshToken)
+        } catch {
+            XCTFail()
         }
     }
 }
