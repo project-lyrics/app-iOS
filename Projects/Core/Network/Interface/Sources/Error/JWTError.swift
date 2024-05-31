@@ -1,8 +1,8 @@
 //
 //  JWTError.swift
-//  DomainOAuth
+//  CoreNetworkInterface
 //
-//  Created by 황인우 on 5/27/24.
+//  Created by 황인우 on 5/31/24.
 //
 
 import Foundation

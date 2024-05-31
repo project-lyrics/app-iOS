@@ -1,14 +1,16 @@
 //
-//  JWTTokenParser.swift
-//  DomainOAuth
+//  JWTDecoder.swift
+//  CoreNetworkInterface
 //
-//  Created by 황인우 on 5/27/24.
+//  Created by 황인우 on 5/31/24.
 //
 
 import CoreLocalStorageInterface
 import Foundation
 
 public struct JWTDecoder {
+    public init() { }
+    
     private func base64UrlDecode(_ base64Url: String) -> Data? {
         var base64 = base64Url
             .replacingOccurrences(of: "-", with: "+")
