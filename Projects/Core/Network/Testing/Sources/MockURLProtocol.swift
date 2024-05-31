@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-final class MockURLProtocol: URLProtocol {
+class MockURLProtocol: URLProtocol {
     static var requestHandler: ((URLRequest) -> AnyPublisher<(HTTPURLResponse?, Data?), Error>)?
     private var cancellable: AnyCancellable?
 
