@@ -11,15 +11,10 @@ import Combine
 import SharedUtil
 
 public final class NetworkProvider: NetworkProviderProtocol {
-    private let session: URLSession
-    private let requestInterceptor: URLRequestInterceptor?
+    private let networkSession: NetworkSession
 
-    public init(
-        session: URLSession = URLSession.shared,
-        requestInterceptor: URLRequestInterceptor? = nil
-    ) {
-        self.session = session
-        self.requestInterceptor = requestInterceptor
+    public init(networkSession: NetworkSession) {
+        self.networkSession = networkSession
     }
 
     public func request<N: HTTPNetworking, T: Decodable>(
@@ -28,20 +23,17 @@ public final class NetworkProvider: NetworkProviderProtocol {
         do {
             let urlRequest: URLRequest = try endpoint.makeURLRequest()
 
-            return session
-                .dataTaskPublisher(
-                    for: urlRequest,
-                    interceptor: self.requestInterceptor
-                )
+            return networkSession
+                .dataTaskPublisher(for: urlRequest)
                 .tryDecodeAPIFailResponse()
                 .validateStatusCode()
                 .retryOnUnauthorized(
-                    session: session,
-                    request: urlRequest,
-                    using: requestInterceptor
+                    session: networkSession,
+                    request: urlRequest
                 )
                 .validateJSONValue(to: T.self)
                 .eraseToAnyPublisher()
+            
         } catch let error as NetworkError {
             return Fail(error: error)
                 .eraseToAnyPublisher()

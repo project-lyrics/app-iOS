@@ -9,8 +9,6 @@ import Foundation
 import Combine
 import CoreNetworkInterface
 
-public typealias DataTaskResult = (data: Data, response: URLResponse)
-
 public extension Publisher where Output == DataTaskResult {
     func validateStatusCode() -> AnyPublisher<DataTaskResult, NetworkError> {
         return tryMap { data, response  in
@@ -92,12 +90,11 @@ public extension Publisher where Output == DataTaskResult {
 // MARK: - Combine + Interceptor
 extension Publisher where Output == DataTaskResult, Failure == NetworkError {
     func retryOnUnauthorized(
-        session: URLSession,
-        request: URLRequest,
-        using interceptor: URLRequestInterceptor?
+        session: NetworkSession,
+        request: URLRequest
     ) -> AnyPublisher<Output, NetworkError> {
         return self.catch { networkError in
-            guard let interceptor = interceptor else {
+            guard let interceptor = session.requestInterceptor else {
                 return Fail<Output, NetworkError>(error: networkError)
                     .eraseToAnyPublisher()
             }
@@ -108,7 +105,7 @@ extension Publisher where Output == DataTaskResult, Failure == NetworkError {
             }
             
             return interceptor.retry(
-                with: session,
+                with: session.urlSession,
                 request,
                 dueTo: networkError
             )
@@ -122,6 +119,17 @@ extension Publisher where Output == DataTaskResult, Failure == NetworkError {
                     
                 case .doNotRetry:
                     return Fail(error: networkError)
+                        .eraseToAnyPublisher()
+                    
+                case .doNotRetryWithError(let error):
+                    return Fail(error: error)
+                        .mapError({ error in
+                            if let networkError = error as? NetworkError {
+                                return networkError
+                            } else {
+                                return NetworkError.unknownError(error.localizedDescription)
+                            }
+                        })
                         .eraseToAnyPublisher()
                 }
             }

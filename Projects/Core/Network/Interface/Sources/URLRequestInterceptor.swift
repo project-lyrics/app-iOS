@@ -11,9 +11,10 @@ import Foundation
 public enum RetryResult {
     case retry
     case doNotRetry
+    case doNotRetryWithError(Error)
 }
 
-public protocol URLRequestInterceptor {
+public protocol URLRequestInterceptor: AnyObject {
     func adapt(_ urlRequest: URLRequest) -> AnyPublisher<URLRequest, Error>
     func retry(
         with session: URLSession,
