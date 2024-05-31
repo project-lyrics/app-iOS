@@ -13,6 +13,8 @@ public enum FeelinAPI<R> {
         oauthProvider: OAuthProvider,
         oauthAccessToken: String
     )
+    case checkUserValidity
+    case reissueAccessToken(refreshToken: String)
 }
 
 extension FeelinAPI: HTTPNetworking {
@@ -62,13 +64,22 @@ extension FeelinAPI: HTTPNetworking {
         switch self {
         case .login:
             return "/api/v1/auth/login"
+            
+        case .checkUserValidity:
+            return "/api/v1/auth/token"
+            
+        case .reissueAccessToken:
+            return "/api/v1/auth/token"
         }
     }
 
     public var httpMethod: HTTPMethod {
         switch self {
-        case .login:
+        case .login, .reissueAccessToken:
             return .post
+        
+        case .checkUserValidity:
+            return .get
         }
     }
 }

@@ -73,7 +73,8 @@ private extension KakaoOAuthService {
 private extension KakaoOAuthService {
     func verifyUser(kakaoAccessToken: String) -> AnyPublisher<OAuthResult, AuthError> {
         let endpoint = FeelinAPI<UserLoginResponse>.login(
-            oauthProvider: .kakao
+            oauthProvider: .kakao, 
+            oauthAccessToken: kakaoAccessToken
         )
         return networkProvider.request(endpoint)
             .tryMap { [jwtDecoder] response -> (AccessToken, RefreshToken) in

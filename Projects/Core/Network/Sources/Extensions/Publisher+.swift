@@ -49,7 +49,10 @@ public extension Publisher where Output == DataTaskResult {
 
     func validateJSONValue<Output: Decodable>(to outputType: Output.Type) -> AnyPublisher<Output, NetworkError> {
         return tryMap {
-            try JSONDecoder().decode(outputType, from: $0.data)
+            // MARK: - 서버와 date 형식을 어떻게 주고 받을 지 정의 해야 함.
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .iso8601
+            return try decoder.decode(outputType, from: $0.data)
         }
         .mapError { error in
             switch error {
