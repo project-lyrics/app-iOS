@@ -12,7 +12,12 @@ import DependencyPlugin
 let targets: [Target] = [
     .feature(
         interface: .Onboarding,
-        factory: .init()
+        factory: .init(
+            dependencies: [
+                .domain,
+                .SPM.FlexLayout
+            ]
+        )
     ),
     .feature(
         implements: .Onboarding,
@@ -40,11 +45,18 @@ let targets: [Target] = [
     ),
     .feature(
         example: .Onboarding,
-        factory: .init()
+        factory: .init(
+            dependencies: [
+                .feature(interface: .Onboarding)
+            ]
+        )
     )
 ]
 
 let project = Project.makeModule(
     name: ModulePath.Feature.name + ModulePath.Feature.Onboarding.rawValue,
+    packages: [
+        .remote(url: "https://github.com/layoutBox/FlexLayout", requirement: .upToNextMajor(from: "2.0.7"))
+    ],
     targets: targets
 )

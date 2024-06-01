@@ -12,7 +12,11 @@ import DependencyPlugin
 let targets: [Target] = [
     .shared(
         implements: .Util,
-        factory: .init()
+        factory: .init(
+            dependencies: [
+                .shared(implements: .ThirdPartyLib)
+            ]
+        )
     )
 ]
 

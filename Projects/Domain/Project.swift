@@ -14,9 +14,7 @@ let targets: [Target] = [
         factory: .init(
             dependencies: [
                 .domain(implements: .PostTextUseCase),
-                .core(implements: .DependencyInjection),
-                .core(interface: .Network),
-                .shared(implements: .Util)
+                .core
             ]
         )
     )

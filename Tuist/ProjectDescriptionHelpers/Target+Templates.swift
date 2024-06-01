@@ -15,7 +15,7 @@ public struct TargetFactory {
     var destinations: Destinations
     var product: Product
     var productName: String?
-    var bundleId: String
+    var bundleId: String?
     var deploymentTargets: DeploymentTargets?
     var infoPlist: InfoPlist?
     var sources: SourceFilesList?
@@ -25,7 +25,7 @@ public struct TargetFactory {
     var entitlements: Entitlements?
     var scripts: [TargetScript]
     var dependencies: [TargetDependency]
-    var settings: Settings?
+    var settings: Settings
     var coreDataModels: [CoreDataModel]
     var environmentVariables: [String : EnvironmentVariable]
     var launchArguments: [LaunchArgument]
@@ -39,7 +39,7 @@ public struct TargetFactory {
         destinations: Destinations = [.iPhone],
         product: Product = .staticLibrary,
         productName: String? = nil,
-        bundleId: String = "",
+        bundleId: String? = nil,
         deploymentTargets: DeploymentTargets? = Project.Environment.deploymentTargets,
         infoPlist: InfoPlist? = .default,
         sources: SourceFilesList? = nil,
@@ -49,7 +49,7 @@ public struct TargetFactory {
         entitlements: Entitlements? = nil,
         scripts: [TargetScript] = [],
         dependencies: [TargetDependency] = [],
-        settings: Settings? = nil,
+        settings: Settings = Project.Environment.defaultSettings,
         coreDataModels: [CoreDataModel] = [],
         environmentVariables: [String : EnvironmentVariable] = [:],
         launchArguments: [LaunchArgument] = [],
@@ -90,7 +90,7 @@ public extension Target {
             destinations: factory.destinations,
             product: factory.product,
             productName: factory.productName,
-            bundleId: factory.bundleId,
+            bundleId: factory.bundleId ?? "\(Project.Environment.bundleId).\(factory.name)",
             deploymentTargets: factory.deploymentTargets,
             infoPlist: factory.infoPlist,
             sources: factory.sources,
@@ -125,7 +125,7 @@ public extension Target {
             newFactory.sources = .sources
             newFactory.productName = Project.Environment.appName
             newFactory.scripts = [.SwiftLintString]
-            newFactory.settings = Project.Environment.defaultSettings
+            newFactory.settings = Project.Environment.appDefaultSettings
             newFactory.dependencies = factory.dependencies
         }
         return make(factory: newFactory)
@@ -154,6 +154,7 @@ public extension Target {
         newFactory.name = ModulePath.Feature.name + module.rawValue + "Tests"
         newFactory.sources = .tests
         newFactory.product = .unitTests
+        newFactory.settings = Project.Environment.testsAppDefaultSettings
 
         return make(factory: newFactory)
     }
@@ -171,6 +172,7 @@ public extension Target {
         newFactory.name = ModulePath.Feature.name + module.rawValue + "Interface"
         newFactory.sources = .interface
         newFactory.scripts = [.SwiftLintString]
+
         return make(factory: newFactory)
     }
 
@@ -180,6 +182,8 @@ public extension Target {
         newFactory.sources = .exampleSources
         newFactory.product = .app
         newFactory.scripts = [.SwiftLintString]
+        newFactory.settings = Project.Environment.exampleAppDefaultSettings
+
         return make(factory: newFactory)
     }
 }
@@ -206,6 +210,7 @@ public extension Target {
         newFactory.name = ModulePath.Coordinator.name + module.rawValue + "Interface"
         newFactory.sources = .interface
         newFactory.scripts = [.SwiftLintString]
+
         return make(factory: newFactory)
     }
 
@@ -214,6 +219,7 @@ public extension Target {
         newFactory.name = ModulePath.Coordinator.name + module.rawValue + "Tests"
         newFactory.sources = .tests
         newFactory.product = .unitTests
+        newFactory.settings = Project.Environment.testsAppDefaultSettings
 
         return make(factory: newFactory)
     }
@@ -236,6 +242,15 @@ public extension Target {
         return make(factory: newFactory)
     }
 
+    static func domain(interface module: ModulePath.Domain, factory: TargetFactory) -> Self {
+        var newFactory = factory
+        newFactory.name = ModulePath.Domain.name + module.rawValue + "Interface"
+        newFactory.sources = .interface
+        newFactory.scripts = [.SwiftLintString]
+
+        return make(factory: newFactory)
+    }
+
     static func domain(implements module: ModulePath.Domain, factory: TargetFactory) -> Self {
         var newFactory = factory
         newFactory.name = ModulePath.Domain.name + module.rawValue
@@ -249,6 +264,7 @@ public extension Target {
         newFactory.name = ModulePath.Domain.name + module.rawValue + "Tests"
         newFactory.sources = .tests
         newFactory.product = .unitTests
+        newFactory.settings = Project.Environment.testsAppDefaultSettings
 
         return make(factory: newFactory)
     }
@@ -258,14 +274,6 @@ public extension Target {
         newFactory.name = ModulePath.Domain.name + module.rawValue + "Testing"
         newFactory.sources = .testing
 
-        return make(factory: newFactory)
-    }
-
-    static func domain(interface module: ModulePath.Domain, factory: TargetFactory) -> Self {
-        var newFactory = factory
-        newFactory.name = ModulePath.Domain.name + module.rawValue + "Interface"
-        newFactory.sources = .interface
-        newFactory.scripts = [.SwiftLintString]
         return make(factory: newFactory)
     }
 }
@@ -279,6 +287,15 @@ public extension Target {
         return make(factory: newFactory)
     }
 
+    static func core(interface module: ModulePath.Core, factory: TargetFactory) -> Self {
+        var newFactory = factory
+        newFactory.name = ModulePath.Core.name + module.rawValue + "Interface"
+        newFactory.sources = .interface
+        newFactory.scripts = [.SwiftLintString]
+
+        return make(factory: newFactory)
+    }
+    
     static func core(implements module: ModulePath.Core, factory: TargetFactory) -> Self {
         var newFactory = factory
         newFactory.name = ModulePath.Core.name + module.rawValue
@@ -292,6 +309,7 @@ public extension Target {
         newFactory.name = ModulePath.Core.name + module.rawValue + "Tests"
         newFactory.sources = .tests
         newFactory.product = .unitTests
+        newFactory.settings = Project.Environment.testsAppDefaultSettings
 
         return make(factory: newFactory)
     }
@@ -304,21 +322,14 @@ public extension Target {
         return make(factory: newFactory)
     }
 
-    static func core(interface module: ModulePath.Core, factory: TargetFactory) -> Self {
-        var newFactory = factory
-        newFactory.name = ModulePath.Core.name + module.rawValue + "Interface"
-        newFactory.sources = .interface
-        newFactory.scripts = [.SwiftLintString]
-        return make(factory: newFactory)
-    }
-
     static func core(example module: ModulePath.Core, factory: TargetFactory) -> Self {
         var newFactory = factory
         newFactory.name = ModulePath.Core.name + module.rawValue + "Example"
-		newFactory.bundleId = Project.Environment.bundleId + newFactory.name
         newFactory.sources = .exampleSources
         newFactory.product = .app
+        newFactory.settings = Project.Environment.exampleAppDefaultSettings
         newFactory.scripts = [.SwiftLintString]
+
         return make(factory: newFactory)
     }
 }
@@ -328,6 +339,7 @@ public extension Target {
         var newFactory = factory
         newFactory.name = ModulePath.Shared.name
         newFactory.sources = .sources
+
         return make(factory: newFactory)
     }
 
@@ -338,7 +350,6 @@ public extension Target {
 
         if module == .DesignSystem {
             newFactory.resources = ["Resources/**"]
-            newFactory.product = .staticFramework
         }
 
         return make(factory: newFactory)

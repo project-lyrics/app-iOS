@@ -5,7 +5,12 @@ import DependencyPlugin
 let targets: [Target] = [
     .core(
         implements: .DependencyInjection,
-        factory: .init()
+        factory: .init(
+            dependencies: [
+                .shared,
+                .core(interface: .Network)
+            ]
+        )
     )
 ]
 

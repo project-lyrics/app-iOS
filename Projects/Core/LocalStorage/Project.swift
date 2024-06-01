@@ -7,7 +7,11 @@ let project = Project.makeModule(
     targets: [
         .core(
             interface: .LocalStorage,
-            factory: .init()
+            factory: .init(
+                dependencies: [
+                    .shared
+                ]
+            )
         ),
         .core(
             implements: .LocalStorage,

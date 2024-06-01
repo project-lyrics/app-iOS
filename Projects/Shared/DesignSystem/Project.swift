@@ -14,9 +14,7 @@ let targets: [Target] = [
         implements: .DesignSystem,
         factory: .init(
             dependencies: [
-                .SPM.Kingfisher,
-                .SPM.PinLayout,
-                .SPM.FlexLayout
+                .shared(implements: .ThirdPartyLib)
             ]
         )
     )

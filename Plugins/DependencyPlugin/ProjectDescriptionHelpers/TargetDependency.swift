@@ -64,7 +64,7 @@ public extension TargetDependency {
 
 public extension TargetDependency {
     static var domain: Self {
-        return .project(target: ModulePath.Domain.name, path: .core)
+        return .project(target: ModulePath.Domain.name, path: .domain)
     }
 
     static func domain(implements module: ModulePath.Domain) -> Self {

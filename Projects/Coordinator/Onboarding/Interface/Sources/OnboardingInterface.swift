@@ -20,6 +20,19 @@ public final class OnboardingCoordinator: Coordinator {
 private extension OnboardingCoordinator {
     func configureOnboardingController() {
         let viewController = OnboardingRootViewController()
-        navigationController.pushViewController(viewController, animated: true)
+        viewController.coordinator = self
+        navigationController.setNavigationBarHidden(true, animated: false)
+        navigationController.pushViewController(viewController, animated: false)
+    }
+}
+
+extension OnboardingCoordinator: CoordinatorDelegate,
+                                 OnboardingRootViewControllerDelegate {
+    public func didFinish() {
+        didFinish(childCoordinator: self)
+    }
+
+    public func didFinish(childCoordinator: Coordinator) {
+        delegate?.didFinish(childCoordinator: childCoordinator)
     }
 }

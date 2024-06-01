@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import CoreDependencyInjectionInterface
 
 @propertyWrapper public struct Injected<Value> {
     public enum InjectError: Error {

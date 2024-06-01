@@ -17,6 +17,7 @@ let targets: [Target] = [
                 .coordinator(implements: .TabBar),
                 .coordinator(implements: .Onboarding),
                 .coordinator(implements: .Main),
+                .SPM.FlexLayout
             ]
         )
     )

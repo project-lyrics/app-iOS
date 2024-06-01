@@ -13,10 +13,10 @@ let targets: [Target] = [
 	.core(
 		factory: .init(
 			dependencies: [
+                .shared,
                 .core(implements: .Network),
 				.core(implements: .DependencyInjection),
-				.core(implements: .LocalStorage),
-                .shared(implements: .Util)
+				.core(implements: .LocalStorage)
 			]
 		)
 	)

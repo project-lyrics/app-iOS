@@ -6,8 +6,16 @@
 //
 
 import UIKit
+import FlexLayout
+
+public protocol OnboardingRootViewControllerDelegate: AnyObject {
+    func didFinish()
+}
 
 public final class OnboardingRootViewController: UIViewController {
+    private let onboardingView = OnboardingView()
+    public weak var coordinator: OnboardingRootViewControllerDelegate?
+
     public init() {
         super.init(nibName: nil, bundle: nil)
     }
@@ -17,7 +25,13 @@ public final class OnboardingRootViewController: UIViewController {
         fatalError()
     }
 
+    public override func loadView() {
+        view = onboardingView
+    }
+
     public override func viewDidLoad() {
         super.viewDidLoad()
+
+        onboardingView.configureLayouts()
     }
 }
