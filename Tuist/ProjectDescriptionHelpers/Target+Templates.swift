@@ -352,10 +352,6 @@ public extension Target {
             newFactory.resources = ["Resources/**"]
         }
 
-        if module == .ThirdPartyLib {
-            newFactory.product = .framework
-        }
-
         return make(factory: newFactory)
     }
 }
