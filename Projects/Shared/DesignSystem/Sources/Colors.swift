@@ -33,5 +33,5 @@ public struct Colors {
     public static let selectedBrand = SharedDesignSystemAsset.Colors.selectedBrand.color
     public static let tertiary = SharedDesignSystemAsset.Colors.tertiary.color
     public static let textFixed = SharedDesignSystemAsset.Colors.textFixed.color
-    public static let yellow = SharedDesignSystemAsset.Colors.yellow.color
+    public static let kakaoYellow = SharedDesignSystemAsset.Colors.kakaoYellow.color
 }

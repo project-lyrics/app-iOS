@@ -79,7 +79,7 @@ final class OnboardingView: UIView {
         button.titleLabel?.font = SharedDesignSystemFontFamily.Pretendard.semiBold.font(size: 16)
         button.setTitleColor(Colors.gray09, for: .normal)
         button.setImage(FeelinImages.kakao, for: .normal)
-        button.backgroundColor = Colors.yellow
+        button.backgroundColor = Colors.kakaoYellow
         button.imageEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 8)
 
         return button
