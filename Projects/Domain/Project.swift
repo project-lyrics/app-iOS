@@ -18,6 +18,22 @@ let targets: [Target] = [
                 .domain(implements: .OAuth)
             ]
         )
+    ),
+    .target(
+        name: "\(ModulePath.Domain.name)Tests",
+        destinations: .iOS,
+        product: .unitTests,
+        bundleId: Project.Environment.bundleId + ".Tests",
+        deploymentTargets: Project.Environment.deploymentTargets,
+        sources: .tests,
+        dependencies: [
+            .domain,
+            .core(testing: .Network),
+            .SPM.KakaoSDKAuth,
+            .SPM.KakaoSDKCommon,
+            .SPM.KakaoSDKUser
+        ],
+        settings: Project.Environment.devSetting
     )
 ]
 

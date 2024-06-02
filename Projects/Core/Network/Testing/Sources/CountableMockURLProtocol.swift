@@ -43,4 +43,3 @@ class CountableMockURLProtocol: URLProtocol {
         requestHandlers = []
     }
 }
-
