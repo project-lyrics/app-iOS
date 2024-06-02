@@ -7,7 +7,7 @@ let targets: [Target] = [
         interface: .Main,
         factory: .init(
             dependencies: [
-                .domain,
+                .dependencyInjection,
                 .SPM.FlexLayout
             ]
         )

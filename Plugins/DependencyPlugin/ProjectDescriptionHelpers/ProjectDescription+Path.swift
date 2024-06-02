@@ -44,6 +44,12 @@ public extension ProjectDescription.Path {
 }
 
 public extension ProjectDescription.Path {
+    static var dependencyInjection: Self {
+        return .relativeToRoot("Projects/\(ModulePath.DependencyInjection.name)")
+    }
+}
+
+public extension ProjectDescription.Path {
 	static var core: Self {
 		return .relativeToRoot("Projects/\(ModulePath.Core.name)")
 	}

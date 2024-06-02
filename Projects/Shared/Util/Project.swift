@@ -14,7 +14,12 @@ let targets: [Target] = [
         implements: .Util,
         factory: .init(
             dependencies: [
-                .shared(implements: .ThirdPartyLib)
+                .sdk(
+                    name: "XCTest",
+                    type: .framework,
+                    status: .optional,
+                    condition: nil
+                )
             ]
         )
     )

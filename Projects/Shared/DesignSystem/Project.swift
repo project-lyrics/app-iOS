@@ -20,7 +20,7 @@ let targets: [Target] = [
     )
 ]
 
-let project: Project = .init(
+let project: Project = .makeModule(
     name: ModulePath.Shared.DesignSystem.rawValue,
     targets: targets,
     resourceSynthesizers: [

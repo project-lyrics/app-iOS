@@ -5,6 +5,8 @@
 //  Created by Derrick kim on 2/19/24.
 //
 
+import KakaoSDKCommon
+import SharedUtil
 import UIKit
 
 @main
@@ -13,7 +15,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
          _ application: UIApplication,
          didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
      ) -> Bool {
-         return true
+         if let kakaoNativeAppKey = Bundle.main.kakaoNativeAppKey {
+             KakaoSDK.initSDK(appKey: kakaoNativeAppKey)
+             return true
+         } else {
+             return false
+         }
      }
 
      func application(

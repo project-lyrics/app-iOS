@@ -1,0 +1,20 @@
+//
+//  Shared.xcconfig
+//  Feelin
+//
+//  Created by 황인우 on 5/17/24.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+#include "./KakaoSecretKeys.xcconfig"
+
+OTHER_SWIFT_FLAGS[config=DEV][sdk=*] = $(inherited) -DDEV
+OTHER_SWIFT_FLAGS[config=QA][sdk=*] = $(inherited) -DQA
+OTHER_SWIFT_FLAGS[config=PROD][sdk=*] = $(inherited) -DPROD
+
+
+BASE_SERVER_URL_DEV = www.example-dev.com
+BASE_SERVER_URL_QA = www.example-qa.com
+BASE_SERVER_URL_PROD = www.example-prod.com

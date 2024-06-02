@@ -8,25 +8,32 @@
 import Foundation
 
 public enum NetworkError: Error, Equatable {
+    case urlError(URLError)
     case urlRequestError(URLRequestError)
     case clientError(ClientError)
     case serverError(ServerError)
     case noResponseError
     case decodingError( _ description: String)
+    case customServerError(APIFailResponse)
+    case requestInterceptError(_ description: String)
     case unknownError( _ description: String)
 
     public var errorMessage: String {
         switch self {
+        case let .urlError(urlError):                   return "url error: \(urlError.localizedDescription)"
         case let .urlRequestError(urlRequestError):     return urlRequestError.errorMessage
         case let .clientError(clientError):             return clientError.errorMessage
         case let .serverError(serverError):             return serverError.errorMessage
         case .noResponseError:                          return "No Response"
         case .decodingError:                            return "Decoding Error"
+        case let .customServerError(apiFailResponse):   return apiFailResponse.errorMessage
+        case let .requestInterceptError(description):   return "RequestInterceptError: \(description)"
         case .unknownError:                             return "Unknown Error"
         }
     }
 
     public enum URLRequestError: Error {
+        case headerError(reason: String)
         case urlComponentError
         case queryEncodingError
         case bodyEncodingError
@@ -34,6 +41,7 @@ public enum NetworkError: Error, Equatable {
 
         public var errorMessage: String {
             switch self {
+            case .headerError(let reason):  return "headerError. Reason: \(reason)"
             case .urlComponentError:        return "urlComponentError"
             case .queryEncodingError:       return "queryEncodingError"
             case .bodyEncodingError:        return "queryEncodingError"

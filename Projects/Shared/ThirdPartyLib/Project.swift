@@ -17,23 +17,26 @@ let targets: [Target] = [
                 with: [
                     "UIMainStoryboardFile": "",
                     "UILaunchStoryboardName": "",
-                    "LSSupportsOpeningDocumentsInPlace": true,
-                    "UIFileSharingEnabled": true,
+                    "LSSupportsOpeningDocumentsInPlace": true
                 ]
             ),
             dependencies: [
                 .SPM.Kingfisher,
-                .SPM.PinLayout
+                .SPM.PinLayout,
+                .SPM.KakaoSDKAuth,
+                .SPM.KakaoSDKUser,
+                .SPM.KakaoSDKCommon
             ]
         )
     )
 ]
 
-let project: Project = .init(
+let project: Project = .makeModule(
     name: ModulePath.Shared.ThirdPartyLib.rawValue,
-    packages: [
-        .remote(url: "https://github.com/onevcat/Kingfisher.git", requirement: .upToNextMajor(from: "7.0.0")),
-        .remote(url: "https://github.com/layoutBox/PinLayout", requirement: .upToNextMajor(from: "1.10.5"))
-    ],
+	packages: [
+		.remote(url: "https://github.com/onevcat/Kingfisher.git", requirement: .upToNextMajor(from: "7.0.0")),
+		.remote(url: "https://github.com/layoutBox/PinLayout", requirement: .upToNextMajor(from: "1.10.5")),
+		.remote(url: "https://github.com/kakao/kakao-ios-sdk", requirement: .upToNextMajor(from: "2.22.1"))
+	],
     targets: targets
 )

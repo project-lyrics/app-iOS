@@ -14,7 +14,8 @@ let targets: [Target] = [
         interface: .Network,
         factory: .init(
             dependencies: [
-                .shared
+                .shared,
+                .core(interface: .LocalStorage)
             ]
         )
     ),

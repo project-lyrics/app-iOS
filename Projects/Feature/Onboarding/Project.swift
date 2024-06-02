@@ -14,7 +14,7 @@ let targets: [Target] = [
         interface: .Onboarding,
         factory: .init(
             dependencies: [
-                .domain,
+                .dependencyInjection,
                 .SPM.FlexLayout
             ]
         )

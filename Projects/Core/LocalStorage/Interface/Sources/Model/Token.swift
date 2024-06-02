@@ -11,6 +11,8 @@ import Foundation
 public protocol TokenType: Codable {
     var token: String { get }
     var expiration: Date { get }
+    
+    init(token: String, expiration: Date)
 }
 
 // MARK: - AccessToken

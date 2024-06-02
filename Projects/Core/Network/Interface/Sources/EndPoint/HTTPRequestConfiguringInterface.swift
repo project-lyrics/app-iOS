@@ -13,6 +13,7 @@ public protocol HTTPRequestConfiguring {
     var baseURL: String? { get }
     var path: String { get }
     var httpMethod: HTTPMethod { get }
+    var headers: [String : String]? { get }
     var queryParameters: Encodable? { get }
     var bodyParameters: Encodable? { get }
 }

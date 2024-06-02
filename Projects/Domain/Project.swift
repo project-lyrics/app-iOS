@@ -13,10 +13,25 @@ let targets: [Target] = [
     .domain(
         factory: .init(
             dependencies: [
+                .core,
                 .domain(implements: .PostTextUseCase),
-                .core
+                .domain(implements: .OAuth)
             ]
         )
+    ),
+    .target(
+        name: "\(ModulePath.Domain.name)Tests",
+        destinations: .iOS,
+        product: .unitTests,
+        bundleId: Project.Environment.bundleId + ".Tests",
+        deploymentTargets: Project.Environment.deploymentTargets,
+        sources: .tests,
+        dependencies: [
+            .core(testing: .Network),
+            .core,
+            .domain
+        ],
+        settings: Project.Environment.devTargetSettings
     )
 ]
 

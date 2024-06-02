@@ -11,10 +11,10 @@ import Combine
 import SharedUtil
 
 public final class NetworkProvider: NetworkProviderProtocol {
-    private let session: URLSession
+    private let networkSession: NetworkSession
 
-    public init(session: URLSession = URLSession.shared) {
-        self.session = session
+    public init(networkSession: NetworkSession) {
+        self.networkSession = networkSession
     }
 
     public func request<N: HTTPNetworking, T: Decodable>(
@@ -23,17 +23,26 @@ public final class NetworkProvider: NetworkProviderProtocol {
         do {
             let urlRequest: URLRequest = try endpoint.makeURLRequest()
 
-            return session
+            return networkSession
                 .dataTaskPublisher(for: urlRequest)
+                .tryDecodeAPIFailResponse()
                 .validateStatusCode()
+                .retryOnUnauthorized(
+                    session: networkSession,
+                    request: urlRequest
+                )
                 .validateJSONValue(to: T.self)
                 .eraseToAnyPublisher()
-        } catch let error {
-            if let networkError = error as? NetworkError {
-                return Fail(error: networkError)
-                    .eraseToAnyPublisher()
-            }
-
+            
+        } catch let error as NetworkError {
+            return Fail(error: error)
+                .eraseToAnyPublisher()
+            
+        } catch let error as URLError {
+            return Fail(error: NetworkError.urlError(error))
+                .eraseToAnyPublisher()
+            
+        } catch {
             return Fail(error: NetworkError.unknownError(error.localizedDescription))
                 .eraseToAnyPublisher()
         }
