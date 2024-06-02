@@ -25,9 +25,9 @@ let targets: [Target] = [
                 .SPM.Kingfisher,
                 .SPM.PinLayout,
 				.SPM.FlexLayout,
-				.SPM.KakaoSDKAuth,
-				.SPM.KakaoSDKUser,
-				.SPM.KakaoSDKCommon
+                .SPM.KakaoSDKAuth,
+                .SPM.KakaoSDKUser,
+                .SPM.KakaoSDKCommon
             ]
         )
     )
