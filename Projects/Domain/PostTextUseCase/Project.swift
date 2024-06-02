@@ -14,8 +14,7 @@ let targets: [Target] = [
         interface: .PostTextUseCase,
         factory: .init(
             dependencies: [
-                .core,
-                .dependencyInjection
+                .core
             ]
         )
     ),

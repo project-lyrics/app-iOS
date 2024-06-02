@@ -5,6 +5,7 @@ import DependencyPlugin
 let target: Target = .dependencyInjection(
     factory: .init(
         dependencies: [
+            .domain
         ]
     )
 )

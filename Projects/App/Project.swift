@@ -9,18 +9,24 @@ import ProjectDescription
 import DependencyPlugin
 import ProjectDescriptionHelpers
 
+let appSchemes: [Scheme] = [
+    .makeScheme(.dev, name: Project.Environment.appName),
+    .makeScheme(.qa, name: Project.Environment.appName),
+    .makeScheme(.prod, name: Project.Environment.appName)
+]
+
 let appTargets: [Target] = [
     .app(
         implements: .iOS,
+        deploymentTarget: .dev,
         factory: .init(
-            infoPlist: Project.Environment.appInfoPlist(deploymentTarget: .dev),
+            infoPlist: Project.Environment.appInfoPlist(deploymentTarget: .dev), 
             entitlements: "Feelin.entitlements",
             dependencies: [
                 .coordinator,
-                .shared(implements: .ThirdPartyLib),
-                .shared(implements: .Util)
+                .SPM.FlexLayout
             ],
-            settings: Project.Environment.devSetting
+            settings: Project.Environment.devTargetSettings
         )
     ),
     .app(
@@ -31,8 +37,9 @@ let appTargets: [Target] = [
             entitlements: "Feelin.entitlements",
             dependencies: [
                 .coordinator,
+                .SPM.FlexLayout
             ],
-            settings: Project.Environment.qaSetting
+            settings: Project.Environment.qaTargetSettings
         )
     ),
     .app(
@@ -43,15 +50,18 @@ let appTargets: [Target] = [
             entitlements: "Feelin.entitlements",
             dependencies: [
                 .coordinator,
+                .SPM.FlexLayout
             ],
-            settings: Project.Environment.prodSetting
+            settings: Project.Environment.prodTargetSettings
         )
     )
 ]
 
 let appProject: Project = .makeModule(
     name: Project.Environment.appName,
-    settings: Project.Environment.projectSettings,
+    packages: [
+        .remote(url: "https://github.com/layoutBox/FlexLayout", requirement: .upToNextMajor(from: "2.0.7"))
+    ],
     targets: appTargets,
     schemes: appSchemes,
     additionalFiles: [

@@ -13,8 +13,8 @@ let targets: [Target] = [
     .domain(
         factory: .init(
             dependencies: [
-                .domain(implements: .PostTextUseCase),
                 .core,
+                .domain(implements: .PostTextUseCase),
                 .domain(implements: .OAuth)
             ]
         )
@@ -27,13 +27,11 @@ let targets: [Target] = [
         deploymentTargets: Project.Environment.deploymentTargets,
         sources: .tests,
         dependencies: [
-            .domain,
             .core(testing: .Network),
-            .SPM.KakaoSDKAuth,
-            .SPM.KakaoSDKCommon,
-            .SPM.KakaoSDKUser
+            .core,
+            .domain
         ],
-        settings: Project.Environment.devSetting
+        settings: Project.Environment.devTargetSettings
     )
 ]
 

@@ -17,14 +17,12 @@ let targets: [Target] = [
                 with: [
                     "UIMainStoryboardFile": "",
                     "UILaunchStoryboardName": "",
-                    "LSSupportsOpeningDocumentsInPlace": true,
-                    "UIFileSharingEnabled": true,
+                    "LSSupportsOpeningDocumentsInPlace": true
                 ]
             ),
             dependencies: [
                 .SPM.Kingfisher,
                 .SPM.PinLayout,
-				.SPM.FlexLayout,
                 .SPM.KakaoSDKAuth,
                 .SPM.KakaoSDKUser,
                 .SPM.KakaoSDKCommon
@@ -33,7 +31,7 @@ let targets: [Target] = [
     )
 ]
 
-let project: Project = .init(
+let project: Project = .makeModule(
     name: ModulePath.Shared.ThirdPartyLib.rawValue,
 	packages: [
 		.remote(url: "https://github.com/onevcat/Kingfisher.git", requirement: .upToNextMajor(from: "7.0.0")),

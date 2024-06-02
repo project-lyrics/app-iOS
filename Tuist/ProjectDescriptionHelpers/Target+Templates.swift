@@ -49,7 +49,7 @@ public struct TargetFactory {
         entitlements: Entitlements? = nil,
         scripts: [TargetScript] = [],
         dependencies: [TargetDependency] = [],
-        settings: Settings = Project.Environment.defaultSettings,
+        settings: Settings = Project.Environment.defaultTargetSettings,
         coreDataModels: [CoreDataModel] = [],
         environmentVariables: [String : EnvironmentVariable] = [:],
         launchArguments: [LaunchArgument] = [],
@@ -363,6 +363,7 @@ public extension Target {
         newFactory.sources = .sources
 
         if module == .DesignSystem {
+            newFactory.product = .staticFramework
             newFactory.resources = ["Resources/**"]
         }
 
