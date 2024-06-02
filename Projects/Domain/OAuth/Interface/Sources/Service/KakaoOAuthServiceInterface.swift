@@ -11,10 +11,6 @@ import CoreNetworkInterface
 import Foundation
 import KakaoSDKUser
 
-public protocol KakaoOAuthServiceInterface {
-    func login() -> AnyPublisher<OAuthResult, AuthError>
-}
-
 final public class KakaoOAuthService {
     // MARK: - 추후 accessTokenKey와 refreshTokenKey는 숨겨야 합니다. 
     public let accessTokenKey: String = "FeelinAccessTokenKey"

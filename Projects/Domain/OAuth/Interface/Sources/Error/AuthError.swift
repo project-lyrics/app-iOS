@@ -11,7 +11,7 @@ import Foundation
 import KakaoSDKCommon
 
 public enum AuthError: LocalizedError {
-    case kakaoSdkError(KakaoSDKError)
+    case kakaoOAuthError(KakaoOAuthError)
     case keychainError(KeychainError)
     case networkError(NetworkError)
     case jwtParsingError(JWTError)
