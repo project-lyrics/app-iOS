@@ -122,3 +122,4 @@ Derived/
 master.key
 
 ### xcconfig ###
+Projects/App/xcconfigs/KakaoSecretKeys.xcconfig
