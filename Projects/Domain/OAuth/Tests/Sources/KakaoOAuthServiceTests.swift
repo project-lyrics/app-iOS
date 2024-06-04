@@ -18,7 +18,7 @@ import XCTest
 final class KakaoOAuthServiceTests: XCTestCase {
     private var cancellables: Set<AnyCancellable>!
     private var kakaoUserAPITestDouble: MockKakaoUserAPI!
-    private var networkProviderTestDouble: NetworkProviderProtocol!
+    private var networkProviderTestDouble: NetworkProviderInterface!
     private var sut: OAuthServiceInterface!
     
     private let expectedAccessToken: String = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzb21lIjoicGF5bG9hZCIsImV4cCI6MTcxNzIwMDAwMC4wfQ.kNeDhxHkCxWFanC-pTc-oY047ec5JVtk9qQWSBnNUcM"

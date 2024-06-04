@@ -25,8 +25,8 @@ public struct InjectIdentifier<T> {
 }
 
 public extension InjectIdentifier {
-    static var networkService: InjectIdentifier<NetworkProviderProtocol> {
-        .by(type: NetworkProviderProtocol.self, key: "networkProvider")
+    static var networkService: InjectIdentifier<NetworkProviderInterface> {
+        .by(type: NetworkProviderInterface.self, key: "networkProvider")
     }
 }
 

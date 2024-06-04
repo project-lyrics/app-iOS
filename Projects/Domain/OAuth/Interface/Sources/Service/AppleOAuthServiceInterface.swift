@@ -14,13 +14,13 @@ public class AppleLoginService: NSObject {
     // MARK: - 추후 accessTokenKey와 refreshTokenKey는 숨겨야 합니다.
     public let accessTokenKey: String = "FeelinAccessTokenKey"
     public let refreshTokenKey: String = "FeelinRefreshTokenKey"
-    public var networkProvider: NetworkProviderProtocol
+    public var networkProvider: NetworkProviderInterface
     public var tokenStorage: TokenStorageInterface
     public let jwtDecoder: JWTDecoder = .init()
     public var appleTokenSubject: PassthroughSubject<String, AppleOAuthError> = .init()
     
     public init(
-        networkProvider: NetworkProviderProtocol,
+        networkProvider: NetworkProviderInterface,
         tokenStorage: TokenStorageInterface
     ) {
         self.networkProvider = networkProvider

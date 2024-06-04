@@ -14,7 +14,7 @@ public protocol UserVerifiable {
     // MARK: - 추후 accessTokenKey와 refreshTokenKey는 숨겨야 합니다.
     var accessTokenKey: String { get }
     var refreshTokenKey: String { get }
-    var networkProvider: NetworkProviderProtocol { get }
+    var networkProvider: NetworkProviderInterface { get }
     var tokenStorage: TokenStorageInterface { get }
     var jwtDecoder: JWTDecoder { get }
     

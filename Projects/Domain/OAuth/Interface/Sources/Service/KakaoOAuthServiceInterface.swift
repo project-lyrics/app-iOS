@@ -17,13 +17,13 @@ final public class KakaoOAuthService {
     public let refreshTokenKey: String = "FeelinRefreshTokenKey"
     
     public let kakaoUserAPI: KakaoUserAPIProtocol
-    public let networkProvider: NetworkProviderProtocol
+    public let networkProvider: NetworkProviderInterface
     public let tokenStorage: TokenStorageInterface
     public let jwtDecoder: JWTDecoder = .init()
     
     public init(
         kakaoUserAPI: KakaoUserAPIProtocol = UserApi.shared,
-        networkProvider: NetworkProviderProtocol,
+        networkProvider: NetworkProviderInterface,
         tokenStorage: TokenStorageInterface
     ) {
         self.kakaoUserAPI = kakaoUserAPI

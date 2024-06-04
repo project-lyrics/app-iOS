@@ -18,11 +18,11 @@ final public class UserValidityService {
     // MARK: - 추후 accessTokenKey와 refreshTokenKey는 숨겨야 합니다.
     public let accessTokenKey: String = "FeelinAccessTokenKey"
     public let refreshTokenKey: String = "FeelinRefreshTokenKey"
-    public let networkProvider: NetworkProviderProtocol
+    public let networkProvider: NetworkProviderInterface
     public let tokenStorage: TokenStorageInterface
     
     public init(
-        networkProvider: NetworkProviderProtocol,
+        networkProvider: NetworkProviderInterface,
         tokenStorage: TokenStorageInterface
     ) {
         self.networkProvider = networkProvider
