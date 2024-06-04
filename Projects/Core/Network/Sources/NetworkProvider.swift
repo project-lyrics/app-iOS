@@ -10,7 +10,7 @@ import CoreNetworkInterface
 import Combine
 import SharedUtil
 
-public final class NetworkProvider: NetworkProviderProtocol {
+public final class NetworkProvider: NetworkProviderInterface {
     private let networkSession: NetworkSession
 
     public init(networkSession: NetworkSession) {

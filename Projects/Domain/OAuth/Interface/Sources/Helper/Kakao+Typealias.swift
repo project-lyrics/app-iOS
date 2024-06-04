@@ -13,4 +13,4 @@ import KakaoSDKUser
 public typealias KakaoOAuthToken = OAuthToken
 public typealias KakaoLaunchMethod = LaunchMethod
 public typealias KakaoAuthPrompt = Prompt
-public typealias KakaoSDKError = SdkError
+public typealias KakaoOAuthError = SdkError

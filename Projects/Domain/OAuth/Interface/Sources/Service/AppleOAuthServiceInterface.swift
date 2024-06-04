@@ -1,8 +1,8 @@
 //
-//  UserValidityServiceInterface.swift
-//  DomainOAuth
+//  AppleOAuthServiceInterface.swift
+//  DomainOAuthInterface
 //
-//  Created by 황인우 on 5/30/24.
+//  Created by 황인우 on 6/3/24.
 //
 
 import Combine
@@ -10,16 +10,14 @@ import CoreLocalStorageInterface
 import CoreNetworkInterface
 import Foundation
 
-public protocol UserValidityServiceInterface {
-    func isUserValid() -> AnyPublisher<Bool, AuthError>
-}
-
-final public class UserValidityService {
+public class AppleLoginService: NSObject {
     // MARK: - 추후 accessTokenKey와 refreshTokenKey는 숨겨야 합니다.
     public let accessTokenKey: String = "FeelinAccessTokenKey"
     public let refreshTokenKey: String = "FeelinRefreshTokenKey"
-    public let networkProvider: NetworkProviderInterface
-    public let tokenStorage: TokenStorageInterface
+    public var networkProvider: NetworkProviderInterface
+    public var tokenStorage: TokenStorageInterface
+    public let jwtDecoder: JWTDecoder = .init()
+    public var appleTokenSubject: PassthroughSubject<String, AppleOAuthError> = .init()
     
     public init(
         networkProvider: NetworkProviderInterface,

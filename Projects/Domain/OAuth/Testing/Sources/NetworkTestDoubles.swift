@@ -9,7 +9,7 @@ import CoreNetworkInterface
 import Foundation
 
 // MARK: - MockNetworkProvider
-final public class MockNetworkProvider: NetworkProviderProtocol {
+final public class MockNetworkProvider: NetworkProviderInterface {
     private var request: URLRequest?
     private var response: Decodable?
     private var error: NetworkError?

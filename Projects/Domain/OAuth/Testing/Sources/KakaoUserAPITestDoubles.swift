@@ -11,11 +11,11 @@ import XCTest
 
 final public class MockKakaoUserAPI: KakaoUserAPIProtocol {
     public var oAuthToken: KakaoOAuthToken?
-    public var error: KakaoSDKError?
+    public var error: KakaoOAuthError?
     
     public init(
         oAuthToken: KakaoOAuthToken?,
-        error: KakaoSDKError?
+        error: KakaoOAuthError?
     ) {
         self.oAuthToken = oAuthToken
         self.error = error
@@ -35,7 +35,7 @@ final public class MockKakaoUserAPI: KakaoUserAPIProtocol {
         if let validOAuthToken = oAuthToken {
             completion(validOAuthToken, nil)
         } else {
-            completion(nil, KakaoSDKError.ClientFailed(reason: .TokenNotFound, errorMessage: "mock객체에게 토큰을 주입해야 한다."))
+            completion(nil, KakaoOAuthError.ClientFailed(reason: .TokenNotFound, errorMessage: "mock객체에게 토큰을 주입해야 한다."))
         }
     }
     
@@ -52,7 +52,7 @@ final public class MockKakaoUserAPI: KakaoUserAPIProtocol {
         if let validOAuthToken = oAuthToken {
             completion(validOAuthToken, nil)
         } else {
-            completion(nil, KakaoSDKError.ClientFailed(reason: .TokenNotFound, errorMessage: "mock객체에게 토큰을 주입해야 한다."))
+            completion(nil, KakaoOAuthError.ClientFailed(reason: .TokenNotFound, errorMessage: "mock객체에게 토큰을 주입해야 한다."))
         }
     }
 }
