@@ -6,6 +6,8 @@
 //
 
 import CoreNetworkInterface
+import CoreLocalStorageInterface
+import DomainOAuthInterface
 
 public struct InjectIdentifier<T> {
     private (set) var type: T.Type? = nil
@@ -25,8 +27,22 @@ public struct InjectIdentifier<T> {
 }
 
 public extension InjectIdentifier {
-    static var networkService: InjectIdentifier<NetworkProviderProtocol> {
+    static var networkProvider: InjectIdentifier<NetworkProviderProtocol> {
         .by(type: NetworkProviderProtocol.self, key: "networkProvider")
+    }
+
+    static var tokenStorage: InjectIdentifier<TokenStorageInterface> {
+        .by(type: TokenStorageInterface.self, key: "tokenStorage")
+    }
+}
+
+public extension InjectIdentifier {
+    static var kakaoOAuthService: InjectIdentifier<KakaoOAuthServiceInterface> {
+        .by(type: KakaoOAuthServiceInterface.self, key: "kakaoOAuthService")
+    }
+    
+    static var userValidityService: InjectIdentifier<UserValidityServiceInterface> {
+        .by(type: UserValidityServiceInterface.self, key: "userValidityService")
     }
 }
 
