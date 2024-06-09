@@ -46,7 +46,21 @@ extension DIContainer {
         standard.register(.kakaoOAuthService) { resolver in
             let tokenStorage = try resolver.resolve(.tokenStorage)
             let networkProvider = try resolver.resolve(.networkProvider)
-            return KakaoOAuthService(networkProvider: networkProvider, tokenStorage: tokenStorage)
+            return KakaoOAuthService(
+                networkProvider: networkProvider,
+                tokenStorage: tokenStorage
+            )
+        }
+    }
+
+    public static func registerAppleOAuthService() {
+        standard.register(.appleOAuthService) { resolver in
+            let tokenStorage = try resolver.resolve(.tokenStorage)
+            let networkProvider = try resolver.resolve(.networkProvider)
+            return AppleLoginService(
+                networkProvider: networkProvider,
+                tokenStorage: tokenStorage
+            )
         }
     }
 

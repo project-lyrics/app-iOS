@@ -41,6 +41,10 @@ public extension InjectIdentifier {
         .by(type: (OAuthServiceInterface & UserVerifiable).self, key: "kakaoOAuthService")
     }
 
+    static var appleOAuthService: InjectIdentifier<OAuthServiceInterface & UserVerifiable> {
+        .by(type: (OAuthServiceInterface & UserVerifiable).self, key: "appleOAuthService")
+    }
+
     static var userValidityService: InjectIdentifier<UserValidityServiceInterface> {
         .by(type: UserValidityServiceInterface.self, key: "userValidityService")
     }
