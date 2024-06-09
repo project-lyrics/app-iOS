@@ -55,7 +55,7 @@ extension AppCoordinator {
     }
 }
 
-extension AppCoordinator: CoordinatorDelegate, SplashViewControllerDelegate  {
+extension AppCoordinator: CoordinatorDelegate, SplashViewControllerDelegate {
     func didFinish(childCoordinator: Coordinator) {
         navigationController.popToRootViewController(animated: false)
         if childCoordinator is OnboardingCoordinator {

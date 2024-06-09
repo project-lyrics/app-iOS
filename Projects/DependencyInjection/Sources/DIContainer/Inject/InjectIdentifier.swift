@@ -27,8 +27,8 @@ public struct InjectIdentifier<T> {
 }
 
 public extension InjectIdentifier {
-    static var networkProvider: InjectIdentifier<NetworkProviderProtocol> {
-        .by(type: NetworkProviderProtocol.self, key: "networkProvider")
+    static var networkProvider: InjectIdentifier<NetworkProviderInterface> {
+        .by(type: NetworkProviderInterface.self, key: "networkProvider")
     }
 
     static var tokenStorage: InjectIdentifier<TokenStorageInterface> {
@@ -37,10 +37,10 @@ public extension InjectIdentifier {
 }
 
 public extension InjectIdentifier {
-    static var kakaoOAuthService: InjectIdentifier<KakaoOAuthServiceInterface> {
-        .by(type: KakaoOAuthServiceInterface.self, key: "kakaoOAuthService")
+    static var kakaoOAuthService: InjectIdentifier<OAuthServiceInterface & UserVerifiable> {
+        .by(type: (OAuthServiceInterface & UserVerifiable).self, key: "kakaoOAuthService")
     }
-    
+
     static var userValidityService: InjectIdentifier<UserValidityServiceInterface> {
         .by(type: UserValidityServiceInterface.self, key: "userValidityService")
     }
