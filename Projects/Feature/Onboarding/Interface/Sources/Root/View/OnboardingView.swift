@@ -85,16 +85,19 @@ final class OnboardingView: UIView {
         return button
     }()
 
+    private var appleLoginAction: (() -> Void)?
+    private var kakaoLoginAction: (() -> Void)?
+
     init() {
         super.init(frame: .zero)
-        backgroundColor = .white
 
-        [logoBeltImageView, rootFlexContainer]
-            .forEach { addSubview($0) }
+        setupDefault()
+        addUIComponents()
     }
 
+    @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
+        fatalError()
     }
 
     override func layoutSubviews() {
@@ -136,5 +139,45 @@ final class OnboardingView: UIView {
         ])
 
         rootFlexContainer.flex.layout()
+    }
+
+    func actionAppleLogin(_ action: @escaping (() -> Void)) {
+        self.appleLoginAction = action
+    }
+
+    func actionKakaoLogin(_ action: @escaping (() -> Void)) {
+        self.kakaoLoginAction = action
+    }
+
+    private func setupDefault() {
+        backgroundColor = .white
+        addButtonTargets()
+    }
+
+    private func addUIComponents() {
+        [logoBeltImageView, rootFlexContainer]
+            .forEach { addSubview($0) }
+    }
+
+    private func addButtonTargets() {
+        appleLoginButton.addTarget(
+            self,
+            action: #selector(didTapAppleLoginButton),
+            for: .touchUpInside
+        )
+
+        kakaoLoginButton.addTarget(
+            self,
+            action: #selector(didTapKakaoLoginButton),
+            for: .touchUpInside
+        )
+    }
+
+    @objc private func didTapAppleLoginButton(_ sender: UIButton) {
+        appleLoginAction?()
+    }
+
+    @objc private func didTapKakaoLoginButton(_ sender: UIButton) {
+        kakaoLoginAction?()
     }
 }

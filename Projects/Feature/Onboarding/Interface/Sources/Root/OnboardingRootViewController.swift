@@ -33,5 +33,16 @@ public final class OnboardingRootViewController: UIViewController {
         super.viewDidLoad()
 
         onboardingView.configureLayouts()
+        bind()
+    }
+
+    private func bind() {
+        onboardingView.actionAppleLogin { [weak self] in
+            self?.viewModel.appleLogin()
+        }
+
+        onboardingView.actionKakaoLogin { [weak self] in
+            self?.viewModel.kakaoLogin()
+        }
     }
 }
