@@ -27,10 +27,10 @@ public struct Colors {
     public static let inputField = SharedDesignSystemAsset.Colors.inputField.color
     public static let modal = SharedDesignSystemAsset.Colors.modal.color
     public static let point = SharedDesignSystemAsset.Colors.point.color
-    public static let pressedGray = SharedDesignSystemAsset.Colors.pressedGray.color
+    public static let pressedGrayscale = SharedDesignSystemAsset.Colors.pressedGrayscale.color
     public static let primary = SharedDesignSystemAsset.Colors.primary.color
     public static let secondary = SharedDesignSystemAsset.Colors.secondary.color
-    public static let selectedBrand = SharedDesignSystemAsset.Colors.selectedBrand.color
+    public static let pressedBrand = SharedDesignSystemAsset.Colors.pressedBrand.color
     public static let tertiary = SharedDesignSystemAsset.Colors.tertiary.color
     public static let textFixed = SharedDesignSystemAsset.Colors.textFixed.color
     public static let kakaoYellow = SharedDesignSystemAsset.Colors.kakaoYellow.color
