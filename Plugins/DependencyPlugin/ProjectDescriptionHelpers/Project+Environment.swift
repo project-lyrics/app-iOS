@@ -14,7 +14,8 @@ public extension Project {
         public static let bundleId = "com.project.feelin"
         public static let projectSettings: Settings = .settings(
             base: [
-                "GCC_PREPROCESSOR_DEFINITIONS": "$(inherited) FLEXLAYOUT_SWIFT_PACKAGE=1"
+                "GCC_PREPROCESSOR_DEFINITIONS": "$(inherited) FLEXLAYOUT_SWIFT_PACKAGE=1",
+                "ENABLE_USER_SCRIPT_SANDBOXING": "YES"
             ],
             configurations: [
                 .build(.dev),
@@ -24,7 +25,8 @@ public extension Project {
         )
         public static let defaultTargetSettings: Settings = .settings(
             base: [
-                "GCC_PREPROCESSOR_DEFINITIONS": "$(inherited) FLEXLAYOUT_SWIFT_PACKAGE=1"
+                "GCC_PREPROCESSOR_DEFINITIONS": "$(inherited) FLEXLAYOUT_SWIFT_PACKAGE=1",
+                "ENABLE_USER_SCRIPT_SANDBOXING": "YES"
             ],
             configurations: [
                 .build(.dev),
@@ -35,7 +37,8 @@ public extension Project {
         public static let testsAppDefaultSettings: Settings = .settings(
             base: [
                 "TEST_HOST": "",
-                "BUNDLE_LOADER": "$(BUILT_PRODUCTS_DIR)/$(TEST_TARGET_NAME).app/$(TEST_TARGET_NAME)"
+                "BUNDLE_LOADER": "$(BUILT_PRODUCTS_DIR)/$(TEST_TARGET_NAME).app/$(TEST_TARGET_NAME)",
+                "ENABLE_USER_SCRIPT_SANDBOXING": "YES"
             ],
             configurations: [
                 .build(.dev),
@@ -46,7 +49,8 @@ public extension Project {
         public static let exampleAppDefaultSettings: Settings = .settings(
             base: [
                 "OTHER_LDFLAGS": "$(inherited) -Xlinker -interposable -all_load",
-                "GCC_PREPROCESSOR_DEFINITIONS": "$(inherited) FLEXLAYOUT_SWIFT_PACKAGE=1"
+                "GCC_PREPROCESSOR_DEFINITIONS": "$(inherited) FLEXLAYOUT_SWIFT_PACKAGE=1",
+                "ENABLE_USER_SCRIPT_SANDBOXING": "YES"
             ],
             configurations: [
                 .build(.dev),
@@ -56,7 +60,8 @@ public extension Project {
         )
         public static let devTargetSettings: Settings = .settings(
             base: [
-                "GCC_PREPROCESSOR_DEFINITIONS": "$(inherited) FLEXLAYOUT_SWIFT_PACKAGE=1"
+                "GCC_PREPROCESSOR_DEFINITIONS": "$(inherited) FLEXLAYOUT_SWIFT_PACKAGE=1",
+                "ENABLE_USER_SCRIPT_SANDBOXING": "YES"
             ],
             configurations: [
                 .build(.dev)
@@ -64,7 +69,8 @@ public extension Project {
         )
         public static let qaTargetSettings: Settings = .settings(
             base: [
-                "GCC_PREPROCESSOR_DEFINITIONS": "$(inherited) FLEXLAYOUT_SWIFT_PACKAGE=1"
+                "GCC_PREPROCESSOR_DEFINITIONS": "$(inherited) FLEXLAYOUT_SWIFT_PACKAGE=1",
+                "ENABLE_USER_SCRIPT_SANDBOXING": "YES"
             ],
             configurations: [
                 .build(.dev)
@@ -72,7 +78,8 @@ public extension Project {
         )
         public static let prodTargetSettings: Settings = .settings(
             base: [
-                "GCC_PREPROCESSOR_DEFINITIONS": "$(inherited) FLEXLAYOUT_SWIFT_PACKAGE=1"
+                "GCC_PREPROCESSOR_DEFINITIONS": "$(inherited) FLEXLAYOUT_SWIFT_PACKAGE=1",
+                "ENABLE_USER_SCRIPT_SANDBOXING": "YES"
             ],
             configurations: [
                 .build(.prod)
