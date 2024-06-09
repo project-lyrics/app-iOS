@@ -18,8 +18,8 @@ import XCTest
 final class KakaoOAuthServiceTests: XCTestCase {
     private var cancellables: Set<AnyCancellable>!
     private var kakaoUserAPITestDouble: MockKakaoUserAPI!
-    private var networkProviderTestDouble: NetworkProviderProtocol!
-    private var sut: KakaoOAuthServiceInterface!
+    private var networkProviderTestDouble: NetworkProviderInterface!
+    private var sut: OAuthServiceInterface!
     
     private let expectedAccessToken: String = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzb21lIjoicGF5bG9hZCIsImV4cCI6MTcxNzIwMDAwMC4wfQ.kNeDhxHkCxWFanC-pTc-oY047ec5JVtk9qQWSBnNUcM"
     
@@ -78,7 +78,7 @@ final class KakaoOAuthServiceTests: XCTestCase {
 
     func test_카카오_로그인_실패() throws {
         // given
-        kakaoUserAPITestDouble.error = KakaoSDKError.ClientFailed(reason: .TokenNotFound, errorMessage: "Mock error")
+        kakaoUserAPITestDouble.error = KakaoOAuthError.ClientFailed(reason: .TokenNotFound, errorMessage: "Mock error")
         networkProviderTestDouble = MockNetworkProvider(
             response: UserLoginResponse(
                 status: "401",
@@ -103,7 +103,7 @@ final class KakaoOAuthServiceTests: XCTestCase {
             "Expected Kakao SDK error"
         ) { error in
             // then
-            guard case AuthError.kakaoSdkError = error else {
+            guard case AuthError.kakaoOAuthError = error else {
                 return XCTFail("Expected Kakao SDK error")
             }
         }

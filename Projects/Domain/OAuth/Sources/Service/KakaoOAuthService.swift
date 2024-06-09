@@ -13,9 +13,10 @@ import Foundation
 import KakaoSDKCommon
 import KakaoSDKUser
 
-extension KakaoOAuthService: KakaoOAuthServiceInterface {
+extension KakaoOAuthService: OAuthServiceInterface, UserVerifiable {
     public func login() -> AnyPublisher<OAuthResult, AuthError> {
         return fetchKakaoAccessToken()
+            .map { ($0, OAuthProvider.kakao) }
             .flatMap(verifyUser)
             .eraseToAnyPublisher()
     }
@@ -32,12 +33,12 @@ private extension KakaoOAuthService {
                     serviceTerms: nil,
                     nonce: nil
                 ) { oAuthToken, error in
-                    if let sdkError = error as? KakaoSDKError {
-                        promise(.failure(.kakaoSdkError(sdkError)))
+                    if let sdkError = error as? KakaoOAuthError {
+                        promise(.failure(.kakaoOAuthError(sdkError)))
                     } else {
                         guard let accessToken = oAuthToken?.accessToken else {
                             promise(
-                                .failure(.kakaoSdkError(.init(apiFailedMessage: "AccessToken이 nil입니다.")))
+                                .failure(.kakaoOAuthError(.init(apiFailedMessage: "AccessToken이 nil입니다.")))
                             )
                             return
                         }
@@ -51,12 +52,12 @@ private extension KakaoOAuthService {
                     serviceTerms: nil,
                     nonce: nil
                 ) { oAuthToken, error in
-                    if let sdkError = error as? KakaoSDKError {
-                        promise(.failure(.kakaoSdkError(sdkError)))
+                    if let sdkError = error as? KakaoOAuthError {
+                        promise(.failure(.kakaoOAuthError(sdkError)))
                     } else {
                         guard let accessToken = oAuthToken?.accessToken else {
                             promise(
-                                .failure(.kakaoSdkError(.init(apiFailedMessage: "AccessToken이 nil입니다.")))
+                                .failure(.kakaoOAuthError(.init(apiFailedMessage: "AccessToken이 nil입니다.")))
                             )
                             return
                         }
@@ -66,47 +67,5 @@ private extension KakaoOAuthService {
             }
         }
         .eraseToAnyPublisher()
-    }
-}
-
-// MARK: - Verify User
-private extension KakaoOAuthService {
-    func verifyUser(kakaoAccessToken: String) -> AnyPublisher<OAuthResult, AuthError> {
-        let endpoint = FeelinAPI<UserLoginResponse>.login(
-            oauthProvider: .kakao, 
-            oauthAccessToken: kakaoAccessToken
-        )
-        return networkProvider.request(endpoint)
-            .tryMap { [jwtDecoder] response -> (AccessToken, RefreshToken) in
-                return (
-                    try jwtDecoder.decode(response.data.accessToken, as: AccessToken.self),
-                    try jwtDecoder.decode(response.data.refreshToken, as: RefreshToken.self)
-                )
-            }
-            .tryMap { [tokenStorage, accessTokenKey, refreshTokenKey] (accessToken, refreshToken) in
-                try tokenStorage.save(token: accessToken, for: accessTokenKey)
-                try tokenStorage.save(token: refreshToken, for: refreshTokenKey)
-            }
-            .map { _ in
-                return OAuthResult(oAuthType: .kakaoLogin)
-            }
-            .mapError({ error in
-                switch error {
-                case let error as KakaoSDKError:
-                    return AuthError.kakaoSdkError(error)
-                    
-                case let error as KeychainError:
-                    return AuthError.keychainError(error)
-                    
-                case let error as NetworkError:
-                    return AuthError.networkError(error)
-                    
-                case let error as JWTError:
-                    return AuthError.jwtParsingError(error)
-                default:
-                    return AuthError.unidentifiedError(error)
-                }
-            })
-            .eraseToAnyPublisher()
     }
 }

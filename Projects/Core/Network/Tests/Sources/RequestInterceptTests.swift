@@ -15,7 +15,7 @@ import XCTest
 @testable import SharedUtil
 
 final class RequestInterceptTest: XCTestCase {
-    var sut: NetworkProviderProtocol!
+    var sut: NetworkProviderInterface!
     var fakeTokenStorage: FakeTokenStorage!
     var tokenInterceptor: MockTokenInterceptor!
     var urlSession: URLSession!

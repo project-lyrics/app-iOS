@@ -15,7 +15,7 @@ import Combine
 @testable import SharedUtil
 
 final class NetworkProviderTests: XCTestCase {
-    var networkProvider: NetworkProviderProtocol!
+    var networkProvider: NetworkProviderInterface!
     var cancellables: Set<AnyCancellable>!
 
     override func setUp() {
@@ -103,7 +103,7 @@ final class NetworkProviderTests: XCTestCase {
         let mockNetworkSesison = NetworkSession(urlSession: urlSession, requestInterceptor: nil)
 
         let expectation = XCTestExpectation(description: "badRequestError")
-        let networkManager: NetworkProviderProtocol = NetworkProvider(networkSession: mockNetworkSesison)
+        let networkManager: NetworkProviderInterface = NetworkProvider(networkSession: mockNetworkSesison)
 
         networkManager.request(endpoint)
             .sink(receiveCompletion: { completion in
@@ -153,7 +153,7 @@ final class NetworkProviderTests: XCTestCase {
         let urlSession = URLSession(configuration: config)
         let mockNetworkSession = NetworkSession(urlSession: urlSession, requestInterceptor: nil)
 
-        let sut: NetworkProviderProtocol = NetworkProvider(networkSession: mockNetworkSession)
+        let sut: NetworkProviderInterface = NetworkProvider(networkSession: mockNetworkSession)
         
         // when
         XCTAssertThrowsError(try awaitPublisher(sut.request(endpoint)), "") { error in
