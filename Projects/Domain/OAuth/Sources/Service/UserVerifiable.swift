@@ -38,13 +38,13 @@ extension UserVerifiable {
                 switch error {
                 case let error as KakaoOAuthError:
                     return AuthError.kakaoOAuthError(error)
-                    
+
                 case let error as KeychainError:
                     return AuthError.keychainError(error)
-                    
+
                 case let error as NetworkError:
                     return AuthError.networkError(error)
-                    
+
                 case let error as JWTError:
                     return AuthError.jwtParsingError(error)
                 default:

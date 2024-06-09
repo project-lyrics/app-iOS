@@ -47,6 +47,7 @@ final class OnboardingView: UIView {
             )
         )
         label.attributedText = attributeString
+        label.isUserInteractionEnabled = true
 
         return label
     }()
@@ -87,6 +88,7 @@ final class OnboardingView: UIView {
 
     private var appleLoginAction: (() -> Void)?
     private var kakaoLoginAction: (() -> Void)?
+    private var continueWithoutLoginAction: (() -> Void)?
 
     init() {
         super.init(frame: .zero)
@@ -149,6 +151,10 @@ final class OnboardingView: UIView {
         self.kakaoLoginAction = action
     }
 
+    func actionContinueWithoutLogin(_ action: @escaping (() -> Void)) {
+        self.continueWithoutLoginAction = action
+    }
+
     private func setupDefault() {
         backgroundColor = .white
         addButtonTargets()
@@ -171,6 +177,12 @@ final class OnboardingView: UIView {
             action: #selector(didTapKakaoLoginButton),
             for: .touchUpInside
         )
+
+        let tapGesture = UITapGestureRecognizer(
+            target: self,
+            action: #selector(didTapContinueWithoutLoginLabel)
+        )
+        continueWithoutLoginLabel.addGestureRecognizer(tapGesture)
     }
 
     @objc private func didTapAppleLoginButton(_ sender: UIButton) {
@@ -179,5 +191,9 @@ final class OnboardingView: UIView {
 
     @objc private func didTapKakaoLoginButton(_ sender: UIButton) {
         kakaoLoginAction?()
+    }
+
+    @objc private func didTapContinueWithoutLoginLabel(_ sender: UIGestureRecognizer) {
+        continueWithoutLoginAction?()
     }
 }

@@ -34,15 +34,22 @@ public final class OnboardingRootViewController: UIViewController {
 
         onboardingView.configureLayouts()
         bind()
+        addButtonAction()
     }
 
     private func bind() {
+
+    private func addButtonAction() {
         onboardingView.actionAppleLogin { [weak self] in
-            self?.viewModel.appleLogin()
+            self?.viewModel.inputs.appleLogin()
         }
 
         onboardingView.actionKakaoLogin { [weak self] in
-            self?.viewModel.kakaoLogin()
+            self?.viewModel.inputs.kakaoLogin()
+        }
+
+        onboardingView.actionContinueWithoutLogin { [weak self] in
+            self?.coordinator?.didFinish()
         }
     }
 }

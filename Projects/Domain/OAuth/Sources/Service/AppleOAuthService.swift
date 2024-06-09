@@ -64,6 +64,7 @@ extension AppleLoginService: ASAuthorizationControllerPresentationContextProvidi
               let window = windowScene.windows.first(where: { $0.isKeyWindow }) else {
             return UIWindow()
         }
+        
         return window
     }
 }
