@@ -20,6 +20,7 @@ public final class UseAgreementViewController: UIViewController {
         
         return label
     }()
+    
     private let useAgreementListView: UseAgreementListView = .init()
     
     private let startButton: UIButton = {
@@ -53,11 +54,12 @@ public final class UseAgreementViewController: UIViewController {
         }
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         super.init(coder: coder)
     }
     
-    @available(*, unavailable)
+    
     public override func viewDidLoad() {
         super.viewDidLoad()
         

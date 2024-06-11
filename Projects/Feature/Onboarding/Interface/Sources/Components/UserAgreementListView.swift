@@ -11,7 +11,7 @@ import SharedDesignSystem
 import SharedUtil
 import UIKit
 
-public class UseAgreementListView: UIView {
+final class UseAgreementListView: UIView {
     private let flexContainer = UIView()
     
     @available(*, unavailable)
@@ -76,7 +76,7 @@ public class UseAgreementListView: UIView {
         return button
     }()
     
-    public init() {
+    init() {
         super.init(frame: .zero)
         
         addSubview(flexContainer)
@@ -119,7 +119,7 @@ public class UseAgreementListView: UIView {
         .backgroundColor(Colors.background)
     }
     
-    public override func layoutSubviews() {
+    override func layoutSubviews() {
         super.layoutSubviews()
         
         flexContainer.pin.all()

@@ -9,7 +9,7 @@ import FlexLayout
 import SharedDesignSystem
 import UIKit
 
-open class CheckBoxButton: UIButton {
+final class CheckBoxButton: UIButton {
     let flexContainer = UIView()
     
     private var uncheckedImage: UIImage = SharedDesignSystem.FeelinImages.checkBoxInactive
@@ -32,7 +32,7 @@ open class CheckBoxButton: UIButton {
     
     private var additionalView: UIView?
     
-    public init(
+    init(
         additionalView: UIView? = nil,
         action: UIAction? = nil
     ) {
@@ -55,12 +55,12 @@ open class CheckBoxButton: UIButton {
         setupButton()
     }
     
-    required public init?(coder: NSCoder) {
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
         super.init(coder: coder)
-        setupButton()
     }
     
-    open override func layoutSubviews() {
+    override func layoutSubviews() {
         super.layoutSubviews()
         
         flexContainer.pin.all()
