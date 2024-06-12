@@ -13,10 +13,8 @@ public struct FeelinImages {
     public static let backLight = SharedDesignSystemAsset.Images.backLight.image
     public static let caretDownDark = SharedDesignSystemAsset.Images.caretDownDark.image
     public static let caretDownLight = SharedDesignSystemAsset.Images.caretDownLight.image
-    public static let checkBoxDarkInactive = SharedDesignSystemAsset.Images.checkBoxDarkInactive.image
-    public static let checkBoxDarkActive = SharedDesignSystemAsset.Images.checkBoxDarkActive.image
-    public static let checkBoxLightInactive = SharedDesignSystemAsset.Images.checkBoxLightInactive.image
-    public static let checkBoxLightActive = SharedDesignSystemAsset.Images.checkBoxLightActive.image
+    public static let checkBoxInactive = SharedDesignSystemAsset.Images.checkBoxInactive.image
+    public static let checkBoxActive = SharedDesignSystemAsset.Images.checkBoxActive.image
     public static let notificationDarkOff = SharedDesignSystemAsset.Images.notificationDarkOff.image
     public static let notificationDarkOn = SharedDesignSystemAsset.Images.notificationDarkOn.image
     public static let notificationLightOff = SharedDesignSystemAsset.Images.notificationLightOff.image
