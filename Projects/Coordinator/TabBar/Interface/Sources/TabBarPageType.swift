@@ -16,7 +16,7 @@ enum TabBarPageType: CaseIterable {
         case .main:
             return UITabBarItem(
                 title: self.title,
-                image: UIImage(systemName: "house"),
+                image: UIImage(systemName: "person"),
                 selectedImage: UIImage(systemName: "house.fill")
             )
         }

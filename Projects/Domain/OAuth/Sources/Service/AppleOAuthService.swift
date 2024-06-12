@@ -11,7 +11,6 @@ import CoreNetworkInterface
 import Foundation
 import DomainOAuthInterface
 
-
 extension AppleLoginService: OAuthServiceInterface, UserVerifiable {
     public func login() -> AnyPublisher<OAuthResult, AuthError> {
         let request = ASAuthorizationAppleIDProvider().createRequest()

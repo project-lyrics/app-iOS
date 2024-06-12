@@ -47,6 +47,7 @@ extension UserVerifiable {
 
                 case let error as JWTError:
                     return AuthError.jwtParsingError(error)
+
                 default:
                     return AuthError.unidentifiedError(error)
                 }
