@@ -18,8 +18,9 @@ public final class DIContainer: Injectable {
     public required init() { }
 }
 
-extension DIContainer {
-    public static func registerNormalNetwork() {
+// MARK: Network
+public extension DIContainer {
+    static func registerNormalNetwork() {
         standard.register(.networkProvider) { resolver in
             let networkSession = NetworkSession(
                 urlSession: URLSession.shared,
@@ -29,7 +30,7 @@ extension DIContainer {
         }
     }
     
-    public static func registerTokenStorageNetwork() {
+    static func registerTokenStorageNetwork() {
         standard.register(.tokenStorage) { _ in return TokenStorage() }
         standard.register(.networkProvider) { resolver in
             let tokenStorage = try resolver.resolve(.tokenStorage)
@@ -41,8 +42,11 @@ extension DIContainer {
             return NetworkProvider(networkSession: networkSession)
         }
     }
+}
 
-    public static func registerKakaoOAuthService() {
+// MARK: LogIn
+public extension DIContainer {
+    static func registerKakaoOAuthService() {
         standard.register(.kakaoOAuthService) { resolver in
             let tokenStorage = try resolver.resolve(.tokenStorage)
             let networkProvider = try resolver.resolve(.networkProvider)
@@ -53,7 +57,7 @@ extension DIContainer {
         }
     }
 
-    public static func registerAppleOAuthService() {
+    static func registerAppleOAuthService() {
         standard.register(.appleOAuthService) { resolver in
             let tokenStorage = try resolver.resolve(.tokenStorage)
             let networkProvider = try resolver.resolve(.networkProvider)
@@ -64,11 +68,19 @@ extension DIContainer {
         }
     }
 
-    public static func registerUserValidityService() {
+    static func registerUserValidityService() {
         standard.register(.userValidityService) { resolver in
             let tokenStorage = try resolver.resolve(.tokenStorage)
             let networkProvider = try resolver.resolve(.networkProvider)
             return UserValidityService(networkProvider: networkProvider, tokenStorage: tokenStorage)
+        }
+    }
+
+    static func registerRecentLogInRecordService() {
+        standard.register(.recentLogInRecordStorage) { _ in return RecentLogInRecordStorage() }
+        standard.register(.recentLogInRecordService) { resolver in
+            let recentLoginRecordStorage = try resolver.resolve(.recentLogInRecordStorage)
+            return RecentLogInRecordService(recentLocalStorage: recentLoginRecordStorage)
         }
     }
 }
