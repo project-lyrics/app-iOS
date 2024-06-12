@@ -1,5 +1,5 @@
 //
-//  OnboardingView.swift
+//  LogInView.swift
 //  FeatureOnboardingInterface
 //
 //  Created by Derrick kim on 5/23/24.
@@ -10,7 +10,7 @@ import PinLayout
 import FlexLayout
 import SharedDesignSystem
 
-final class OnboardingView: UIView {
+final class LogInView: UIView {
     private let rootFlexContainer = UIView()
 
     private let titleLabel = {
@@ -30,7 +30,7 @@ final class OnboardingView: UIView {
         return label
     }()
 
-    private let continueWithoutLoginLabel = {
+    lazy var continueWithoutLogInLabel = {
         let label = UILabel()
         label.text = "회원가입은 나중에! 둘러볼게요"
         label.textColor = Colors.gray04
@@ -61,7 +61,7 @@ final class OnboardingView: UIView {
         return imageView
     }()
 
-    private let appleLoginButton = {
+    lazy var appleLogInButton = {
         let button = UIButton()
         button.setTitle("Apple로 시작하기", for: .normal)
         button.titleLabel?.font = SharedDesignSystemFontFamily.EncodeSans.semiBold.font(size: 16)
@@ -74,7 +74,7 @@ final class OnboardingView: UIView {
         return button
     }()
 
-    private let kakaoLoginButton = {
+    lazy var kakaoLogInButton = {
         let button = UIButton()
         button.setTitle("카카오로 시작하기", for: .normal)
         button.titleLabel?.font = SharedDesignSystemFontFamily.Pretendard.semiBold.font(size: 16)
@@ -86,14 +86,13 @@ final class OnboardingView: UIView {
         return button
     }()
 
-    private var appleLoginAction: (() -> Void)?
-    private var kakaoLoginAction: (() -> Void)?
-    private var continueWithoutLoginAction: (() -> Void)?
-
+    private let topBallonView = BalloonView()
+    private let bottomBallonView = BalloonView()
+    
     init() {
         super.init(frame: .zero)
 
-        setupDefault()
+        setUpDefault()
         addUIComponents()
     }
 
@@ -120,19 +119,21 @@ final class OnboardingView: UIView {
             }
 
             flex.addItem().direction(.column).define { flex in
-                flex.addItem(appleLoginButton)
+                flex.addItem(appleLogInButton)
                     .height(56)
                     .cornerRadius(8)
-                flex.addItem(kakaoLoginButton)
+                flex.addItem(kakaoLogInButton)
                     .height(56)
                     .cornerRadius(8)
                     .marginTop(12)
-                flex.addItem(continueWithoutLoginLabel)
+                flex.addItem(continueWithoutLogInLabel)
                     .marginTop(30)
             }
             .marginTop(93)
         }
         .margin(0, 10, 0, 10)
+
+        rootFlexContainer.flex.layout()
 
         NSLayoutConstraint.activate([
             logoBeltImageView.topAnchor.constraint(equalTo: rootFlexContainer.topAnchor, constant: 205),
@@ -140,60 +141,23 @@ final class OnboardingView: UIView {
             logoBeltImageView.trailingAnchor.constraint(equalTo: trailingAnchor)
         ])
 
-        rootFlexContainer.flex.layout()
+        NSLayoutConstraint.activate([
+            topBallonView.bottomAnchor.constraint(equalTo: appleLogInButton.topAnchor, constant: 13),
+            topBallonView.trailingAnchor.constraint(equalTo: appleLogInButton.trailingAnchor, constant: -4)
+        ])
+
+        NSLayoutConstraint.activate([
+            bottomBallonView.bottomAnchor.constraint(equalTo: kakaoLogInButton.topAnchor, constant: 13),
+            bottomBallonView.trailingAnchor.constraint(equalTo: kakaoLogInButton.trailingAnchor, constant: -4)
+        ])
     }
 
-    func actionAppleLogin(_ action: @escaping (() -> Void)) {
-        self.appleLoginAction = action
-    }
-
-    func actionKakaoLogin(_ action: @escaping (() -> Void)) {
-        self.kakaoLoginAction = action
-    }
-
-    func actionContinueWithoutLogin(_ action: @escaping (() -> Void)) {
-        self.continueWithoutLoginAction = action
-    }
-
-    private func setupDefault() {
+    private func setUpDefault() {
         backgroundColor = .white
-        addButtonTargets()
     }
 
     private func addUIComponents() {
-        [logoBeltImageView, rootFlexContainer]
+        [logoBeltImageView, rootFlexContainer, topBallonView, bottomBallonView]
             .forEach { addSubview($0) }
-    }
-
-    private func addButtonTargets() {
-        appleLoginButton.addTarget(
-            self,
-            action: #selector(didTapAppleLoginButton),
-            for: .touchUpInside
-        )
-
-        kakaoLoginButton.addTarget(
-            self,
-            action: #selector(didTapKakaoLoginButton),
-            for: .touchUpInside
-        )
-
-        let tapGesture = UITapGestureRecognizer(
-            target: self,
-            action: #selector(didTapContinueWithoutLoginLabel)
-        )
-        continueWithoutLoginLabel.addGestureRecognizer(tapGesture)
-    }
-
-    @objc private func didTapAppleLoginButton(_ sender: UIButton) {
-        appleLoginAction?()
-    }
-
-    @objc private func didTapKakaoLoginButton(_ sender: UIButton) {
-        kakaoLoginAction?()
-    }
-
-    @objc private func didTapContinueWithoutLoginLabel(_ sender: UIGestureRecognizer) {
-        continueWithoutLoginAction?()
     }
 }
