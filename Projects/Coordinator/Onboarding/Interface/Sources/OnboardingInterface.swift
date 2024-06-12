@@ -1,6 +1,9 @@
 import UIKit
 import CoordinatorAppInterface
 import FeatureOnboardingInterface
+import DependencyInjection
+import DomainOAuthInterface
+import CoordinatorMainInterface
 
 public final class OnboardingCoordinator: Coordinator {
     public weak var delegate: CoordinatorDelegate?
@@ -13,21 +16,49 @@ public final class OnboardingCoordinator: Coordinator {
     }
 
     public func start() {
-        configureOnboardingController()
+        registerDependencies()
+        configureLogInController()
     }
 }
 
 private extension OnboardingCoordinator {
-    func configureOnboardingController() {
-        let viewController = OnboardingRootViewController()
+    func configureLogInController() {
+        let viewModel = logInDependencies()
+        let viewController = LogInViewController(viewModel: viewModel)
         viewController.coordinator = self
         navigationController.setNavigationBarHidden(true, animated: false)
         navigationController.pushViewController(viewController, animated: false)
     }
+
+    func registerDependencies() {
+        DIContainer.registerTokenStorageNetwork()
+        DIContainer.registerUserValidityService()
+        DIContainer.registerKakaoOAuthService()
+        DIContainer.registerAppleOAuthService()
+        DIContainer.registerRecentLogInRecordService()
+    }
+
+    func logInDependencies() -> LogInViewModel {
+        @Injected(.kakaoOAuthService) var kakaoOAuthService
+        @Injected(.appleOAuthService) var appleOAuthService
+        @Injected(.userValidityService) var userValidityService
+        @Injected(.recentLogInRecordService) var recentLoginRecordService
+
+        let kakaoLoginUseCase = OAuthLogInUseCase(oAuthService: kakaoOAuthService)
+        let appleLoginUseCase = OAuthLogInUseCase(oAuthService: appleOAuthService)
+
+        let viewModel = LogInViewModel(
+            kakaoOAuthLoginUseCase: kakaoLoginUseCase,
+            appleOAuthLoginUseCase: appleLoginUseCase, 
+            recentLoginRecordService: recentLoginRecordService
+        )
+
+        return viewModel
+    }
 }
 
 extension OnboardingCoordinator: CoordinatorDelegate,
-                                 OnboardingRootViewControllerDelegate {
+                                 LogInViewControllerDelegate {
     public func didFinish() {
         didFinish(childCoordinator: self)
     }
