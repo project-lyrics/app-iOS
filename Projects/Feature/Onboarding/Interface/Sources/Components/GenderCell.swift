@@ -47,7 +47,7 @@ final class GenderCell: UICollectionViewCell {
         super.layoutSubviews()
         
         contentView.pin.all()
-        contentView.flex.layout(mode: .adjustHeight)
+        contentView.flex.layout()
     }
     
     private func setUpCell() {
