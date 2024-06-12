@@ -10,6 +10,8 @@ import CoordinatorAppInterface
 import CoordinatorTabBarInterface
 import FeatureOnboardingInterface
 import CoordinatorOnboardingInterface
+import DependencyInjection
+import DomainOAuthInterface
 
 final class AppCoordinator: Coordinator {
     var delegate: CoordinatorDelegate?
@@ -19,18 +21,22 @@ final class AppCoordinator: Coordinator {
     init(rootViewController: UINavigationController) {
         self.navigationController = rootViewController
         self.childCoordinators = []
-    }
-}
 
-extension AppCoordinator {
+        registerDependencies()
+    }
+
     func start() {
-        let viewController = SplashViewController()
+        let viewModel = splashDependencies()
+        let viewController = SplashViewController(viewModel: viewModel)
         viewController.coordinator = self
         navigationController.setNavigationBarHidden(true, animated: false)
         navigationController.pushViewController(viewController, animated: false)
     }
+}
 
+private extension AppCoordinator {
     func connectOnboardingCoordinator() {
+        navigationController.viewControllers.removeAll()
         let onboardingCoordinator = OnboardingCoordinator(
             navigationController: navigationController
         )
@@ -41,6 +47,7 @@ extension AppCoordinator {
     }
 
     func connectTabBarCoordinator() {
+        navigationController.popToRootViewController(animated: false)
         let onboardingCoordinator = TabBarCoordinator(
             navigationController: navigationController
         )
@@ -50,12 +57,29 @@ extension AppCoordinator {
         childCoordinators.append(onboardingCoordinator)
     }
 
-    func didFinish() {
-        didFinish(childCoordinator: self)
+    func registerDependencies() {
+        DIContainer.registerTokenStorageNetwork()
+        DIContainer.registerUserValidityService()
+    }
+
+    func splashDependencies() -> SplashViewModel {
+        @Injected(.userValidityService) var userValidityService
+
+        let autoLogInUseCase = AutoLogInUseCase(userValidityService: userValidityService)
+        let viewModel = SplashViewModel(autoLogInUseCase: autoLogInUseCase)
+        return viewModel
     }
 }
 
 extension AppCoordinator: CoordinatorDelegate, SplashViewControllerDelegate {
+    func connectTabBarFlow() {
+        connectTabBarCoordinator()
+    }
+
+    func didFinish() {
+        didFinish(childCoordinator: self)
+    }
+
     func didFinish(childCoordinator: Coordinator) {
         navigationController.popToRootViewController(animated: false)
         if childCoordinator is OnboardingCoordinator {
