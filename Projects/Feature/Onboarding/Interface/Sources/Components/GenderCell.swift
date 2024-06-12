@@ -53,7 +53,6 @@ final class GenderCell: UICollectionViewCell {
     private func setUpCell() {
         clipsToBounds = true
         layer.cornerRadius = 8
-        layer.borderColor = Colors.gray01.cgColor
     }
     
     private func setUpLayout() {
@@ -104,6 +103,7 @@ final class GenderCell: UICollectionViewCell {
         descriptionLabel.textColor = Colors.gray03
         
         layer.borderWidth = 1
+        layer.borderColor = Colors.gray01.cgColor
         backgroundColor = Colors.background
     }
 }

@@ -18,8 +18,22 @@ public final class UserInformationViewController: UIViewController {
     
     public override func viewDidLoad() {
         super.viewDidLoad()
-        userInformationView.genderCollectionView.delegate = self
-        userInformationView.genderCollectionView.dataSource = self
+        genderCollectionView.delegate = self
+        genderCollectionView.dataSource = self
+    }
+}
+
+private extension UserInformationViewController {
+    var genderCollectionView: GenderCollectionView {
+        userInformationView.genderCollectionView
+    }
+    
+    var bitrhYearDropDownView: UIView {
+        userInformationView.birthYearDropDownView
+    }
+    
+    var nextButton: FeelinConfirmButton {
+        userInformationView.nextButton
     }
 }
 

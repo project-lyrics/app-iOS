@@ -22,8 +22,6 @@ final class BirthYearDropDownView: UIView {
     
     private let titleLabel = {
         let label = UILabel()
-        label.text = "출생 연도를 입력해주세요"
-        label.textColor = Colors.gray03
         label.textAlignment = .center
         label.font = SharedDesignSystemFontFamily.Pretendard.semiBold.font(size: 16)
         return label
@@ -71,11 +69,16 @@ final class BirthYearDropDownView: UIView {
         }
     }
     
-    private func initAppearance() {
+    private func setUpView() {
         isUserInteractionEnabled = true
-        
         clipsToBounds = true
         layer.cornerRadius = 8
+    }
+    
+    private func initAppearance() {
+        titleLabel.text = "출생 연도를 입력해주세요"
+        titleLabel.textColor = Colors.gray03
+
         layer.borderWidth = 1
         layer.borderColor = Colors.gray01.cgColor
     }
@@ -84,8 +87,8 @@ final class BirthYearDropDownView: UIView {
         titleLabel.textColor = Colors.alertSuccess
         dropDownImageView.isHidden = true
         
-        backgroundColor = Colors.secondary
         layer.borderWidth = 0
+        backgroundColor = Colors.secondary
     }
     
     func setBirthYear(_ birthYear: Int) {
