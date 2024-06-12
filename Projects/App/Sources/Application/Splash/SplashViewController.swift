@@ -6,17 +6,17 @@
 //
 
 import UIKit
+import Combine
 import SharedDesignSystem
 import CoordinatorAppInterface
 import PinLayout
 
 protocol SplashViewControllerDelegate: AnyObject {
+    func connectTabBarFlow()
     func didFinish()
 }
 
 final class SplashViewController: UIViewController {
-    weak var coordinator: SplashViewControllerDelegate?
-
     private let logoImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -25,10 +25,25 @@ final class SplashViewController: UIViewController {
         return imageView
     }()
 
+    private var cancellables = Set<AnyCancellable>()
+
+    weak var coordinator: SplashViewControllerDelegate?
+    private let viewModel: SplashViewModel
+
+    init(viewModel: SplashViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupDefault()
+        setUpDefault()
     }
 
     override func viewDidLayoutSubviews() {
@@ -37,10 +52,11 @@ final class SplashViewController: UIViewController {
         addConstraints()
     }
 
-    private func setupDefault() {
+    private func setUpDefault() {
         addViews()
         setupColors()
-        setupAnimation()
+        bind()
+        viewModel.autoLogIn()
     }
 
     private func setupColors() {
@@ -55,9 +71,17 @@ final class SplashViewController: UIViewController {
         logoImageView.pin.center()
     }
 
-    private func setupAnimation() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
-            self?.coordinator?.didFinish()
-        }
+    private func bind() {
+        viewModel.isSignIn
+            .delay(for: .seconds(1), scheduler: DispatchQueue.main)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isSignIn in
+                if isSignIn {
+                    self?.coordinator?.connectTabBarFlow()
+                } else {
+                    self?.coordinator?.didFinish()
+                }
+            }
+            .store(in: &cancellables)
     }
 }
