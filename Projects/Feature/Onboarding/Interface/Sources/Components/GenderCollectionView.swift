@@ -7,6 +7,8 @@
 
 import UIKit
 
+import SharedUtil
+
 final class GenderCollectionView: UICollectionView {
     private let flowLayout = {
         let layout = UICollectionViewFlowLayout()
@@ -20,7 +22,7 @@ final class GenderCollectionView: UICollectionView {
     init() {
         super.init(frame: .zero, collectionViewLayout: flowLayout)
         
-        register(GenderCell.self, forCellWithReuseIdentifier: GenderCell.reuseIdentifier)
+        register(cellType: GenderCell.self)
     }
     
     @available(*, unavailable)

@@ -8,13 +8,12 @@
 import UIKit
 
 import SharedDesignSystem
+import SharedUtil
 
 import FlexLayout
 import PinLayout
 
-final class GenderCell: UICollectionViewCell {
-    static let reuseIdentifier = "GenderCell"
-    
+final class GenderCell: UICollectionViewCell, Reusable {
     private var genderType: GenderType?
     
     // MARK: - components

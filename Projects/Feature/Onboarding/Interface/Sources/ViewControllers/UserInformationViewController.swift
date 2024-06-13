@@ -72,9 +72,7 @@ extension UserInformationViewController: UICollectionViewDataSource {
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: GenderCell.reuseIdentifier, for: indexPath) as? GenderCell else {
-            return UICollectionViewCell()
-        }
+        let cell = collectionView.dequeueReusableCell(for: indexPath, cellType: GenderCell.self)
         cell.configure(with: GenderType.allCases[indexPath.row])
         return cell
     }
