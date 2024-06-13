@@ -88,7 +88,7 @@ final class LogInView: UIView {
 
     private let topBallonView = BalloonView()
     private let bottomBallonView = BalloonView()
-    
+
     init() {
         super.init(frame: .zero)
 
@@ -150,6 +150,11 @@ final class LogInView: UIView {
             bottomBallonView.bottomAnchor.constraint(equalTo: kakaoLogInButton.topAnchor, constant: 13),
             bottomBallonView.trailingAnchor.constraint(equalTo: kakaoLogInButton.trailingAnchor, constant: -4)
         ])
+    }
+
+    func setUpRecentLogInRecordBallonView(_ isHidden: Bool) {
+        topBallonView.isHidden = isHidden
+        bottomBallonView.isHidden = !isHidden
     }
 
     private func setUpDefault() {

@@ -42,6 +42,7 @@ final class BalloonView: UIView {
         backgroundColor = .white
         layer.masksToBounds = false
         layer.cornerRadius = cornerRadius
+        isHidden = true
 
         addSubview(titleLabel)
         addBalloonShape()

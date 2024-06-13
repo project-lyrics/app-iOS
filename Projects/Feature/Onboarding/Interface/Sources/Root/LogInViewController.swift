@@ -65,12 +65,14 @@ public final class LogInViewController: UIViewController {
             .store(in: &cancellables)
 
         viewModel.outputs.recentLogInRecord
-            .sink { type in
+            .sink { [weak self] type in
                 switch type {
                 case .none:
                     break
-                default:
-                    break
+                case .appleLogin:
+                    self?.loginView.setUpRecentLogInRecordBallonView(true)
+                case .kakaoLogin:
+                    self?.loginView.setUpRecentLogInRecordBallonView(false)
                 }
             }
             .store(in: &cancellables)
