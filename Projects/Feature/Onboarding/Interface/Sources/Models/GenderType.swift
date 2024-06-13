@@ -5,7 +5,9 @@
 //  Created by jiyeon on 6/12/24.
 //
 
-import Foundation
+import UIKit
+
+import SharedDesignSystem
 
 enum GenderType: CaseIterable {
     case male
@@ -15,6 +17,20 @@ enum GenderType: CaseIterable {
         switch self {
         case .male:     "남성"
         case .female:   "여성"
+        }
+    }
+    
+    var activeImage: UIImage {
+        switch self {
+        case .male:     FeelinImages.maleActive
+        case .female:   FeelinImages.femaleActive
+        }
+    }
+    
+    var inactiveImage: UIImage {
+        switch self {
+        case .male:     FeelinImages.maleInactive
+        case .female:   FeelinImages.femaleInactive
         }
     }
 }

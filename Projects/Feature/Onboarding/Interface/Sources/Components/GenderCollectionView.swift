@@ -8,7 +8,6 @@
 import UIKit
 
 final class GenderCollectionView: UICollectionView {
-    
     private let flowLayout = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -20,6 +19,7 @@ final class GenderCollectionView: UICollectionView {
     
     init() {
         super.init(frame: .zero, collectionViewLayout: flowLayout)
+        
         register(GenderCell.self, forCellWithReuseIdentifier: GenderCell.reuseIdentifier)
     }
     

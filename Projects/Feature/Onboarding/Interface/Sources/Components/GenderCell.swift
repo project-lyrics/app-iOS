@@ -32,6 +32,7 @@ final class GenderCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
         setUpCell()
         setUpLayout()
     }
@@ -41,6 +42,12 @@ final class GenderCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    private func setUpCell() {
+        clipsToBounds = true
+        layer.cornerRadius = 8
+        layer.borderColor = Colors.gray01.cgColor
+    }
+    
     // MARK: - layout
     
     override func layoutSubviews() {
@@ -48,11 +55,6 @@ final class GenderCell: UICollectionViewCell {
         
         contentView.pin.all()
         contentView.flex.layout()
-    }
-    
-    private func setUpCell() {
-        clipsToBounds = true
-        layer.cornerRadius = 8
     }
     
     private func setUpLayout() {
@@ -72,38 +74,13 @@ final class GenderCell: UICollectionViewCell {
     func configure(with genderType: GenderType) {
         self.genderType = genderType
         descriptionLabel.text = genderType.description
-        
-        didDeselect()
+        setSelected(false)
     }
     
-    func didSelect() {
-        guard let genderType = genderType else { return }
-        switch genderType {
-        case .female:
-            imageView.image = SharedDesignSystem.FeelinImages.femaleActive
-        case .male:
-            imageView.image = SharedDesignSystem.FeelinImages.maleActive
-        }
-        
-        descriptionLabel.textColor = Colors.alertSuccess
-        
-        layer.borderWidth = 0
-        backgroundColor = Colors.secondary
-    }
-    
-    func didDeselect() {
-        guard let genderType = genderType else { return }
-        switch genderType {
-        case .female:
-            imageView.image = SharedDesignSystem.FeelinImages.femaleInactive
-        case .male:
-            imageView.image = SharedDesignSystem.FeelinImages.maleInactive
-        }
-        
-        descriptionLabel.textColor = Colors.gray03
-        
-        layer.borderWidth = 1
-        layer.borderColor = Colors.gray01.cgColor
-        backgroundColor = Colors.background
+    func setSelected(_ isSelected: Bool) {
+        imageView.image = isSelected ? genderType?.activeImage : genderType?.inactiveImage
+        descriptionLabel.textColor = isSelected ? Colors.alertSuccess : Colors.gray03
+        layer.borderWidth = isSelected ? 0 : 1
+        backgroundColor = isSelected ? Colors.secondary : Colors.background
     }
 }

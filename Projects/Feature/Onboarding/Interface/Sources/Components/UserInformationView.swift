@@ -52,7 +52,7 @@ final class UserInformationView: UIView {
         return label
     }()
     
-    let birthYearDropDownView = BirthYearDropDownView()
+    let birthYearDropDownButton = FeelinDropDownButton(description: "출생 연도를 입력해주세요")
     
     lazy var nextButton = FeelinConfirmButton(title: "다음")
     
@@ -60,6 +60,7 @@ final class UserInformationView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
         backgroundColor = Colors.background
         setUpLayout()
     }
@@ -94,9 +95,10 @@ final class UserInformationView: UIView {
             
             flex.addItem(birthYearTitleLabel)
                 .marginTop(26)
-            flex.addItem(birthYearDropDownView)
+            flex.addItem(birthYearDropDownButton)
                 .minHeight(52)
                 .marginTop(13)
+                .cornerRadius(8)
             
             flex.addItem()
                 .grow(1)

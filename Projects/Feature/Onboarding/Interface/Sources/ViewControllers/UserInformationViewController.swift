@@ -18,6 +18,7 @@ public final class UserInformationViewController: UIViewController {
     
     public override func viewDidLoad() {
         super.viewDidLoad()
+        
         genderCollectionView.delegate = self
         genderCollectionView.dataSource = self
     }
@@ -28,8 +29,8 @@ private extension UserInformationViewController {
         userInformationView.genderCollectionView
     }
     
-    var bitrhYearDropDownView: UIView {
-        userInformationView.birthYearDropDownView
+    var birthYearDropDownButton: FeelinDropDownButton {
+        userInformationView.birthYearDropDownButton
     }
     
     var nextButton: FeelinConfirmButton {
@@ -38,18 +39,24 @@ private extension UserInformationViewController {
 }
 
 extension UserInformationViewController: UICollectionViewDelegate {
-    public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    public func collectionView(
+        _ collectionView: UICollectionView,
+        didSelectItemAt indexPath: IndexPath
+    ) {
         guard let cell = collectionView.cellForItem(at: indexPath) as? GenderCell else {
             return
         }
-        cell.didSelect()
+        cell.setSelected(true)
     }
     
-    public func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+    public func collectionView(
+        _ collectionView: UICollectionView,
+        didDeselectItemAt indexPath: IndexPath
+    ) {
         guard let cell = collectionView.cellForItem(at: indexPath) as? GenderCell else {
             return
         }
-        cell.didDeselect()
+        cell.setSelected(false)
     }
 }
 
