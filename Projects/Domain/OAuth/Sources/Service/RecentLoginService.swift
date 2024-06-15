@@ -8,8 +8,8 @@
 import Combine
 import DomainOAuthInterface
 
-extension RecentLogInRecordService: RecentLogInRecordServiceInterface {
-    public func getRecentLogInRecord() -> AnyPublisher<OAuthType, RecordError> {
+extension RecentLoginRecordService: RecentLoginRecordServiceInterface {
+    public func getRecentLoginRecord() -> AnyPublisher<OAuthType, RecordError> {
         return Future { [weak self] promise in
             if let record = self?.recentLocalStorage.getRecentLoginRecord() {
                 promise(.success(OAuthType(rawValue: record) ?? .none))

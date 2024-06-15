@@ -1,5 +1,5 @@
 //
-//  RecentLogInRecordService.swift
+//  RecentLoginRecordService.swift
 //  DomainOAuthInterface
 //
 //  Created by Derrick kim on 6/12/24.
@@ -11,16 +11,16 @@ import CoreNetworkInterface
 import Foundation
 import KakaoSDKUser
 
-public protocol RecentLogInRecordServiceInterface {
-    func getRecentLogInRecord() -> AnyPublisher<OAuthType, RecordError>
+public protocol RecentLoginRecordServiceInterface {
+    func getRecentLoginRecord() -> AnyPublisher<OAuthType, RecordError>
     func save(oAuthType: String)
 }
 
-public final class RecentLogInRecordService {
-    public let recentLocalStorage: RecentLogInRecordStorageInterface
+public final class RecentLoginRecordService {
+    public let recentLocalStorage: RecentLoginRecordStorageInterface
 
     public init(
-        recentLocalStorage: RecentLogInRecordStorageInterface
+        recentLocalStorage: RecentLoginRecordStorageInterface
     ) {
         self.recentLocalStorage = recentLocalStorage
     }

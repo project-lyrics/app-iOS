@@ -17,14 +17,14 @@ public final class OnboardingCoordinator: Coordinator {
 
     public func start() {
         registerDependencies()
-        configureLogInController()
+        configureLoginController()
     }
 }
 
 private extension OnboardingCoordinator {
-    func configureLogInController() {
-        let viewModel = logInDependencies()
-        let viewController = LogInViewController(viewModel: viewModel)
+    func configureLoginController() {
+        let viewModel = LoginDependencies()
+        let viewController = LoginViewController(viewModel: viewModel)
         viewController.coordinator = self
         navigationController.setNavigationBarHidden(true, animated: false)
         navigationController.pushViewController(viewController, animated: false)
@@ -35,19 +35,19 @@ private extension OnboardingCoordinator {
         DIContainer.registerUserValidityService()
         DIContainer.registerKakaoOAuthService()
         DIContainer.registerAppleOAuthService()
-        DIContainer.registerRecentLogInRecordService()
+        DIContainer.registerRecentLoginRecordService()
     }
 
-    func logInDependencies() -> LogInViewModel {
+    func LoginDependencies() -> LoginViewModel {
         @Injected(.kakaoOAuthService) var kakaoOAuthService
         @Injected(.appleOAuthService) var appleOAuthService
         @Injected(.userValidityService) var userValidityService
-        @Injected(.recentLogInRecordService) var recentLoginRecordService
+        @Injected(.recentLoginRecordService) var recentLoginRecordService
 
-        let kakaoLoginUseCase = OAuthLogInUseCase(oAuthService: kakaoOAuthService)
-        let appleLoginUseCase = OAuthLogInUseCase(oAuthService: appleOAuthService)
+        let kakaoLoginUseCase = OAuthLoginUseCase(oAuthService: kakaoOAuthService)
+        let appleLoginUseCase = OAuthLoginUseCase(oAuthService: appleOAuthService)
 
-        let viewModel = LogInViewModel(
+        let viewModel = LoginViewModel(
             kakaoOAuthLoginUseCase: kakaoLoginUseCase,
             appleOAuthLoginUseCase: appleLoginUseCase, 
             recentLoginRecordService: recentLoginRecordService
@@ -58,7 +58,7 @@ private extension OnboardingCoordinator {
 }
 
 extension OnboardingCoordinator: CoordinatorDelegate,
-                                 LogInViewControllerDelegate {
+                                 LoginViewControllerDelegate {
     public func didFinish() {
         didFinish(childCoordinator: self)
     }

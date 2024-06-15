@@ -10,7 +10,7 @@ import Foundation
 import DomainOAuthInterface
 
 protocol SplashViewModelInputs {
-    func autoLogIn()
+    func autoLogin()
 }
 
 protocol SplashViewModelOutputs {
@@ -18,7 +18,7 @@ protocol SplashViewModelOutputs {
 }
 
 final class SplashViewModel: SplashViewModelInputs, SplashViewModelOutputs {
-    private let autoLogInUseCase: AutoLogInUseCase
+    private let autoLoginUseCase: AutoLoginUseCase
     private let isSignInSubject = PassthroughSubject<Bool, Never>()
 
     private var cancellables = Set<AnyCancellable>()
@@ -27,12 +27,12 @@ final class SplashViewModel: SplashViewModelInputs, SplashViewModelOutputs {
         return isSignInSubject.eraseToAnyPublisher()
     }
 
-    init(autoLogInUseCase: AutoLogInUseCase) {
-        self.autoLogInUseCase = autoLogInUseCase
+    init(autoLoginUseCase: AutoLoginUseCase) {
+        self.autoLoginUseCase = autoLoginUseCase
     }
 
-    func autoLogIn() {
-        autoLogInUseCase.execute()
+    func autoLogin() {
+        autoLoginUseCase.execute()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] completion in
                 switch completion {

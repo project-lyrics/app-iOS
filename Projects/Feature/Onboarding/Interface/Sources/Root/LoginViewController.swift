@@ -1,5 +1,5 @@
 //
-//  LogInViewController.swift
+//  LoginViewController.swift
 //  FeatureOnboardingInterface
 //
 //  Created by Derrick kim on 4/20/24.
@@ -9,18 +9,18 @@ import UIKit
 import FlexLayout
 import Combine
 
-public protocol LogInViewControllerDelegate: AnyObject {
+public protocol LoginViewControllerDelegate: AnyObject {
     func didFinish()
 }
 
-public final class LogInViewController: UIViewController {
-    private let loginView = LogInView()
-    private let viewModel: LogInViewModel
+public final class LoginViewController: UIViewController {
+    private let loginView = LoginView()
+    private let viewModel: LoginViewModel
     private var cancellables = Set<AnyCancellable>()
 
-    public weak var coordinator: LogInViewControllerDelegate?
+    public weak var coordinator: LoginViewControllerDelegate?
 
-    public init(viewModel: LogInViewModel) {
+    public init(viewModel: LoginViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -44,7 +44,7 @@ public final class LogInViewController: UIViewController {
         loginView.configureLayouts()
         addButtonTargets()
         bind()
-        viewModel.fetchRecentLogInRecord()
+        viewModel.fetchRecentLoginRecord()
     }
 
     private func bind() {
@@ -63,64 +63,64 @@ public final class LogInViewController: UIViewController {
             }
             .store(in: &cancellables)
 
-        viewModel.outputs.recentLogInRecord
+        viewModel.outputs.recentLoginRecord
             .sink { [weak self] type in
                 switch type {
                 case .none:
                     break
                 case .apple:
-                    self?.loginView.setUpRecentLogInRecordBallonView(true)
+                    self?.loginView.setUpRecentLoginRecordBallonView(true)
                 case .kakao:
-                    self?.loginView.setUpRecentLogInRecordBallonView(false)
+                    self?.loginView.setUpRecentLoginRecordBallonView(false)
                 }
             }
             .store(in: &cancellables)
     }
 
     private func addButtonTargets() {
-        appleLogInButton.addTarget(
+        appleLoginButton.addTarget(
             self,
-            action: #selector(appleLogInButtonTapped),
+            action: #selector(appleLoginButtonTapped),
             for: .touchUpInside
         )
 
-        kakaoLogInButton.addTarget(
+        kakaoLoginButton.addTarget(
             self,
-            action: #selector(kakaoLogInButtonTapped),
+            action: #selector(kakaoLoginButtonTapped),
             for: .touchUpInside
         )
 
         let tapGesture = UITapGestureRecognizer(
             target: self,
-            action: #selector(continueWithoutLogInLabelTapped)
+            action: #selector(continueWithoutLoginLabelTapped)
         )
-        continueWithoutLogInLabel.addGestureRecognizer(tapGesture)
+        continueWithoutLoginLabel.addGestureRecognizer(tapGesture)
     }
 
-    @objc private func appleLogInButtonTapped(_ sender: UIButton) {
-        viewModel.inputs.appleLogIn()
+    @objc private func appleLoginButtonTapped(_ sender: UIButton) {
+        viewModel.inputs.appleLogin()
     }
 
-    @objc private func kakaoLogInButtonTapped(_ sender: UIButton) {
+    @objc private func kakaoLoginButtonTapped(_ sender: UIButton) {
         viewModel.inputs.kakaoLogin()
     }
 
-    @objc private func continueWithoutLogInLabelTapped(_ sender: UIGestureRecognizer) {
+    @objc private func continueWithoutLoginLabelTapped(_ sender: UIGestureRecognizer) {
         coordinator?.didFinish()
     }
 }
 
 // MARK: UI Properties
-private extension LogInViewController {
-    var kakaoLogInButton: UIButton {
-        return loginView.kakaoLogInButton
+private extension LoginViewController {
+    var kakaoLoginButton: UIButton {
+        return loginView.kakaoLoginButton
     }
 
-    var appleLogInButton: UIButton {
-        return loginView.appleLogInButton
+    var appleLoginButton: UIButton {
+        return loginView.appleLoginButton
     }
 
-    var continueWithoutLogInLabel: UILabel {
-        return loginView.continueWithoutLogInLabel
+    var continueWithoutLoginLabel: UILabel {
+        return loginView.continueWithoutLoginLabel
     }
 }

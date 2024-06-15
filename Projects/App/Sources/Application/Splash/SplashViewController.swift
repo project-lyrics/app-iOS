@@ -56,7 +56,7 @@ final class SplashViewController: UIViewController {
         addViews()
         setupColors()
         bind()
-        viewModel.autoLogIn()
+        viewModel.autoLogin()
     }
 
     private func setupColors() {

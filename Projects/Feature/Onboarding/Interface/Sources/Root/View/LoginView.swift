@@ -1,5 +1,5 @@
 //
-//  LogInView.swift
+//  LoginView.swift
 //  FeatureOnboardingInterface
 //
 //  Created by Derrick kim on 5/23/24.
@@ -10,7 +10,7 @@ import PinLayout
 import FlexLayout
 import SharedDesignSystem
 
-final class LogInView: UIView {
+final class LoginView: UIView {
     private let rootFlexContainer = UIView()
 
     private let titleLabel = {
@@ -30,7 +30,7 @@ final class LogInView: UIView {
         return label
     }()
 
-    lazy var continueWithoutLogInLabel = {
+    lazy var continueWithoutLoginLabel = {
         let label = UILabel()
         label.text = "회원가입은 나중에! 둘러볼게요"
         label.textColor = Colors.gray04
@@ -61,7 +61,7 @@ final class LogInView: UIView {
         return imageView
     }()
 
-    lazy var appleLogInButton = {
+    lazy var appleLoginButton = {
         let button = UIButton()
         button.setTitle("Apple로 시작하기", for: .normal)
         button.titleLabel?.font = SharedDesignSystemFontFamily.EncodeSans.semiBold.font(size: 16)
@@ -74,7 +74,7 @@ final class LogInView: UIView {
         return button
     }()
 
-    lazy var kakaoLogInButton = {
+    lazy var kakaoLoginButton = {
         let button = UIButton()
         button.setTitle("카카오로 시작하기", for: .normal)
         button.titleLabel?.font = SharedDesignSystemFontFamily.Pretendard.semiBold.font(size: 16)
@@ -119,14 +119,14 @@ final class LogInView: UIView {
             }
 
             flex.addItem().direction(.column).define { flex in
-                flex.addItem(appleLogInButton)
+                flex.addItem(appleLoginButton)
                     .height(56)
                     .cornerRadius(8)
-                flex.addItem(kakaoLogInButton)
+                flex.addItem(kakaoLoginButton)
                     .height(56)
                     .cornerRadius(8)
                     .marginTop(12)
-                flex.addItem(continueWithoutLogInLabel)
+                flex.addItem(continueWithoutLoginLabel)
                     .marginTop(30)
             }
             .marginTop(93)
@@ -142,17 +142,17 @@ final class LogInView: UIView {
         ])
 
         NSLayoutConstraint.activate([
-            topBallonView.bottomAnchor.constraint(equalTo: appleLogInButton.topAnchor, constant: 13),
-            topBallonView.trailingAnchor.constraint(equalTo: appleLogInButton.trailingAnchor, constant: -4)
+            topBallonView.bottomAnchor.constraint(equalTo: appleLoginButton.topAnchor, constant: 13),
+            topBallonView.trailingAnchor.constraint(equalTo: appleLoginButton.trailingAnchor, constant: -4)
         ])
 
         NSLayoutConstraint.activate([
-            bottomBallonView.bottomAnchor.constraint(equalTo: kakaoLogInButton.topAnchor, constant: 13),
-            bottomBallonView.trailingAnchor.constraint(equalTo: kakaoLogInButton.trailingAnchor, constant: -4)
+            bottomBallonView.bottomAnchor.constraint(equalTo: kakaoLoginButton.topAnchor, constant: 13),
+            bottomBallonView.trailingAnchor.constraint(equalTo: kakaoLoginButton.trailingAnchor, constant: -4)
         ])
     }
 
-    func setUpRecentLogInRecordBallonView(_ isHidden: Bool) {
+    func setUpRecentLoginRecordBallonView(_ isHidden: Bool) {
         topBallonView.isHidden = isHidden
         bottomBallonView.isHidden = !isHidden
     }

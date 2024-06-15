@@ -44,7 +44,7 @@ public extension DIContainer {
     }
 }
 
-// MARK: LogIn
+// MARK: Login
 public extension DIContainer {
     static func registerKakaoOAuthService() {
         standard.register(.kakaoOAuthService) { resolver in
@@ -76,11 +76,11 @@ public extension DIContainer {
         }
     }
 
-    static func registerRecentLogInRecordService() {
-        standard.register(.recentLogInRecordStorage) { _ in return RecentLogInRecordStorage() }
-        standard.register(.recentLogInRecordService) { resolver in
-            let recentLoginRecordStorage = try resolver.resolve(.recentLogInRecordStorage)
-            return RecentLogInRecordService(recentLocalStorage: recentLoginRecordStorage)
+    static func registerRecentLoginRecordService() {
+        standard.register(.recentLoginRecordStorage) { _ in return RecentLoginRecordStorage() }
+        standard.register(.recentLoginRecordService) { resolver in
+            let recentLoginRecordStorage = try resolver.resolve(.recentLoginRecordStorage)
+            return RecentLoginRecordService(recentLocalStorage: recentLoginRecordStorage)
         }
     }
 }

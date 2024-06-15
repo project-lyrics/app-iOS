@@ -65,8 +65,8 @@ private extension AppCoordinator {
     func splashDependencies() -> SplashViewModel {
         @Injected(.userValidityService) var userValidityService
 
-        let autoLogInUseCase = AutoLogInUseCase(userValidityService: userValidityService)
-        let viewModel = SplashViewModel(autoLogInUseCase: autoLogInUseCase)
+        let autoLoginUseCase = AutoLoginUseCase(userValidityService: userValidityService)
+        let viewModel = SplashViewModel(autoLoginUseCase: autoLoginUseCase)
         return viewModel
     }
 }

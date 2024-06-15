@@ -1,5 +1,5 @@
 //
-//  RecentLogInRecordStorage.swift
+//  RecentLoginRecordStorage.swift
 //  CoreLocalStorageInterface
 //
 //  Created by Derrick kim on 6/11/24.
@@ -8,9 +8,9 @@
 import Foundation
 import CoreLocalStorageInterface
 
-public final class RecentLogInRecordStorage: RecentLogInRecordStorageInterface {
+public final class RecentLoginRecordStorage: RecentLoginRecordStorageInterface {
     private let RECENT_LOGIN = "RECENT_LOGIN"
-    
+
     public init() { }
 
     public func getRecentLoginRecord() -> String? {
