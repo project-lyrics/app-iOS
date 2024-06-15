@@ -46,9 +46,13 @@ let targets: [Target] = [
     .feature(
         example: .Onboarding,
         factory: .init(
+            infoPlist: Project.Environment.appInfoPlist(deploymentTarget: .qa),
             dependencies: [
-                .feature(interface: .Onboarding)
-            ]
+                .feature(implements: .Onboarding),
+                .feature(interface: .Onboarding),
+                .SPM.FlexLayout
+            ],
+            settings: Project.Environment.exampleAppDefaultSettings
         )
     )
 ]

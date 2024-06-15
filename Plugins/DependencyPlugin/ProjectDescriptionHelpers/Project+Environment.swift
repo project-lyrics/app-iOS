@@ -48,7 +48,6 @@ public extension Project {
         )
         public static let exampleAppDefaultSettings: Settings = .settings(
             base: [
-                "OTHER_LDFLAGS": "$(inherited) -Xlinker -interposable -all_load",
                 "GCC_PREPROCESSOR_DEFINITIONS": "$(inherited) FLEXLAYOUT_SWIFT_PACKAGE=1",
                 "ENABLE_USER_SCRIPT_SANDBOXING": "YES"
             ],
