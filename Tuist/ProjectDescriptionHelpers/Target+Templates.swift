@@ -158,6 +158,7 @@ public extension Target {
         newFactory.name = ModulePath.Feature.name + module.rawValue + "Tests"
         newFactory.sources = .tests
         newFactory.product = .unitTests
+        newFactory.settings = Project.Environment.devTargetSettings
 
         return make(factory: newFactory)
     }
@@ -223,6 +224,7 @@ public extension Target {
         newFactory.name = ModulePath.Coordinator.name + module.rawValue + "Tests"
         newFactory.sources = .tests
         newFactory.product = .unitTests
+        newFactory.settings = Project.Environment.devTargetSettings
 
         return make(factory: newFactory)
     }
@@ -277,6 +279,7 @@ public extension Target {
         newFactory.name = ModulePath.Domain.name + module.rawValue + "Tests"
         newFactory.sources = .tests
         newFactory.product = .unitTests
+        newFactory.settings = Project.Environment.devTargetSettings
 
         return make(factory: newFactory)
     }
@@ -321,6 +324,7 @@ public extension Target {
         newFactory.name = ModulePath.Core.name + module.rawValue + "Tests"
         newFactory.sources = .tests
         newFactory.product = .unitTests
+        newFactory.settings = Project.Environment.devTargetSettings
 
         return make(factory: newFactory)
     }
