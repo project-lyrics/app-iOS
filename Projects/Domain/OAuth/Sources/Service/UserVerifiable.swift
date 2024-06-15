@@ -27,7 +27,10 @@ extension UserVerifiable {
                     try jwtDecoder.decode(response.data.refreshToken, as: RefreshToken.self)
                 )
             }
-            .tryMap { [tokenStorage, accessTokenKey, refreshTokenKey] (accessToken, refreshToken) in
+            .tryMap { [tokenStorage, tokenKeyHolder] (accessToken, refreshToken) in
+                let accessTokenKey = try tokenKeyHolder.fetchAccessTokenKey()
+                let refreshTokenKey = try tokenKeyHolder.fetchRefreshTokenKey()
+                
                 try tokenStorage.save(token: accessToken, for: accessTokenKey)
                 try tokenStorage.save(token: refreshToken, for: refreshTokenKey)
             }
@@ -48,7 +51,7 @@ extension UserVerifiable {
                 case let error as JWTError:
                     return AuthError.jwtParsingError(error)
                 default:
-                    return AuthError.unidentifiedError(error)
+                    return AuthError.unExpectedError(error)
                 }
             })
             .eraseToAnyPublisher()

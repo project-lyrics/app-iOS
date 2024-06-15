@@ -12,22 +12,21 @@ import Foundation
 import KakaoSDKUser
 
 final public class KakaoOAuthService {
-    // MARK: - 추후 accessTokenKey와 refreshTokenKey는 숨겨야 합니다. 
-    public let accessTokenKey: String = "FeelinAccessTokenKey"
-    public let refreshTokenKey: String = "FeelinRefreshTokenKey"
-    
     public let kakaoUserAPI: KakaoUserAPIProtocol
     public let networkProvider: NetworkProviderInterface
     public let tokenStorage: TokenStorageInterface
     public let jwtDecoder: JWTDecoder = .init()
+    public let tokenKeyHolder: TokenKeyHolderInterface
     
     public init(
         kakaoUserAPI: KakaoUserAPIProtocol = UserApi.shared,
         networkProvider: NetworkProviderInterface,
-        tokenStorage: TokenStorageInterface
+        tokenStorage: TokenStorageInterface,
+        tokenKeyHolder: TokenKeyHolderInterface = TokenKeyHolder()
     ) {
         self.kakaoUserAPI = kakaoUserAPI
         self.networkProvider = networkProvider
         self.tokenStorage = tokenStorage
+        self.tokenKeyHolder = tokenKeyHolder
     }
 }
