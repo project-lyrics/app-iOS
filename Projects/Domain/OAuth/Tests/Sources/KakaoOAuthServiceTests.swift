@@ -60,10 +60,16 @@ final class KakaoOAuthServiceTests: XCTestCase {
         )
         let mockTokenStorage = MockTokenStorage()
         
+        let mockTokenKeyHolder = MockTokenKeyHolder(
+            expectedAccessTokenKey: "AccessTokenKey",
+            expectedRefreshTokenKey: "RefreshTokenKey"
+        )
+        
         sut = KakaoOAuthService(
             kakaoUserAPI: kakaoUserAPITestDouble,
             networkProvider: networkProviderTestDouble,
-            tokenStorage: mockTokenStorage
+            tokenStorage: mockTokenStorage,
+            tokenKeyHolder: mockTokenKeyHolder
         )
 
         // when
@@ -74,6 +80,38 @@ final class KakaoOAuthServiceTests: XCTestCase {
         XCTAssertTrue(mockTokenStorage.saveCalled)
         // 전달받은 accessToken, refreshToken을 저장해야 하니 총 저장횟수는 2번이어야 한다.
         XCTAssertEqual(mockTokenStorage.saveResultCount, 2)
+    }
+    
+    func test_로그인시_번들에_AccessToken이_없으면_bundle에러가_발생한다() throws {
+        // given
+        networkProviderTestDouble = MockNetworkProvider(
+            response: UserLoginResponse(
+                status: "201",
+                data: TokenResponse(
+                    accessToken: expectedAccessToken,
+                    refreshToken: expectedRefreshToken
+                )
+            ),
+            error: nil
+        )
+        let mockTokenStorage = MockTokenStorage()
+        
+        sut = KakaoOAuthService(
+            kakaoUserAPI: kakaoUserAPITestDouble,
+            networkProvider: networkProviderTestDouble,
+            tokenStorage: mockTokenStorage
+        )
+
+        // when
+        XCTAssertThrowsError(try awaitPublisher(sut.login()), "", { error in
+            // then
+            print("에러: \(error)")
+            if let error = error as? AuthError {
+                XCTAssertEqual(error, AuthError.unExpectedError(BundleError.missingItem(itemName: "AccessTokenKey")))
+            } else {
+                XCTFail("알 수 없는 에러")
+            }
+        })
     }
 
     func test_카카오_로그인_실패() throws {
