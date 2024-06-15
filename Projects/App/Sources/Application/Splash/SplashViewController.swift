@@ -54,12 +54,12 @@ final class SplashViewController: UIViewController {
 
     private func setUpDefault() {
         addViews()
-        setupColors()
+        setUpColors()
         bind()
         viewModel.autoLogin()
     }
 
-    private func setupColors() {
+    private func setUpColors() {
         view.backgroundColor = Colors.primary
     }
 
