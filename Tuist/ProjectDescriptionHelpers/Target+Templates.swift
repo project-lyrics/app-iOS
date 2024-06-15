@@ -182,6 +182,7 @@ public extension Target {
     static func feature(example module: ModulePath.Feature, factory: TargetFactory) -> Self {
         var newFactory = factory
         newFactory.name = ModulePath.Feature.name + module.rawValue + "Example"
+        newFactory.bundleId = Project.Environment.bundleId + "-\(module.rawValue)"
         newFactory.sources = .exampleSources
         newFactory.product = .app
         newFactory.scripts = [.SwiftLintString]
@@ -339,6 +340,7 @@ public extension Target {
         newFactory.product = .app
         newFactory.settings = Project.Environment.exampleAppDefaultSettings
         newFactory.scripts = [.SwiftLintString]
+        newFactory.bundleId = Project.Environment.bundleId + "-\(module.rawValue)"
 
         return make(factory: newFactory)
     }
