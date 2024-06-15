@@ -58,7 +58,7 @@ private extension AppCoordinator {
     }
 
     func registerDependencies() {
-        DIContainer.registerTokenStorageNetwork()
+        DIContainer.registerNetworkProvider(hasTokenStorage: true)
         DIContainer.registerUserValidityService()
     }
 

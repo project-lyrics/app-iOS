@@ -20,21 +20,19 @@ public final class DIContainer: Injectable {
 
 // MARK: Network
 public extension DIContainer {
-    static func registerNormalNetwork() {
-        standard.register(.networkProvider) { resolver in
-            let networkSession = NetworkSession(
-                urlSession: URLSession.shared,
-                requestInterceptor: nil
-            )
-            return NetworkProvider(networkSession: networkSession)
+    static func registerNetworkProvider(hasTokenStorage: Bool = false) {
+        if hasTokenStorage {
+            standard.register(.tokenStorage) { _ in return TokenStorage() }
         }
-    }
-    
-    static func registerTokenStorageNetwork() {
-        standard.register(.tokenStorage) { _ in return TokenStorage() }
+
         standard.register(.networkProvider) { resolver in
-            let tokenStorage = try resolver.resolve(.tokenStorage)
-            let requestInterceptor = TokenInterceptor(tokenStorage: tokenStorage)
+            var requestInterceptor: TokenInterceptor?
+
+            if hasTokenStorage {
+                let tokenStorage = try resolver.resolve(.tokenStorage)
+                requestInterceptor = TokenInterceptor(tokenStorage: tokenStorage)
+            }
+
             let networkSession = NetworkSession(
                 urlSession: URLSession.shared,
                 requestInterceptor: requestInterceptor

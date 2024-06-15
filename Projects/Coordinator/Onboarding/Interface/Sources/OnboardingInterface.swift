@@ -31,7 +31,7 @@ private extension OnboardingCoordinator {
     }
 
     func registerDependencies() {
-        DIContainer.registerTokenStorageNetwork()
+        DIContainer.registerNetworkProvider(hasTokenStorage: true)
         DIContainer.registerUserValidityService()
         DIContainer.registerKakaoOAuthService()
         DIContainer.registerAppleOAuthService()
