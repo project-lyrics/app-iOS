@@ -8,8 +8,8 @@
 import Foundation
 
 public enum OAuthType: String {
-    case kakaoLogin
-    case appleLogin
+    case kakao
+    case apple
     case none
 }
 

@@ -68,9 +68,9 @@ public final class LogInViewController: UIViewController {
                 switch type {
                 case .none:
                     break
-                case .appleLogin:
+                case .apple:
                     self?.loginView.setUpRecentLogInRecordBallonView(true)
-                case .kakaoLogin:
+                case .kakao:
                     self?.loginView.setUpRecentLogInRecordBallonView(false)
                 }
             }

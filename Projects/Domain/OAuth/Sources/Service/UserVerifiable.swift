@@ -31,8 +31,9 @@ extension UserVerifiable {
                 try tokenStorage.save(token: accessToken, for: accessTokenKey)
                 try tokenStorage.save(token: refreshToken, for: refreshTokenKey)
             }
-            .map { _ in
-                return OAuthResult(oAuthType: .kakaoLogin)
+            .map { oAuthType in
+                let type = OAuthType(rawValue: oAuthProvider.rawValue) ?? .none
+                return OAuthResult(oAuthType: type)
             }
             .mapError({ error in
                 switch error {

@@ -6,7 +6,7 @@
 //
 
 import Combine
-import Foundation
+import DomainOAuthInterface
 
 extension RecentLogInRecordService: RecentLogInRecordServiceInterface {
     public func getRecentLogInRecord() -> AnyPublisher<OAuthType, RecordError> {
