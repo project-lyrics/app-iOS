@@ -57,6 +57,7 @@ public final class FeelinDropDownButton: UIButton {
     
     public override func layoutSubviews() {
         super.layoutSubviews()
+        
         flexContainer.pin.all()
         flexContainer.flex.layout()
     }

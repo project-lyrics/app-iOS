@@ -25,5 +25,6 @@ extension UILabel {
         )
         
         self.attributedText = attrString
+        self.numberOfLines = 0
     }
 }
