@@ -1,7 +1,7 @@
 ---
-name: Feature Template
+name: Feature/Refactor Template
 about: 기능 추가 이슈 템플릿
-title: "[FEATURE] 이슈 제목"
+title: "[FEATURE / REFACTOR] 이슈 제목"
 labels: ''
 assignees: derrickkim0109
 
