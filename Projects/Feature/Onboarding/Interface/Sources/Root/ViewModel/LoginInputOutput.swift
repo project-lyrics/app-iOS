@@ -15,7 +15,6 @@ public protocol LoginViewModelInputs {
 }
 
 public protocol LoginViewModelOutputs {
-    var loginSuccess: AnyPublisher<Bool, Never> { get }
-    var loginFailure: AnyPublisher<Error, Never> { get }
+    var loginResultState: AnyPublisher<LoginResultState, Never> { get }
     var recentLoginRecord: AnyPublisher<OAuthType, Never> { get }
 }

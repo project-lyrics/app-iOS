@@ -14,8 +14,7 @@ public final class LoginViewModel {
     public var outputs: LoginViewModelOutputs { return self }
 
     private var cancellables = Set<AnyCancellable>()
-    private let loginSuccessSubject = PassthroughSubject<Bool, Never>()
-    private let loginFailureSubject = PassthroughSubject<Error, Never>()
+    private let loginResultStateSubject = PassthroughSubject<LoginResultState, Never>()
     private let recentLoginRecordSubject = PassthroughSubject<OAuthType, Never>()
 
     private let kakaoOAuthLoginUseCase: OAuthLoginUseCase
@@ -38,12 +37,8 @@ extension LoginViewModel: LoginViewModelInputs, LoginViewModelOutputs {
         return recentLoginRecordSubject.eraseToAnyPublisher()
     }
 
-    public var loginSuccess: AnyPublisher<Bool, Never> {
-        return loginSuccessSubject.eraseToAnyPublisher()
-    }
-
-    public var loginFailure: AnyPublisher<Error, Never> {
-        return loginFailureSubject.eraseToAnyPublisher()
+    public var loginResultState: AnyPublisher<LoginResultState, Never> {
+        return loginResultStateSubject.eraseToAnyPublisher()
     }
 
     public func kakaoLogin() {
@@ -54,11 +49,10 @@ extension LoginViewModel: LoginViewModelInputs, LoginViewModelOutputs {
                 case .finished:
                     break
                 case .failure(let error):
-                    self?.loginFailureSubject.send(error)
+                    self?.loginResultStateSubject.send(.failure(error: error.localizedDescription))
                 }
             } receiveValue: { [weak self] result in
-                self?.saveLoginRecord(oAuthType: result.oAuthType.rawValue)
-                self?.loginSuccessSubject.send(true)
+                self?.loginResultStateSubject.send(.success)
             }
             .store(in: &cancellables)
     }
@@ -71,11 +65,10 @@ extension LoginViewModel: LoginViewModelInputs, LoginViewModelOutputs {
                 case .finished:
                     break
                 case .failure(let error):
-                    self?.loginFailureSubject.send(error)
+                    self?.loginResultStateSubject.send(.failure(error: error.localizedDescription))
                 }
             } receiveValue: { [weak self] result in
-                self?.saveLoginRecord(oAuthType: result.oAuthType.rawValue)
-                self?.loginSuccessSubject.send(true)
+                self?.loginResultStateSubject.send(.success)
             }
             .store(in: &cancellables)
     }

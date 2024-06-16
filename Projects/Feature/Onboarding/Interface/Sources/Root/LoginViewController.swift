@@ -48,18 +48,15 @@ public final class LoginViewController: UIViewController {
     }
 
     private func bind() {
-        viewModel.outputs.loginSuccess
-            .sink { [weak self] success in
-                if success {
+        viewModel.outputs.loginResultState
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] state in
+                switch state {
+                case .success:
                     self?.coordinator?.didFinish()
+                case .failure(let error):
+                    break
                 }
-            }
-            .store(in: &cancellables)
-
-        // TODO: 공통 Modal View 구현 필요
-        viewModel.outputs.loginFailure
-            .sink { error in
-                
             }
             .store(in: &cancellables)
 
