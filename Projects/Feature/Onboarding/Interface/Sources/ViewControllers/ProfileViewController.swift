@@ -7,7 +7,7 @@
 
 import UIKit
 
-import SharedDesignSystem
+import Shared
 
 public final class ProfileViewController: UIViewController {
     private let profileView = ProfileView()

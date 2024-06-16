@@ -7,7 +7,7 @@
 
 import UIKit
 
-import SharedDesignSystem
+import Shared
 
 import FlexLayout
 import PinLayout
