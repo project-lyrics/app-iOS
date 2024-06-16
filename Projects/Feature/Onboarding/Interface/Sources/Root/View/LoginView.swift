@@ -15,6 +15,7 @@ final class LoginView: UIView {
 
     private let titleLabel = {
         let label = UILabel()
+        label.textColor = Colors.gray09
         label.textAlignment = .center
         label.font = SharedDesignSystemFontFamily.Pretendard.extraBold.font(size: 72)
         label.text = "Feelin"
@@ -23,6 +24,7 @@ final class LoginView: UIView {
 
     private let messageLabel = {
         let label = UILabel()
+        label.textColor = Colors.gray05
         label.textAlignment = .center
         label.text = "이야기로 음악을 느끼다, 이야기로 음악을 채우다"
         label.font = SharedDesignSystemFontFamily.Pretendard.medium.font(size: 16)
@@ -158,7 +160,7 @@ final class LoginView: UIView {
     }
 
     private func setUpDefault() {
-        backgroundColor = .white
+        backgroundColor = Colors.background
     }
 
     private func addUIComponents() {
