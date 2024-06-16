@@ -24,6 +24,7 @@ fi
 public extension TargetScript {
     static let SwiftLintString = TargetScript.pre(
         script: swiftLintScript,
-        name: "SwiftLintString"
+        name: "SwiftLintString",
+        basedOnDependencyAnalysis: false
     )
 }

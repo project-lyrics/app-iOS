@@ -85,7 +85,6 @@ extension TokenInterceptor: URLRequestInterceptor {
         request: URLRequest,
         with session: URLSession
     ) -> AnyPublisher<RetryResult, Never> {
-        
         return session
             .dataTaskPublisher(for: request)
             .tryDecodeAPIFailResponse()

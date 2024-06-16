@@ -13,6 +13,7 @@ let project = Project.makeModule(
             factory: .init(
                 dependencies: [
                     .feature,
+                    .coordinator(interface: .Main),
                     .coordinator(interface: .App),
                     .SPM.FlexLayout
                 ]

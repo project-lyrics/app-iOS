@@ -15,7 +15,8 @@ public protocol UserVerifiable {
     var tokenStorage: TokenStorageInterface { get }
     var jwtDecoder: JWTDecoder { get }
     var tokenKeyHolder: TokenKeyHolderInterface { get }
-    
+    var recentLoginRecordService: RecentLoginRecordServiceInterface { get }
+  
     func verifyUser(
         oAuthToken: String,
         oAuthProvider: OAuthProvider

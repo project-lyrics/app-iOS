@@ -16,14 +16,17 @@ public class AppleLoginService: NSObject {
     public let jwtDecoder: JWTDecoder = .init()
     public let tokenKeyHolder: TokenKeyHolderInterface
     public var appleTokenSubject: PassthroughSubject<String, AppleOAuthError> = .init()
-    
+    public let recentLoginRecordService: RecentLoginRecordServiceInterface
+
     public init(
         networkProvider: NetworkProviderInterface,
         tokenStorage: TokenStorageInterface,
+        recentLoginRecordService: RecentLoginRecordServiceInterface,
         tokenKeyHolder: TokenKeyHolderInterface = TokenKeyHolder()
     ) {
         self.networkProvider = networkProvider
         self.tokenStorage = tokenStorage
-        self.tokenKeyHolder = tokenKeyHolder
+        self.recentLoginRecordService = recentLoginRecordService
+        self.tokenKeyHolder = tokenKeyHolder      
     }
 }

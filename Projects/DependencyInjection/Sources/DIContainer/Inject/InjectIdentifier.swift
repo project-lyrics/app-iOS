@@ -6,6 +6,8 @@
 //
 
 import CoreNetworkInterface
+import CoreLocalStorageInterface
+import DomainOAuthInterface
 
 public struct InjectIdentifier<T> {
     private (set) var type: T.Type? = nil
@@ -25,8 +27,34 @@ public struct InjectIdentifier<T> {
 }
 
 public extension InjectIdentifier {
-    static var networkService: InjectIdentifier<NetworkProviderInterface> {
+    static var networkProvider: InjectIdentifier<NetworkProviderInterface> {
         .by(type: NetworkProviderInterface.self, key: "networkProvider")
+    }
+
+    static var tokenStorage: InjectIdentifier<TokenStorageInterface> {
+        .by(type: TokenStorageInterface.self, key: "tokenStorage")
+    }    
+
+    static var recentLoginRecordStorage: InjectIdentifier<RecentLoginRecordStorageInterface> {
+        .by(type: RecentLoginRecordStorageInterface.self, key: "recentLoginRecordStorage")
+    }
+}
+
+public extension InjectIdentifier {
+    static var kakaoOAuthService: InjectIdentifier<OAuthServiceInterface & UserVerifiable> {
+        .by(type: (OAuthServiceInterface & UserVerifiable).self, key: "kakaoOAuthService")
+    }
+
+    static var appleOAuthService: InjectIdentifier<OAuthServiceInterface & UserVerifiable> {
+        .by(type: (OAuthServiceInterface & UserVerifiable).self, key: "appleOAuthService")
+    }
+
+    static var userValidityService: InjectIdentifier<UserValidityServiceInterface> {
+        .by(type: UserValidityServiceInterface.self, key: "userValidityService")
+    }
+
+    static var recentLoginRecordService: InjectIdentifier<RecentLoginRecordServiceInterface> {
+        .by(type: RecentLoginRecordServiceInterface.self, key: "recentLoginRecordService")
     }
 }
 

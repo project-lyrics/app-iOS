@@ -17,16 +17,19 @@ final public class KakaoOAuthService {
     public let tokenStorage: TokenStorageInterface
     public let jwtDecoder: JWTDecoder = .init()
     public let tokenKeyHolder: TokenKeyHolderInterface
-    
+    public let recentLoginRecordService: RecentLoginRecordServiceInterface
+
     public init(
         kakaoUserAPI: KakaoUserAPIProtocol = UserApi.shared,
         networkProvider: NetworkProviderInterface,
         tokenStorage: TokenStorageInterface,
+        recentLoginRecordService: RecentLoginRecordServiceInterface,
         tokenKeyHolder: TokenKeyHolderInterface = TokenKeyHolder()
     ) {
         self.kakaoUserAPI = kakaoUserAPI
         self.networkProvider = networkProvider
         self.tokenStorage = tokenStorage
         self.tokenKeyHolder = tokenKeyHolder
+        self.recentLoginRecordService = recentLoginRecordService
     }
 }

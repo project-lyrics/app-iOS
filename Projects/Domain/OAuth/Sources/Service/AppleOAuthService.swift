@@ -11,7 +11,6 @@ import CoreNetworkInterface
 import Foundation
 import DomainOAuthInterface
 
-
 extension AppleLoginService: OAuthServiceInterface, UserVerifiable {
     public func login() -> AnyPublisher<OAuthResult, AuthError> {
         let request = ASAuthorizationAppleIDProvider().createRequest()
@@ -64,6 +63,7 @@ extension AppleLoginService: ASAuthorizationControllerPresentationContextProvidi
               let window = windowScene.windows.first(where: { $0.isKeyWindow }) else {
             return UIWindow()
         }
+        
         return window
     }
 }
