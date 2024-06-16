@@ -33,7 +33,8 @@ final class ProfileCharacterCollectionView: UICollectionView {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        let cellWidth = (frame.width - flowLayout.minimumInteritemSpacing * 3) / 4
+        let numOfItems = ProfileCharacterType.allCases.count
+        let cellWidth = (frame.width - flowLayout.minimumInteritemSpacing * (numOfItems - 1) / numOfItems
         flowLayout.itemSize = CGSize(width: cellWidth, height: cellWidth)
         flowLayout.sectionInset = UIEdgeInsets(
             top: 0,
