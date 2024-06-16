@@ -1,6 +1,7 @@
 import UIKit
 import CoordinatorAppInterface
 import CoordinatorMainInterface
+import SharedDesignSystem
 
 public final class TabBarCoordinator: Coordinator {
     public weak var delegate: CoordinatorDelegate?
@@ -19,6 +20,7 @@ public final class TabBarCoordinator: Coordinator {
         let controllers: [UINavigationController] = pages.map {
             createTabBarNavigationController(of: $0)
         }
+        
         configureTabBarController(with: controllers)
     }
 }
@@ -32,23 +34,15 @@ extension TabBarCoordinator: CoordinatorDelegate {
 
 private extension TabBarCoordinator {
     func configureTabBarController(with viewControllers: [UIViewController]) {
+        tabBarController.setViewControllers(viewControllers, animated: false)
         tabBarController.selectedIndex = TabBarPageType.main.index
-        tabBarController.tabBar.tintColor = .systemBlue
+        tabBarController.view.backgroundColor = .white
+        tabBarController.tabBar.backgroundColor = .gray
+        tabBarController.tabBar.tintColor = Colors.primary
+        tabBarController.tabBar.unselectedItemTintColor = .systemGray2
 
-        tabBarController.setViewControllers(
-            viewControllers,
-            animated: true
-        )
-
-        navigationController.setNavigationBarHidden(
-            true,
-            animated: false
-        )
-
-        navigationController.pushViewController(
-            tabBarController,
-            animated: true
-        )
+        navigationController.setNavigationBarHidden(true, animated: false)
+        navigationController.pushViewController(tabBarController, animated: true)
     }
 
     func createTabBarNavigationController(

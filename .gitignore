@@ -97,7 +97,7 @@ xcuserdata
 
 
 ### SwiftPM ###
-
+.package.resolved
 
 ### Xcode ###
 # Xcode
@@ -123,3 +123,4 @@ master.key
 
 ### xcconfig ###
 Projects/App/xcconfigs/KakaoSecretKeys.xcconfig
+Projects/App/xcconfigs/TokenKeys.xcconfig

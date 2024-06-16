@@ -1,5 +1,5 @@
 //
-//  OAuthLoginUsecase.swift
+//  OAuthLoginUseCase.swift
 //  DomainOAuthInterface
 //
 //  Created by 황인우 on 5/28/24.
@@ -8,7 +8,7 @@
 import Combine
 import Foundation
 
-public struct OAuthLoginUsecase {
+public struct OAuthLoginUseCase {
     private let oAuthService: OAuthServiceInterface & UserVerifiable
     
     public init(oAuthService: OAuthServiceInterface & UserVerifiable) {

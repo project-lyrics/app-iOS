@@ -19,7 +19,7 @@ public enum FeelinAPI<R> {
 
 extension FeelinAPI: HTTPNetworking {
     public var headers: [String : String]? {
-        var defaultHeader = [ "application/json": "Content-Type"]
+        var defaultHeader = ["application/json": "Content-Type"]
         
         switch self {
         case .login(_, oauthAccessToken: let oAuthAccessToken):

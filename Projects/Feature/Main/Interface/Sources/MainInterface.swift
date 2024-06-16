@@ -12,5 +12,6 @@ public final class MainRootViewController: UIViewController {
 
     public override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .white
     }
 }
