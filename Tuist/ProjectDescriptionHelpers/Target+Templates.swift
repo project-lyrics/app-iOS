@@ -176,6 +176,7 @@ public extension Target {
         newFactory.name = ModulePath.Feature.name + module.rawValue + "Tests"
         newFactory.sources = .tests
         newFactory.product = .unitTests
+        newFactory.settings = Project.Environment.devTargetSettings
 
         return make(factory: newFactory)
     }
@@ -183,6 +184,7 @@ public extension Target {
     static func feature(example module: ModulePath.Feature, factory: TargetFactory) -> Self {
         var newFactory = factory
         newFactory.name = ModulePath.Feature.name + module.rawValue + "Example"
+        newFactory.bundleId = Project.Environment.bundleId + "-\(module.rawValue)"
         newFactory.sources = .exampleSources
         newFactory.product = .app
         newFactory.settings = Project.Environment.exampleAppDefaultSettings
@@ -231,6 +233,7 @@ public extension Target {
         newFactory.name = ModulePath.Coordinator.name + module.rawValue + "Tests"
         newFactory.sources = .tests
         newFactory.product = .unitTests
+        newFactory.settings = Project.Environment.devTargetSettings
 
         return make(factory: newFactory)
     }
@@ -286,6 +289,7 @@ public extension Target {
         newFactory.name = ModulePath.Domain.name + module.rawValue + "Tests"
         newFactory.sources = .tests
         newFactory.product = .unitTests
+        newFactory.settings = Project.Environment.devTargetSettings
 
         return make(factory: newFactory)
     }
@@ -331,6 +335,7 @@ public extension Target {
         newFactory.name = ModulePath.Core.name + module.rawValue + "Tests"
         newFactory.sources = .tests
         newFactory.product = .unitTests
+        newFactory.settings = Project.Environment.devTargetSettings
 
         return make(factory: newFactory)
     }
@@ -341,6 +346,8 @@ public extension Target {
         newFactory.sources = .exampleSources
         newFactory.product = .app
         newFactory.settings = Project.Environment.exampleAppDefaultSettings
+        newFactory.scripts = [.SwiftLintString]
+        newFactory.bundleId = Project.Environment.bundleId + "-\(module.rawValue)"
 
         return make(factory: newFactory)
     }

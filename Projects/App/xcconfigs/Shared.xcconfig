@@ -9,6 +9,7 @@
 // https://help.apple.com/xcode/#/dev745c5c974
 
 #include "./KakaoSecretKeys.xcconfig"
+#include "./TokenKeys.xcconfig"
 
 OTHER_SWIFT_FLAGS[config=DEV][sdk=*] = $(inherited) -DDEV
 OTHER_SWIFT_FLAGS[config=QA][sdk=*] = $(inherited) -DQA
