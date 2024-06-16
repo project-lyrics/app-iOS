@@ -16,6 +16,7 @@ open class BottomSheetViewController<View: UIView>: UIViewController {
     private let dimmedView = {
         let view = UIView()
         view.backgroundColor = Colors.dim
+        view.alpha = 0.0
         view.isUserInteractionEnabled = true
         return view
     }()
@@ -53,6 +54,7 @@ open class BottomSheetViewController<View: UIView>: UIViewController {
     private func showBottomSheets() {
         bottomSheetViewBottomConstraint?.constant = 0
         UIView.animate(withDuration: 0.3, animations: {
+            self.dimmedView.alpha = 1.0
             self.view.layoutIfNeeded()
         })
     }
@@ -60,6 +62,7 @@ open class BottomSheetViewController<View: UIView>: UIViewController {
     public override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
         bottomSheetViewBottomConstraint?.constant = bottomSheetHeight
         UIView.animate(withDuration: 0.3, animations: {
+            self.dimmedView.alpha = 0.0
             self.view.layoutIfNeeded()
         }) { _ in
             super.dismiss(animated: false, completion: completion)

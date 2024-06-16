@@ -19,10 +19,10 @@ public final class ProfileViewController: UIViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
         
-        setUpButtonAction()
+        setUpAction()
     }
     
-    private func setUpButtonAction() {
+    private func setUpAction() {
         profileEditButton.addTarget(
             self,
             action: #selector(profileEditButtonDidTap),
@@ -31,7 +31,7 @@ public final class ProfileViewController: UIViewController {
     }
     
     @objc private func profileEditButtonDidTap() {
-        let editProfileViewController = EditProfileViewController(bottomSheetHeight: 264)
+        let editProfileViewController = EditProfileViewController(bottomSheetHeight: 284)
         editProfileViewController.modalPresentationStyle = .overFullScreen
         present(editProfileViewController, animated: false)
     }
