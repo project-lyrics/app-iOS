@@ -7,7 +7,7 @@
 
 import UIKit
 
-import SharedDesignSystem
+import Shared
 
 public final class UserInformationViewController: UIViewController {
     private let userInformationView = UserInformationView()

@@ -7,7 +7,7 @@
 
 import UIKit
 
-import SharedUtil
+import Shared
 
 final class GenderCollectionView: UICollectionView {
     private let flowLayout = {

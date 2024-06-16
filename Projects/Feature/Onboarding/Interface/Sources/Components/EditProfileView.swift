@@ -7,7 +7,7 @@
 
 import UIKit
 
-import SharedDesignSystem
+import Shared
 
 import FlexLayout
 import PinLayout
@@ -92,9 +92,9 @@ public final class EditProfileView: UIView {
     private func updateXImageForCurrentTraitCollection() {
         switch traitCollection.userInterfaceStyle {
         case .dark:
-            xButton.setImage(FeelinImages.xLight, for: .normal)
-        default:
             xButton.setImage(FeelinImages.xDark, for: .normal)
+        default:
+            xButton.setImage(FeelinImages.xLight, for: .normal)
         }
     }
 }

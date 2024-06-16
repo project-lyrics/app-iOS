@@ -10,6 +10,7 @@ import UIKit
 open class BottomSheetViewController<View: UIView>: UIViewController {
     private var bottomSheetViewBottomConstraint: NSLayoutConstraint?
     private let bottomSheetHeight: CGFloat
+    private let animationDuration = 0.3
     
     // MARK: - components
     
@@ -53,7 +54,7 @@ open class BottomSheetViewController<View: UIView>: UIViewController {
     
     private func showBottomSheets() {
         bottomSheetViewBottomConstraint?.constant = 0
-        UIView.animate(withDuration: 0.3, animations: {
+        UIView.animate(withDuration: animationDuration, animations: {
             self.dimmedView.alpha = 1.0
             self.view.layoutIfNeeded()
         })
@@ -61,7 +62,7 @@ open class BottomSheetViewController<View: UIView>: UIViewController {
     
     public override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
         bottomSheetViewBottomConstraint?.constant = bottomSheetHeight
-        UIView.animate(withDuration: 0.3, animations: {
+        UIView.animate(withDuration: animationDuration, animations: {
             self.dimmedView.alpha = 0.0
             self.view.layoutIfNeeded()
         }) { _ in
@@ -99,24 +100,24 @@ open class BottomSheetViewController<View: UIView>: UIViewController {
         // TapGesture
         let tapGesture = UITapGestureRecognizer(
             target: self,
-            action: #selector(handleDimmedViewTap)
+            action: #selector(dimmedViewDidTap)
         )
         dimmedView.addGestureRecognizer(tapGesture)
         
         // SwipeGesture
         let swipeGesture = UISwipeGestureRecognizer(
             target: self,
-            action: #selector(handleDownGesture)
+            action: #selector(didSwipeDown)
         )
         swipeGesture.direction = .down
         view.addGestureRecognizer(swipeGesture)
     }
     
-    @objc private func handleDimmedViewTap(_ tapRecognizer: UITapGestureRecognizer) {
+    @objc private func dimmedViewDidTap(_ tapRecognizer: UITapGestureRecognizer) {
         dismiss(animated: false)
     }
     
-    @objc private func handleDownGesture(_ swipeRecognizer: UISwipeGestureRecognizer) {
+    @objc private func didSwipeDown(_ swipeRecognizer: UISwipeGestureRecognizer) {
         if swipeRecognizer.state == .ended {
             switch swipeRecognizer.direction {
             case .down: dismiss(animated: false)

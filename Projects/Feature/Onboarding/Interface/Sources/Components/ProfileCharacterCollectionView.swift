@@ -7,7 +7,7 @@
 
 import UIKit
 
-import SharedUtil
+import Shared
 
 final class ProfileCharacterCollectionView: UICollectionView {
     private let flowLayout = {

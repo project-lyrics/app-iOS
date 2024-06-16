@@ -7,7 +7,7 @@
 
 import UIKit
 
-import SharedDesignSystem
+import Shared
 
 public final class EditProfileViewController: BottomSheetViewController<EditProfileView> {
     
