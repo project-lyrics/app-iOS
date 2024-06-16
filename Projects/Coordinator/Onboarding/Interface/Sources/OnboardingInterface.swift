@@ -23,7 +23,7 @@ public final class OnboardingCoordinator: Coordinator {
 
 private extension OnboardingCoordinator {
     func configureLoginController() {
-        let viewModel = LoginDependencies()
+        let viewModel = loginDependencies()
         let viewController = LoginViewController(viewModel: viewModel)
         viewController.coordinator = self
         navigationController.setNavigationBarHidden(true, animated: false)
@@ -38,7 +38,7 @@ private extension OnboardingCoordinator {
         DIContainer.registerRecentLoginRecordService()
     }
 
-    func LoginDependencies() -> LoginViewModel {
+    func loginDependencies() -> LoginViewModel {
         @Injected(.kakaoOAuthService) var kakaoOAuthService
         @Injected(.appleOAuthService) var appleOAuthService
         @Injected(.userValidityService) var userValidityService

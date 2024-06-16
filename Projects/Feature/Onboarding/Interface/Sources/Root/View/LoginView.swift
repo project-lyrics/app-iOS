@@ -19,6 +19,7 @@ final class LoginView: UIView {
         label.textAlignment = .center
         label.font = SharedDesignSystemFontFamily.Pretendard.extraBold.font(size: 72)
         label.text = "Feelin"
+
         return label
     }()
 
