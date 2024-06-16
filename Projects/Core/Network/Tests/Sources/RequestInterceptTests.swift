@@ -79,8 +79,7 @@ final class RequestInterceptTest: XCTestCase {
         )
         
         let endpoint = FeelinAPI<UserValidityResponse>.checkUserValidity
-        
-        
+
         // when
         XCTAssertThrowsError(try awaitPublisher(sut.request(endpoint)), "") { error in
             if let error = error as? NetworkError {

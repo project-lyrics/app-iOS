@@ -7,9 +7,10 @@
 
 import Foundation
 
-public enum OAuthType {
-    case kakaoLogin
-    case appleLogin
+public enum OAuthType: String {
+    case kakao
+    case apple
+    case none
 }
 
 public struct OAuthResult: Equatable {
