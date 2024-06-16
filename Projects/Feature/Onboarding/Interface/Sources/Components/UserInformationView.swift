@@ -32,7 +32,6 @@ final class UserInformationView: UIView {
             "서비스 이용 현황 분석을 위해서만 활용되며\n다른 곳엔 사용되지 않아요",
             lineHeight: 20
         )
-        label.numberOfLines = 2
         label.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 14)
         label.textColor = Colors.gray04
         return label
