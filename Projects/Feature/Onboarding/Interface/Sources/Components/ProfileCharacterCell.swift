@@ -56,8 +56,8 @@ final class ProfileCharacterCell: UICollectionViewCell, Reusable {
             .justifyContent(.center)
             .define { flex in
             flex.addItem(imageView)
-                .width(72)
-                .height(72)
+                .width(90%)
+                .height(90%)
         }
     }
     

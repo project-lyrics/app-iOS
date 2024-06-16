@@ -25,14 +25,13 @@ public final class EditProfileView: UIView {
         return label
     }()
     
-    private let xImageView = {
-        let imageView = UIImageView()
-        imageView.image = FeelinImages.xLight
-        imageView.contentMode = .scaleAspectFit
-        return imageView
+    let xButton = {
+        let button = UIButton()
+        button.setImage(FeelinImages.xLight, for: .normal)
+        return button
     }()
     
-    private let profileCharacterCollectionView = ProfileCharacterCollectionView()
+    let profileCharacterCollectionView = ProfileCharacterCollectionView()
     
     lazy var selectButton = FeelinConfirmButton(initialEnabled: true, title: "선택")
     
@@ -66,13 +65,15 @@ public final class EditProfileView: UIView {
     
     private func setUpLayout() {
         addSubview(flexContainer)
-        flexContainer.flex.padding(20).define { flex in
+        flexContainer.flex.padding(24).define { flex in
             flex.addItem()
                 .direction(.row)
                 .justifyContent(.spaceBetween)
                 .define { flex in
                     flex.addItem(titleLabel)
-                    flex.addItem(xImageView)
+                    flex.addItem(xButton)
+                        .width(20)
+                        .height(20)
                 }
             
             flex.addItem(profileCharacterCollectionView)
@@ -91,9 +92,9 @@ public final class EditProfileView: UIView {
     private func updateXImageForCurrentTraitCollection() {
         switch traitCollection.userInterfaceStyle {
         case .dark:
-            xImageView.image = FeelinImages.xLight
+            xButton.setImage(FeelinImages.xLight, for: .normal)
         default:
-            xImageView.image = FeelinImages.xDark
+            xButton.setImage(FeelinImages.xDark, for: .normal)
         }
     }
 }
