@@ -20,6 +20,8 @@ extension UserVerifiable {
             oauthProvider: oAuthProvider,
             oauthAccessToken: oAuthToken
         )
+        let type = OAuthType(rawValue: oAuthProvider.rawValue) ?? .none
+
         return networkProvider.request(endpoint)
             .tryMap { [jwtDecoder] response -> (AccessToken, RefreshToken) in
                 return (
@@ -27,12 +29,13 @@ extension UserVerifiable {
                     try jwtDecoder.decode(response.data.refreshToken, as: RefreshToken.self)
                 )
             }
-            .tryMap { [tokenStorage, accessTokenKey, refreshTokenKey] (accessToken, refreshToken) in
+            .tryMap { [tokenStorage, recentLoginRecordService, accessTokenKey, refreshTokenKey] (accessToken, refreshToken) in
                 try tokenStorage.save(token: accessToken, for: accessTokenKey)
                 try tokenStorage.save(token: refreshToken, for: refreshTokenKey)
+
+                recentLoginRecordService.save(oAuthType: type.rawValue)
             }
             .map { oAuthType in
-                let type = OAuthType(rawValue: oAuthProvider.rawValue) ?? .none
                 return OAuthResult(oAuthType: type)
             }
             .mapError({ error in

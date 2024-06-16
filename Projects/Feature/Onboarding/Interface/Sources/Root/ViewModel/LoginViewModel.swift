@@ -89,10 +89,3 @@ extension LoginViewModel: LoginViewModelInputs, LoginViewModelOutputs {
             .store(in: &cancellables)
     }
 }
-
-
-private extension LoginViewModel {
-    func saveLoginRecord(oAuthType: String) {
-        recentLoginRecordService.save(oAuthType: oAuthType)
-    }
-}

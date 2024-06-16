@@ -48,9 +48,12 @@ public extension DIContainer {
         standard.register(.kakaoOAuthService) { resolver in
             let tokenStorage = try resolver.resolve(.tokenStorage)
             let networkProvider = try resolver.resolve(.networkProvider)
+            let recentLoginRecordService = try resolver.resolve(.recentLoginRecordService)
+
             return KakaoOAuthService(
                 networkProvider: networkProvider,
-                tokenStorage: tokenStorage
+                tokenStorage: tokenStorage, 
+                recentLoginRecordService: recentLoginRecordService
             )
         }
     }
@@ -59,9 +62,12 @@ public extension DIContainer {
         standard.register(.appleOAuthService) { resolver in
             let tokenStorage = try resolver.resolve(.tokenStorage)
             let networkProvider = try resolver.resolve(.networkProvider)
+            let recentLoginRecordService = try resolver.resolve(.recentLoginRecordService)
+
             return AppleLoginService(
                 networkProvider: networkProvider,
-                tokenStorage: tokenStorage
+                tokenStorage: tokenStorage,
+                recentLoginRecordService: recentLoginRecordService
             )
         }
     }
