@@ -1,7 +1,7 @@
 ---
 name: Feature Template
-about: 해당 이슈 생성 템플릿을 사용하여 이슈를 생성해주세요.
-title: "[INC/CRS/ETC] 이슈 제목"
+about: 기능 추가 이슈 템플릿
+title: "[FEATURE] 이슈 제목"
 labels: ''
 assignees: derrickkim0109
 
