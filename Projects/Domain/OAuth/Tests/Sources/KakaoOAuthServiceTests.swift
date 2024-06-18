@@ -68,7 +68,8 @@ final class KakaoOAuthServiceTests: XCTestCase {
         sut = KakaoOAuthService(
             kakaoUserAPI: kakaoUserAPITestDouble,
             networkProvider: networkProviderTestDouble,
-            tokenStorage: mockTokenStorage,
+            tokenStorage: mockTokenStorage, 
+            recentLoginRecordService: <#any RecentLoginRecordServiceInterface#>,
             tokenKeyHolder: mockTokenKeyHolder
         )
 
@@ -76,7 +77,7 @@ final class KakaoOAuthServiceTests: XCTestCase {
         let result = try awaitPublisher(sut.login())
 
         // then
-        XCTAssertEqual(result.oAuthType, .kakaoLogin)
+        XCTAssertEqual(result.oAuthType, .kakao)
         XCTAssertTrue(mockTokenStorage.saveCalled)
         // 전달받은 accessToken, refreshToken을 저장해야 하니 총 저장횟수는 2번이어야 한다.
         XCTAssertEqual(mockTokenStorage.saveResultCount, 2)
@@ -96,10 +97,13 @@ final class KakaoOAuthServiceTests: XCTestCase {
         )
         let mockTokenStorage = MockTokenStorage()
         
+        let dummyRecentLoginRecordService = DummyLoginRecordService()
+        
         sut = KakaoOAuthService(
             kakaoUserAPI: kakaoUserAPITestDouble,
             networkProvider: networkProviderTestDouble,
-            tokenStorage: mockTokenStorage
+            tokenStorage: mockTokenStorage, 
+            recentLoginRecordService: dummyRecentLoginRecordService
         )
 
         // when
@@ -128,11 +132,13 @@ final class KakaoOAuthServiceTests: XCTestCase {
             error: nil
         )
         let dummyTokenStorage = FakeTokenStorage()
+        let dummyRecentLoginRecordService = DummyLoginRecordService()
         
         sut = KakaoOAuthService(
             kakaoUserAPI: kakaoUserAPITestDouble,
             networkProvider: networkProviderTestDouble,
-            tokenStorage: dummyTokenStorage
+            tokenStorage: dummyTokenStorage, 
+            recentLoginRecordService: dummyRecentLoginRecordService
         )
 
         // when

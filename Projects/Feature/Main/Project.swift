@@ -39,9 +39,14 @@ let targets: [Target] = [
     .feature(
         example: .Main,
         factory: .init(
+            infoPlist: Project.Environment.appInfoPlist(deploymentTarget: .dev),
+            resources: ["Example/Resources/**"],
             dependencies: [
-                .feature(interface: .Main)
-            ]
+                .feature(implements: .Main),
+                .feature(interface: .Main),
+                .SPM.FlexLayout
+            ],
+            settings: Project.Environment.exampleAppDefaultSettings
         )
     )
 ]

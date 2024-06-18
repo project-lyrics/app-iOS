@@ -33,7 +33,7 @@ public class FeelinConfirmButton: UIButton {
         updateAppearance()
         
         self.setTitle(title, for: .normal)
-        self.titleLabel?.font = UIFont.pretendard(size: 16, type: .semiBold)
+        self.titleLabel?.font = SharedDesignSystemFontFamily.Pretendard.semiBold.font(size: 16)
     }
     
     private func updateAppearance() {
