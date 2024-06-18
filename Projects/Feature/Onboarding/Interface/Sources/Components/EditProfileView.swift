@@ -33,7 +33,7 @@ public final class EditProfileView: UIView {
     
     let profileCharacterCollectionView = ProfileCharacterCollectionView()
     
-    lazy var selectButton = FeelinConfirmButton(initialEnabled: true, title: "선택")
+    lazy var selectButton = FeelinConfirmButton(title: "선택")
     
     // MARK: - init
     
@@ -49,11 +49,6 @@ public final class EditProfileView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        updateXImageForCurrentTraitCollection()
-    }
-    
     // MARK: - layout
     
     public override func layoutSubviews() {
@@ -65,10 +60,11 @@ public final class EditProfileView: UIView {
     
     private func setUpLayout() {
         addSubview(flexContainer)
-        flexContainer.flex.padding(24).define { flex in
+        flexContainer.flex.paddingHorizontal(20).define { flex in
             flex.addItem()
                 .direction(.row)
                 .justifyContent(.spaceBetween)
+                .marginTop(24)
                 .define { flex in
                     flex.addItem(titleLabel)
                     flex.addItem(xButton)
@@ -78,7 +74,7 @@ public final class EditProfileView: UIView {
             
             flex.addItem(profileCharacterCollectionView)
                 .height(80)
-                .marginTop(20)
+                .marginTop(24)
             
             flex.addItem()
                 .grow(1)
@@ -86,15 +82,7 @@ public final class EditProfileView: UIView {
             flex.addItem(selectButton)
                 .height(56)
                 .cornerRadius(8)
-        }
-    }
-    
-    private func updateXImageForCurrentTraitCollection() {
-        switch traitCollection.userInterfaceStyle {
-        case .dark:
-            xButton.setImage(FeelinImages.xDark, for: .normal)
-        default:
-            xButton.setImage(FeelinImages.xLight, for: .normal)
+                .marginBottom(23)
         }
     }
 }

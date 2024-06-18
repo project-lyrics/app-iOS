@@ -69,9 +69,9 @@ final class ProfileView: UIView {
     
     private func setUpLayout() {
         addSubview(flexContainer)
-        flexContainer.flex.padding(20).define { flex in
+        flexContainer.flex.paddingHorizontal(20).define { flex in
             flex.addItem(titleLabel)
-                .marginTop(46)
+                .marginTop(72)
             
             flex.addItem(profileEditButton)
                 .marginTop(40)
@@ -88,6 +88,7 @@ final class ProfileView: UIView {
             flex.addItem(nextButton)
                 .minHeight(56)
                 .cornerRadius(8)
+                .marginBottom(23)
         }
     }
 }

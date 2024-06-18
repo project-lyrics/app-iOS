@@ -94,7 +94,7 @@ final class NicknameTextFieldView: UIView {
             flex.addItem()
                 .direction(.row)
                 .justifyContent(.spaceBetween)
-                .marginTop(5)
+                .marginTop(4)
                 .define { flex in
                     flex.addItem(messageLabel)
                         .grow(1)
