@@ -75,12 +75,12 @@ final class ProfileEditButton: UIButton {
             flex.addItem(profileImageView)
                 .width(176)
                 .height(176)
-                .marginLeft(21)
+                .marginLeft(20)
             
             flex.addItem(circleView)
                 .width(56)
                 .height(56)
-                .marginLeft(-35)
+                .marginLeft(-36)
                 .cornerRadius(28)
                 .justifyContent(.center)
                 .define { flex in

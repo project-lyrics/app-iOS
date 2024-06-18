@@ -61,9 +61,9 @@ final class GenderCell: UICollectionViewCell, Reusable {
                 .width(120)
                 .height(120)
                 .marginTop(28)
+            
             flex.addItem(descriptionLabel)
-                .marginTop(13)
-                .marginBottom(28)
+                .marginTop(8)
         }
     }
     
