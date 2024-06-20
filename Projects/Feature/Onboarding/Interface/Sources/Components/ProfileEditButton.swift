@@ -64,6 +64,7 @@ final class ProfileEditButton: UIButton {
         
         flexContainer.pin.all()
         flexContainer.flex.layout()
+        circleView.layer.cornerRadius = circleView.frame.width / 2
     }
     
     private func setUpLayout() {
@@ -74,20 +75,19 @@ final class ProfileEditButton: UIButton {
             .alignItems(.end)
             .define { flex in
             flex.addItem(profileImageView)
-                .width(176)
-                .height(176)
-                .marginLeft(20)
+                .width(45%)
+                .aspectRatio(1.0)
+                .marginLeft(5%)
             
             flex.addItem(circleView)
-                .width(56)
-                .height(56)
-                .marginLeft(-36)
-                .cornerRadius(28)
+                .width(14%)
+                .aspectRatio(1.0)
+                .marginLeft(-9%)
                 .justifyContent(.center)
                 .define { flex in
                     flex.addItem(editImageView)
-                        .width(24)
-                        .height(24)
+                        .width(42%)
+                        .aspectRatio(1.0)
                         .alignSelf(.center)
                 }
         }
