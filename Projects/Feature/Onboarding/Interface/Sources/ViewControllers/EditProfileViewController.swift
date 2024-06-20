@@ -10,7 +10,6 @@ import UIKit
 import Shared
 
 public final class EditProfileViewController: BottomSheetViewController<EditProfileView> {
-    
     public override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -40,7 +39,6 @@ public final class EditProfileViewController: BottomSheetViewController<EditProf
     @objc private func selectButtonDidTap() {
         dismiss(animated: true)
     }
-    
 }
 
 private extension EditProfileViewController {
@@ -62,7 +60,8 @@ extension EditProfileViewController: UICollectionViewDelegate {
         _ collectionView: UICollectionView,
         didSelectItemAt indexPath: IndexPath
     ) {
-        guard let cell = collectionView.cellForItem(at: indexPath) as? ProfileCharacterCell else {
+        guard let cell = collectionView.cellForItem(at: indexPath) as? ProfileCharacterCell
+        else {
             return
         }
         cell.setSelected(true)
@@ -72,7 +71,8 @@ extension EditProfileViewController: UICollectionViewDelegate {
         _ collectionView: UICollectionView,
         didDeselectItemAt indexPath: IndexPath
     ) {
-        guard let cell = collectionView.cellForItem(at: indexPath) as? ProfileCharacterCell else {
+        guard let cell = collectionView.cellForItem(at: indexPath) as? ProfileCharacterCell
+        else {
             return
         }
         cell.setSelected(false)
@@ -91,7 +91,10 @@ extension EditProfileViewController: UICollectionViewDataSource {
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(for: indexPath, cellType: ProfileCharacterCell.self)
+        let cell = collectionView.dequeueReusableCell(
+            for: indexPath,
+            cellType: ProfileCharacterCell.self
+        )
         cell.configure(with: ProfileCharacterType.allCases[indexPath.row])
         return cell
     }

@@ -40,6 +40,7 @@ final class ProfileEditButton: UIButton {
     private let editImageView = {
         let imageView = UIImageView()
         imageView.image = FeelinImages.pencil
+        imageView.contentMode = .scaleAspectFit
         return imageView
     }()
     

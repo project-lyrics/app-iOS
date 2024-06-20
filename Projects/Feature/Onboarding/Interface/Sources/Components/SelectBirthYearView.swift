@@ -23,7 +23,7 @@ public final class SelectBirthYearView: UIView {
         return button
     }()
     
-    lazy var pickerView = UIPickerView()
+    let pickerView = UIPickerView()
     
     // MARK: - init
     

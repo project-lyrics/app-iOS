@@ -17,7 +17,11 @@ final class ProfileCharacterCell: UICollectionViewCell, Reusable {
     
     // MARK: - components
     
-    private let imageView = UIImageView()
+    private let imageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        return imageView
+    }()
     
     // MARK: - init
     

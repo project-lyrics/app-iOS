@@ -40,9 +40,11 @@ final class ProfileView: UIView {
         return label
     }()
     
-    private lazy var nicknameTextFieldView = NicknameTextFieldView(maxNicknameLength: maxNicknameLength)
+    private lazy var nicknameTextFieldView = NicknameTextFieldView(
+        maxNicknameLength: maxNicknameLength
+    )
     
-    lazy var nextButton = FeelinConfirmButton(title: "다음")
+    let nextButton = FeelinConfirmButton(title: "다음")
     
     // MARK: - init
     

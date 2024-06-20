@@ -52,7 +52,7 @@ final class UserInformationView: UIView {
     
     let birthYearDropDownButton = FeelinDropDownButton(description: "출생 연도를 입력해주세요")
     
-    lazy var nextButton = FeelinConfirmButton(title: "다음")
+    let nextButton = FeelinConfirmButton(title: "다음")
     
     // MARK: - init
     

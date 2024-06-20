@@ -8,17 +8,17 @@
 import UIKit
 
 public enum ProfileCharacterType: CaseIterable {
-    case profileShortHair
-    case profileBraidedHair
-    case profile5To5PartedHair
-    case profilePoopHair
+    case shortHair
+    case braidedHair
+    case partedHair
+    case poopHair
     
     public var image: UIImage {
         switch self {
-        case .profileShortHair:         FeelinImages.profileShortHair
-        case .profileBraidedHair:       FeelinImages.profileBraidedHair
-        case .profile5To5PartedHair:    FeelinImages.profile5To5PartedHair
-        case .profilePoopHair:          FeelinImages.profilePoopHair
+        case .shortHair:    FeelinImages.profileShortHair
+        case .braidedHair:  FeelinImages.profileBraidedHair
+        case .partedHair:   FeelinImages.profile5To5PartedHair
+        case .poopHair:     FeelinImages.profilePoopHair
         }
     }
     

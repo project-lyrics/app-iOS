@@ -64,7 +64,8 @@ extension UserInformationViewController: UICollectionViewDelegate {
         _ collectionView: UICollectionView,
         didSelectItemAt indexPath: IndexPath
     ) {
-        guard let cell = collectionView.cellForItem(at: indexPath) as? GenderCell else {
+        guard let cell = collectionView.cellForItem(at: indexPath) as? GenderCell
+        else {
             return
         }
         cell.setSelected(true)
@@ -74,7 +75,8 @@ extension UserInformationViewController: UICollectionViewDelegate {
         _ collectionView: UICollectionView,
         didDeselectItemAt indexPath: IndexPath
     ) {
-        guard let cell = collectionView.cellForItem(at: indexPath) as? GenderCell else {
+        guard let cell = collectionView.cellForItem(at: indexPath) as? GenderCell
+        else {
             return
         }
         cell.setSelected(false)

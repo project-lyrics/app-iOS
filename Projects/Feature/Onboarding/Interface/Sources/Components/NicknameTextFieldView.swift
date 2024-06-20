@@ -37,16 +37,18 @@ final class NicknameTextFieldView: UIView {
         return view
     }()
     
-    private lazy var messageLabel = {
-        let label = createDescriptionLabel()
+    private let messageLabel = {
+        let label = UILabel()
         label.textColor = Colors.alertWarning
+        label.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 14)
         label.isHidden = true
         return label
     }()
     
     private lazy var lengthLabel = {
-        let label = createDescriptionLabel()
+        let label = UILabel()
         label.text = "0/\(maxNicknameLength)"
+        label.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 14)
         label.textColor = Colors.gray02
         label.textAlignment = .right
         return label
@@ -106,26 +108,18 @@ final class NicknameTextFieldView: UIView {
 }
 
 private extension NicknameTextFieldView {
-    func createDescriptionLabel() -> UILabel {
-        let label = UILabel()
-        label.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 14)
-        return label
-    }
-}
-
-private extension NicknameTextFieldView {
-    @objc private func textFieldEditingChanged(_ textField: UITextField) {
+    @objc func textFieldEditingChanged(_ textField: UITextField) {
         guard let text = textField.text else { return }
         updateLengthLabel(with: text)
         validateNickname(text)
     }
     
-    private func updateLengthLabel(with text: String) {
+    func updateLengthLabel(with text: String) {
         let currentNicknameLength = text.count
         lengthLabel.text = "\(currentNicknameLength)/\(maxNicknameLength)"
     }
     
-    private func validateNickname(_ text: String) {
+    func validateNickname(_ text: String) {
         let isCharactersValid = text.containsOnlyAllowedCharacters
         let isLengthValid = text.count <= maxNicknameLength
         
@@ -140,5 +134,13 @@ private extension NicknameTextFieldView {
         messageLabel.isHidden = isValid
         separator.backgroundColor = isValid ? Colors.gray02 : Colors.alertWarning
         lengthLabel.textColor = isLengthValid ? Colors.gray02 : Colors.alertWarning
+    }
+}
+
+private extension String {
+    var containsOnlyAllowedCharacters: Bool {
+        // 한글, 영문, 숫자만 포함되는 정규식
+        let regex = "^[ㄱ-ㅎ가-힣a-zA-Z0-9]*$"
+        return NSPredicate(format: "SELF MATCHES %@", regex).evaluate(with: self)
     }
 }

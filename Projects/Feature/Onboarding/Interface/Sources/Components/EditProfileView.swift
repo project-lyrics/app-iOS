@@ -33,7 +33,7 @@ public final class EditProfileView: UIView {
     
     let profileCharacterCollectionView = ProfileCharacterCollectionView()
     
-    lazy var selectButton = FeelinConfirmButton(title: "선택")
+    let selectButton = FeelinConfirmButton(title: "선택")
     
     // MARK: - init
     

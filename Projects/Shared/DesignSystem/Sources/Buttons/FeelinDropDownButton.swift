@@ -28,7 +28,7 @@ public final class FeelinDropDownButton: UIButton {
         return label
     }()
     
-    private lazy var dropDownImageView: UIImageView = {
+    private let dropDownImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = FeelinImages.caretDownLight
         imageView.contentMode = .scaleAspectFit
