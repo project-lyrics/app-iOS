@@ -44,11 +44,13 @@ final class ProfileView: UIView {
         maxLength: maxNicknameLength,
         placeholder: "텍스트",
         lengthExceededMessage: "1~10자의 닉네임을 사용해주세요",
-        invalidMessage: "공백, 특수문자, 이모티콘은 사용 불가합니다",
-        customValidation: { (nickname) in
-            let regex = "^[ㄱ-ㅎ가-힣a-zA-Z0-9]*$"
-            return NSPredicate(format: "SELF MATCHES %@", regex).evaluate(with: nickname)
-        }
+        validationRules: [
+            { (nickname) in
+                let regex = "^[ㄱ-ㅎ가-힣a-zA-Z0-9]*$"
+                let isValid = NSPredicate(format: "SELF MATCHES %@", regex).evaluate(with: nickname)
+                return (isValid, isValid ? nil : "공백, 특수문자, 이모티콘은 사용 불가합니다")
+            }
+        ]
     )
     
     let nextButton = FeelinConfirmButton(title: "다음")

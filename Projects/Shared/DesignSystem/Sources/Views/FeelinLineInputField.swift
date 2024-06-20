@@ -15,10 +15,8 @@ import PinLayout
 public final class FeelinLineInputField: UIView {
     private let maxLength: Int
     private let lengthExceededMessage: String?
-    private let validMessage: String?                   // customValidation 결과가 true일 때 표시할 메시지
-    private let invalidMessage: String?                 // customValidation 결과가 false일 때 표시할 메시지
-    private let customValidation: ((String) -> Bool)?   // 입력 텍스트 길이 외 다른 유효성 검사 조건을 정의하는 클로저
-    public var isValid = false                          // 전체 유효성 검사를 통과했는지 여부를 나타내는 플래그
+    private let validationRules: [((String) -> (Bool, String?))]?
+    public var isValid = false
     
     // MARK: - components
     
@@ -62,15 +60,11 @@ public final class FeelinLineInputField: UIView {
         maxLength: Int,
         placeholder: String?,
         lengthExceededMessage: String?,
-        validMessage: String? = nil,
-        invalidMessage: String? = nil,
-        customValidation: ((String) -> Bool)? = nil
+        validationRules: [((String) -> (Bool, String?))]?
     ) {
         self.maxLength = maxLength
         self.lengthExceededMessage = lengthExceededMessage
-        self.validMessage = validMessage
-        self.invalidMessage = invalidMessage
-        self.customValidation = customValidation
+        self.validationRules = validationRules
         
         super.init(frame: .zero)
         
@@ -134,19 +128,25 @@ private extension FeelinLineInputField {
     func validate(text: String) {
         let currentLength = text.count
         let isLengthValid = currentLength <= maxLength
-        let isCustomValid = customValidation?(text) ?? true
+        var isCustomValid = true
+        var validationMessage: String?
         
         lengthIndicatorLabel.text = "\(currentLength)/\(maxLength)"
         lengthIndicatorLabel.textColor = isLengthValid ? Colors.gray02 : Colors.alertWarning
         
-        if currentLength == 0 {
-            alertLabel.text = ""
-        } else if !isLengthValid {
-            alertLabel.text = lengthExceededMessage
+        if !isLengthValid {
+            validationMessage = lengthExceededMessage
         } else {
-            alertLabel.text = isCustomValid ? validMessage : invalidMessage
+            if let rules = validationRules {
+                for rule in rules {
+                    let (isRuleValid, message) = rule(text)
+                    isCustomValid = isRuleValid
+                    validationMessage = message
+                }
+            }
         }
         
+        alertLabel.text = validationMessage
         updateValidationState(isValid: isCustomValid && isLengthValid)
     }
     
