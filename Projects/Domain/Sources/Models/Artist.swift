@@ -20,6 +20,6 @@ public struct Artist: Hashable {
     ) {
         self.name = name
         self.image = image
-        self.isFavorite = false
+        self.isFavorite = isFavorite
     }
 }

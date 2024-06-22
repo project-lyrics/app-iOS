@@ -10,7 +10,7 @@ import UIKit
 import FlexLayout
 import PinLayout
 
-final public class FeelinSearchBar: UIView {
+public final class FeelinSearchBar: UIView {
     
     // MARK: - View
     

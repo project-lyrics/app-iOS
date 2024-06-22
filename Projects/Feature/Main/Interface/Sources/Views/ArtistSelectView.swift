@@ -9,7 +9,7 @@ import UIKit
 
 import Shared
 
-class ArtistSelectView: UIView {
+final class ArtistSelectView: UIView {
     
     // MARK: - UI Components
     
@@ -50,7 +50,7 @@ class ArtistSelectView: UIView {
         return label
     }()
     
-    private let subtitlelabel: UILabel = {
+    private let subtitleLabel: UILabel = {
         let label = UILabel()
         label.text = "노래와 가사를 공유할 수 있는 공간이 생성돼요"
         label.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 14)
@@ -68,6 +68,7 @@ class ArtistSelectView: UIView {
         self.setUpLayout()
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError()
     }
@@ -97,7 +98,7 @@ class ArtistSelectView: UIView {
                 .marginTop(38)
                 .marginHorizontal(20)
             
-            flex.addItem(subtitlelabel)
+            flex.addItem(subtitleLabel)
                 .marginTop(8)
                 .marginHorizontal(20)
             

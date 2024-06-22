@@ -64,37 +64,14 @@ public final class ArtistSelectViewController: UIViewController {
     
     // MARK: - Diffable DataSource
     
+    private typealias ArtistListDataSource = UICollectionViewDiffableDataSource<ArtistListSection, Artist>
+    private typealias ArtistListSnapshot = NSDiffableDataSourceSnapshot<ArtistListSection, Artist>
+    
     private enum ArtistListSection: CaseIterable {
         case main
     }
     
-    private var artistListDataSource: UICollectionViewDiffableDataSource<ArtistListSection, Artist>!
-    
-    // MARK: - View
-    
-    var artistSelectView: ArtistSelectView = .init()
-    
-    public override func loadView() {
-        self.view = artistSelectView
-    }
-    
-    public override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        self.configureDataSource()
-        self.assignDelegates()
-        
-        var snapshot = NSDiffableDataSourceSnapshot<ArtistListSection, Artist>()
-        snapshot.appendSections([.main])
-        snapshot.appendItems(artists, toSection: .main)
-        artistListDataSource.applySnapshotUsingReloadData(snapshot)
-    }
-    
-    private func assignDelegates() {
-        self.artistCollectionView.delegate = self
-    }
-    
-    private func configureDataSource() {
+    private lazy var artistListDataSource: ArtistListDataSource = {
         let artistCellRegistration = UICollectionView.CellRegistration<FeelinArtistCell, Artist> { cell, indexPath, artist in
             
             cell.configure(
@@ -106,15 +83,38 @@ public final class ArtistSelectViewController: UIViewController {
             cell.setArtistBorder(color: Colors.disabled)
         }
         
-        artistListDataSource = UICollectionViewDiffableDataSource(
-            collectionView: artistCollectionView,
+        return ArtistListDataSource(
+            collectionView: self.artistCollectionView,
             cellProvider: { collectionView, indexPath, artist -> FeelinArtistCell in
                 return collectionView.dequeueConfiguredReusableCell(
                     using: artistCellRegistration,
                     for: indexPath,
                     item: artist
                 )
-        })
+            })
+    }()
+    
+    // MARK: - View
+    
+    private var artistSelectView: ArtistSelectView = .init()
+    
+    public override func loadView() {
+        self.view = artistSelectView
+    }
+    
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        self.assignDelegates()
+        
+        var snapshot = ArtistListSnapshot()
+        snapshot.appendSections([.main])
+        snapshot.appendItems(artists, toSection: .main)
+        artistListDataSource.applySnapshotUsingReloadData(snapshot)
+    }
+    
+    private func assignDelegates() {
+        self.artistCollectionView.delegate = self
     }
 }
 

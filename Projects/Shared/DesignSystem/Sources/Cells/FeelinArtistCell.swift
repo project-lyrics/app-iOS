@@ -9,7 +9,6 @@ import UIKit
 
 import FlexLayout
 import PinLayout
-import SharedUtil
 
 public final class FeelinArtistCell: UICollectionViewCell {
     
