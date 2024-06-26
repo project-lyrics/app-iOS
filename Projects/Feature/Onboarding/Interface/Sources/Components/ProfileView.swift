@@ -40,18 +40,7 @@ final class ProfileView: UIView {
         return label
     }()
     
-    private lazy var nicknameTextFieldView = FeelinLineInputField(
-        maxLength: maxNicknameLength,
-        placeholder: "텍스트",
-        lengthExceededMessage: "1~10자의 닉네임을 사용해주세요",
-        validationRules: [
-            { (nickname) in
-                let regex = "^[ㄱ-ㅎ가-힣a-zA-Z0-9]*$"
-                let isValid = NSPredicate(format: "SELF MATCHES %@", regex).evaluate(with: nickname)
-                return (isValid, isValid ? nil : "공백, 특수문자, 이모티콘은 사용 불가합니다")
-            }
-        ]
-    )
+    private lazy var nicknameTextFieldView = FeelinLineInputField(placeholder: "닉네임")
     
     let nextButton = FeelinConfirmButton(title: "다음")
     
