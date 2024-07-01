@@ -105,7 +105,6 @@ public extension Project {
                 "UILaunchStoryboardName": "LaunchScreen",
                 "NSAppTransportSecurity": ["NSAllowsArbitraryLoads": true],
                 "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"],
-                "UIUserInterfaceStyle": "Light",
                 "UIApplicationSceneManifest": [
                     "UIApplicationSupportsMultipleScenes": true,
                     "UISceneConfigurations": [

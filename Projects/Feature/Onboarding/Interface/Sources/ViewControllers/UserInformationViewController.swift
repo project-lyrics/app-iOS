@@ -7,9 +7,11 @@
 
 import UIKit
 
-import SharedDesignSystem
+import Shared
 
 public final class UserInformationViewController: UIViewController {
+    private let baseBirthYear = 2000
+    
     private let userInformationView = UserInformationView()
     
     public override func loadView() {
@@ -19,8 +21,27 @@ public final class UserInformationViewController: UIViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
         
+        setUpAction()
         genderCollectionView.delegate = self
         genderCollectionView.dataSource = self
+    }
+    
+    private func setUpAction() {
+        birthYearDropDownButton.addTarget(
+            self,
+            action: #selector(birthYearDropDownButtonDidTap),
+            for: .touchUpInside
+        )
+    }
+    
+    @objc private func birthYearDropDownButtonDidTap() {
+        let selectBirthYearViewController = SelectBirthYearViewController(
+            bottomSheetHeight: 284,
+            baseYear: baseBirthYear
+        )
+        selectBirthYearViewController.modalPresentationStyle = .overFullScreen
+        selectBirthYearViewController.delegate = self
+        present(selectBirthYearViewController, animated: false)
     }
 }
 
@@ -43,7 +64,8 @@ extension UserInformationViewController: UICollectionViewDelegate {
         _ collectionView: UICollectionView,
         didSelectItemAt indexPath: IndexPath
     ) {
-        guard let cell = collectionView.cellForItem(at: indexPath) as? GenderCell else {
+        guard let cell = collectionView.cellForItem(at: indexPath) as? GenderCell
+        else {
             return
         }
         cell.setSelected(true)
@@ -53,7 +75,8 @@ extension UserInformationViewController: UICollectionViewDelegate {
         _ collectionView: UICollectionView,
         didDeselectItemAt indexPath: IndexPath
     ) {
-        guard let cell = collectionView.cellForItem(at: indexPath) as? GenderCell else {
+        guard let cell = collectionView.cellForItem(at: indexPath) as? GenderCell
+        else {
             return
         }
         cell.setSelected(false)
@@ -75,5 +98,11 @@ extension UserInformationViewController: UICollectionViewDataSource {
         let cell = collectionView.dequeueReusableCell(for: indexPath, cellType: GenderCell.self)
         cell.configure(with: GenderType.allCases[indexPath.row])
         return cell
+    }
+}
+
+extension UserInformationViewController: SelectBirthYearDelegate {
+    func setBitrhYear(year: Int) {
+        birthYearDropDownButton.setDescription("\(year)년")
     }
 }

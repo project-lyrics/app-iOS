@@ -7,8 +7,7 @@
 
 import UIKit
 
-import SharedDesignSystem
-import SharedUtil
+import Shared
 
 import FlexLayout
 import PinLayout
@@ -32,7 +31,6 @@ final class UserInformationView: UIView {
             "서비스 이용 현황 분석을 위해서만 활용되며\n다른 곳엔 사용되지 않아요",
             lineHeight: 20
         )
-        label.numberOfLines = 2
         label.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 14)
         label.textColor = Colors.gray04
         return label
@@ -54,7 +52,7 @@ final class UserInformationView: UIView {
     
     let birthYearDropDownButton = FeelinDropDownButton(description: "출생 연도를 입력해주세요")
     
-    lazy var nextButton = FeelinConfirmButton(title: "다음")
+    let nextButton = FeelinConfirmButton(title: "다음")
     
     // MARK: - init
     
@@ -81,23 +79,23 @@ final class UserInformationView: UIView {
     
     private func setUpLayout() {
         addSubview(flexContainer)
-        flexContainer.flex.padding(20).define { flex in
+        flexContainer.flex.paddingHorizontal(20).define { flex in
             flex.addItem(titleLabel)
-                .marginTop(46)
+                .marginTop(72)
             flex.addItem(subTitleLabel)
-                .marginTop(13)
+                .marginTop(8)
             
             flex.addItem(genderTitleLabel)
-                .marginTop(26)
+                .marginTop(24)
              flex.addItem(genderCollectionView)
                 .height(204)
-                .marginTop(13)
+                .marginTop(12)
             
             flex.addItem(birthYearTitleLabel)
-                .marginTop(26)
+                .marginTop(24)
             flex.addItem(birthYearDropDownButton)
                 .minHeight(52)
-                .marginTop(13)
+                .marginTop(12)
                 .cornerRadius(8)
             
             flex.addItem()
@@ -106,6 +104,7 @@ final class UserInformationView: UIView {
             flex.addItem(nextButton)
                 .minHeight(56)
                 .cornerRadius(8)
+                .marginBottom(23)
         }
     }
 }

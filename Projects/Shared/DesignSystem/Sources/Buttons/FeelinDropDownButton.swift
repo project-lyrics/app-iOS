@@ -28,7 +28,7 @@ public final class FeelinDropDownButton: UIButton {
         return label
     }()
     
-    private lazy var dropDownImageView: UIImageView = {
+    private let dropDownImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = FeelinImages.caretDownLight
         imageView.contentMode = .scaleAspectFit
@@ -48,15 +48,11 @@ public final class FeelinDropDownButton: UIButton {
         fatalError("init(coder:) has not been implemented")
     }
     
-    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        updateDropDownImageForCurrentTraitCollection()
-    }
-    
     // MARK: - layout
     
     public override func layoutSubviews() {
         super.layoutSubviews()
+        
         flexContainer.pin.all()
         flexContainer.flex.layout()
     }
@@ -88,15 +84,6 @@ public final class FeelinDropDownButton: UIButton {
         dropDownImageView.isHidden = true
         layer.borderWidth = 0
         backgroundColor = Colors.secondary
-    }
-    
-    private func updateDropDownImageForCurrentTraitCollection() {
-        switch traitCollection.userInterfaceStyle {
-        case .dark:
-            dropDownImageView.image = FeelinImages.caretDownLight
-        default:
-            dropDownImageView.image = FeelinImages.caretDownDark
-        }
     }
     
     public func setDescription(_ description: String?) {
