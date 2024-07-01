@@ -15,7 +15,7 @@ public final class FeelinLineInputField: UIView {
     
     private let flexContainer = UIView()
     
-    let textField = {
+    public let textField = {
         let textField = UITextField()
         textField.font = SharedDesignSystemFontFamily.Pretendard.semiBold.font(size: 16)
         textField.textColor = Colors.gray08
@@ -66,5 +66,9 @@ public final class FeelinLineInputField: UIView {
                 .height(1)
                 .marginTop(8)
         }
+    }
+    
+    public func setValid(_ isValid: Bool) {
+        separator.backgroundColor = isValid ? Colors.gray02 : Colors.alertWarning
     }
 }

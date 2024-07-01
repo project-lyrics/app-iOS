@@ -40,7 +40,23 @@ final class ProfileView: UIView {
         return label
     }()
     
-    private lazy var nicknameTextFieldView = FeelinLineInputField(placeholder: "닉네임")
+    private lazy var nicknameTextField = FeelinLineInputField(placeholder: "닉네임")
+    
+    private let alertLabel = {
+        let label = UILabel()
+        label.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 14)
+        label.textColor = Colors.alertWarning
+        return label
+    }()
+    
+    private lazy var lengthIndicatorLabel = {
+        let label = UILabel()
+        label.text = "0/\(maxNicknameLength)"
+        label.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 14)
+        label.textColor = Colors.gray02
+        label.textAlignment = .right
+        return label
+    }()
     
     let nextButton = FeelinConfirmButton(title: "다음")
     
@@ -51,6 +67,7 @@ final class ProfileView: UIView {
         
         backgroundColor = Colors.background
         setUpLayout()
+        setUpNicknameTextField()
     }
     
     @available(*, unavailable)
@@ -79,8 +96,19 @@ final class ProfileView: UIView {
             flex.addItem(guideLabel)
                 .marginTop(40)
             
-            flex.addItem(nicknameTextFieldView)
+            flex.addItem(nicknameTextField)
                 .marginTop(20)
+            
+            flex.addItem()
+                .direction(.row)
+                .justifyContent(.spaceBetween)
+                .marginTop(4)
+                .define { flex in
+                    flex.addItem(alertLabel)
+                        .grow(1)
+                    flex.addItem(lengthIndicatorLabel)
+                        .width(50)
+                }
             
             flex.addItem()
                 .grow(1)
@@ -90,5 +118,49 @@ final class ProfileView: UIView {
                 .cornerRadius(8)
                 .marginBottom(23)
         }
+    }
+    
+    private func setUpNicknameTextField() {
+        nicknameTextField.textField.addTarget(
+            self,
+            action: #selector(textFieldEditingChanged),
+            for: .editingChanged
+        )
+    }
+}
+
+private extension ProfileView {
+    @objc func textFieldEditingChanged(_ textField: UITextField) {
+        guard let text = textField.text else { return }
+        validate(text: text)
+    }
+    
+    func validate(text: String) {
+        let currentLength = text.count
+        let isLengthValid = currentLength <= maxNicknameLength
+        let isCharacterValid = text.containsOnlyAllowedCharacters
+        
+        lengthIndicatorLabel.text = "\(currentLength)/\(maxNicknameLength)"
+        lengthIndicatorLabel.textColor = isLengthValid ? Colors.gray02 : Colors.alertWarning
+        
+        if !isLengthValid {
+            alertLabel.text = "1~10자의 닉네임을 사용해주세요"
+        } else if !isCharacterValid {
+            alertLabel.text = "공백, 특수문자, 이모티콘은 사용 불가합니다"
+        }
+        
+        setNicknameValid(isLengthValid && isCharacterValid)
+    }
+    
+    func setNicknameValid(_ isValid: Bool) {
+        nicknameTextField.setValid(isValid)
+        alertLabel.isHidden = isValid
+    }
+}
+
+private extension String {
+    var containsOnlyAllowedCharacters: Bool {
+        let regex = "^[ㄱ-ㅎ가-힣a-zA-Z0-9]*$"
+        return NSPredicate(format: "SELF MATCHES %@", regex).evaluate(with: self)
     }
 }
