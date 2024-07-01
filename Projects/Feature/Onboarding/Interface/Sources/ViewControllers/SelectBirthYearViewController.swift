@@ -15,6 +15,8 @@ protocol SelectBirthYearDelegate: AnyObject {
 
 public final class SelectBirthYearViewController: BottomSheetViewController<SelectBirthYearView> {
     private let currentYear = Calendar.current.component(.year, from: Date())
+    private let minYear = Calendar.current.component(.year, from: Date()) - 100
+    private let maxYear = Calendar.current.component(.year, from: Date()) - 14
     private var selectedYear: Int
     
     weak var delegate: SelectBirthYearDelegate?
@@ -34,7 +36,7 @@ public final class SelectBirthYearViewController: BottomSheetViewController<Sele
         pickerView.delegate = self
         pickerView.dataSource = self
         
-        let baseYearIndex = baseYear - 1
+        let baseYearIndex = baseYear - minYear
         pickerView.selectRow(baseYearIndex, inComponent: 0, animated: false)
     }
     
@@ -68,7 +70,7 @@ extension SelectBirthYearViewController: UIPickerViewDelegate {
         titleForRow row: Int,
         forComponent component: Int
     ) -> String? {
-        let year = row + 1
+        let year = minYear + row
         return "\(year)"
     }
     
@@ -77,7 +79,7 @@ extension SelectBirthYearViewController: UIPickerViewDelegate {
         didSelectRow row: Int,
         inComponent component: Int
     ) {
-        let year = row + 1
+        let year = minYear + row
         selectedYear = year
     }
 }
@@ -91,6 +93,6 @@ extension SelectBirthYearViewController: UIPickerViewDataSource {
         _ pickerView: UIPickerView,
         numberOfRowsInComponent component: Int
     ) -> Int {
-        return currentYear // 1년부터 현재 연도까지
+        return maxYear - minYear + 1 // 14세부터 100세까지
     }
 }
