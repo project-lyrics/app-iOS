@@ -27,3 +27,5 @@ extension UILabel {
         self.attributedText = attrString
     }
 }
+
+extension UILabel: CombineCompatible {}
