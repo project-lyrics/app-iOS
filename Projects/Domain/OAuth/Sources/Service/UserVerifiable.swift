@@ -38,8 +38,8 @@ extension UserVerifiable {
 
                 recentLoginRecordService.save(oAuthType: type.rawValue)
             }
-            .map { oAuthType in
-                return OAuthResult(oAuthType: type)
+            .map { _ in
+                return OAuthResult.success(type)
             }
             .mapError({ error in
                 switch error {
