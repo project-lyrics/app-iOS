@@ -19,8 +19,8 @@ public final class LoginViewController: UIViewController {
     private let viewModel: LoginViewModel
     private var cancellables = Set<AnyCancellable>()
 
-    private var loginButtonTappedPublisher: PassthroughSubject<OAuthType, Never> = .init()
-    private var recentLoginPublisher: PassthroughSubject<Void, Never> = .init()
+    private var loginButtonTapped: PassthroughSubject<OAuthType, Never> = .init()
+    private var recentLoginLoaded: PassthroughSubject<Void, Never> = .init()
 
     public weak var coordinator: LoginViewControllerDelegate?
 
@@ -41,7 +41,7 @@ public final class LoginViewController: UIViewController {
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        recentLoginPublisher.send()
+        recentLoginLoaded.send()
     }
 
     public override func viewDidLoad() {
@@ -59,13 +59,13 @@ public final class LoginViewController: UIViewController {
     private func bindUI() {
         kakaoLoginButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in
-                self?.loginButtonTappedPublisher.send(.kakao)
+                self?.loginButtonTapped.send(.kakao)
             }
             .store(in: &cancellables)
 
         appleLoginButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in
-                self?.loginButtonTappedPublisher.send(.apple)
+                self?.loginButtonTapped.send(.apple)
             }
             .store(in: &cancellables)
 
@@ -77,9 +77,12 @@ public final class LoginViewController: UIViewController {
     }
 
     private func bind() {
+        let loginButtonTappedPublisher = loginButtonTapped.eraseToAnyPublisher()
+        let recentLoginPublisher = recentLoginLoaded.eraseToAnyPublisher()
+
         let input = LoginViewModel.Input(
-            loginButtonTappedPublisher: loginButtonTappedPublisher.eraseToAnyPublisher(), 
-            recentLoginPublisher: recentLoginPublisher.eraseToAnyPublisher()
+            loginButtonTappedPublisher: loginButtonTappedPublisher,
+            recentLoginPublisher: recentLoginPublisher
         )
 
         let output = viewModel.transform(input)
