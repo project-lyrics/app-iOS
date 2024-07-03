@@ -79,7 +79,7 @@ public final class LoginViewController: UIViewController {
     private func bind() {
         let input = LoginViewModel.Input(
             loginButtonTappedPublisher: loginButtonTappedPublisher.eraseToAnyPublisher(), 
-            viewWillAppear: recentLoginPublisher.eraseToAnyPublisher()
+            recentLoginPublisher: recentLoginPublisher.eraseToAnyPublisher()
         )
 
         let output = viewModel.transform(input)

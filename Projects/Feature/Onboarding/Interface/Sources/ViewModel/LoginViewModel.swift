@@ -12,7 +12,7 @@ import Foundation
 public final class LoginViewModel {
     public struct Input {
         let loginButtonTappedPublisher: AnyPublisher<OAuthType, Never>
-        let viewWillAppear: AnyPublisher<Void, Never>
+        let recentLoginPublisher: AnyPublisher<Void, Never>
     }
 
     public struct Output {
@@ -74,7 +74,7 @@ extension LoginViewModel {
 
 
     public func getRecentLoginRecord(input: Input) -> AnyPublisher<OAuthType, Never> {
-        input.viewWillAppear
+        input.recentLoginPublisher
             .flatMap { [weak self] () -> AnyPublisher<OAuthType, Never> in
                 guard let self = self else {
                     return Just(OAuthType.none).eraseToAnyPublisher()
