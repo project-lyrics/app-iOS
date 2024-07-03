@@ -26,13 +26,26 @@ public extension CombineCompatible where Self: UILabel {
     var tapPublisher: AnyPublisher<UILabel, Never> {
         let subject = PassthroughSubject<UILabel, Never>()
         let target = GestureRecognizerTarget(subject: subject, label: self)
-        let tapGestureRecognizer = UITapGestureRecognizer(target: target, action: #selector(GestureRecognizerTarget.handleTap(_:)))
+        let tapGestureRecognizer = UITapGestureRecognizer(
+            target: target,
+            action: #selector(GestureRecognizerTarget.handleTap(_:))
+        )
 
         self.isUserInteractionEnabled = true
         self.addGestureRecognizer(tapGestureRecognizer)
 
-        objc_setAssociatedObject(self, &AssociatedKeys.tapSubject, subject, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-        objc_setAssociatedObject(self, &AssociatedKeys.gestureRecognizerTarget, target, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        objc_setAssociatedObject(
+            self,
+            &AssociatedKeys.tapSubject,
+            subject,
+            .OBJC_ASSOCIATION_RETAIN_NONATOMIC
+        )
+        objc_setAssociatedObject(
+            self,
+            &AssociatedKeys.gestureRecognizerTarget,
+            target,
+            .OBJC_ASSOCIATION_RETAIN_NONATOMIC
+        )
 
         return subject.eraseToAnyPublisher()
     }
