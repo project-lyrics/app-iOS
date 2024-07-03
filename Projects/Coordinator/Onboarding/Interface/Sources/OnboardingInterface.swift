@@ -31,11 +31,11 @@ private extension OnboardingCoordinator {
     }
 
     func registerDependencies() {
+        DIContainer.registerRecentLoginRecordService()
         DIContainer.registerNetworkProvider(hasTokenStorage: true)
         DIContainer.registerUserValidityService()
         DIContainer.registerKakaoOAuthService()
         DIContainer.registerAppleOAuthService()
-        DIContainer.registerRecentLoginRecordService()
     }
 
     func loginDependencies() -> LoginViewModel {
