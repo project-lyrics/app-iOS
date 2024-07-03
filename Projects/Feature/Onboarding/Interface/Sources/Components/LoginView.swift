@@ -5,6 +5,7 @@
 //  Created by Derrick kim on 5/23/24.
 //
 
+import Domain
 import UIKit
 import PinLayout
 import FlexLayout
@@ -155,9 +156,9 @@ final class LoginView: UIView {
         ])
     }
 
-    func setUpRecentLoginRecordBallonView(_ isHidden: Bool) {
-        topBallonView.isHidden = isHidden
-        bottomBallonView.isHidden = !isHidden
+    func setUpRecentLoginRecordBallonView(_ type: OAuthType) {
+        topBallonView.isHidden = type == .apple ? false : true
+        bottomBallonView.isHidden = type == .kakao ? false : true
     }
 
     private func setUpDefault() {
