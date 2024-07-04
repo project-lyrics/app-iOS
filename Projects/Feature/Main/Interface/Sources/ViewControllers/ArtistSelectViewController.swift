@@ -17,47 +17,47 @@ public final class ArtistSelectViewController: UIViewController {
     var artists: [Artist] = [
         Artist.init(
             name: "검정치마",
-            image: UIImage(named: "검정치마")!
+            image: UIImage(named: "black_skirt")!
         ),
         Artist.init(
             name: "검엑스",
-            image: UIImage(named: "검엑스")!
+            image: UIImage(named: "gmx")!
         ),
         Artist.init(
             name: "갤럭시익스프레스",
-            image: UIImage(named: "갤럭시익스프레스")!
+            image: UIImage(named: "galaxy_express")!
         ),
         Artist.init(
             name: "국카스텐",
-            image: UIImage(named: "국카스텐")!
+            image: UIImage(named: "gkst")!
         ),
         Artist.init(
             name: "검은잎들",
-            image: UIImage(named: "검은잎들")!
+            image: UIImage(named: "black_leaves")!
         ),
         Artist.init(
             name: "글랜체크",
-            image: UIImage(named: "글랜체크")!
+            image: UIImage(named: "glen_check")!
         ),
         Artist.init(
             name: "넬(NELL)",
-            image: UIImage(named: "넬")!
+            image: UIImage(named: "nell")!
         ),
         Artist.init(
             name: "노브레인",
-            image: UIImage(named: "노브레인")!
+            image: UIImage(named: "no_brain")!
         ),
         Artist.init(
             name: "노리플라이",
-            image: UIImage(named: "노리플라이")!
+            image: UIImage(named: "no_reply")!
         ),
         Artist.init(
             name: "나상현씨\n밴드",
-            image: UIImage(named: "나상현씨밴드")!
+            image: UIImage(named: "nsh_band")!
         ),
         Artist.init(
             name: "내귀에도청장치설치했다가 너 혼남 진짜 혼남 리얼팩트",
-            image: UIImage(named: "내귀에도청장치")!
+            image: UIImage(named: "eavesdrop")!
         ),
     ]
     
