@@ -8,6 +8,7 @@
 import UIKit
 import FlexLayout
 import Combine
+import Domain
 
 public protocol LoginViewControllerDelegate: AnyObject {
     func didFinish()
@@ -17,6 +18,9 @@ public final class LoginViewController: UIViewController {
     private let loginView = LoginView()
     private let viewModel: LoginViewModel
     private var cancellables = Set<AnyCancellable>()
+
+    private var loginButtonTapped: PassthroughSubject<OAuthType, Never> = .init()
+    private var recentLoginLoaded: PassthroughSubject<Void, Never> = .init()
 
     public weak var coordinator: LoginViewControllerDelegate?
 
@@ -34,6 +38,12 @@ public final class LoginViewController: UIViewController {
         view = loginView
     }
 
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        recentLoginLoaded.send()
+    }
+
     public override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -42,16 +52,44 @@ public final class LoginViewController: UIViewController {
 
     private func setUpDefault() {
         loginView.configureLayouts()
-        addButtonTargets()
+        bindUI()
         bind()
-        viewModel.fetchRecentLoginRecord()
+    }
+
+    private func bindUI() {
+        kakaoLoginButton.publisher(for: .touchUpInside)
+            .sink { [weak self] _ in
+                self?.loginButtonTapped.send(.kakao)
+            }
+            .store(in: &cancellables)
+
+        appleLoginButton.publisher(for: .touchUpInside)
+            .sink { [weak self] _ in
+                self?.loginButtonTapped.send(.apple)
+            }
+            .store(in: &cancellables)
+
+        continueWithoutLoginLabel.tapPublisher
+            .sink { [weak self] _ in
+                self?.coordinator?.didFinish()
+            }
+            .store(in: &cancellables)
     }
 
     private func bind() {
-        viewModel.outputs.loginResultState
+        let loginButtonTappedPublisher = loginButtonTapped.eraseToAnyPublisher()
+        let recentLoginPublisher = recentLoginLoaded.eraseToAnyPublisher()
+
+        let input = LoginViewModel.Input(
+            loginButtonTappedPublisher: loginButtonTappedPublisher,
+            recentLoginPublisher: recentLoginPublisher
+        )
+
+        let output = viewModel.transform(input)
+        output.loginResult
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] state in
-                switch state {
+            .sink { [weak self] result in
+                switch result {
                 case .success:
                     self?.coordinator?.didFinish()
                 case .failure(let error):
@@ -60,50 +98,17 @@ public final class LoginViewController: UIViewController {
             }
             .store(in: &cancellables)
 
-        viewModel.outputs.recentLoginRecord
+        output.recentLoginResult
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] type in
                 switch type {
                 case .none:
                     break
-                case .apple:
-                    self?.loginView.setUpRecentLoginRecordBallonView(true)
-                case .kakao:
-                    self?.loginView.setUpRecentLoginRecordBallonView(false)
+                default:
+                    self?.loginView.setUpRecentLoginRecordBallonView(type)
                 }
             }
             .store(in: &cancellables)
-    }
-
-    private func addButtonTargets() {
-        appleLoginButton.addTarget(
-            self,
-            action: #selector(appleLoginButtonTapped),
-            for: .touchUpInside
-        )
-
-        kakaoLoginButton.addTarget(
-            self,
-            action: #selector(kakaoLoginButtonTapped),
-            for: .touchUpInside
-        )
-
-        let tapGesture = UITapGestureRecognizer(
-            target: self,
-            action: #selector(continueWithoutLoginLabelTapped)
-        )
-        continueWithoutLoginLabel.addGestureRecognizer(tapGesture)
-    }
-
-    @objc private func appleLoginButtonTapped(_ sender: UIButton) {
-        viewModel.inputs.appleLogin()
-    }
-
-    @objc private func kakaoLoginButtonTapped(_ sender: UIButton) {
-        viewModel.inputs.kakaoLogin()
-    }
-
-    @objc private func continueWithoutLoginLabelTapped(_ sender: UIGestureRecognizer) {
-        coordinator?.didFinish()
     }
 }
 

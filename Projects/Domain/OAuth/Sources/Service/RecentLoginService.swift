@@ -9,12 +9,10 @@ import Combine
 import DomainOAuthInterface
 
 extension RecentLoginRecordService: RecentLoginRecordServiceInterface {
-    public func getRecentLoginRecord() -> AnyPublisher<OAuthType, RecordError> {
+    public func getRecentLoginRecord() -> AnyPublisher<OAuthType, Never> {
         return Future { [weak self] promise in
             if let record = self?.recentLocalStorage.getRecentLoginRecord() {
                 promise(.success(OAuthType(rawValue: record) ?? .none))
-            } else {
-                promise(.failure(.fetchError))
             }
         }
         .eraseToAnyPublisher()

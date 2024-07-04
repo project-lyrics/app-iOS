@@ -8,15 +8,12 @@
 import Foundation
 
 public enum OAuthType: String {
-    case kakao
-    case apple
+    case kakao = "KAKAO"
+    case apple = "APPLE"
     case none
 }
 
-public struct OAuthResult: Equatable {
-    public let oAuthType: OAuthType
-    
-    public init(oAuthType: OAuthType) {
-        self.oAuthType = oAuthType
-    }
+public enum OAuthResult: Equatable {
+    case success(OAuthType)
+    case failure(String)
 }

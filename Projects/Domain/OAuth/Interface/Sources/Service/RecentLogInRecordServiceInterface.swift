@@ -12,7 +12,7 @@ import Foundation
 import KakaoSDKUser
 
 public protocol RecentLoginRecordServiceInterface {
-    func getRecentLoginRecord() -> AnyPublisher<OAuthType, RecordError>
+    func getRecentLoginRecord() -> AnyPublisher<OAuthType, Never>
     func save(oAuthType: String)
 }
 

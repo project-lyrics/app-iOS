@@ -1,28 +1,32 @@
 //
-//  OnboardingView.swift
+//  LoginView.swift
 //  FeatureOnboardingInterface
 //
 //  Created by Derrick kim on 5/23/24.
 //
 
+import Domain
 import UIKit
 import PinLayout
 import FlexLayout
 import SharedDesignSystem
 
-final class OnboardingView: UIView {
+final class LoginView: UIView {
     private let rootFlexContainer = UIView()
 
     private let titleLabel = {
         let label = UILabel()
+        label.textColor = Colors.gray09
         label.textAlignment = .center
         label.font = SharedDesignSystemFontFamily.Pretendard.extraBold.font(size: 72)
         label.text = "Feelin"
+
         return label
     }()
 
     private let messageLabel = {
         let label = UILabel()
+        label.textColor = Colors.gray05
         label.textAlignment = .center
         label.text = "이야기로 음악을 느끼다, 이야기로 음악을 채우다"
         label.font = SharedDesignSystemFontFamily.Pretendard.medium.font(size: 16)
@@ -30,7 +34,7 @@ final class OnboardingView: UIView {
         return label
     }()
 
-    private let continueWithoutLoginLabel = {
+    lazy var continueWithoutLoginLabel = {
         let label = UILabel()
         label.text = "회원가입은 나중에! 둘러볼게요"
         label.textColor = Colors.gray04
@@ -47,6 +51,7 @@ final class OnboardingView: UIView {
             )
         )
         label.attributedText = attributeString
+        label.isUserInteractionEnabled = true
 
         return label
     }()
@@ -60,7 +65,7 @@ final class OnboardingView: UIView {
         return imageView
     }()
 
-    private let appleLoginButton = {
+    lazy var appleLoginButton = {
         let button = UIButton()
         button.setTitle("Apple로 시작하기", for: .normal)
         button.titleLabel?.font = SharedDesignSystemFontFamily.EncodeSans.semiBold.font(size: 16)
@@ -73,7 +78,7 @@ final class OnboardingView: UIView {
         return button
     }()
 
-    private let kakaoLoginButton = {
+    lazy var kakaoLoginButton = {
         let button = UIButton()
         button.setTitle("카카오로 시작하기", for: .normal)
         button.titleLabel?.font = SharedDesignSystemFontFamily.Pretendard.semiBold.font(size: 16)
@@ -85,16 +90,19 @@ final class OnboardingView: UIView {
         return button
     }()
 
+    private let topBallonView = BalloonView()
+    private let bottomBallonView = BalloonView()
+
     init() {
         super.init(frame: .zero)
-        backgroundColor = .white
 
-        [logoBeltImageView, rootFlexContainer]
-            .forEach { addSubview($0) }
+        setUpDefault()
+        addUIComponents()
     }
 
+    @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
+        fatalError()
     }
 
     override func layoutSubviews() {
@@ -129,12 +137,36 @@ final class OnboardingView: UIView {
         }
         .margin(0, 10, 0, 10)
 
+        rootFlexContainer.flex.layout()
+
         NSLayoutConstraint.activate([
             logoBeltImageView.topAnchor.constraint(equalTo: rootFlexContainer.topAnchor, constant: 205),
             logoBeltImageView.leadingAnchor.constraint(equalTo: leadingAnchor),
             logoBeltImageView.trailingAnchor.constraint(equalTo: trailingAnchor)
         ])
 
-        rootFlexContainer.flex.layout()
+        NSLayoutConstraint.activate([
+            topBallonView.bottomAnchor.constraint(equalTo: appleLoginButton.topAnchor, constant: 13),
+            topBallonView.trailingAnchor.constraint(equalTo: appleLoginButton.trailingAnchor, constant: -4)
+        ])
+
+        NSLayoutConstraint.activate([
+            bottomBallonView.bottomAnchor.constraint(equalTo: kakaoLoginButton.topAnchor, constant: 13),
+            bottomBallonView.trailingAnchor.constraint(equalTo: kakaoLoginButton.trailingAnchor, constant: -4)
+        ])
+    }
+
+    func setUpRecentLoginRecordBallonView(_ type: OAuthType) {
+        topBallonView.isHidden = type == .apple ? false : true
+        bottomBallonView.isHidden = type == .kakao ? false : true
+    }
+
+    private func setUpDefault() {
+        backgroundColor = Colors.background
+    }
+
+    private func addUIComponents() {
+        [logoBeltImageView, rootFlexContainer, topBallonView, bottomBallonView]
+            .forEach { addSubview($0) }
     }
 }

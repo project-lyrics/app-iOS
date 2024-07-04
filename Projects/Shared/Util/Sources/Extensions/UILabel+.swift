@@ -28,3 +28,5 @@ extension UILabel {
         self.numberOfLines = 0
     }
 }
+
+extension UILabel: CombineCompatible {}

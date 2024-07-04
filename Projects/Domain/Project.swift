@@ -14,7 +14,6 @@ let targets: [Target] = [
         factory: .init(
             dependencies: [
                 .core,
-                .domain(implements: .PostTextUseCase),
                 .domain(implements: .OAuth)
             ]
         )
