@@ -14,13 +14,13 @@ final class CheckBoxButton: UIButton {
     
     private var uncheckedImage: UIImage = SharedDesignSystem.FeelinImages.checkBoxInactive
     private var checkedImage = SharedDesignSystem.FeelinImages.checkBoxActive
-    
-    private (set) public var isChecked: Bool = false {
+
+    public override var isSelected: Bool {
         didSet {
             updateImage()
         }
     }
-    
+
     // MARK: - View
     private var checkBoxImageView: UIImageView = {
         let imageView = UIImageView(image: SharedDesignSystem.FeelinImages.checkBoxInactive)
@@ -78,12 +78,11 @@ final class CheckBoxButton: UIButton {
     }
     
     @objc private func buttonTapped() {
-        isChecked.toggle()
         isSelected.toggle()
     }
     
     private func updateImage() {
-        let image = isChecked ? checkedImage : uncheckedImage
+        let image = isSelected ? checkedImage : uncheckedImage
         self.checkBoxImageView.image = image
     }
     
@@ -91,7 +90,8 @@ final class CheckBoxButton: UIButton {
         flexContainer.isUserInteractionEnabled = false
         
         flexContainer.flex
-            .alignSelf(.center)
+            .direction(.row)
+            .alignItems(.center)
             .direction(.row).define { flex in
             flex.addItem(checkBoxImageView)
                 .marginLeft(18)
