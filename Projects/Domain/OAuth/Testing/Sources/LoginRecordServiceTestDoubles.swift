@@ -11,7 +11,7 @@ import Foundation
 import DomainOAuthInterface
 
 public final class DummyLoginRecordService: RecentLoginRecordServiceInterface {
-    public func getRecentLoginRecord() -> AnyPublisher<OAuthType, RecordError> {
+    public func getRecentLoginRecord() -> AnyPublisher<OAuthType, Never> {
         return Empty().eraseToAnyPublisher()
     }
     
