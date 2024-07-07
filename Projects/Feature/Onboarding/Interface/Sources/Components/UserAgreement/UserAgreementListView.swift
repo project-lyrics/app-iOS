@@ -12,6 +12,7 @@ import UIKit
 import Domain
 
 final class UseAgreementListView: UIView {
+
     private let flexContainer = UIView()
 
     @available(*, unavailable)
@@ -45,15 +46,15 @@ final class UseAgreementListView: UIView {
     }()
 
     lazy var ageAgreeButton: UIButton = {
-        return self.createAgreementButton("만 14세 이상 가입 동의")
+        return self.createAgreementButton(TermEntity.ageAgree.title)
     }()
 
     lazy var serviceUsageAgreeButton: UIButton = {
-        return self.createAgreementButton("서비스 이용약관 동의")
+        return self.createAgreementButton(TermEntity.serviceUsage.title)
     }()
 
     lazy var personalInfoAgreeButton: UIButton = {
-        return self.createAgreementButton("개인정보처리방침 동의")
+        return self.createAgreementButton(TermEntity.personalInfo.title)
     }()
 
     lazy var checkServiceUsageButton: UIButton = {
@@ -70,11 +71,21 @@ final class UseAgreementListView: UIView {
         super.init(frame: .zero)
 
         addSubview(flexContainer)
+        configureLayouts()
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        flexContainer.pin.all()
 
         flexContainer.flex
-            .paddingHorizontal(20)
-            .define { flex in
+            .layout()
+    }
 
+    private func configureLayouts() {        
+        flexContainer.flex.paddingHorizontal(20)
+            .define { flex in
                 flex.addItem(allAgreeButton)
                     .marginTop(32)
                     .height(52)
@@ -106,15 +117,6 @@ final class UseAgreementListView: UIView {
                     .height(28)
         }
         .backgroundColor(Colors.background)
-    }
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-
-        flexContainer.pin.all()
-
-        flexContainer.flex
-            .layout()
     }
 }
 

@@ -6,10 +6,35 @@
 //
 
 import FlexLayout
+import PinLayout
 import SharedDesignSystem
 import UIKit
+import Combine
+import Core
+import Domain
+
+public protocol UseAgreementViewControllerDelegate: AnyObject {
+    func showUserInformationViewController(model: UserSignUpEntity)
+    func showServiceUsageViewController()
+    func showPersonalInfoUsageViewController()
+    func popViewController()
+}
 
 public final class UseAgreementViewController: UIViewController {
+
+    private let navigationBar = NavigationBar()
+
+    private lazy var backButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+
+        let userInterfaceStyle = traitCollection.userInterfaceStyle
+        let image = userInterfaceStyle == .light ? FeelinImages.backLight : FeelinImages.backDark
+        button.setImage(image, for: .normal)
+
+        return button
+    }()
+
     // MARK: - View
     private var agreementTitleLabel: UILabel = {
         let label = UILabel()
@@ -30,14 +55,44 @@ public final class UseAgreementViewController: UIViewController {
     }()
 
     private let rootFlexContainer: UIView = .init()
+    private var cancellables = Set<AnyCancellable>()
+    private var model: UserSignUpEntity
+    public weak var coordinator: UseAgreementViewControllerDelegate?
+
     // MARK: - init
-    public init() {
+    public init(model: UserSignUpEntity) {
+        self.model = model
         super.init(nibName: nil, bundle: nil)
+
+        setUpDefault()
+        bind()
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError()
+    }
+
+    public override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        rootFlexContainer.pin.all(self.view.pin.safeArea)
+        rootFlexContainer.flex.layout()
+    }
+
+    private func setUpDefault() {
         self.view.backgroundColor = Colors.background
         self.view.addSubview(rootFlexContainer)
+
+        navigationBar.addLeftBarView(backButton)
+
         rootFlexContainer.flex.define { flex in
+            flex.addItem(navigationBar)
+                .height(44)
+                .marginHorizontal(20)
+
             flex.addItem(agreementTitleLabel)
-                .marginTop(46)
+                .marginTop(28)
                 .marginHorizontal(20)
 
             flex.addItem(useAgreementListView)
@@ -51,7 +106,64 @@ public final class UseAgreementViewController: UIViewController {
                 .cornerRadius(8)
         }
     }
+
+    private func bind() {
+        let ageAgreePublisher = ageAgreeButton.publisher(for: .touchUpInside)
+        let serviceUsageAgreePublisher = serviceUsageAgreeButton.publisher(for: .touchUpInside)
+        let personalInfoAgreePublisher = personalInfoAgreeButton.publisher(for: .touchUpInside)
+
+        Publishers.CombineLatest3(
+            ageAgreePublisher,
+            serviceUsageAgreePublisher,
+            personalInfoAgreePublisher
+        )
+        .sink { [weak self] ageAgreed, serviceUsageAgreed, personalInfoAgreed in
+            let isSelected = ageAgreed.isSelected && serviceUsageAgreed.isSelected && personalInfoAgreed.isSelected
+            self?.allAgreeButton.isSelected = isSelected
+            self?.startButton.isEnabled = isSelected
+        }
+        .store(in: &cancellables)
+
+        allAgreeButton.publisher(for: .touchUpInside)
+            .sink { [weak self] _ in
+                self?.allAgreeButtonTapped()
+            }
+            .store(in: &cancellables)
+
+        checkServiceUsageButton.publisher(for: .touchUpInside)
+            .sink { [weak self] _ in
+                self?.coordinator?.showServiceUsageViewController()
+            }
+            .store(in: &cancellables)
+
+        checkPersonalInfoUsageButton.publisher(for: .touchUpInside)
+            .sink { [weak self] _ in
+                self?.coordinator?.showPersonalInfoUsageViewController()
+            }
+            .store(in: &cancellables)
+
+        startButton.publisher(for: .touchUpInside)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                let terms = TermEntity.defaultTerms.map { $0.toDTO() }
+                model.terms = terms
+                coordinator?.showUserInformationViewController(model: model)
+            }
+            .store(in: &cancellables)
+
+        backButton.publisher(for: .touchUpInside)
+            .sink { [weak self] _ in
+                self?.coordinator?.popViewController()
+            }
+            .store(in: &cancellables)
     }
+
+    private func allAgreeButtonTapped() {
+        let isSelected = allAgreeButton.isSelected
+        ageAgreeButton.isSelected = isSelected
+        serviceUsageAgreeButton.isSelected = isSelected
+        personalInfoAgreeButton.isSelected = isSelected
+        startButton.isEnabled = isSelected
     }
 }
 
