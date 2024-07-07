@@ -30,7 +30,7 @@ public final class LoginViewController: UIViewController {
     }
 
     @available(*, unavailable)
-    public required init?(coder: NSCoder) {
+    required init?(coder: NSCoder) {
         fatalError()
     }
 

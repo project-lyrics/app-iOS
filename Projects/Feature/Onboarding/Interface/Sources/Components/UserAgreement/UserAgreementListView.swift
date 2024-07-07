@@ -7,9 +7,9 @@
 
 import FlexLayout
 import PinLayout
-import SharedDesignSystem
-import SharedUtil
+import Shared
 import UIKit
+import Domain
 
 final class UseAgreementListView: UIView {
     private let flexContainer = UIView()

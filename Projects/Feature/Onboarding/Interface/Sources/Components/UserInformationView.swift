@@ -8,7 +8,7 @@
 import UIKit
 
 import Shared
-
+import Combine
 import FlexLayout
 import PinLayout
 
@@ -53,7 +53,7 @@ final class UserInformationView: UIView {
     let birthYearDropDownButton = FeelinDropDownButton(description: "출생 연도를 입력해주세요")
     
     let nextButton = FeelinConfirmButton(title: "다음")
-    
+
     // MARK: - init
     
     override init(frame: CGRect) {
@@ -69,7 +69,7 @@ final class UserInformationView: UIView {
     }
     
     // MARK: - layout
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
 

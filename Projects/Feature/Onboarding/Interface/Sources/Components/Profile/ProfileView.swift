@@ -14,21 +14,21 @@ import PinLayout
 
 final class ProfileView: UIView {
     private let maxNicknameLength = 10
-    
+
     // MARK: - components
-    
     private let flexContainer = UIView()
-    
+
     private let titleLabel = {
         let label = UILabel()
         label.text = "프로필을 설정해주세요"
         label.font = SharedDesignSystemFontFamily.Pretendard.bold.font(size: 24)
         label.textColor = Colors.gray08
+
         return label
     }()
-    
+
     let profileEditButton = ProfileEditButton()
-    
+
     private lazy var guideLabel = {
         let label = UILabel()
         label.setTextWithLineHeight(
@@ -37,68 +37,72 @@ final class ProfileView: UIView {
         )
         label.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 14)
         label.textColor = Colors.gray04
+
         return label
     }()
     
     private lazy var nicknameTextField = FeelinLineInputField(placeholder: "닉네임")
     
+
     private let alertLabel = {
         let label = UILabel()
         label.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 14)
         label.textColor = Colors.alertWarning
         return label
     }()
-    
+
     private lazy var lengthIndicatorLabel = {
         let label = UILabel()
         label.text = "0/\(maxNicknameLength)"
         label.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 14)
         label.textColor = Colors.gray02
         label.textAlignment = .right
+
         return label
     }()
-    
+
     let nextButton = FeelinConfirmButton(title: "다음")
-    
+
     // MARK: - init
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+
         backgroundColor = Colors.background
         setUpLayout()
         setUpNicknameTextField()
     }
-    
+
     @available(*, unavailable)
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        fatalError()
     }
-    
+
     // MARK: - layout
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
-        
+
         flexContainer.pin.all(pin.safeArea)
         flexContainer.flex.layout()
     }
-    
+
     private func setUpLayout() {
         addSubview(flexContainer)
         flexContainer.flex.paddingHorizontal(20).define { flex in
             flex.addItem(titleLabel)
                 .marginTop(72)
             
+
             flex.addItem(profileEditButton)
                 .marginTop(40)
-            
+
             flex.addItem(guideLabel)
                 .marginTop(40)
-            
+
             flex.addItem(nicknameTextField)
                 .marginTop(20)
-            
+
             flex.addItem()
                 .direction(.row)
                 .justifyContent(.spaceBetween)
@@ -109,17 +113,17 @@ final class ProfileView: UIView {
                     flex.addItem(lengthIndicatorLabel)
                         .width(50)
                 }
-            
+
             flex.addItem()
                 .grow(1)
-            
+
             flex.addItem(nextButton)
                 .minHeight(56)
                 .cornerRadius(8)
                 .marginBottom(23)
         }
     }
-    
+
     private func setUpNicknameTextField() {
         nicknameTextField.textField.addTarget(
             self,
@@ -134,24 +138,24 @@ private extension ProfileView {
         guard let text = textField.text else { return }
         validate(text: text)
     }
-    
+
     func validate(text: String) {
         let currentLength = text.count
         let isLengthValid = currentLength <= maxNicknameLength
         let isCharacterValid = text.containsOnlyAllowedCharacters
-        
+
         lengthIndicatorLabel.text = "\(currentLength)/\(maxNicknameLength)"
         lengthIndicatorLabel.textColor = isLengthValid ? Colors.gray02 : Colors.alertWarning
-        
+
         if !isLengthValid {
             alertLabel.text = "1~10자의 닉네임을 사용해주세요"
         } else if !isCharacterValid {
             alertLabel.text = "공백, 특수문자, 이모티콘은 사용 불가합니다"
         }
-        
+
         setNicknameValid(isLengthValid && isCharacterValid)
     }
-    
+
     func setNicknameValid(_ isValid: Bool) {
         nicknameTextField.setValid(isValid)
         alertLabel.isHidden = isValid

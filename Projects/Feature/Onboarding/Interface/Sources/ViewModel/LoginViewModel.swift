@@ -14,18 +14,14 @@ public final class LoginViewModel {
         let loginButtonTappedPublisher: AnyPublisher<OAuthType, Never>
         let recentLoginPublisher: AnyPublisher<Void, Never>
     }
-    
+
     public struct Output {
         let loginResult: AnyPublisher<OAuthResult, Never>
         let recentLoginResult: AnyPublisher<OAuthType, Never>
     }
-    
-    private var cancellables = Set<AnyCancellable>()
-    
     private let kakaoOAuthLoginUseCase: OAuthLoginUseCase
     private let appleOAuthLoginUseCase: OAuthLoginUseCase
     private let recentLoginRecordService: RecentLoginRecordServiceInterface
-    
     public init(
         kakaoOAuthLoginUseCase: OAuthLoginUseCase,
         appleOAuthLoginUseCase: OAuthLoginUseCase,
@@ -35,7 +31,7 @@ public final class LoginViewModel {
         self.appleOAuthLoginUseCase = appleOAuthLoginUseCase
         self.recentLoginRecordService = recentLoginRecordService
     }
-    
+
     func transform(_ input: Input) -> Output {
         return Output(
             loginResult: self.login(input: input),
@@ -56,7 +52,7 @@ extension LoginViewModel {
             }
             .eraseToAnyPublisher()
     }
-    
+
     private func kakaoLogin() -> AnyPublisher<OAuthResult, Never> {
         return self.kakaoOAuthLoginUseCase.execute()
             .catch { error -> AnyPublisher<OAuthResult, Never> in
@@ -64,7 +60,7 @@ extension LoginViewModel {
             }
             .eraseToAnyPublisher()
     }
-    
+
     private func appleLogin() -> AnyPublisher<OAuthResult, Never> {
         return self.appleOAuthLoginUseCase.execute()
             .catch { error -> AnyPublisher<OAuthResult, Never> in
@@ -72,14 +68,14 @@ extension LoginViewModel {
             }
             .eraseToAnyPublisher()
     }
-    
+
     public func getRecentLoginRecord(input: Input) -> AnyPublisher<OAuthType, Never> {
         input.recentLoginPublisher
             .flatMap { [weak self] () -> AnyPublisher<OAuthType, Never> in
                 guard let self = self else {
                     return Just(OAuthType.none).eraseToAnyPublisher()
                 }
-                
+
                 return recentLoginRecordService.getRecentLoginRecord()
                     .eraseToAnyPublisher()
             }

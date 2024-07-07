@@ -1,9 +1,12 @@
 import UIKit
-import CoordinatorAppInterface
-import FeatureOnboardingInterface
-import DependencyInjection
-import DomainOAuthInterface
+
 import CoordinatorMainInterface
+import CoordinatorAppInterface
+import Core
+
+import Domain
+import DependencyInjection
+import FeatureOnboardingInterface
 
 public final class OnboardingCoordinator: Coordinator {
     public weak var delegate: CoordinatorDelegate?
@@ -16,7 +19,7 @@ public final class OnboardingCoordinator: Coordinator {
     }
 
     public func start() {
-        registerDependencies()
+        registerLoginDependencies()
         configureLoginController()
     }
 }
@@ -30,7 +33,7 @@ private extension OnboardingCoordinator {
         navigationController.pushViewController(viewController, animated: false)
     }
 
-    func registerDependencies() {
+    func registerLoginDependencies() {
         DIContainer.registerRecentLoginRecordService()
         DIContainer.registerNetworkProvider(hasTokenStorage: true)
         DIContainer.registerUserValidityService()
