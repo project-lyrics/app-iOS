@@ -27,6 +27,12 @@ public struct Term: Encodable {
     let agree: Bool
     let title: String
     let agreement: String
+
+    public init(agree: Bool, title: String, agreement: String) {
+        self.agree = agree
+        self.title = title
+        self.agreement = agreement
+    }
 }
 
 // MARK: - UserSignUpRequest
@@ -38,4 +44,20 @@ public struct UserSignUpRequest: Encodable {
     let gender: Gender
     let birthYear: String
     let terms: [Term]
+
+    public init(
+        socialAccessToken: String,
+        authProvider: OAuthProvider,
+        username: String,
+        gender: Gender,
+        birthYear: String,
+        terms: [Term]
+    ) {
+        self.socialAccessToken = socialAccessToken
+        self.authProvider = authProvider
+        self.username = username
+        self.gender = gender
+        self.birthYear = birthYear
+        self.terms = terms
+    }
 }
