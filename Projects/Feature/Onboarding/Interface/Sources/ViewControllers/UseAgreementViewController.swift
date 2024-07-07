@@ -92,6 +92,7 @@ public final class UseAgreementViewController: UIViewController {
                 .marginHorizontal(20)
 
             flex.addItem(agreementTitleLabel)
+                .marginTop(46)
                 .marginTop(28)
                 .marginHorizontal(20)
 
