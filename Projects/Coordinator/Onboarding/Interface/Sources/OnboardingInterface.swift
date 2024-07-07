@@ -35,7 +35,7 @@ private extension OnboardingCoordinator {
 
     func registerLoginDependencies() {
         DIContainer.registerRecentLoginRecordService()
-        DIContainer.registerNetworkProvider(hasTokenStorage: true)
+        DIContainer.registerNetworkProvider(hasTokenStorage: false)
         DIContainer.registerUserValidityService()
         DIContainer.registerKakaoOAuthService()
         DIContainer.registerAppleOAuthService()
@@ -61,7 +61,36 @@ private extension OnboardingCoordinator {
 }
 
 extension OnboardingCoordinator: CoordinatorDelegate,
-                                 LoginViewControllerDelegate {
+                                 LoginViewControllerDelegate,
+                                 UseAgreementViewControllerDelegate,
+                                 UserInformationViewControllerDelegate,
+                                 ProfileViewControllerDelegate {
+    public func showUseAgreementViewController(model: UserSignUpEntity) {
+        let viewController = UseAgreementViewController(model: model)
+        viewController.coordinator = self
+        navigationController.pushViewController(viewController, animated: true)
+    }
+
+    public func showServiceUsageViewController() {
+
+    }
+
+    public func showPersonalInfoUsageViewController() {
+
+    }
+
+    public func showUserInformationViewController(model: UserSignUpEntity) {
+        let viewController = UserInformationViewController(model: model)
+        viewController.coordinator = self
+        navigationController.pushViewController(viewController, animated: true)
+    }
+
+    public func showProfileViewController(model: UserSignUpEntity) {
+        let viewController = ProfileViewController(model: model)
+        viewController.coordinator = self
+        navigationController.pushViewController(viewController, animated: true)
+    }
+
     public func didFinish() {
         didFinish(childCoordinator: self)
     }
