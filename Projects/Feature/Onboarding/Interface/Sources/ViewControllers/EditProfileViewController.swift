@@ -6,13 +6,47 @@
 //
 
 import UIKit
+import Combine
 import Shared
 
 public final class EditProfileViewController: BottomSheetViewController<EditProfileView> {
+    private var cancellables = Set<AnyCancellable>()
+    private var selectedProfileIndex: Int = 0
+    public let profileSelectionPublisher = PassthroughSubject<Int, Never>()
+
     public override func viewDidLoad() {
         super.viewDidLoad()
+
+        bind()
         profileCharacterCollectionView.dataSource = self
     }
+
+    private func bind() {
+        xButton.publisher(for: .touchUpInside)
+            .sink { [weak self] _ in
+                self?.dismiss(animated: true)
+            }
+            .store(in: &cancellables)
+
+        selectButton.publisher(for: .touchUpInside)
+            .sink { [weak self] (_) in
+                self?.profileSelectionPublisher.send(self?.selectedProfileIndex ?? 0)
+                self?.dismiss(animated: true)
+            }
+            .store(in: &cancellables)
+
+        profileCharacterCollectionView.publisher(for: [.didSelectItem, .didDeselectItem])
+            .sink { [weak self] indexPath in
+                guard let self = self else { return }
+
+                if let cell = self.profileCharacterCollectionView.cellForItem(at: indexPath) as? ProfileCharacterCell {
+                    let isSelected = self.profileCharacterCollectionView.indexPathsForSelectedItems?.contains(indexPath) ?? false
+                    cell.setSelected(isSelected)
+                    selectButton.isEnabled = isSelected
+                    selectedProfileIndex = indexPath.row
+                }
+            }
+            .store(in: &cancellables)
     }
 }
 
@@ -20,8 +54,8 @@ private extension EditProfileViewController {
     var xButton: UIButton {
         bottomSheetView.xButton
     }
-    
-    var profileCharacterCollectionView: ProfileCharacterCollectionView {
+
+    var profileCharacterCollectionView: UICollectionView {
         bottomSheetView.profileCharacterCollectionView
     }
 

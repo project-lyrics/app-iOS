@@ -31,7 +31,13 @@ public final class FeelinLineInputField: UIView {
         view.backgroundColor = Colors.gray02
         return view
     }()
-    
+
+    public var isValid: Bool = true {
+        didSet {
+            separator.backgroundColor = isValid ? Colors.gray02 : Colors.alertWarning
+        }
+    }
+
     // MARK: - init
     
     public init(placeholder: String?) {
@@ -69,6 +75,6 @@ public final class FeelinLineInputField: UIView {
     }
     
     public func setValid(_ isValid: Bool) {
-        separator.backgroundColor = isValid ? Colors.gray02 : Colors.alertWarning
+        self.isValid = isValid
     }
 }

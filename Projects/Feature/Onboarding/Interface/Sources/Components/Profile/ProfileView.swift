@@ -16,6 +16,19 @@ final class ProfileView: UIView {
     private let maxNicknameLength = 10
 
     // MARK: - components
+    private let navigationBar = NavigationBar()
+
+    lazy var backButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+
+        let userInterfaceStyle = traitCollection.userInterfaceStyle
+        let image = userInterfaceStyle == .light ? FeelinImages.backLight : FeelinImages.backDark
+        button.setImage(image, for: .normal)
+
+        return button
+    }()
+
     private let flexContainer = UIView()
 
     private let titleLabel = {
@@ -40,14 +53,14 @@ final class ProfileView: UIView {
 
         return label
     }()
-    
-    private lazy var nicknameTextField = FeelinLineInputField(placeholder: "닉네임")
-    
+
+    lazy var nicknameTextField = FeelinLineInputField(placeholder: "닉네임")
 
     private let alertLabel = {
         let label = UILabel()
         label.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 14)
         label.textColor = Colors.alertWarning
+
         return label
     }()
 
@@ -89,10 +102,16 @@ final class ProfileView: UIView {
 
     private func setUpLayout() {
         addSubview(flexContainer)
+
+        navigationBar.addLeftBarView(backButton)
+
         flexContainer.flex.paddingHorizontal(20).define { flex in
+            flex.addItem(navigationBar)
+                .height(44)
+                .marginTop(pin.safeArea.top)
+
             flex.addItem(titleLabel)
-                .marginTop(72)
-            
+                .marginTop(28)
 
             flex.addItem(profileEditButton)
                 .marginTop(40)
