@@ -70,7 +70,7 @@ public struct Term: Encodable {
 public struct UserSignUpRequest: Encodable {
     let socialAccessToken: String
     let authProvider: OAuthProvider
-    let username: String
+    let nickname: String
     let gender: Gender
     let birthYear: String
     let terms: [Term]
@@ -78,14 +78,14 @@ public struct UserSignUpRequest: Encodable {
     public init(
         socialAccessToken: String,
         authProvider: OAuthProvider,
-        username: String,
+        nickname: String,
         gender: Gender,
         birthYear: String,
         terms: [Term]
     ) {
         self.socialAccessToken = socialAccessToken
         self.authProvider = authProvider
-        self.username = username
+        self.nickname = nickname
         self.gender = gender
         self.birthYear = birthYear
         self.terms = terms
