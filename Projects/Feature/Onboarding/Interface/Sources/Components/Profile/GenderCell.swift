@@ -6,15 +6,15 @@
 //
 
 import UIKit
-
+import Domain
 import Shared
 
 import FlexLayout
 import PinLayout
 
 final class GenderCell: UICollectionViewCell, Reusable {
-    private var genderType: GenderType?
-    
+    private var gender: GenderEntity?
+
     // MARK: - components
     
     private let imageView = UIImageView()
@@ -69,14 +69,14 @@ final class GenderCell: UICollectionViewCell, Reusable {
     
     // MARK: - configure
     
-    func configure(with genderType: GenderType) {
-        self.genderType = genderType
-        descriptionLabel.text = genderType.description
+    func configure(with gender: GenderEntity) {
+        self.gender = gender
+        descriptionLabel.text = gender.description
         setSelected(false)
     }
     
     func setSelected(_ isSelected: Bool) {
-        imageView.image = isSelected ? genderType?.activeImage : genderType?.inactiveImage
+        imageView.image = isSelected ? gender?.activeImage : gender?.inactiveImage
         descriptionLabel.textColor = isSelected ? Colors.alertSuccess : Colors.gray03
         layer.borderWidth = isSelected ? 0 : 1
         backgroundColor = isSelected ? Colors.secondary : Colors.background

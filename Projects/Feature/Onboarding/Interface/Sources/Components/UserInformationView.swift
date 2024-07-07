@@ -17,6 +17,28 @@ final class UserInformationView: UIView {
     
     private let flexContainer = UIView()
     
+    private let navigationBar = NavigationBar()
+    
+    lazy var backButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+
+        let userInterfaceStyle = traitCollection.userInterfaceStyle
+        let image = userInterfaceStyle == .light ? FeelinImages.backLight : FeelinImages.backDark
+        button.setImage(image, for: .normal)
+
+        return button
+    }()
+
+    let skipButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("건너뛰기", for: .normal)
+        button.titleLabel?.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 16)
+        button.setTitleColor(Colors.gray05, for: .normal)
+        return button
+    }()
+
     private let titleLabel = {
         let label = UILabel()
         label.text = "추가 정보를 입력해주세요"
@@ -79,9 +101,17 @@ final class UserInformationView: UIView {
     
     private func setUpLayout() {
         addSubview(flexContainer)
+
+        navigationBar.addLeftBarView(backButton)
+        navigationBar.addRightBarView(skipButton)
+
         flexContainer.flex.paddingHorizontal(20).define { flex in
+            flex.addItem(navigationBar)
+                .height(44)
+                .marginTop(pin.safeArea.top)
+
             flex.addItem(titleLabel)
-                .marginTop(72)
+                .marginTop(28)
             flex.addItem(subTitleLabel)
                 .marginTop(8)
             

@@ -14,6 +14,10 @@ public final class SelectBirthYearViewController: BottomSheetViewController<Sele
     private let minYear = Calendar.current.component(.year, from: Date()) - 100
     private let maxYear = Calendar.current.component(.year, from: Date()) - 14
     private var selectedYear: Int
+    private var cancellables = Set<AnyCancellable>()
+
+    public let selectedYearSubject = PassthroughSubject<String, Never>()
+
     // MARK: - init
 
     public init(bottomSheetHeight: CGFloat, baseYear: Int) {
@@ -22,6 +26,7 @@ public final class SelectBirthYearViewController: BottomSheetViewController<Sele
         super.init(bottomSheetHeight: bottomSheetHeight)
 
         setUpPickerView(baseYear: baseYear)
+        bind()
     }
 
     private func setUpPickerView(baseYear: Int) {
@@ -31,6 +36,16 @@ public final class SelectBirthYearViewController: BottomSheetViewController<Sele
         let baseYearIndex = baseYear - minYear
         pickerView.selectRow(baseYearIndex, inComponent: 0, animated: false)
     }
+
+    private func bind() {
+        doneButton.publisher(for: .touchUpInside)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+
+                selectedYearSubject.send("\(selectedYear)년")
+                dismiss(animated: false)
+            }
+            .store(in: &cancellables)
     }
 }
 
