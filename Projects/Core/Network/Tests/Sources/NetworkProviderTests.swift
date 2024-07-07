@@ -130,8 +130,8 @@ final class NetworkProviderTests: XCTestCase {
             }
         """.data(using: .utf8)!
         let endpoint = FeelinAPI<UserLoginResponse>.login(
-            oauthProvider: .kakao,
-            oauthAccessToken: expectedOauthToken
+            oAuthProvider: .kakao,
+            oAuthAccessToken: expectedOauthToken
         )
         let expectedError = NetworkError.clientError(.badRequestError)
         
@@ -206,8 +206,8 @@ final class NetworkProviderTests: XCTestCase {
         networkProvider = NetworkProvider(networkSession: mockNetworkSession)
         
         let endpoint = FeelinAPI<UserLoginResponse>.login(
-            oauthProvider: .kakao,
-            oauthAccessToken: expectedOauthToken
+            oAuthProvider: .kakao,
+            oAuthAccessToken: expectedOauthToken
         )
         
         // when

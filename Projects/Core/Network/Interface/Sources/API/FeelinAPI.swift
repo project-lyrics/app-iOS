@@ -10,8 +10,8 @@ import Foundation
 
 public enum FeelinAPI<R> {
     case login(
-        oauthProvider: OAuthProvider,
-        oauthAccessToken: String
+        oAuthProvider: OAuthProvider,
+        oAuthAccessToken: String
     )
     case checkUserValidity
     case reissueAccessToken(refreshToken: String)
@@ -25,9 +25,6 @@ extension FeelinAPI: HTTPNetworking {
         var defaultHeader = ["Content-Type": "application/json"]
 
         switch self {
-        case .login(_, oauthAccessToken: let oAuthAccessToken):
-            defaultHeader["Authorization"] = "Bearer \(oAuthAccessToken)"
-
         case .reissueAccessToken(refreshToken: let refreshToken):
             defaultHeader["Authorization"] = "Bearer \(refreshToken)"
 
@@ -73,10 +70,10 @@ extension FeelinAPI: HTTPNetworking {
 
     public var bodyParameters: Encodable? {
         switch self {
-        case .login(let oauthProvider, let oauthAccessToken):
+        case .login(let oAuthProvider, let oAuthAccessToken):
             return [
-                "socialAccessToken": oauthAccessToken,
-                "authProvider": oauthProvider.rawValue
+                "socialAccessToken": oAuthAccessToken,
+                "authProvider": oAuthProvider.rawValue
             ]
             
         case .postFavoriteArtists(let ids):
