@@ -11,7 +11,7 @@ import UIKit
 
 final class CheckBoxButton: UIButton {
     let flexContainer = UIView()
-    
+
     private var uncheckedImage: UIImage = SharedDesignSystem.FeelinImages.checkBoxInactive
     private var checkedImage = SharedDesignSystem.FeelinImages.checkBoxActive
 
@@ -26,12 +26,12 @@ final class CheckBoxButton: UIButton {
         let imageView = UIImageView(image: SharedDesignSystem.FeelinImages.checkBoxInactive)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFit
-        
+
         return imageView
     }()
-    
+
     private var additionalView: UIView?
-    
+
     init(
         additionalView: UIView? = nil,
         action: UIAction? = nil
@@ -42,31 +42,31 @@ final class CheckBoxButton: UIButton {
         }
         addSubview(flexContainer)
         self.additionalView = additionalView
-        
+
         if let additionalView = additionalView {
             addSubview(additionalView)
         }
-        
+
         setupButton()
     }
-    
+
     public override init(frame: CGRect) {
         super.init(frame: frame)
         setupButton()
     }
-    
+
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         super.init(coder: coder)
     }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
-        
+
         flexContainer.pin.all()
         flexContainer.flex.layout()
     }
-    
+
     private func setupButton() {
         addTarget(
             self,
@@ -76,29 +76,29 @@ final class CheckBoxButton: UIButton {
         updateImage()
         setUpView()
     }
-    
+
     @objc private func buttonTapped() {
         isSelected.toggle()
     }
-    
+
     private func updateImage() {
         let image = isSelected ? checkedImage : uncheckedImage
         self.checkBoxImageView.image = image
     }
-    
+
     private func setUpView() {
         flexContainer.isUserInteractionEnabled = false
-        
+
         flexContainer.flex
             .direction(.row)
             .alignItems(.center)
-            .direction(.row).define { flex in
-            flex.addItem(checkBoxImageView)
-                .marginLeft(18)
-            
-            if let additionalView = additionalView {
-                flex.addItem(additionalView)
+            .define { flex in
+                flex.addItem(checkBoxImageView)
+                    .marginLeft(18)
+
+                if let additionalView = additionalView {
+                    flex.addItem(additionalView)
+                }
             }
-        }
     }
 }
