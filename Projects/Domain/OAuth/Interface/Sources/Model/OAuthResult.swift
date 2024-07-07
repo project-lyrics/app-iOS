@@ -15,5 +15,5 @@ public enum OAuthType: String {
 
 public enum OAuthResult: Equatable {
     case success(OAuthType)
-    case failure(String)
+    case failure(AuthError)
 }

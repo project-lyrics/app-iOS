@@ -19,9 +19,11 @@ public final class LoginViewModel {
         let loginResult: AnyPublisher<OAuthResult, Never>
         let recentLoginResult: AnyPublisher<OAuthType, Never>
     }
+
     private let kakaoOAuthLoginUseCase: OAuthLoginUseCase
     private let appleOAuthLoginUseCase: OAuthLoginUseCase
     private let recentLoginRecordService: RecentLoginRecordServiceInterface
+
     public init(
         kakaoOAuthLoginUseCase: OAuthLoginUseCase,
         appleOAuthLoginUseCase: OAuthLoginUseCase,
@@ -43,7 +45,10 @@ public final class LoginViewModel {
 extension LoginViewModel {
     private func login(input: Input) -> AnyPublisher<OAuthResult, Never> {
         return input.loginButtonTappedPublisher
-            .flatMap { [unowned self] type -> AnyPublisher<OAuthResult, Never> in
+            .flatMap { [weak self] type -> AnyPublisher<OAuthResult, Never> in
+                guard let self else {
+                    return Just(OAuthResult.success(.none)).eraseToAnyPublisher()
+                }
                 switch type {
                 case .apple:    return self.appleLogin()
                 case .kakao:    return self.kakaoLogin()
@@ -56,7 +61,7 @@ extension LoginViewModel {
     private func kakaoLogin() -> AnyPublisher<OAuthResult, Never> {
         return self.kakaoOAuthLoginUseCase.execute()
             .catch { error -> AnyPublisher<OAuthResult, Never> in
-                return Just(OAuthResult.failure(error.errorDescription ?? "")).eraseToAnyPublisher()
+                return Just(OAuthResult.failure(error)).eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
     }
@@ -64,7 +69,7 @@ extension LoginViewModel {
     private func appleLogin() -> AnyPublisher<OAuthResult, Never> {
         return self.appleOAuthLoginUseCase.execute()
             .catch { error -> AnyPublisher<OAuthResult, Never> in
-                return Just(OAuthResult.failure(error.errorDescription ?? "")).eraseToAnyPublisher()
+                return Just(OAuthResult.failure(error)).eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
     }

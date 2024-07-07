@@ -12,6 +12,7 @@ import Domain
 
 public protocol LoginViewControllerDelegate: AnyObject {
     func didFinish()
+    func showUseAgreementViewController(model: UserSignUpEntity)
 }
 
 public final class LoginViewController: UIViewController {
@@ -86,14 +87,23 @@ public final class LoginViewController: UIViewController {
         )
 
         let output = viewModel.transform(input)
+
         output.loginResult
             .receive(on: DispatchQueue.main)
             .sink { [weak self] result in
                 switch result {
-                case .success:
-                    self?.coordinator?.didFinish()
-                case .failure(let error):
+                case .success(let type):
+                    let model = UserSignUpEntity(
+                        socialAccessToken: "",
+                        oAuthType: type
+                    )
+
+                    self?.coordinator?.showUseAgreementViewController(model: model)
+
+                case .failure(_):
                     break
+                    // TODO: error
+//                    self?.coordinator?.didFinish()
                 }
             }
             .store(in: &cancellables)

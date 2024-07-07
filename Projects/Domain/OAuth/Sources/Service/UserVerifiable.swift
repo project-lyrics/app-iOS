@@ -17,8 +17,8 @@ extension UserVerifiable {
         oAuthProvider: OAuthProvider
     ) -> AnyPublisher<OAuthResult, AuthError> {
         let endpoint = FeelinAPI<UserLoginResponse>.login(
-            oauthProvider: oAuthProvider,
-            oauthAccessToken: oAuthToken
+            oAuthProvider: oAuthProvider,
+            oAuthAccessToken: oAuthToken
         )
         let type = OAuthType(rawValue: oAuthProvider.rawValue) ?? .none
 
