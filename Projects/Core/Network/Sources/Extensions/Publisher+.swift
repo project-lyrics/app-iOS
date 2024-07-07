@@ -10,10 +10,16 @@ import Combine
 import CoreNetworkInterface
 
 public extension Publisher where Output == DataTaskResult {
-    func validateStatusCode() -> AnyPublisher<DataTaskResult, NetworkError> {
+    func validateResponse(_ decoder: JSONDecoder = JSONDecoder()) -> AnyPublisher<DataTaskResult, NetworkError> {
         return tryMap { data, response  in
             guard let response = response as? HTTPURLResponse else {
                 throw NetworkError.noResponseError
+            }
+            
+            if let feelinServerFailResponse = try? decoder.decode(APIFailResponse.self, from: data) {
+                throw NetworkError.feelinAPIError(
+                    .init(apiFailResponse: feelinServerFailResponse)
+                )
             }
 
             switch response.statusCode {
@@ -49,7 +55,6 @@ public extension Publisher where Output == DataTaskResult {
 
     func validateJSONValue<Output: Decodable>(to outputType: Output.Type) -> AnyPublisher<Output, NetworkError> {
         return tryMap {
-            // MARK: - 서버와 date 형식을 어떻게 주고 받을 지 정의 해야 함.
             let decoder = JSONDecoder()
             decoder.dateDecodingStrategy = .iso8601
             return try decoder.decode(outputType, from: $0.data)
@@ -64,33 +69,6 @@ public extension Publisher where Output == DataTaskResult {
                 return NetworkError.unknownError(error.localizedDescription)
             }
         }
-        .eraseToAnyPublisher()
-    }
-    
-    func tryDecodeAPIFailResponse(decoder: JSONDecoder = .init()) -> AnyPublisher<DataTaskResult, NetworkError> {
-        return tryMap { output in
-            if let apiFailResponse = try? decoder.decode(APIFailResponse.self, from: output.data) {
-                switch apiFailResponse.errorCode {
-                case "00401":
-                    throw NetworkError.clientError(.authorizationError)
-                    
-                case "00500":
-                    throw NetworkError.serverError(.internalServerError)
-                    
-                default:
-                    throw NetworkError.customServerError(apiFailResponse)
-                }
-            } else {
-                return output
-            }
-        }
-        .mapError({ error in
-            if let networkError = error as? NetworkError {
-                return networkError
-            } else {
-                return NetworkError.unknownError(error.localizedDescription)
-            }
-        })
         .eraseToAnyPublisher()
     }
 
@@ -111,11 +89,6 @@ extension Publisher where Output == DataTaskResult, Failure == NetworkError {
                     .eraseToAnyPublisher()
             }
             
-            guard networkError == .clientError(.authorizationError) else {
-                return Fail(error: networkError)
-                    .eraseToAnyPublisher()
-            }
-            
             return interceptor.retry(
                 with: session.urlSession,
                 request,
@@ -126,7 +99,7 @@ extension Publisher where Output == DataTaskResult, Failure == NetworkError {
                 case .retry:
                     return session
                         .dataTaskPublisher(for: request)
-                        .validateStatusCode()
+                        .validateResponse()
                         .eraseToAnyPublisher()
                     
                 case .doNotRetry:

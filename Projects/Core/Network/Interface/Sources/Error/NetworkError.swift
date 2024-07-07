@@ -14,7 +14,7 @@ public enum NetworkError: Error, Equatable {
     case serverError(ServerError)
     case noResponseError
     case decodingError( _ description: String)
-    case customServerError(APIFailResponse)
+    case feelinAPIError(FeelinAPIError)
     case requestInterceptError(_ description: String)
     case unknownError( _ description: String)
 
@@ -26,7 +26,7 @@ public enum NetworkError: Error, Equatable {
         case let .serverError(serverError):             return serverError.errorMessage
         case .noResponseError:                          return "No Response"
         case .decodingError:                            return "Decoding Error"
-        case let .customServerError(apiFailResponse):   return apiFailResponse.errorMessage
+        case let .feelinAPIError(feelinAPiError):       return feelinAPiError.localizedDescription
         case let .requestInterceptError(description):   return "RequestInterceptError: \(description)"
         case .unknownError:                             return "Unknown Error"
         }
