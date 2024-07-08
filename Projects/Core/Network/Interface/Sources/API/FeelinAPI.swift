@@ -88,6 +88,9 @@ extension FeelinAPI: HTTPNetworking {
         case .signUp(let request):
             return request
 
+        case .signUp(let request):
+            return request
+
         default:
             return nil
         }
