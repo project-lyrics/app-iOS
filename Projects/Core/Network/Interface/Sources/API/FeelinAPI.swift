@@ -13,6 +13,7 @@ public enum FeelinAPI<R> {
         oAuthProvider: OAuthProvider,
         oAuthAccessToken: String
     )
+    case signUp(request: UserSignUpRequest)
     case checkUserValidity
     case reissueAccessToken(refreshToken: String)
     case getArtists(cursor: Int?, size: Int)
@@ -81,6 +82,9 @@ extension FeelinAPI: HTTPNetworking {
                 "artistIds": ids
             ]
 
+        case .signUp(let request):
+            return request
+
         default:
             return nil
         }
@@ -101,6 +105,9 @@ extension FeelinAPI: HTTPNetworking {
         case .login:
             return "/api/v1/auth/sign-in"
 
+        case .signUp:
+            return "/api/v1/auth/sign-up"
+
         case .checkUserValidity:
             return "/api/v1/auth/token"
 
@@ -120,7 +127,7 @@ extension FeelinAPI: HTTPNetworking {
 
     public var httpMethod: HTTPMethod {
         switch self {
-        case .login, .reissueAccessToken, .postFavoriteArtists:
+        case .login, .reissueAccessToken, .signUp, .postFavoriteArtists:
             return .post
 
         case .checkUserValidity, .getArtists, .searchArtists:
