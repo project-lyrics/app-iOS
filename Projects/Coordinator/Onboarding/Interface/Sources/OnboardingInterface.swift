@@ -65,27 +65,27 @@ extension OnboardingCoordinator: CoordinatorDelegate,
                                  UseAgreementViewControllerDelegate,
                                  UserInformationViewControllerDelegate,
                                  ProfileViewControllerDelegate {
-    public func showUseAgreementViewController(model: UserSignUpEntity) {
+    public func pushUseAgreementViewController(model: UserSignUpEntity) {
         let viewController = UseAgreementViewController(model: model)
         viewController.coordinator = self
         navigationController.pushViewController(viewController, animated: true)
     }
 
-    public func showServiceUsageViewController() {
+    public func pushServiceUsageViewController() {
 
     }
 
-    public func showPersonalInfoUsageViewController() {
+    public func pushPersonalInfoUsageViewController() {
 
     }
 
-    public func showUserInformationViewController(model: UserSignUpEntity) {
+    public func pushUserInformationViewController(model: UserSignUpEntity) {
         let viewController = UserInformationViewController(model: model)
         viewController.coordinator = self
         navigationController.pushViewController(viewController, animated: true)
     }
 
-    public func showProfileViewController(model: UserSignUpEntity) {
+    public func pushProfileViewController(model: UserSignUpEntity) {
         let viewController = ProfileViewController(model: model)
         viewController.coordinator = self
         navigationController.pushViewController(viewController, animated: true)

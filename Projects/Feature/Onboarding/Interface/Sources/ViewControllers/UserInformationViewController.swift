@@ -11,7 +11,7 @@ import Domain
 import Shared
 
 public protocol UserInformationViewControllerDelegate: AnyObject {
-    func showProfileViewController(model: UserSignUpEntity)
+    func pushProfileViewController(model: UserSignUpEntity)
     func popViewController()
 }
 
@@ -59,7 +59,7 @@ public final class UserInformationViewController: UIViewController {
         skipButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in
                 guard let self = self else { return }
-                coordinator?.showProfileViewController(model: model)
+                coordinator?.pushProfileViewController(model: model)
             }
             .store(in: &cancellables)
 
@@ -104,7 +104,7 @@ public final class UserInformationViewController: UIViewController {
         nextButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in
                 guard let self = self else { return }
-                coordinator?.showProfileViewController(model: model)
+                coordinator?.pushProfileViewController(model: model)
             }
             .store(in: &cancellables)
     }

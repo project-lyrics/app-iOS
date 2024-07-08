@@ -12,7 +12,7 @@ import Domain
 
 public protocol LoginViewControllerDelegate: AnyObject {
     func didFinish()
-    func showUseAgreementViewController(model: UserSignUpEntity)
+    func pushUseAgreementViewController(model: UserSignUpEntity)
 }
 
 public final class LoginViewController: UIViewController {
@@ -98,7 +98,7 @@ public final class LoginViewController: UIViewController {
                         oAuthType: type
                     )
 
-                    self?.coordinator?.showUseAgreementViewController(model: model)
+                    self?.coordinator?.pushUseAgreementViewController(model: model)
 
                 case .failure(_):
                     break

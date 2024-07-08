@@ -14,9 +14,9 @@ import Core
 import Domain
 
 public protocol UseAgreementViewControllerDelegate: AnyObject {
-    func showUserInformationViewController(model: UserSignUpEntity)
-    func showServiceUsageViewController()
-    func showPersonalInfoUsageViewController()
+    func pushUserInformationViewController(model: UserSignUpEntity)
+    func pushServiceUsageViewController()
+    func pushPersonalInfoUsageViewController()
     func popViewController()
 }
 
@@ -132,13 +132,13 @@ public final class UseAgreementViewController: UIViewController {
 
         checkServiceUsageButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in
-                self?.coordinator?.showServiceUsageViewController()
+                self?.coordinator?.pushServiceUsageViewController()
             }
             .store(in: &cancellables)
 
         checkPersonalInfoUsageButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in
-                self?.coordinator?.showPersonalInfoUsageViewController()
+                self?.coordinator?.pushPersonalInfoUsageViewController()
             }
             .store(in: &cancellables)
 
@@ -147,7 +147,7 @@ public final class UseAgreementViewController: UIViewController {
                 guard let self = self else { return }
                 let terms = TermEntity.defaultTerms.map { $0.toDTO() }
                 model.terms = terms
-                coordinator?.showUserInformationViewController(model: model)
+                coordinator?.pushUserInformationViewController(model: model)
             }
             .store(in: &cancellables)
 
