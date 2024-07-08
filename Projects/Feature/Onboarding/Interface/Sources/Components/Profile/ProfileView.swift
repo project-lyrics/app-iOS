@@ -183,7 +183,7 @@ private extension ProfileView {
 
 private extension String {
     var containsOnlyAllowedCharacters: Bool {
-        let regex = "^[ㄱ-ㅎ가-힣a-zA-Z0-9]*$"
+        let regex = "^[ㄱ-ㅎ가-힣ㅏ-ㅣa-zA-Z0-9]*$"
         return NSPredicate(format: "SELF MATCHES %@", regex).evaluate(with: self)
     }
 }
