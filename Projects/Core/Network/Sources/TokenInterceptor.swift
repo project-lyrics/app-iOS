@@ -42,7 +42,8 @@ extension TokenInterceptor: URLRequestInterceptor {
         _ request: URLRequest,
         dueTo error: NetworkError
     ) -> AnyPublisher<RetryResult, Never> {
-        guard case .clientError(.authorizationError) = error else {
+        guard case let .feelinAPIError(feelinAPIError) = error,
+              case .tokenIsExpired = feelinAPIError else {
             return Just(.doNotRetry)
                 .eraseToAnyPublisher()
         }
@@ -70,10 +71,14 @@ extension TokenInterceptor: URLRequestInterceptor {
                 .eraseToAnyPublisher()
             
         } catch let error as KeychainError {
-            return Just(.doNotRetryWithError(NetworkError.requestInterceptError("Token Interceptor에서 액세스 토큰을 불러오는 과정에서 에러가 발생했습니다. 에러: \(error.errorDescription ?? error.localizedDescription)")))
+            return Just(
+                .doNotRetryWithError(NetworkError.requestInterceptError("Token Interceptor에서 액세스 토큰을 불러오는 과정에서 에러가 발생했습니다. 에러: \(error.errorDescription ?? error.localizedDescription)"))
+            )
                 .eraseToAnyPublisher()
         } catch let error as JWTError {
-            return Just(.doNotRetryWithError(NetworkError.requestInterceptError("Token Interceptor에서 jwt파싱 과정에서 에러가 발생했습니다. 에러:\(error.errorDescription ?? error.localizedDescription) ")))
+            return Just(
+                .doNotRetryWithError(NetworkError.requestInterceptError("Token Interceptor에서 jwt파싱 과정에서 에러가 발생했습니다. 에러:\(error.errorDescription ?? error.localizedDescription) "))
+            )
                 .eraseToAnyPublisher()
         } catch {
             return Just(.doNotRetryWithError(NetworkError.unknownError(error.localizedDescription)))
@@ -87,8 +92,7 @@ extension TokenInterceptor: URLRequestInterceptor {
     ) -> AnyPublisher<RetryResult, Never> {
         return session
             .dataTaskPublisher(for: request)
-            .tryDecodeAPIFailResponse()
-            .validateStatusCode()
+            .validateResponse()
             .validateJSONValue(to: ReissueTokenResponse.self)
             .map(\.data)
             .tryMap { [jwtDecoder] tokenResponse -> (AccessToken, RefreshToken) in
