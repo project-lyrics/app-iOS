@@ -42,7 +42,7 @@ private extension TabBarCoordinator {
         tabBarController.tabBar.unselectedItemTintColor = .systemGray2
 
         navigationController.setNavigationBarHidden(true, animated: false)
-        navigationController.pushViewController(tabBarController, animated: true)
+        navigationController.pushViewController(tabBarController, animated: false)
     }
 
     func createTabBarNavigationController(

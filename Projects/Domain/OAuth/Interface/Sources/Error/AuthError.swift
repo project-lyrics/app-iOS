@@ -5,8 +5,7 @@
 //  Created by 황인우 on 5/26/24.
 //
 
-import CoreLocalStorageInterface
-import CoreNetworkInterface
+import Core
 import Foundation
 import KakaoSDKCommon
 

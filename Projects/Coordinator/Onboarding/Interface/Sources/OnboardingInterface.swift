@@ -2,6 +2,7 @@ import UIKit
 
 import CoordinatorMainInterface
 import CoordinatorAppInterface
+import CoordinatorTabBarInterface
 import Core
 
 import Domain
@@ -64,7 +65,8 @@ extension OnboardingCoordinator: CoordinatorDelegate,
                                  LoginViewControllerDelegate,
                                  UseAgreementViewControllerDelegate,
                                  UserInformationViewControllerDelegate,
-                                 ProfileViewControllerDelegate {
+                                 ProfileViewControllerDelegate,
+                                 WelcomeViewControllerDelegate {
     public func pushUseAgreementViewController(model: UserSignUpEntity) {
         let viewController = UseAgreementViewController(model: model)
         viewController.coordinator = self
@@ -72,7 +74,7 @@ extension OnboardingCoordinator: CoordinatorDelegate,
     }
 
     public func pushServiceUsageViewController() {
-
+        
     }
 
     public func pushPersonalInfoUsageViewController() {
@@ -89,6 +91,23 @@ extension OnboardingCoordinator: CoordinatorDelegate,
         let viewController = ProfileViewController(model: model)
         viewController.coordinator = self
         navigationController.pushViewController(viewController, animated: true)
+    }
+
+    public func pushWelcomeViewController() {
+        let viewController = WelcomeViewController()
+        viewController.coordinator = self
+        navigationController.pushViewController(viewController, animated: true)
+    }
+
+    public func connectTabBarFlow() {
+        navigationController.popToRootViewController(animated: false)
+        let onboardingCoordinator = TabBarCoordinator(
+            navigationController: navigationController
+        )
+
+        onboardingCoordinator.delegate = self
+        onboardingCoordinator.start()
+        childCoordinators.append(onboardingCoordinator)
     }
 
     public func didFinish() {

@@ -13,6 +13,7 @@ import Shared
 
 public protocol ProfileViewControllerDelegate: AnyObject {
     func popViewController()
+    func pushWelcomeViewController()
 }
 
 public final class ProfileViewController: UIViewController {
@@ -86,7 +87,7 @@ public final class ProfileViewController: UIViewController {
 
         nextButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in
-
+                self?.coordinator?.pushWelcomeViewController()
             }
             .store(in: &cancellables)
     }
