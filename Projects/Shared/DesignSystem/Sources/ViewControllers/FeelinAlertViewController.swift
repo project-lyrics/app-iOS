@@ -276,11 +276,9 @@ public final class FeelinAlertViewController: UIViewController {
             }
         }
         
-        /// testing
         buttonStackView.addArrangedSubview(leftButton)
         buttonStackView.addArrangedSubview(rightButton)
         buttonStackView.addArrangedSubview(singleButton)
-        ///
         
         containerStackView.addArrangedSubview(buttonStackView)
     }
