@@ -21,7 +21,6 @@ public final class ProfileViewModel {
         let isNextButtonEnabled: AnyPublisher<Bool, Never>
         let profileImage: AnyPublisher<UIImage, Never>
         let signUpResult: AnyPublisher<SignUpResult, Never>
-        let profileImageErrorPublisher: AnyPublisher<String, Never>
     }
 
     private let signUpUseCase: SignUpUseCase
@@ -39,8 +38,7 @@ public final class ProfileViewModel {
         return Output(
             isNextButtonEnabled: self.checkNextButtonIsEnabled(input: input),
             profileImage: self.convertProfileImage(input: input),
-            signUpResult: self.signUp(input: input),
-            profileImageErrorPublisher: self.getProfileImageError()
+            signUpResult: self.signUp(input: input)
         )
     }
 }
