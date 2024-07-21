@@ -112,3 +112,18 @@ public extension DIContainer {
         }
     }
 }
+
+// MARK: SignUp
+
+public extension DIContainer {
+    static func registerSignUpService() {
+        standard.register(.signUpService) { resolver in
+            let tokenStorage = try resolver.resolve(.tokenStorage)
+            let networkProvider = try resolver.resolve(.networkProvider)
+            return SignUpService(
+                networkProvider: networkProvider,
+                tokenStorage: tokenStorage
+            )
+        }
+    }
+}
