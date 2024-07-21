@@ -17,12 +17,15 @@ public protocol UserValidityServiceInterface {
 final public class UserValidityService {
     public let networkProvider: NetworkProviderInterface
     public let tokenStorage: TokenStorageInterface
-    
+    public let tokenKeyHolder: TokenKeyHolderInterface
+
     public init(
         networkProvider: NetworkProviderInterface,
-        tokenStorage: TokenStorageInterface
+        tokenStorage: TokenStorageInterface,
+        tokenKeyHolder: TokenKeyHolderInterface = TokenKeyHolder()
     ) {
         self.networkProvider = networkProvider
         self.tokenStorage = tokenStorage
+        self.tokenKeyHolder = tokenKeyHolder
     }
 }
