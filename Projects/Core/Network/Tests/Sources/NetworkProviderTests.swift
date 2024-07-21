@@ -129,7 +129,7 @@ final class NetworkProviderTests: XCTestCase {
                 "errorMessage" : "잘못된 요청입니다.",
             }
         """.data(using: .utf8)!
-        let endpoint = FeelinAPI<UserLoginResponse>.login(
+        let endpoint = FeelinAPI<TokenResponse>.login(
             oAuthProvider: .kakao,
             oAuthAccessToken: expectedOauthToken
         )
@@ -205,7 +205,7 @@ final class NetworkProviderTests: XCTestCase {
         
         networkProvider = NetworkProvider(networkSession: mockNetworkSession)
         
-        let endpoint = FeelinAPI<UserLoginResponse>.login(
+        let endpoint = FeelinAPI<TokenResponse>.login(
             oAuthProvider: .kakao,
             oAuthAccessToken: expectedOauthToken
         )
@@ -214,8 +214,8 @@ final class NetworkProviderTests: XCTestCase {
         do {
             let result = try awaitPublisher(networkProvider.request(endpoint))
             // then
-            XCTAssertEqual(result.data.accessToken, expectedAccessToken)
-            XCTAssertEqual(result.data.refreshToken, expectedRefreshToken)
+            XCTAssertEqual(result.accessToken, expectedAccessToken)
+            XCTAssertEqual(result.refreshToken, expectedRefreshToken)
         } catch {
             XCTFail()
         }
@@ -264,6 +264,7 @@ final class NetworkProviderTests: XCTestCase {
             socialAccessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.dQw4w9WgXcQ",
             authProvider: .kakao,
             nickname: "derrick",
+            profileCharacter: "poopHair",
             gender: .male,
             birthYear: "1992년",
             terms: [Term(
@@ -272,7 +273,7 @@ final class NetworkProviderTests: XCTestCase {
                 agreement: "url"
             )]
         )
-        let endpoint = FeelinAPI<UserLoginResponse>.signUp(
+        let endpoint = FeelinAPI<TokenResponse>.signUp(
             request: request
         )
 
@@ -280,8 +281,8 @@ final class NetworkProviderTests: XCTestCase {
         do {
             let result = try awaitPublisher(networkProvider.request(endpoint))
             // then
-            XCTAssertEqual(result.data.accessToken, expectedAccessToken)
-            XCTAssertEqual(result.data.refreshToken, expectedRefreshToken)
+            XCTAssertEqual(result.accessToken, expectedAccessToken)
+            XCTAssertEqual(result.refreshToken, expectedRefreshToken)
         } catch {
             XCTFail()
         }

@@ -13,6 +13,7 @@ import Domain
 public protocol LoginViewControllerDelegate: AnyObject {
     func didFinish()
     func pushUseAgreementViewController(model: UserSignUpEntity)
+    func connectTabBarFlow()
 }
 
 public final class LoginViewController: UIViewController {
@@ -93,17 +94,21 @@ public final class LoginViewController: UIViewController {
             .sink { [weak self] result in
                 switch result {
                 case .success(let type):
-                    let model = UserSignUpEntity(
-                        socialAccessToken: "",
-                        oAuthType: type
-                    )
+                    self?.coordinator?.connectTabBarFlow()
 
-                    self?.coordinator?.pushUseAgreementViewController(model: model)
+                case .failure(let error):
+                    switch error {
+                    case let .feelinError(.userNotFound((accessToken, oAuthType))):
+                        let model = UserSignUpEntity(
+                            socialAccessToken: accessToken,
+                            oAuthType: oAuthType
+                        )
+                        self?.coordinator?.pushUseAgreementViewController(model: model)
 
-                case .failure(_):
-                    break
-                    // TODO: error
-//                    self?.coordinator?.didFinish()
+                    default:
+                        break
+                    }
+                    // TODO: error modal 필요
                 }
             }
             .store(in: &cancellables)

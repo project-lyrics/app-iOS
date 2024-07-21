@@ -6,7 +6,7 @@
 //
 
 import Combine
-import CoreLocalStorageInterface
+import Core
 import Foundation
 
 // MARK: - FakeTokenStorage

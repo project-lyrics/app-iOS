@@ -18,6 +18,7 @@ public enum AuthError: LocalizedError, Equatable {
     case appleOAuthError(AppleOAuthError)
     case keychainError(KeychainError)
     case networkError(NetworkError)
+    case feelinError(FeelinError)
     case jwtParsingError(JWTError)
     case unExpectedError(Error)
 }
