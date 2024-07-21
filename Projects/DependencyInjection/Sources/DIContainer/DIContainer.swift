@@ -5,12 +5,10 @@
 //  Created by Derrick kim on 4/17/24.
 //
 
+import Core
+import Domain
+
 import Foundation
-import CoreNetwork
-import CoreNetworkInterface
-import CoreLocalStorage
-import DomainOAuthInterface
-import DomainOAuth
 
 public final class DIContainer: Injectable {
     public var dependencies: [AnyHashable : Any] = [:]
@@ -85,6 +83,17 @@ public extension DIContainer {
         standard.register(.recentLoginRecordService) { resolver in
             let recentLoginRecordStorage = try resolver.resolve(.recentLoginRecordStorage)
             return RecentLoginRecordService(recentLocalStorage: recentLoginRecordStorage)
+        }
+    }
+    
+    static func registerDependenciesForArtistSelectView() {
+        standard.register(.artistPaginationService) { _ in
+            return ArtistPaginationService()
+        }
+        
+        standard.register(.artistAPIService) { resolver in
+            let networkProvider = try resolver.resolve(.networkProvider)
+            return ArtistAPIService(networkProvider: networkProvider)
         }
     }
 }
