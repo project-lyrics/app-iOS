@@ -42,6 +42,10 @@ private extension OnboardingCoordinator {
         DIContainer.registerAppleOAuthService()
     }
 
+    func registerSignUpDependencies() {
+        DIContainer.registerSignUpService()
+    }
+
     func loginDependencies() -> LoginViewModel {
         @Injected(.kakaoOAuthService) var kakaoOAuthService
         @Injected(.appleOAuthService) var appleOAuthService
@@ -55,6 +59,18 @@ private extension OnboardingCoordinator {
             kakaoOAuthLoginUseCase: kakaoLoginUseCase,
             appleOAuthLoginUseCase: appleLoginUseCase, 
             recentLoginRecordService: recentLoginRecordService
+        )
+
+        return viewModel
+    }
+
+    func profileDependencies(model: UserSignUpEntity) -> ProfileViewModel {
+        @Injected(.signUpService) var signUpService
+        let signUpUseCase = SignUpUseCase(signUpService: signUpService)
+
+        let viewModel = ProfileViewModel(
+            userSignUpEntity: model,
+            signUpUseCase: signUpUseCase
         )
 
         return viewModel
@@ -88,7 +104,9 @@ extension OnboardingCoordinator: CoordinatorDelegate,
     }
 
     public func pushProfileViewController(model: UserSignUpEntity) {
-        let viewController = ProfileViewController(model: model)
+        registerSignUpDependencies()
+        let viewModel = profileDependencies(model: model)
+        let viewController = ProfileViewController(viewModel: viewModel)
         viewController.coordinator = self
         navigationController.pushViewController(viewController, animated: true)
     }
@@ -109,7 +127,7 @@ extension OnboardingCoordinator: CoordinatorDelegate,
         onboardingCoordinator.start()
         childCoordinators.append(onboardingCoordinator)
     }
-
+    
     public func didFinish() {
         didFinish(childCoordinator: self)
     }

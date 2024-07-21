@@ -22,10 +22,10 @@ public final class ProfileViewController: UIViewController {
 
     public weak var coordinator: ProfileViewControllerDelegate?
     private var cancellables = Set<AnyCancellable>()
-    private var model: UserSignUpEntity
+    private let viewModel: ProfileViewModel
 
-    public init(model: UserSignUpEntity) {
-        self.model = model
+    public init(viewModel: ProfileViewModel) {
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
 
