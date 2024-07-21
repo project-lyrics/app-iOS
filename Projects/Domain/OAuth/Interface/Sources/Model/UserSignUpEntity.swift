@@ -11,6 +11,7 @@ public struct UserSignUpEntity {
     public var socialAccessToken: String?
     public var oAuthType: OAuthType?
     public var nickname: String?
+    public var profileCharacter: String?
     public var gender: GenderEntity?
     public var birthYear: String?
     public var terms: [Term]
@@ -19,6 +20,7 @@ public struct UserSignUpEntity {
         socialAccessToken: String? = nil,
         oAuthType: OAuthType? = nil,
         nickname: String? = nil,
+        profileCharacter: String? = nil,
         gender: GenderEntity? = nil,
         birthYear: String? = nil,
         terms: [Term] = []
@@ -26,6 +28,7 @@ public struct UserSignUpEntity {
         self.socialAccessToken = socialAccessToken
         self.oAuthType = oAuthType
         self.nickname = nickname
+        self.profileCharacter = profileCharacter
         self.gender = gender
         self.birthYear = birthYear
         self.terms = terms
@@ -36,6 +39,7 @@ public struct UserSignUpEntity {
               let oAuthType = oAuthType?.rawValue,
               let authProvider = OAuthProvider(rawValue: oAuthType),
               let nickname = nickname,
+              let profileCharacter = profileCharacter,
               let gender = gender?.toDTO,
               let birthYear = birthYear else {
             return nil
@@ -45,6 +49,7 @@ public struct UserSignUpEntity {
             socialAccessToken: socialAccessToken,
             authProvider: authProvider,
             nickname: nickname,
+            profileCharacter: profileCharacter,
             gender: gender,
             birthYear: birthYear,
             terms: terms

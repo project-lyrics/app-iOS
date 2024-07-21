@@ -13,8 +13,8 @@ public enum FeelinAPI<R> {
         oAuthProvider: OAuthProvider,
         oAuthAccessToken: String
     )
-    case signUp(request: UserSignUpRequest)
     case checkUserValidity
+    case signUp(request: UserSignUpRequest?)
     case reissueAccessToken(refreshToken: String)
     case getArtists(cursor: Int?, size: Int)
     case searchArtists(query: String, cursor: Int?, size: Int)
@@ -124,7 +124,7 @@ extension FeelinAPI: HTTPNetworking {
             return "/api/v1/favorite-artists/batch"
         }
     }
-
+    
     public var httpMethod: HTTPMethod {
         switch self {
         case .login, .reissueAccessToken, .signUp, .postFavoriteArtists:
