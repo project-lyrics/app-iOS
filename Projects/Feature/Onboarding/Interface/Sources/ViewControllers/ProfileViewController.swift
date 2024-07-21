@@ -49,6 +49,21 @@ public final class ProfileViewController: UIViewController {
     }
 
     private func bind() {
+        let nicknameTextPublisher = PassthroughSubject<String?, Never>()
+        let profileImagePublisher = PassthroughSubject<String?, Never>()
+
+        let combinedSignUpModelPublisher = Publishers.CombineLatest(
+            nicknameTextPublisher,
+            profileImagePublisher
+        )
+            .compactMap { (nickname, profileCharacter) -> UserSignUpEntity? in
+                guard let nickname = nickname,
+                      let profileCharacter = profileCharacter else { return nil }
+
+                return UserSignUpEntity(nickname: nickname, profileCharacter: profileCharacter)
+            }
+            .eraseToAnyPublisher()
+
         backButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in
                 self?.coordinator?.popViewController()
@@ -65,16 +80,21 @@ public final class ProfileViewController: UIViewController {
             .store(in: &cancellables)
 
         let nicknameTextFieldPublisher = nicknameTextField.textField.textPublisher
-            .map {
-                return ($0?.count ?? 0 < 10 && $0?.count ?? 0 > 0)
+            .map { nickname in
+                if let count = nickname?.count, count < 10, count > 0 {
+                    nicknameTextPublisher.send(nickname)
+                    return true
+                }
+
+                return false
             }
             .eraseToAnyPublisher()
 
         profileSelectionPublisher
             .sink { [weak self] index in
-                // TODO: 어떤 아이콘 선택했는지 필요함
                 let images = ProfileCharacterType.allCases
                 self?.profileEditButton.setProfileImage(with: images[index].image)
+                profileImagePublisher.send(images[index].character)
             }
             .store(in: &cancellables)
 
@@ -85,11 +105,33 @@ public final class ProfileViewController: UIViewController {
             }
             .store(in: &cancellables)
 
-        nextButton.publisher(for: .touchUpInside)
-            .sink { [weak self] _ in
-                self?.coordinator?.pushWelcomeViewController()
+        let nextButtonPublisher = nextButton.publisher(for: .touchUpInside)
+            .eraseToAnyPublisher()
+
+        let combinedPublisher = nextButtonPublisher
+            .combineLatest(combinedSignUpModelPublisher)
+            .map { $1 }
+            .eraseToAnyPublisher()
+
+        let input = ProfileViewModel.Input(
+            combinedSignUpModelPublisher: combinedPublisher
+        )
+
+        let output = viewModel.transform(input)
+
+        output.signUpResult
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] result in
+                switch result {
+                case .success:
+                    self?.coordinator?.pushWelcomeViewController()
+                case .failure(let error):
+                    print("Sign up failed: \(error.localizedDescription)")
+                }
             }
             .store(in: &cancellables)
+
+        profileImagePublisher.send(ProfileCharacterType.defaultCharacter)
     }
 }
 
