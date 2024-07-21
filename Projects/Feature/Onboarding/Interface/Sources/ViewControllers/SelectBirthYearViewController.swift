@@ -42,7 +42,7 @@ public final class SelectBirthYearViewController: BottomSheetViewController<Sele
             .sink { [weak self] _ in
                 guard let self = self else { return }
 
-                selectedYearSubject.send("\(selectedYear)년")
+                selectedYearSubject.send("\(selectedYear)")
                 dismiss(animated: false)
             }
             .store(in: &cancellables)
