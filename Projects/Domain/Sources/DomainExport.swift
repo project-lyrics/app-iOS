@@ -7,3 +7,5 @@
 
 @_exported import DomainOAuth
 @_exported import DomainOAuthInterface
+@_exported import DomainArtist
+@_exported import DomainArtistInterface
