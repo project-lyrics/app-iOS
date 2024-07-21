@@ -82,7 +82,6 @@ public final class ProfileViewController: UIViewController {
             .map { ProfileCharacterType.allCases[$0].character }
 
         let nicknameTextPublisher = nicknameTextField.textField.textPublisher
-            .share()
 
         let profileImagePublisher = CurrentValueSubject<String, Never>(ProfileCharacterType.defaultCharacter)
 
