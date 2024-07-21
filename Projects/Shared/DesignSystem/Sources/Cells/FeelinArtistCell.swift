@@ -8,6 +8,7 @@
 import UIKit
 
 import FlexLayout
+import Kingfisher
 import PinLayout
 
 public final class FeelinArtistCell: UICollectionViewCell {
@@ -37,6 +38,7 @@ public final class FeelinArtistCell: UICollectionViewCell {
         let label = UILabel()
         label.font = SharedDesignSystemFontFamily.Pretendard.medium.font(size: 14)
         label.textColor = .black
+        label.textAlignment = .center
         label.numberOfLines = 2
         return label
     }()
@@ -76,18 +78,20 @@ public final class FeelinArtistCell: UICollectionViewCell {
                 }
             
             flex.addItem(artistNameLabel)
+                .width(100%)
                 .marginTop(8)
         }
     }
     
     public func configure(
         artistName: String,
-        artistImage: UIImage?,
+        artistImageURL: URL?,
         imageBorderWidth: CGFloat = 0,
         imageBorderInset: CGFloat = 0
     ) {
         self.artistNameLabel.text = artistName
-        self.artistImageView.image = artistImage
+        self.artistImageView.kf.indicatorType = .activity
+        self.artistImageView.kf.setImage(with: artistImageURL)
         self.borderWidth = imageBorderWidth
         self.inset = imageBorderInset
         self.setUpLayout()

@@ -7,3 +7,5 @@
 
 @_exported import CoreNetwork
 @_exported import CoreNetworkInterface
+@_exported import CoreLocalStorage
+@_exported import CoreLocalStorageInterface

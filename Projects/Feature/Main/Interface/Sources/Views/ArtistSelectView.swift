@@ -10,12 +10,21 @@ import UIKit
 import Shared
 
 final class ArtistSelectView: UIView {
+    private (set) var finishSelectButtonHeight: CGFloat = 56
     
     // MARK: - UI Components
     
     let closeButton: UIButton = {
         let button = UIButton()
         button.setImage(FeelinImages.xLight, for: .normal)
+        return button
+    }()
+    
+    let skipButton: UIButton = {
+        let button = UIButton()
+        button.titleLabel?.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 16)
+        button.setTitle("건너뛰기", for: .normal)
+        button.setTitleColor(Colors.gray06, for: .normal)
         return button
     }()
     
@@ -32,14 +41,14 @@ final class ArtistSelectView: UIView {
         title: "완료"
     )
     
-    private var flowLayout: UICollectionViewFlowLayout = {
+    private (set) var flowLayout: UICollectionViewFlowLayout = {
         let flowlayout = UICollectionViewFlowLayout()
         flowlayout.minimumInteritemSpacing = 12
         flowlayout.minimumLineSpacing = 12
         return flowlayout
     }()
     
-    private let rootFlexContainer: UIView = .init()
+    private (set) var rootFlexContainer: UIView = .init()
     
     private let titleLabel: UILabel = {
         let label = UILabel()
@@ -89,10 +98,19 @@ final class ArtistSelectView: UIView {
         self.addSubview(rootFlexContainer)
         
         rootFlexContainer.flex.define { flex in
-            flex.addItem(closeButton)
-                .size(.init(width: 24, height: 24))
-                .marginTop(10)
-                .marginLeft(20)
+            flex.addItem().direction(.row).define { flex in
+                flex.addItem(closeButton)
+                    .size(.init(width: 24, height: 24))
+                    .alignSelf(.center)
+                    
+                flex.addItem()
+                    .grow(2)
+                
+                flex.addItem(skipButton)
+            }
+            .marginTop(10)
+            .marginHorizontal(20)
+            
             
             flex.addItem(titleLabel)
                 .marginTop(38)
@@ -116,7 +134,7 @@ final class ArtistSelectView: UIView {
                 .left(20)
                 .right(20)
                 .bottom(44)
-                .height(56)
+                .height(finishSelectButtonHeight)
                 .cornerRadius(8)
         }
     }
@@ -129,6 +147,13 @@ final class ArtistSelectView: UIView {
         flowLayout.itemSize = CGSize(
             width: cellWidth,
             height: cellHeight
+        )
+        
+        flowLayout.sectionInset = .init(
+            top: 0,
+            left: 0,
+            bottom: finishSelectButtonHeight,
+            right: 0
         )
     }
 }

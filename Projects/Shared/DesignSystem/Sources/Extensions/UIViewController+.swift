@@ -10,7 +10,7 @@ import UIKit
 extension UIViewController {
     public func showAlert(
         title: String,
-        message: String,
+        message: String?,
         attributedMessage: NSAttributedString? = nil,
         leftActionTitle: String = "취소",
         rightActionTitle: String = "확인",
@@ -33,7 +33,7 @@ extension UIViewController {
     
     public func showAlert(
         title: String,
-        message: String,
+        message: String?,
         attributedMessage: NSAttributedString? = nil,
         singleActionTitle: String,
         actionCompletion: (() -> Void)? = nil
