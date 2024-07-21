@@ -103,11 +103,7 @@ public final class LoginViewController: UIViewController {
                             socialAccessToken: accessToken,
                             oAuthType: oAuthType
                         )
-                        
                         self?.coordinator?.pushUseAgreementViewController(model: model)
-                        
-                    case let .networkError(error):
-                        self?.showAlert(title: "로그인에 실패했어요.네트워크 환경을 점검해 주세요.[\(error.errorCode)]", message: "", singleActionTitle: "확인")
 
                     default:
                         break
