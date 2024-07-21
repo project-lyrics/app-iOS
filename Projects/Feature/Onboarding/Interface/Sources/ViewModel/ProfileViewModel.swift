@@ -26,7 +26,6 @@ public final class ProfileViewModel {
 
     private let signUpUseCase: SignUpUseCase
     private var userSignUpEntity: UserSignUpEntity
-    private var profileImageErrorPublisher = PassthroughSubject<String, Never>()
 
     public init(
         userSignUpEntity: UserSignUpEntity,
@@ -94,9 +93,5 @@ private extension ProfileViewModel {
                 return Just(SignUpResult.failure(error)).eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
-    }
-
-    func getProfileImageError() -> AnyPublisher<String, Never> {
-        return profileImageErrorPublisher.eraseToAnyPublisher()
     }
 }
