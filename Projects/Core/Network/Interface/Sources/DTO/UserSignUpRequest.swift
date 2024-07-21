@@ -64,30 +64,3 @@ public struct Term: Encodable {
         self.agreement = agreement
     }
 }
-
-// MARK: - UserSignUpRequest
-
-public struct UserSignUpRequest: Encodable {
-    let socialAccessToken: String
-    let authProvider: OAuthProvider
-    let nickname: String
-    let gender: Gender
-    let birthYear: String
-    let terms: [Term]
-
-    public init(
-        socialAccessToken: String,
-        authProvider: OAuthProvider,
-        nickname: String,
-        gender: Gender,
-        birthYear: String,
-        terms: [Term]
-    ) {
-        self.socialAccessToken = socialAccessToken
-        self.authProvider = authProvider
-        self.nickname = nickname
-        self.gender = gender
-        self.birthYear = birthYear
-        self.terms = terms
-    }
-}
