@@ -42,7 +42,6 @@ extension UserVerifiable {
                 return OAuthResult.success(type)
             }
             .mapError({ error in
-                print(error)
                 switch error {
                 case let error as KakaoOAuthError:
                     return AuthError.kakaoOAuthError(error)

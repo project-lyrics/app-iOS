@@ -103,10 +103,11 @@ public final class LoginViewController: UIViewController {
                             socialAccessToken: accessToken,
                             oAuthType: oAuthType
                         )
+                        
                         self?.coordinator?.pushUseAgreementViewController(model: model)
 
                     default:
-                        break
+                        self?.showAlert(title: "알림", message: error.localizedDescription)
                     }
                 }
             }
