@@ -11,19 +11,19 @@ import Foundation
 
 public struct UserSignUpRequest: Encodable {
     let socialAccessToken: String
-    let authProvider: OAuthProvider
+    let authProvider: String
     let nickname: String
     let profileCharacter: String
-    let gender: Gender
+    let gender: String
     let birthYear: String
     let terms: [Term]
 
     public init(
         socialAccessToken: String,
-        authProvider: OAuthProvider,
+        authProvider: String,
         nickname: String,
         profileCharacter: String,
-        gender: Gender,
+        gender: String,
         birthYear: String,
         terms: [Term]
     ) {

@@ -47,10 +47,10 @@ public struct UserSignUpEntity {
 
         return UserSignUpRequest(
             socialAccessToken: socialAccessToken,
-            authProvider: authProvider,
+            authProvider: authProvider.rawValue,
             nickname: nickname,
             profileCharacter: profileCharacter,
-            gender: gender,
+            gender: gender.rawValue,
             birthYear: birthYear,
             terms: terms
         )
