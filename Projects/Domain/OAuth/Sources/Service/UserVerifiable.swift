@@ -41,7 +41,6 @@ extension UserVerifiable {
                 return OAuthResult.success(type)
             }
             .mapError({ error in
-                print(error)
                 switch error {
                 case let error as KakaoOAuthError:
                     return AuthError.kakaoOAuthError(error)
@@ -51,7 +50,7 @@ extension UserVerifiable {
 
                 case let error as NetworkError:
                     switch error {
-                    case .customServerError(let apiFailResponse) where apiFailResponse.errorCode == "02000":
+                    case .feelinAPIError(.userDataNotFound(_)):
                         return AuthError.feelinError(.userNotFound((accessToken: oAuthToken, oAuthType: type)))
 
                     default:

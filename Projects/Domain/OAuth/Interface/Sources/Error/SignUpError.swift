@@ -7,7 +7,6 @@
 
 import Core
 import Foundation
-import KakaoSDKCommon
 
 public enum SignUpError: LocalizedError, Equatable {
     public static func == (lhs: SignUpError, rhs: SignUpError) -> Bool {
