@@ -55,7 +55,6 @@ public extension ModulePath {
     enum Domain: String, CaseIterable {
         case Artist
         case OAuth
-        case PostTextUseCase
 
         public static let name: String = "Domain"
     }
