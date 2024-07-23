@@ -37,7 +37,7 @@ public final class FeelinArtistCell: UICollectionViewCell {
     private let artistNameLabel: UILabel = {
         let label = UILabel()
         label.font = SharedDesignSystemFontFamily.Pretendard.medium.font(size: 14)
-        label.textColor = .black
+        label.textColor = Colors.gray08
         label.textAlignment = .center
         label.numberOfLines = 2
         return label

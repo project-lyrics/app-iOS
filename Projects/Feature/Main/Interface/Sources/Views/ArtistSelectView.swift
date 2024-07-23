@@ -53,7 +53,7 @@ final class ArtistSelectView: UIView {
     
     private let subtitleLabel: UILabel = {
         let label = UILabel()
-        label.text = "노래와 가사를 공유할 수 있는 공간이 생성돼요"
+        label.text = "곡과 가사를 공유할 수 있는 공간이 생성돼요"
         label.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 14)
         label.textColor = Colors.gray04
         return label

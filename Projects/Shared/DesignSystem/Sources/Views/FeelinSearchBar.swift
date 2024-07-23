@@ -23,7 +23,8 @@ public final class FeelinSearchBar: UIView {
     private var searchImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
-        imageView.image = FeelinImages.searchLight
+        imageView.image = FeelinImages.searchLight.withRenderingMode(.alwaysTemplate)
+        imageView.tintColor = Colors.gray05
         return imageView
     }()
     
