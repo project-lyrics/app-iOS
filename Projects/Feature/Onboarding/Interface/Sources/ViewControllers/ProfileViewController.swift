@@ -126,7 +126,7 @@ public final class ProfileViewController: UIViewController {
                 case .success:
                     self?.coordinator?.pushWelcomeViewController()
                 case .failure(let error):
-                    print("Sign up failed: \(error.localizedDescription)")
+                    self?.showAlert(title: "알림", message: error.localizedDescription)
                 }
             }
             .store(in: &cancellables)
