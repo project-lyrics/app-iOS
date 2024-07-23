@@ -166,7 +166,15 @@ private extension ArtistSelectViewController {
         
         self.artistSearchBar.searchTextField.editEndPublisher
             .dropFirst()
+            .compactMap { $0 }
+            .filter { $0.isEmpty }
             .sink { [weak viewModel] searchText in
+                viewModel?.fetchArtists(isInitialFetch: true)
+            }
+            .store(in: &cancellables)
+        
+        self.artistSearchBar.clearButton.publisher(for: .touchUpInside)
+            .sink { [weak viewModel] _ in
                 viewModel?.fetchArtists(isInitialFetch: true)
             }
             .store(in: &cancellables)
@@ -184,15 +192,17 @@ private extension ArtistSelectViewController {
             }
             .store(in: &cancellables)
         
-        self.skipButton.publisher(for: .touchUpInside)
-            .sink { _ in
-                // TODO: - 추후 Coordinator를 활용하여 화면전환
-            }
-            .store(in: &cancellables)
-        
         self.closeButton.publisher(for: .touchUpInside)
-            .sink { _ in
-                // TODO: - 추후 Coordinator를 활용하여 화면전환
+            .sink { [unowned self] _ in
+                self.showAlert(
+                    title: "선택한 정보를 저장하지 않고\n 나가시겠어요?",
+                    message: nil,
+                    leftActionTitle: "취소",
+                    rightActionTitle: "나가기",
+                    rightActionCompletion: {
+                        // MARK: - 추후 coordinator를 활용하여 메인화면으로 전환
+                    }
+                )
             }
             .store(in: &cancellables)
     }
