@@ -20,14 +20,6 @@ final class ArtistSelectView: UIView {
         return button
     }()
     
-    let skipButton: UIButton = {
-        let button = UIButton()
-        button.titleLabel?.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 16)
-        button.setTitle("건너뛰기", for: .normal)
-        button.setTitleColor(Colors.gray06, for: .normal)
-        return button
-    }()
-    
     let artistSearchBar = FeelinSearchBar(placeholder: "아티스트 검색")
     
     lazy var artistCollectionView: UICollectionView = {
@@ -98,18 +90,10 @@ final class ArtistSelectView: UIView {
         self.addSubview(rootFlexContainer)
         
         rootFlexContainer.flex.define { flex in
-            flex.addItem().direction(.row).define { flex in
-                flex.addItem(closeButton)
-                    .size(.init(width: 24, height: 24))
-                    .alignSelf(.center)
-                    
-                flex.addItem()
-                    .grow(2)
-                
-                flex.addItem(skipButton)
-            }
-            .marginTop(10)
-            .marginHorizontal(20)
+            flex.addItem(closeButton)
+                .size(.init(width: 24, height: 24))
+                .marginTop(10)
+                .marginHorizontal(20)
             
             
             flex.addItem(titleLabel)

@@ -239,8 +239,4 @@ private extension ArtistSelectViewController {
     var finishSelectButton: FeelinConfirmButton {
         return self.artistSelectView.finishSelectButton
     }
-    
-    var skipButton: UIButton {
-        return self.artistSelectView.skipButton
-    }
 }
