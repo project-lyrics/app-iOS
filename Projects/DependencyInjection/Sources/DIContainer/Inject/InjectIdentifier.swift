@@ -5,9 +5,8 @@
 //  Created by Derrick kim on 4/18/24.
 //
 
-import CoreNetworkInterface
-import CoreLocalStorageInterface
-import DomainOAuthInterface
+import Core
+import Domain
 
 public struct InjectIdentifier<T> {
     private (set) var type: T.Type? = nil
@@ -55,6 +54,15 @@ public extension InjectIdentifier {
 
     static var recentLoginRecordService: InjectIdentifier<RecentLoginRecordServiceInterface> {
         .by(type: RecentLoginRecordServiceInterface.self, key: "recentLoginRecordService")
+    }
+    
+    static var artistAPIService:
+    InjectIdentifier<ArtistAPIServiceInterface> {
+        .by(type: ArtistAPIServiceInterface.self, key: "artistAPIService")
+    }
+    
+    static var artistPaginationService: InjectIdentifier<ArtistPaginationServiceInterface> {
+        .by(type: ArtistPaginationServiceInterface.self, key: "artistPaginationService")
     }
 }
 

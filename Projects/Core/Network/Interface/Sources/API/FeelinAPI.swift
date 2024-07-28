@@ -15,11 +15,14 @@ public enum FeelinAPI<R> {
     )
     case checkUserValidity
     case reissueAccessToken(refreshToken: String)
+    case getArtists(cursor: Int?, size: Int)
+    case searchArtists(query: String, cursor: Int?, size: Int)
+    case postFavoriteArtists(ids: [Int])
 }
 
 extension FeelinAPI: HTTPNetworking {
     public var headers: [String : String]? {
-        var defaultHeader = ["application/json": "Content-Type"]
+        var defaultHeader = ["Content-Type": "application/json"]
 
         switch self {
         case .login(_, oauthAccessToken: let oAuthAccessToken):
@@ -36,7 +39,36 @@ extension FeelinAPI: HTTPNetworking {
     }
 
     public var queryParameters: Encodable? {
-        return nil
+        switch self {
+        case .getArtists(let cursor, let size):
+            if let cursor = cursor {
+                return [
+                    "cursor": cursor,
+                    "size": size
+                ]
+            }
+            
+            return [
+                "size": size
+            ]
+        case .searchArtists(let query, let cursor, let size):
+            if let cursor = cursor {
+                return [
+                    "query": "\(query)",
+                    "cursor": "\(cursor)",
+                    "size": "\(size)"
+                ]
+            }
+            
+            return [
+                "query": "\(query)",
+                "size": "\(size)"
+            ]
+            
+        default:
+            return nil
+        }
+        
     }
 
     public var bodyParameters: Encodable? {
@@ -45,6 +77,11 @@ extension FeelinAPI: HTTPNetworking {
             return [
                 "socialAccessToken": oauthAccessToken,
                 "authProvider": oauthProvider.rawValue
+            ]
+            
+        case .postFavoriteArtists(let ids):
+            return [
+                "artistIds": ids
             ]
 
         default:
@@ -72,15 +109,24 @@ extension FeelinAPI: HTTPNetworking {
 
         case .reissueAccessToken:
             return "/api/v1/auth/token"
+            
+        case .getArtists:
+            return "/api/v1/artists"
+            
+        case .searchArtists:
+            return "/api/v1/artists/search"
+            
+        case .postFavoriteArtists:
+            return "/api/v1/favorite-artists/batch"
         }
     }
 
     public var httpMethod: HTTPMethod {
         switch self {
-        case .login, .reissueAccessToken:
+        case .login, .reissueAccessToken, .postFavoriteArtists:
             return .post
 
-        case .checkUserValidity:
+        case .checkUserValidity, .getArtists, .searchArtists:
             return .get
         }
     }

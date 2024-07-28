@@ -44,6 +44,8 @@ let targets: [Target] = [
             dependencies: [
                 .feature(implements: .Main),
                 .feature(interface: .Main),
+                .feature(testing: .Main),
+                .dependencyInjection,
                 .SPM.FlexLayout
             ],
             settings: Project.Environment.exampleAppDefaultSettings

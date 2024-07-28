@@ -5,8 +5,13 @@
 //  Created by 황인우 on 5/19/24.
 //
 
+import DependencyInjection
+import Domain
 import FeatureMainInterface
+import FeatureMainTesting
 import Shared
+import Core
+
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
@@ -23,7 +28,37 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window = UIWindow(windowScene: windowScene)
         
-//        window?.rootViewController = ArtistSelectViewController()
+        DIContainer.standard.register(.networkProvider) { resolver in
+            return NetworkProvider(
+                networkSession: .init(requestInterceptor: MockTokenInterceptor())
+            )
+        }
+        DIContainer.registerDependenciesForArtistSelectView()
+        
+        @Injected(.artistAPIService) var artistAPIService: ArtistAPIServiceInterface
+        @Injected(.artistPaginationService) var artistPaginationService: ArtistPaginationServiceInterface
+        
+        let getArtistsUseCase = GetArtistsUseCase(
+            artistAPIService: artistAPIService,
+            artistPaginationService: artistPaginationService
+        )
+        
+        let searchArtistsUseCase = SearchArtistsUseCase(
+            artistAPIService: artistAPIService,
+            artistPaginationService: artistPaginationService
+        )
+        
+        let postFavoriteArtistsUseCase = PostFavoriteArtistsUseCase(artistAPIService: artistAPIService)
+        
+        let viewModel = ArtistSelectViewModel(
+            getArtistsUseCase: getArtistsUseCase,
+            searchArtistsUseCase: searchArtistsUseCase, 
+            postFavoriteArtistsUseCase: postFavoriteArtistsUseCase
+        )
+        
+        let artistSelectViewController = ArtistSelectViewController(viewModel: viewModel)
+        
+        window?.rootViewController = artistSelectViewController
         window?.makeKeyAndVisible()
     }
     

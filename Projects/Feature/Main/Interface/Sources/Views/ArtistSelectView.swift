@@ -10,6 +10,7 @@ import UIKit
 import Shared
 
 final class ArtistSelectView: UIView {
+    private (set) var finishSelectButtonHeight: CGFloat = 56
     
     // MARK: - UI Components
     
@@ -32,14 +33,14 @@ final class ArtistSelectView: UIView {
         title: "완료"
     )
     
-    private var flowLayout: UICollectionViewFlowLayout = {
+    private (set) var flowLayout: UICollectionViewFlowLayout = {
         let flowlayout = UICollectionViewFlowLayout()
         flowlayout.minimumInteritemSpacing = 12
         flowlayout.minimumLineSpacing = 12
         return flowlayout
     }()
     
-    private let rootFlexContainer: UIView = .init()
+    private (set) var rootFlexContainer: UIView = .init()
     
     private let titleLabel: UILabel = {
         let label = UILabel()
@@ -52,7 +53,7 @@ final class ArtistSelectView: UIView {
     
     private let subtitleLabel: UILabel = {
         let label = UILabel()
-        label.text = "노래와 가사를 공유할 수 있는 공간이 생성돼요"
+        label.text = "곡과 가사를 공유할 수 있는 공간이 생성돼요"
         label.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 14)
         label.textColor = Colors.gray04
         return label
@@ -92,7 +93,8 @@ final class ArtistSelectView: UIView {
             flex.addItem(closeButton)
                 .size(.init(width: 24, height: 24))
                 .marginTop(10)
-                .marginLeft(20)
+                .marginHorizontal(20)
+            
             
             flex.addItem(titleLabel)
                 .marginTop(38)
@@ -116,7 +118,7 @@ final class ArtistSelectView: UIView {
                 .left(20)
                 .right(20)
                 .bottom(44)
-                .height(56)
+                .height(finishSelectButtonHeight)
                 .cornerRadius(8)
         }
     }
@@ -129,6 +131,13 @@ final class ArtistSelectView: UIView {
         flowLayout.itemSize = CGSize(
             width: cellWidth,
             height: cellHeight
+        )
+        
+        flowLayout.sectionInset = .init(
+            top: 0,
+            left: 0,
+            bottom: finishSelectButtonHeight,
+            right: 0
         )
     }
 }

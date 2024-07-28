@@ -14,7 +14,8 @@ let targets: [Target] = [
         factory: .init(
             dependencies: [
                 .core,
-                .domain(implements: .OAuth)
+                .domain(implements: .OAuth),
+                .domain(implements: .Artist)
             ]
         )
     ),
