@@ -42,7 +42,7 @@ public final class LoginViewController: UIViewController {
 
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
+        
         recentLoginLoaded.send()
     }
 
@@ -93,7 +93,7 @@ public final class LoginViewController: UIViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] result in
                 switch result {
-                case .success(let type):
+                case .success:
                     self?.coordinator?.connectTabBarFlow()
 
                 case .failure(let error):
@@ -107,7 +107,7 @@ public final class LoginViewController: UIViewController {
                         self?.coordinator?.pushUseAgreementViewController(model: model)
 
                     default:
-                        self?.showAlert(title: "알림", message: error.localizedDescription)
+                        self?.showAlert(title: "로그인에 실패했어요.네트워크 환경을 점검해 주세요.[\(error)]", message: "", singleActionTitle: "확인")
                     }
                 }
             }
