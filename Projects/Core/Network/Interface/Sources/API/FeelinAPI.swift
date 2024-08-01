@@ -27,7 +27,9 @@ extension FeelinAPI: HTTPNetworking {
 
         switch self {
         case .checkUserValidity(accessToken: let accessToken):
-            defaultHeader["Authorization"] = "Bearer \(accessToken)"
+            return [
+                "Authorization" : "Bearer \(accessToken)"
+            ]
 
         case .reissueAccessToken(refreshToken: let refreshToken):
             defaultHeader["Authorization"] = "Bearer \(refreshToken)"

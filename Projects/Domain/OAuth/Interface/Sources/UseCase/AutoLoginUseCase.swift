@@ -15,7 +15,7 @@ public struct AutoLoginUseCase {
         self.userValidityService = userValidityService
     }
     
-    public func execute() -> AnyPublisher<Bool, AuthError> {
+    public func execute() -> AnyPublisher<Void, AuthError> {
         return self.userValidityService.isUserValid()
     }
 }

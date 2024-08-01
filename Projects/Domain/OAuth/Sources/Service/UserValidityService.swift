@@ -12,7 +12,7 @@ import CoreNetworkInterface
 import DomainOAuthInterface
 
 extension UserValidityService: UserValidityServiceInterface {
-    public func isUserValid() -> AnyPublisher<Bool, AuthError> {
+    public func isUserValid() -> AnyPublisher<Void, AuthError> {
         guard let accessTokenKey = try? tokenKeyHolder.fetchAccessTokenKey(),
               let accessToken: AccessToken = try? tokenStorage.read(key: accessTokenKey) else {
             return Fail(error: AuthError.keychainError(.itemNotFound)).eraseToAnyPublisher()
@@ -22,7 +22,7 @@ extension UserValidityService: UserValidityServiceInterface {
 
         return networkProvider
             .request(endpoint)
-            .map(\.data.isValid)
+            .map { _ in () }
             .mapError { error in
                 AuthError.networkError(error)
             }

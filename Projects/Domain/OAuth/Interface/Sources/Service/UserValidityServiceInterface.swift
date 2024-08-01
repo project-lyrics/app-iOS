@@ -11,7 +11,7 @@ import CoreNetworkInterface
 import Foundation
 
 public protocol UserValidityServiceInterface {
-    func isUserValid() -> AnyPublisher<Bool, AuthError>
+    func isUserValid() -> AnyPublisher<Void, AuthError>
 }
 
 final public class UserValidityService {
