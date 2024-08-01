@@ -107,7 +107,7 @@ public final class LoginViewController: UIViewController {
                         self?.coordinator?.pushUseAgreementViewController(model: model)
 
                     default:
-                        self?.showAlert(title: "알림", message: error.localizedDescription)
+                        self?.showAlert(title: "로그인에 실패했어요.네트워크 환경을 점검해 주세요.[\(error)]", message: "", singleActionTitle: "확인")
                     }
                 }
             }
