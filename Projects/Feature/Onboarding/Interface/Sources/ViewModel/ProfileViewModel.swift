@@ -21,10 +21,12 @@ public final class ProfileViewModel {
         let isNextButtonEnabled: AnyPublisher<Bool, Never>
         let profileImage: AnyPublisher<UIImage, Never>
         let signUpResult: AnyPublisher<SignUpResult, Never>
+        let profileImageErrorPublisher: AnyPublisher<String, Never>
     }
 
     private let signUpUseCase: SignUpUseCase
     private var userSignUpEntity: UserSignUpEntity
+    private var profileImageErrorPublisher = PassthroughSubject<String, Never>()
 
     public init(
         userSignUpEntity: UserSignUpEntity,
@@ -91,5 +93,9 @@ private extension ProfileViewModel {
                 return Just(SignUpResult.failure(error)).eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
+    }
+
+    func getProfileImageError() -> AnyPublisher<String, Never> {
+        return profileImageErrorPublisher.eraseToAnyPublisher()
     }
 }

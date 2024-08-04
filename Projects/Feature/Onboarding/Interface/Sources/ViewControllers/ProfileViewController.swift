@@ -49,21 +49,6 @@ public final class ProfileViewController: UIViewController {
     }
 
     private func bind() {
-        let nicknameTextPublisher = PassthroughSubject<String?, Never>()
-        let profileImagePublisher = PassthroughSubject<String?, Never>()
-
-        let combinedSignUpModelPublisher = Publishers.CombineLatest(
-            nicknameTextPublisher,
-            profileImagePublisher
-        )
-            .compactMap { (nickname, profileCharacter) -> UserSignUpEntity? in
-                guard let nickname = nickname,
-                      let profileCharacter = profileCharacter else { return nil }
-
-                return UserSignUpEntity(nickname: nickname, profileCharacter: profileCharacter)
-            }
-            .eraseToAnyPublisher()
-
         backButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in
                 self?.coordinator?.popViewController()
@@ -120,8 +105,6 @@ public final class ProfileViewController: UIViewController {
                 }
             }
             .store(in: &cancellables)
-
-        profileImagePublisher.send(ProfileCharacterType.defaultCharacter)
     }
 }
 
