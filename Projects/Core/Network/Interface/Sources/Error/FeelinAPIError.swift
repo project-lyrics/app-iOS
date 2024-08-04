@@ -8,75 +8,141 @@
 import Foundation
 
 public enum FeelinAPIError: LocalizedError, Equatable {
-    case invalidRequest(errorMessage: String)
-    case invalidRequestInput(errorMessage: String)
-    case unexpectedServerError(errorMessage: String)
-    case refreshTokenNotFound(errorMessage: String)
-    case tokenIsExpired(errorMessage: String)
-    case wrongTokenTypePassed(errorMessage: String)
-    case unsupportedAuthProvider(errorMessage: String)
-    case invalidToken(errorMessage: String)
-    case invalidPublicKey(errorMessage: String)
-    case invalidSecretKey(errorMessage: String)
-    case userDataNotFound(errorMessage: String)
-    case artistDataNotFound(errorMessage: String)
-    case dataFailedValidation(errorMessage: String)
-    case recordDataNotFound(errorMessage: String)
+    case invalidRequest(errorCode: String, errorMessage: String)
+    case invalidRequestInput(errorCode: String, errorMessage: String)
+    case unexpectedServerError(errorCode: String, errorMessage: String)
+    case refreshTokenNotFound(errorCode: String, errorMessage: String)
+    case tokenIsExpired(errorCode: String, errorMessage: String)
+    case wrongTokenTypePassed(errorCode: String, errorMessage: String)
+    case unsupportedAuthProvider(errorCode: String, errorMessage: String)
+    case invalidToken(errorCode: String, errorMessage: String)
+    case invalidPublicKey(errorCode: String, errorMessage: String)
+    case invalidSecretKey(errorCode: String, errorMessage: String)
+    case userDataNotFound(errorCode: String, errorMessage: String)
+    case artistDataNotFound(errorCode: String, errorMessage: String)
+    case dataFailedValidation(errorCode: String, errorMessage: String)
+    case recordDataNotFound(errorCode: String, errorMessage: String)
     case unknown(errorCode: String, errorMessage: String)
-    
-    public var errorDescription: String? {
+
+    public var errorCode: String {
         switch self {
-        case .invalidRequest(let errorMessage),
-             .invalidRequestInput(let errorMessage),
-             .unexpectedServerError(let errorMessage),
-             .refreshTokenNotFound(let errorMessage),
-             .tokenIsExpired(let errorMessage),
-             .wrongTokenTypePassed(let errorMessage),
-             .unsupportedAuthProvider(let errorMessage),
-             .invalidToken(let errorMessage),
-             .invalidPublicKey(let errorMessage),
-             .invalidSecretKey(let errorMessage),
-             .userDataNotFound(let errorMessage),
-             .artistDataNotFound(let errorMessage),
-             .dataFailedValidation(let errorMessage),
-             .recordDataNotFound(let errorMessage),
-             .unknown(_, let errorMessage):
+        case .invalidRequest(let errorCode, _),
+                .invalidRequestInput(let errorCode, _),
+                .unexpectedServerError(let errorCode, _),
+                .refreshTokenNotFound(let errorCode, _),
+                .tokenIsExpired(let errorCode, _),
+                .wrongTokenTypePassed(let errorCode, _),
+                .unsupportedAuthProvider(let errorCode, _),
+                .invalidToken(let errorCode, _),
+                .invalidPublicKey(let errorCode, _),
+                .invalidSecretKey(let errorCode, _),
+                .userDataNotFound(let errorCode, _),
+                .artistDataNotFound(let errorCode, _),
+                .dataFailedValidation(let errorCode, _),
+                .recordDataNotFound(let errorCode, _),
+                .unknown(let errorCode, _):
+            return errorCode
+        }
+    }
+
+    public var errorMessage: String {
+        switch self {
+        case .invalidRequest(_, let errorMessage),
+                .invalidRequestInput(_, let errorMessage),
+                .unexpectedServerError(_, let errorMessage),
+                .refreshTokenNotFound(_, let errorMessage),
+                .tokenIsExpired(_, let errorMessage),
+                .wrongTokenTypePassed(_, let errorMessage),
+                .unsupportedAuthProvider(_, let errorMessage),
+                .invalidToken(_, let errorMessage),
+                .invalidPublicKey(_, let errorMessage),
+                .invalidSecretKey(_, let errorMessage),
+                .userDataNotFound(_, let errorMessage),
+                .artistDataNotFound(_, let errorMessage),
+                .dataFailedValidation(_, let errorMessage),
+                .recordDataNotFound(_, let errorMessage),
+                .unknown(_, let errorMessage):
             return errorMessage
         }
     }
-    
+
     public init(apiFailResponse: APIFailResponse) {
         switch apiFailResponse.errorCode {
         case "00000":
-            self = .invalidRequest(errorMessage: apiFailResponse.errorMessage)
+            self = .invalidRequest(
+                errorCode: apiFailResponse.errorCode,
+                errorMessage: apiFailResponse.errorMessage
+            )
         case "00001":
-            self = .invalidRequestInput(errorMessage: apiFailResponse.errorMessage)
+            self = .invalidRequestInput(
+                errorCode: apiFailResponse.errorCode,
+                errorMessage: apiFailResponse.errorMessage
+            )
         case "00002":
-            self = .unexpectedServerError(errorMessage: apiFailResponse.errorMessage)
+            self = .unexpectedServerError(
+                errorCode: apiFailResponse.errorCode,
+                errorMessage: apiFailResponse.errorMessage
+            )
         case "01000":
-            self = .refreshTokenNotFound(errorMessage: apiFailResponse.errorMessage)
+            self = .refreshTokenNotFound(
+                errorCode: apiFailResponse.errorCode,
+                errorMessage: apiFailResponse.errorMessage
+            )
         case "01001":
-            self = .tokenIsExpired(errorMessage: apiFailResponse.errorMessage)
+            self = .tokenIsExpired(
+                errorCode: apiFailResponse.errorCode,
+                errorMessage: apiFailResponse.errorMessage
+            )
         case "01002":
-            self = .wrongTokenTypePassed(errorMessage: apiFailResponse.errorMessage)
+            self = .wrongTokenTypePassed(
+                errorCode: apiFailResponse.errorCode,
+                errorMessage: apiFailResponse.errorMessage
+            )
         case "01003":
-            self = .unsupportedAuthProvider(errorMessage: apiFailResponse.errorMessage)
+            self = .unsupportedAuthProvider(
+                errorCode: apiFailResponse.errorCode,
+                errorMessage: apiFailResponse.errorMessage
+            )
         case "01004":
-            self = .invalidToken(errorMessage: apiFailResponse.errorMessage)
+            self = .invalidToken(
+                errorCode: apiFailResponse.errorCode,
+                errorMessage: apiFailResponse.errorMessage
+            )
         case "01005":
-            self = .invalidPublicKey(errorMessage: apiFailResponse.errorMessage)
+            self = .invalidPublicKey(
+                errorCode: apiFailResponse.errorCode,
+                errorMessage: apiFailResponse.errorMessage
+            )
         case "01006":
-            self = .invalidSecretKey(errorMessage: apiFailResponse.errorMessage)
+            self = .invalidSecretKey(
+                errorCode: apiFailResponse.errorCode,
+                errorMessage: apiFailResponse.errorMessage
+            )
         case "02000":
-            self = .userDataNotFound(errorMessage: apiFailResponse.errorMessage)
+            self = .userDataNotFound(
+                errorCode: apiFailResponse.errorCode,
+                errorMessage: apiFailResponse.errorMessage
+            )
         case "03000":
-            self = .artistDataNotFound(errorMessage: apiFailResponse.errorMessage)
+            self = .artistDataNotFound(
+                errorCode: apiFailResponse.errorCode,
+                errorMessage: apiFailResponse.errorMessage
+            )
         case "03001":
-            self = .dataFailedValidation(errorMessage: apiFailResponse.errorMessage)
+            self = .dataFailedValidation(
+                errorCode: apiFailResponse.errorCode,
+                errorMessage: apiFailResponse.errorMessage
+            )
         case "04000":
-            self = .recordDataNotFound(errorMessage: apiFailResponse.errorMessage)
+            self = .recordDataNotFound(
+                errorCode: apiFailResponse.errorCode,
+                errorMessage: apiFailResponse.errorMessage
+            )
         default:
-            self = .unknown(errorCode: apiFailResponse.errorCode, errorMessage: apiFailResponse.errorMessage)
+            self = .unknown(
+                errorCode: apiFailResponse.errorCode,
+                errorMessage: apiFailResponse.errorMessage
+            )
         }
     }
 }

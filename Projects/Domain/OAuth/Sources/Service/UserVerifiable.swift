@@ -19,6 +19,7 @@ extension UserVerifiable {
             oAuthProvider: oAuthProvider,
             oAuthAccessToken: oAuthToken
         )
+
         let type = OAuthType(rawValue: oAuthProvider.rawValue) ?? .none
 
         return networkProvider.request(endpoint)
