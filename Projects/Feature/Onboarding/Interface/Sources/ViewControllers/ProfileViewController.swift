@@ -49,21 +49,6 @@ public final class ProfileViewController: UIViewController {
     }
 
     private func bind() {
-        let nicknameTextPublisher = PassthroughSubject<String?, Never>()
-        let profileImagePublisher = PassthroughSubject<String?, Never>()
-
-        let combinedSignUpModelPublisher = Publishers.CombineLatest(
-            nicknameTextPublisher,
-            profileImagePublisher
-        )
-            .compactMap { (nickname, profileCharacter) -> UserSignUpEntity? in
-                guard let nickname = nickname,
-                      let profileCharacter = profileCharacter else { return nil }
-
-                return UserSignUpEntity(nickname: nickname, profileCharacter: profileCharacter)
-            }
-            .eraseToAnyPublisher()
-
         backButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in
                 self?.coordinator?.popViewController()
@@ -73,51 +58,42 @@ public final class ProfileViewController: UIViewController {
         profileEditButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in
                 guard let self = self else { return }
-
-                editProfileViewController.modalPresentationStyle = .overFullScreen
-                present(editProfileViewController, animated: false)
+                self.editProfileViewController.modalPresentationStyle = .overFullScreen
+                self.present(self.editProfileViewController, animated: false)
             }
             .store(in: &cancellables)
 
-        let nicknameTextFieldPublisher = nicknameTextField.textField.textPublisher
-            .map { nickname in
-                if let count = nickname?.count, count < 10, count > 0 {
-                    nicknameTextPublisher.send(nickname)
-                    return true
-                }
+        let profileSelectionPublisher = profileSelectionPublisher
+            .map { ProfileCharacterType.allCases[$0].character }
 
-                return false
-            }
-            .eraseToAnyPublisher()
+        let nicknameTextPublisher = nicknameTextField.textField.textPublisher
+            .share()
+
+        let profileImagePublisher = CurrentValueSubject<String, Never>(ProfileCharacterType.defaultCharacter)
 
         profileSelectionPublisher
-            .sink { [weak self] index in
-                let images = ProfileCharacterType.allCases
-                self?.profileEditButton.setProfileImage(with: images[index].image)
-                profileImagePublisher.send(images[index].character)
+            .sink { character in
+                profileImagePublisher.send(character)
             }
             .store(in: &cancellables)
-
-        nicknameTextFieldPublisher
-            .sink { [weak self] isEnabled in
-                guard let self = self else { return }
-                nextButton.isEnabled = isEnabled && nicknameTextField.isValid
-            }
-            .store(in: &cancellables)
-
-        let nextButtonPublisher = nextButton.publisher(for: .touchUpInside)
-            .eraseToAnyPublisher()
-
-        let combinedPublisher = nextButtonPublisher
-            .combineLatest(combinedSignUpModelPublisher)
-            .map { $1 }
-            .eraseToAnyPublisher()
 
         let input = ProfileViewModel.Input(
-            combinedSignUpModelPublisher: combinedPublisher
+            nicknameTextPublisher: nicknameTextPublisher.eraseToAnyPublisher(),
+            profileImagePublisher: profileImagePublisher.eraseToAnyPublisher(),
+            nextButtonTapPublisher: nextButton.publisher(for: .touchUpInside).eraseToAnyPublisher()
         )
 
         let output = viewModel.transform(input)
+
+        output.isNextButtonEnabled
+            .assign(to: \.isEnabled, on: nextButton)
+            .store(in: &cancellables)
+
+        output.profileImage
+            .sink { [weak self] profileImage in
+                self?.profileEditButton.setProfileImage(with: profileImage)
+            }
+            .store(in: &cancellables)
 
         output.signUpResult
             .receive(on: DispatchQueue.main)
@@ -130,8 +106,6 @@ public final class ProfileViewController: UIViewController {
                 }
             }
             .store(in: &cancellables)
-
-        profileImagePublisher.send(ProfileCharacterType.defaultCharacter)
     }
 }
 

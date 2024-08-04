@@ -7,7 +7,7 @@
 
 import UIKit
 
-public enum ProfileCharacterType: CaseIterable {
+public enum ProfileCharacterType: String, CaseIterable {
     case shortHair
     case braidedHair
     case partedHair
