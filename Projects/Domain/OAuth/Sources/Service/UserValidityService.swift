@@ -18,7 +18,7 @@ extension UserValidityService: UserValidityServiceInterface {
             return Fail(error: AuthError.keychainError(.itemNotFound)).eraseToAnyPublisher()
         }
 
-        let endpoint: FeelinAPI<UserValidityResponse> = FeelinAPI.checkUserValidity(accessToken: accessToken.token)
+        let endpoint: FeelinAPI<FeelinDefaultResponse> = FeelinAPI.checkUserValidity(accessToken: accessToken.token)
 
         return networkProvider
             .request(endpoint)
