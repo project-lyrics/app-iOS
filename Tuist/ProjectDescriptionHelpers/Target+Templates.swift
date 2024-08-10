@@ -159,6 +159,7 @@ public extension Target {
         newFactory.name = ModulePath.Feature.name + module.rawValue + "Interface"
         newFactory.sources = .interface
         newFactory.scripts = [.SwiftLintString]
+        newFactory.product = Environment.forPreview.getBoolean(default: false) ? .framework : .staticLibrary
 
         return make(factory: newFactory)
     }
