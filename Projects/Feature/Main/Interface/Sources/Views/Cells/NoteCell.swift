@@ -11,7 +11,7 @@ import FlexLayout
 import PinLayout
 import Shared
 
-class NoteCell: UICollectionViewCell {
+final class NoteCell: UICollectionViewCell {
     
     private let flexContainer = UIView()
     
