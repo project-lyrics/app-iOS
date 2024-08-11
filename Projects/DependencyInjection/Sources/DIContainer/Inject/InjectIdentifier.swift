@@ -58,6 +58,7 @@ public extension InjectIdentifier {
 
     static var signUpService: InjectIdentifier<SignUpServiceInterface> {
         .by(type: SignUpServiceInterface.self, key: "signUpService")
+    }
     
     static var artistAPIService:
     InjectIdentifier<ArtistAPIServiceInterface> {
