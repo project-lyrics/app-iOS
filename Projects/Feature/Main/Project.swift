@@ -8,7 +8,8 @@ let targets: [Target] = [
         factory: .init(
             dependencies: [
                 .dependencyInjection,
-                .SPM.FlexLayout
+                .SPM.FlexLayout,
+                .shared
             ]
         )
     ),
