@@ -56,8 +56,7 @@ public final class ProfileViewController: UIViewController {
             .store(in: &cancellables)
 
         profileEditButton.publisher(for: .touchUpInside)
-            .sink { [weak self] _ in
-                guard let self = self else { return }
+            .sink { [unowned self] _ in
                 self.editProfileViewController.modalPresentationStyle = .overFullScreen
                 self.present(self.editProfileViewController, animated: false)
             }
@@ -65,20 +64,14 @@ public final class ProfileViewController: UIViewController {
 
         let profileSelectionPublisher = profileSelectionPublisher
             .map { ProfileCharacterType.allCases[$0].character }
+            .eraseToAnyPublisher()
 
         let nicknameTextPublisher = nicknameTextField.textField.textPublisher
-
-        let profileImagePublisher = CurrentValueSubject<String, Never>(ProfileCharacterType.defaultCharacter)
-
-        profileSelectionPublisher
-            .sink { character in
-                profileImagePublisher.send(character)
-            }
-            .store(in: &cancellables)
+            .eraseToAnyPublisher()
 
         let input = ProfileViewModel.Input(
-            nicknameTextPublisher: nicknameTextPublisher.eraseToAnyPublisher(),
-            profileImagePublisher: profileImagePublisher.eraseToAnyPublisher(),
+            nicknameTextPublisher: nicknameTextPublisher,
+            profileImagePublisher: profileSelectionPublisher,
             nextButtonTapPublisher: nextButton.publisher(for: .touchUpInside).eraseToAnyPublisher()
         )
 
@@ -125,7 +118,7 @@ private extension ProfileViewController {
         return profileView.nextButton
     }
 
-    var profileSelectionPublisher: PassthroughSubject<Int, Never> {
+    var profileSelectionPublisher: CurrentValueSubject<Int, Never> {
         return editProfileViewController.profileSelectionPublisher
     }
 }

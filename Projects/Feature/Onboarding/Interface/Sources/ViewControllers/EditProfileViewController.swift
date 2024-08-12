@@ -12,7 +12,7 @@ import Shared
 public final class EditProfileViewController: BottomSheetViewController<EditProfileView> {
     private var cancellables = Set<AnyCancellable>()
     private var selectedProfileIndex: Int = 0
-    public let profileSelectionPublisher = PassthroughSubject<Int, Never>()
+    public let profileSelectionPublisher = CurrentValueSubject<Int, Never>(0)
 
     public override func viewDidLoad() {
         super.viewDidLoad()
