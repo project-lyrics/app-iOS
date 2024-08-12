@@ -42,7 +42,7 @@ final class NoteCell: UICollectionViewCell {
     
     private (set) var moreAboutContentButton: UIButton = {
         let button = UIButton()
-        let buttonImage = FeelinImages.meetball.image
+        let buttonImage = FeelinImages.meetball
             .withRenderingMode(.alwaysTemplate)
         button.setImage(buttonImage, for: .normal)
         button.tintColor = Colors.gray03
