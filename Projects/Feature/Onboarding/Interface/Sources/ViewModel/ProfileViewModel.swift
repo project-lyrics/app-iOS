@@ -44,11 +44,17 @@ public final class ProfileViewModel {
 }
 
 private extension ProfileViewModel {
+    func isEnabledNextButton(_ nickname: String?) -> Bool {
+        guard let nickname = nickname, !nickname.isEmpty, nickname.count < 10 else {
+            return false
+        }
+        return true
+    }
+
     func checkNextButtonIsEnabled(input: Input) -> AnyPublisher<Bool, Never> {
         return input.nicknameTextPublisher
             .map { nickname in
-                guard let nickname = nickname else { return false }
-                return !nickname.isEmpty && nickname.count < 10
+                return self.isEnabledNextButton(nickname)
             }
             .eraseToAnyPublisher()
     }
@@ -63,25 +69,27 @@ private extension ProfileViewModel {
     }
 
     func signUp(input: Input) -> AnyPublisher<SignUpResult, Never> {
+        let validNicknamePublisher = input.nicknameTextPublisher
+            .filter { nickname in return self.isEnabledNextButton(nickname) }
+            .compactMap { $0 }
+            .eraseToAnyPublisher()
+
         let combinedSignUpModelPublisher = Publishers
             .CombineLatest(
-                input.nicknameTextPublisher,
+                validNicknamePublisher,
                 input.profileImagePublisher
             )
-            .compactMap { (nickname, profileCharacter) -> UserSignUpEntity? in
-                guard let nickname = nickname, !nickname.isEmpty, nickname.count < 10 else { return nil }
-                
+            .map { (nickname, profileCharacter) -> UserSignUpEntity in
                 var entity = self.userSignUpEntity
                 entity.nickname = nickname
                 entity.profileCharacter = profileCharacter
-
                 return entity
             }
             .eraseToAnyPublisher()
 
         return input.nextButtonTapPublisher
             .combineLatest(combinedSignUpModelPublisher)
-            .flatMap { (tap, entity) in
+            .flatMap { (_, entity) in
                 return self.signUp(entity)
             }
             .eraseToAnyPublisher()
