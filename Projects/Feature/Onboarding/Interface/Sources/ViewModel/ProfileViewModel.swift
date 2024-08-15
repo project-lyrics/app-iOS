@@ -70,14 +70,19 @@ private extension ProfileViewModel {
             )
             .compactMap { (nickname, profileCharacter) -> UserSignUpEntity? in
                 guard let nickname = nickname, !nickname.isEmpty, nickname.count < 10 else { return nil }
-                return UserSignUpEntity(nickname: nickname, profileCharacter: profileCharacter)
+                
+                var entity = self.userSignUpEntity
+                entity.nickname = nickname
+                entity.profileCharacter = profileCharacter
+
+                return entity
             }
             .eraseToAnyPublisher()
 
         return input.nextButtonTapPublisher
             .combineLatest(combinedSignUpModelPublisher)
             .flatMap { (tap, entity) in
-                return Just(SignUpResult.success).eraseToAnyPublisher()
+                return self.signUp(entity)
             }
             .eraseToAnyPublisher()
     }

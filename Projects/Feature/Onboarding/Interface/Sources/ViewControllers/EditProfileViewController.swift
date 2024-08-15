@@ -12,7 +12,7 @@ import Shared
 public final class EditProfileViewController: BottomSheetViewController<EditProfileView> {
     private var cancellables = Set<AnyCancellable>()
     private var selectedProfileIndex: Int = 0
-    public let profileSelectionPublisher = CurrentValueSubject<Int, Never>(0)
+    public let profileSelectionIndexPublisher = CurrentValueSubject<Int, Never>(0)
 
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,7 +30,7 @@ public final class EditProfileViewController: BottomSheetViewController<EditProf
 
         selectButton.publisher(for: .touchUpInside)
             .sink { [weak self] (_) in
-                self?.profileSelectionPublisher.send(self?.selectedProfileIndex ?? 0)
+                self?.profileSelectionIndexPublisher.send(self?.selectedProfileIndex ?? 0)
                 self?.dismiss(animated: true)
             }
             .store(in: &cancellables)
