@@ -7,7 +7,7 @@
 
 import AuthenticationServices
 import Combine
-import CoreNetworkInterface
+import Core
 import Foundation
 import DomainOAuthInterface
 

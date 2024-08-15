@@ -6,8 +6,7 @@
 //
 
 import Combine
-import CoreNetworkInterface
-import CoreLocalStorageInterface
+import Core
 import DomainOAuthInterface
 import Foundation
 
@@ -16,17 +15,18 @@ extension UserVerifiable {
         oAuthToken: String,
         oAuthProvider: OAuthProvider
     ) -> AnyPublisher<OAuthResult, AuthError> {
-        let endpoint = FeelinAPI<UserLoginResponse>.login(
-            oauthProvider: oAuthProvider,
-            oauthAccessToken: oAuthToken
+        let endpoint = FeelinAPI<TokenResponse>.login(
+            oAuthProvider: oAuthProvider,
+            oAuthAccessToken: oAuthToken
         )
+
         let type = OAuthType(rawValue: oAuthProvider.rawValue) ?? .none
 
         return networkProvider.request(endpoint)
             .tryMap { [jwtDecoder] response -> (AccessToken, RefreshToken) in
                 return (
-                    try jwtDecoder.decode(response.data.accessToken, as: AccessToken.self),
-                    try jwtDecoder.decode(response.data.refreshToken, as: RefreshToken.self)
+                    try jwtDecoder.decode(response.accessToken, as: AccessToken.self),
+                    try jwtDecoder.decode(response.refreshToken, as: RefreshToken.self)
                 )
             }
             .tryMap { [tokenStorage, tokenKeyHolder, recentLoginRecordService] (accessToken, refreshToken) in
@@ -35,7 +35,7 @@ extension UserVerifiable {
 
                 try tokenStorage.save(token: accessToken, for: accessTokenKey)
                 try tokenStorage.save(token: refreshToken, for: refreshTokenKey)
-
+                
                 recentLoginRecordService.save(oAuthType: type.rawValue)
             }
             .map { _ in
@@ -50,7 +50,13 @@ extension UserVerifiable {
                     return AuthError.keychainError(error)
 
                 case let error as NetworkError:
-                    return AuthError.networkError(error)
+                    switch error {
+                    case .feelinAPIError(.userDataNotFound(_,_)):
+                        return AuthError.feelinError(.userNotFound((accessToken: oAuthToken, oAuthType: type)))
+
+                    default:
+                        return AuthError.networkError(error)
+                    }
 
                 case let error as JWTError:
                     return AuthError.jwtParsingError(error)

@@ -26,9 +26,16 @@ public enum NetworkError: Error, Equatable {
         case let .serverError(serverError):             return serverError.errorMessage
         case .noResponseError:                          return "No Response"
         case .decodingError:                            return "Decoding Error"
-        case let .feelinAPIError(feelinAPiError):       return feelinAPiError.localizedDescription
+        case let .feelinAPIError(feelinAPiError):       return feelinAPiError.errorMessage
         case let .requestInterceptError(description):   return "RequestInterceptError: \(description)"
         case .unknownError:                             return "Unknown Error"
+        }
+    }
+
+    public var errorCode: String {
+        switch self {
+        case let .feelinAPIError(feelinAPiError):       return feelinAPiError.errorCode
+        default:                                        return ""
         }
     }
 

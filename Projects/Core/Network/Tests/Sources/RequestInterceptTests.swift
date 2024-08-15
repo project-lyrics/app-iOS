@@ -77,8 +77,9 @@ final class RequestInterceptTest: XCTestCase {
         sut = NetworkProvider(
             networkSession: mockNetworkSession
         )
-        
-        let endpoint = FeelinAPI<UserValidityResponse>.checkUserValidity
+
+        let accessToken: AccessToken! = try fakeTokenStorage.read(key: "FeelinGoodAccessRight")
+        let endpoint = FeelinAPI<UserValidityResponse>.checkUserValidity(accessToken: accessToken.token)
 
         // when
         XCTAssertThrowsError(try awaitPublisher(sut.request(endpoint)), "") { error in
@@ -124,7 +125,8 @@ final class RequestInterceptTest: XCTestCase {
             networkSession: mockNetworkSession
         )
         
-        let endpoint = FeelinAPI<UserLoginResponse>.checkUserValidity
+        let accessToken: AccessToken! = try fakeTokenStorage.read(key: "FeelinGoodAccessRight")
+        let endpoint = FeelinAPI<TokenResponse>.checkUserValidity(accessToken: accessToken.token)
         
         // when
         XCTAssertThrowsError(try awaitPublisher(sut.request(endpoint)), "") { error in

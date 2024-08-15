@@ -19,7 +19,6 @@ public final class MainCoordinator: Coordinator {
 
 private extension MainCoordinator {
     func configureMainController() {
-        let viewController = MainRootViewController()
-        navigationController.pushViewController(viewController, animated: false)
+        
     }
 }

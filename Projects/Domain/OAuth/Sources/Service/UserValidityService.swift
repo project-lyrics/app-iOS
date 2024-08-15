@@ -6,17 +6,25 @@
 //
 
 import Combine
+import Core
 import Foundation
-import CoreNetworkInterface
 import DomainOAuthInterface
 
 extension UserValidityService: UserValidityServiceInterface {
-    public func isUserValid() -> AnyPublisher<Bool, AuthError> {
-        let endpoint: FeelinAPI<UserValidityResponse> = FeelinAPI.checkUserValidity
+    public func isUserValid() -> AnyPublisher<Void, AuthError> {
+        guard let accessTokenKey = try? tokenKeyHolder.fetchAccessTokenKey(),
+              let accessToken: AccessToken = try? tokenStorage.read(key: accessTokenKey) else {
+            return Fail(error: AuthError.keychainError(.itemNotFound)).eraseToAnyPublisher()
+        }
+
+        let endpoint: FeelinAPI<FeelinDefaultResponse> = FeelinAPI.checkUserValidity(accessToken: accessToken.token)
+
         return networkProvider
             .request(endpoint)
-            .map(\.data.isValid)
-            .mapError(AuthError.networkError)
+            .map { _ in () }
+            .mapError { error in
+                AuthError.networkError(error)
+            }
             .eraseToAnyPublisher()
     }
 }

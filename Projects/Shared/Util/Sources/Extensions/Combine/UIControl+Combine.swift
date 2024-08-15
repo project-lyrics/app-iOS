@@ -19,7 +19,7 @@ public extension UIControl {
             input.addTarget(self, action: #selector(eventHandler), for: event)
         }
 
-        public func request(_ demand: Subscribers.Demand) {}
+        public func request(_ demand: Subscribers.Demand) { }
 
         public func cancel() {
             subscriber = nil

@@ -7,11 +7,6 @@
 
 import Foundation
 
-public struct UserLoginResponse: Decodable {
-    public let status: String
-    public let data: TokenResponse
-}
-
 public struct TokenResponse: Decodable {
     public let accessToken: String
     public let refreshToken: String

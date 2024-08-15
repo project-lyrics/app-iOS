@@ -6,38 +6,47 @@
 //
 
 import UIKit
-
+import Combine
 import Shared
 
 public final class EditProfileViewController: BottomSheetViewController<EditProfileView> {
+    private var cancellables = Set<AnyCancellable>()
+    private var selectedProfileIndex: Int = 0
+    public let profileSelectionIndexPublisher = CurrentValueSubject<Int, Never>(0)
+
     public override func viewDidLoad() {
         super.viewDidLoad()
-        
-        setUpAction()
-        profileCharacterCollectionView.delegate = self
+
+        bind()
         profileCharacterCollectionView.dataSource = self
     }
-    
-    private func setUpAction() {
-        xButton.addTarget(
-            self,
-            action: #selector(xButtonDidTap),
-            for: .touchUpInside
-        )
-        
-        selectButton.addTarget(
-            self,
-            action: #selector(selectButtonDidTap),
-            for: .touchUpInside
-        )
-    }
-    
-    @objc private func xButtonDidTap() {
-        dismiss(animated: true)
-    }
-    
-    @objc private func selectButtonDidTap() {
-        dismiss(animated: true)
+
+    private func bind() {
+        xButton.publisher(for: .touchUpInside)
+            .sink { [weak self] _ in
+                self?.dismiss(animated: true)
+            }
+            .store(in: &cancellables)
+
+        selectButton.publisher(for: .touchUpInside)
+            .sink { [weak self] (_) in
+                self?.profileSelectionIndexPublisher.send(self?.selectedProfileIndex ?? 0)
+                self?.dismiss(animated: true)
+            }
+            .store(in: &cancellables)
+
+        profileCharacterCollectionView.publisher(for: [.didSelectItem, .didDeselectItem])
+            .sink { [weak self] indexPath in
+                guard let self = self else { return }
+
+                if let cell = self.profileCharacterCollectionView.cellForItem(at: indexPath) as? ProfileCharacterCell {
+                    let isSelected = self.profileCharacterCollectionView.indexPathsForSelectedItems?.contains(indexPath) ?? false
+                    cell.setSelected(isSelected)
+                    selectButton.isEnabled = isSelected
+                    selectedProfileIndex = indexPath.row
+                }
+            }
+            .store(in: &cancellables)
     }
 }
 
@@ -45,37 +54,13 @@ private extension EditProfileViewController {
     var xButton: UIButton {
         bottomSheetView.xButton
     }
-    
-    var profileCharacterCollectionView: ProfileCharacterCollectionView {
+
+    var profileCharacterCollectionView: UICollectionView {
         bottomSheetView.profileCharacterCollectionView
     }
-    
+
     var selectButton: UIButton {
         bottomSheetView.selectButton
-    }
-}
-
-extension EditProfileViewController: UICollectionViewDelegate {
-    public func collectionView(
-        _ collectionView: UICollectionView,
-        didSelectItemAt indexPath: IndexPath
-    ) {
-        guard let cell = collectionView.cellForItem(at: indexPath) as? ProfileCharacterCell
-        else {
-            return
-        }
-        cell.setSelected(true)
-    }
-    
-    public func collectionView(
-        _ collectionView: UICollectionView,
-        didDeselectItemAt indexPath: IndexPath
-    ) {
-        guard let cell = collectionView.cellForItem(at: indexPath) as? ProfileCharacterCell
-        else {
-            return
-        }
-        cell.setSelected(false)
     }
 }
 
@@ -86,7 +71,7 @@ extension EditProfileViewController: UICollectionViewDataSource {
     ) -> Int {
         return ProfileCharacterType.allCases.count
     }
-    
+
     public func collectionView(
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath

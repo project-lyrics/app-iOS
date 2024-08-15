@@ -11,8 +11,8 @@ import Foundation
 
 final public class TokenInterceptor {
     // MARK: - 추후 accessTokenKey와 refreshTokenKey는 숨겨야 합니다.
-    public let accessTokenKey: String = "FeelinAccessTokenKey"
-    public let refreshTokenKey: String = "FeelinRefreshTokenKey"
+    public let accessTokenKey: String = "FeelinGoodAccessRight"
+    public let refreshTokenKey: String = "FeelinGoodRefreshRight"
     public let tokenStorage: TokenStorageInterface
     public let jwtDecoder: JWTDecoder = .init()
     

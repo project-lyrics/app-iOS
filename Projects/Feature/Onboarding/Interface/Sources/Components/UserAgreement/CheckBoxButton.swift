@@ -11,27 +11,27 @@ import UIKit
 
 final class CheckBoxButton: UIButton {
     let flexContainer = UIView()
-    
+
     private var uncheckedImage: UIImage = SharedDesignSystem.FeelinImages.checkBoxInactive
     private var checkedImage = SharedDesignSystem.FeelinImages.checkBoxActive
-    
-    private (set) public var isChecked: Bool = false {
+
+    public override var isSelected: Bool {
         didSet {
             updateImage()
         }
     }
-    
+
     // MARK: - View
     private var checkBoxImageView: UIImageView = {
         let imageView = UIImageView(image: SharedDesignSystem.FeelinImages.checkBoxInactive)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFit
-        
+
         return imageView
     }()
-    
+
     private var additionalView: UIView?
-    
+
     init(
         additionalView: UIView? = nil,
         action: UIAction? = nil
@@ -42,31 +42,31 @@ final class CheckBoxButton: UIButton {
         }
         addSubview(flexContainer)
         self.additionalView = additionalView
-        
+
         if let additionalView = additionalView {
             addSubview(additionalView)
         }
-        
+
         setupButton()
     }
-    
+
     public override init(frame: CGRect) {
         super.init(frame: frame)
         setupButton()
     }
-    
+
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         super.init(coder: coder)
     }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
-        
+
         flexContainer.pin.all()
         flexContainer.flex.layout()
     }
-    
+
     private func setupButton() {
         addTarget(
             self,
@@ -76,29 +76,29 @@ final class CheckBoxButton: UIButton {
         updateImage()
         setUpView()
     }
-    
+
     @objc private func buttonTapped() {
-        isChecked.toggle()
         isSelected.toggle()
     }
-    
+
     private func updateImage() {
-        let image = isChecked ? checkedImage : uncheckedImage
+        let image = isSelected ? checkedImage : uncheckedImage
         self.checkBoxImageView.image = image
     }
-    
+
     private func setUpView() {
         flexContainer.isUserInteractionEnabled = false
-        
+
         flexContainer.flex
-            .alignSelf(.center)
-            .direction(.row).define { flex in
-            flex.addItem(checkBoxImageView)
-                .marginLeft(18)
-            
-            if let additionalView = additionalView {
-                flex.addItem(additionalView)
+            .direction(.row)
+            .alignItems(.center)
+            .define { flex in
+                flex.addItem(checkBoxImageView)
+                    .marginLeft(18)
+
+                if let additionalView = additionalView {
+                    flex.addItem(additionalView)
+                }
             }
-        }
     }
 }

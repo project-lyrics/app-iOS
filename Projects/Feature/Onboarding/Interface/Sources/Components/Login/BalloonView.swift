@@ -16,6 +16,7 @@ final class BalloonView: UIView {
         label.textAlignment = .center
         label.text = "마지막에 로그인했어요"
         label.font = SharedDesignSystemFontFamily.Pretendard.medium.font(size: 14)
+        
         return label
     }()
 

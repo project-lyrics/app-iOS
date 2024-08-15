@@ -15,6 +15,7 @@ let project = Project.makeModule(
                     .feature,
                     .coordinator(interface: .Main),
                     .coordinator(interface: .App),
+                    .coordinator(interface: .TabBar),
                     .SPM.FlexLayout
                 ]
             )

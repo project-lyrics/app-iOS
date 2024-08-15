@@ -49,17 +49,15 @@ final class KakaoOAuthServiceTests: XCTestCase {
     func test_카카오_로그인_성공() throws {
         // given
         networkProviderTestDouble = MockNetworkProvider(
-            response: UserLoginResponse(
-                status: "201",
-                data: TokenResponse(
-                    accessToken: expectedAccessToken,
-                    refreshToken: expectedRefreshToken
-                )
+            response: TokenResponse(
+                accessToken: expectedAccessToken,
+                refreshToken: expectedRefreshToken
             ),
             error: nil
         )
         let mockTokenStorage = MockTokenStorage()
-        
+        let mockRecentLoginRecordService = MockRecentLoginRecordService()
+
         let mockTokenKeyHolder = MockTokenKeyHolder(
             expectedAccessTokenKey: "AccessTokenKey",
             expectedRefreshTokenKey: "RefreshTokenKey"
@@ -69,7 +67,7 @@ final class KakaoOAuthServiceTests: XCTestCase {
             kakaoUserAPI: kakaoUserAPITestDouble,
             networkProvider: networkProviderTestDouble,
             tokenStorage: mockTokenStorage, 
-            recentLoginRecordService: <#any RecentLoginRecordServiceInterface#>,
+            recentLoginRecordService: mockRecentLoginRecordService,
             tokenKeyHolder: mockTokenKeyHolder
         )
 
@@ -77,7 +75,7 @@ final class KakaoOAuthServiceTests: XCTestCase {
         let result = try awaitPublisher(sut.login())
 
         // then
-        XCTAssertEqual(result.oAuthType, .kakao)
+        XCTAssertEqual(result, .success(.kakao))
         XCTAssertTrue(mockTokenStorage.saveCalled)
         // 전달받은 accessToken, refreshToken을 저장해야 하니 총 저장횟수는 2번이어야 한다.
         XCTAssertEqual(mockTokenStorage.saveResultCount, 2)
@@ -86,24 +84,20 @@ final class KakaoOAuthServiceTests: XCTestCase {
     func test_로그인시_번들에_AccessToken이_없으면_bundle에러가_발생한다() throws {
         // given
         networkProviderTestDouble = MockNetworkProvider(
-            response: UserLoginResponse(
-                status: "201",
-                data: TokenResponse(
-                    accessToken: expectedAccessToken,
-                    refreshToken: expectedRefreshToken
-                )
+            response: TokenResponse(
+                accessToken: expectedAccessToken,
+                refreshToken: expectedRefreshToken
             ),
             error: nil
         )
         let mockTokenStorage = MockTokenStorage()
-        
-        let dummyRecentLoginRecordService = DummyLoginRecordService()
-        
+        let mockRecentLoginRecordService = MockRecentLoginRecordService()
+
         sut = KakaoOAuthService(
             kakaoUserAPI: kakaoUserAPITestDouble,
             networkProvider: networkProviderTestDouble,
             tokenStorage: mockTokenStorage, 
-            recentLoginRecordService: dummyRecentLoginRecordService
+            recentLoginRecordService: mockRecentLoginRecordService
         )
 
         // when
@@ -122,23 +116,20 @@ final class KakaoOAuthServiceTests: XCTestCase {
         // given
         kakaoUserAPITestDouble.error = KakaoOAuthError.ClientFailed(reason: .TokenNotFound, errorMessage: "Mock error")
         networkProviderTestDouble = MockNetworkProvider(
-            response: UserLoginResponse(
-                status: "401",
-                data: TokenResponse(
-                    accessToken: expectedAccessToken,
-                    refreshToken: expectedRefreshToken
-                )
+            response: TokenResponse(
+                accessToken: expectedAccessToken,
+                refreshToken: expectedRefreshToken
             ),
             error: nil
         )
         let dummyTokenStorage = FakeTokenStorage()
-        let dummyRecentLoginRecordService = DummyLoginRecordService()
-        
+        let mockRecentLoginRecordService = MockRecentLoginRecordService()
+
         sut = KakaoOAuthService(
             kakaoUserAPI: kakaoUserAPITestDouble,
             networkProvider: networkProviderTestDouble,
             tokenStorage: dummyTokenStorage, 
-            recentLoginRecordService: dummyRecentLoginRecordService
+            recentLoginRecordService: mockRecentLoginRecordService
         )
 
         // when

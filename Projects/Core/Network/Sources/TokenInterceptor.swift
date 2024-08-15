@@ -20,7 +20,7 @@ extension TokenInterceptor: URLRequestInterceptor {
                     .eraseToAnyPublisher()
             }
             request.setValue(
-                "Bearer \(accessToken)",
+                "Bearer \(accessToken.token)",
                 forHTTPHeaderField: "Authorization"
             )
             

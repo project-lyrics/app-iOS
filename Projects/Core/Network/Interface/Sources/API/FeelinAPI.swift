@@ -10,10 +10,11 @@ import Foundation
 
 public enum FeelinAPI<R> {
     case login(
-        oauthProvider: OAuthProvider,
-        oauthAccessToken: String
+        oAuthProvider: OAuthProvider,
+        oAuthAccessToken: String
     )
-    case checkUserValidity
+    case signUp(request: UserSignUpRequest?)
+    case checkUserValidity(accessToken: String)
     case reissueAccessToken(refreshToken: String)
     case getArtists(cursor: Int?, size: Int)
     case searchArtists(query: String, cursor: Int?, size: Int)
@@ -25,8 +26,10 @@ extension FeelinAPI: HTTPNetworking {
         var defaultHeader = ["Content-Type": "application/json"]
 
         switch self {
-        case .login(_, oauthAccessToken: let oAuthAccessToken):
-            defaultHeader["Authorization"] = "Bearer \(oAuthAccessToken)"
+        case .checkUserValidity(accessToken: let accessToken):
+            return [
+                "Authorization" : "Bearer \(accessToken)"
+            ]
 
         case .reissueAccessToken(refreshToken: let refreshToken):
             defaultHeader["Authorization"] = "Bearer \(refreshToken)"
@@ -73,16 +76,25 @@ extension FeelinAPI: HTTPNetworking {
 
     public var bodyParameters: Encodable? {
         switch self {
-        case .login(let oauthProvider, let oauthAccessToken):
+        case .login(let oAuthProvider, let oAuthAccessToken):
             return [
-                "socialAccessToken": oauthAccessToken,
-                "authProvider": oauthProvider.rawValue
+                "socialAccessToken": oAuthAccessToken,
+                "authProvider": oAuthProvider.rawValue
             ]
             
         case .postFavoriteArtists(let ids):
             return [
                 "artistIds": ids
             ]
+
+        case .signUp(let request):
+            return request
+
+        case .signUp(let request):
+            return request
+
+        case .signUp(let request):
+            return request
 
         default:
             return nil
@@ -104,8 +116,11 @@ extension FeelinAPI: HTTPNetworking {
         case .login:
             return "/api/v1/auth/sign-in"
 
+        case .signUp:
+            return "/api/v1/auth/sign-up"
+
         case .checkUserValidity:
-            return "/api/v1/auth/token"
+            return "/api/v1/auth/validate-token"
 
         case .reissueAccessToken:
             return "/api/v1/auth/token"
@@ -120,10 +135,10 @@ extension FeelinAPI: HTTPNetworking {
             return "/api/v1/favorite-artists/batch"
         }
     }
-
+    
     public var httpMethod: HTTPMethod {
         switch self {
-        case .login, .reissueAccessToken, .postFavoriteArtists:
+        case .login, .reissueAccessToken, .signUp, .postFavoriteArtists:
             return .post
 
         case .checkUserValidity, .getArtists, .searchArtists:

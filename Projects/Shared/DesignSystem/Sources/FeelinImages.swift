@@ -66,6 +66,7 @@ public struct FeelinImages {
     public static let logoBelt = SharedDesignSystemAsset.Images.logoBelt.image
     public static let kakao = SharedDesignSystemAsset.Images.kakao.image
     public static let apple = SharedDesignSystemAsset.Images.apple.image
+    public static let welcomeBackground = SharedDesignSystemAsset.Images.welcomeBackground.image
     public static let play = SharedDesignSystemAsset.Images.play.image
     public static let gallery = SharedDesignSystemAsset.Images.gallery.image
     public static let album = SharedDesignSystemAsset.Images.album.image

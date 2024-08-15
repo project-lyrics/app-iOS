@@ -7,7 +7,7 @@
 
 import UIKit
 
-public enum ProfileCharacterType: CaseIterable {
+public enum ProfileCharacterType: String, CaseIterable {
     case shortHair
     case braidedHair
     case partedHair
@@ -21,6 +21,16 @@ public enum ProfileCharacterType: CaseIterable {
         case .poopHair:     FeelinImages.profilePoopHair
         }
     }
-    
+
+    public var character: String {
+        switch self {
+        case .shortHair:        return "shortHair"
+        case .braidedHair:      return "braidedHair"
+        case .partedHair:       return "partedHair"
+        case .poopHair:         return "poopHair"
+        }
+    }
+
     public static let defaultImage = FeelinImages.profileShortHair
+    public static let defaultCharacter = ProfileCharacterType.shortHair.character
 }

@@ -55,6 +55,10 @@ public extension InjectIdentifier {
     static var recentLoginRecordService: InjectIdentifier<RecentLoginRecordServiceInterface> {
         .by(type: RecentLoginRecordServiceInterface.self, key: "recentLoginRecordService")
     }
+
+    static var signUpService: InjectIdentifier<SignUpServiceInterface> {
+        .by(type: SignUpServiceInterface.self, key: "signUpService")
+    }
     
     static var artistAPIService:
     InjectIdentifier<ArtistAPIServiceInterface> {

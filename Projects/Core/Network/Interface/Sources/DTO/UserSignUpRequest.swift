@@ -7,6 +7,36 @@
 
 import Foundation
 
+// MARK: - UserSignUpRequest
+
+public struct UserSignUpRequest: Encodable {
+    let socialAccessToken: String
+    let authProvider: String
+    let nickname: String
+    let profileCharacter: String
+    let gender: String
+    let birthYear: String
+    let terms: [Term]
+
+    public init(
+        socialAccessToken: String,
+        authProvider: String,
+        nickname: String,
+        profileCharacter: String,
+        gender: String,
+        birthYear: String,
+        terms: [Term]
+    ) {
+        self.socialAccessToken = socialAccessToken
+        self.authProvider = authProvider
+        self.nickname = nickname
+        self.profileCharacter = profileCharacter
+        self.gender = gender
+        self.birthYear = birthYear
+        self.terms = terms
+    }
+}
+
 // MARK: - OAuthProvider
 
 public enum OAuthProvider: String, Encodable {
@@ -27,15 +57,10 @@ public struct Term: Encodable {
     let agree: Bool
     let title: String
     let agreement: String
-}
 
-// MARK: - UserSignUpRequest
-
-public struct UserSignUpRequest: Encodable {
-    let socialAccessToken: String
-    let authProvider: OAuthProvider
-    let username: String
-    let gender: Gender
-    let birthYear: String
-    let terms: [Term]
+    public init(agree: Bool, title: String, agreement: String) {
+        self.agree = agree
+        self.title = title
+        self.agreement = agreement
+    }
 }
