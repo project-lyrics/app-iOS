@@ -8,7 +8,6 @@
 import Combine
 import Core
 import Foundation
-import CoreNetworkInterface
 import DomainOAuthInterface
 
 extension UserValidityService: UserValidityServiceInterface {

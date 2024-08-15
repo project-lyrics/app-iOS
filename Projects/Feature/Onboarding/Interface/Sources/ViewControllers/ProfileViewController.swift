@@ -56,7 +56,7 @@ public final class ProfileViewController: UIViewController {
             .store(in: &cancellables)
 
         profileEditButton.publisher(for: .touchUpInside)
-            .sink { [unowned self] _ in
+            .sink { _ in
                 self.editProfileViewController.modalPresentationStyle = .overFullScreen
                 self.present(self.editProfileViewController, animated: false)
             }
