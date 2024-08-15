@@ -182,11 +182,8 @@ final class NetworkProviderTests: XCTestCase {
             
             let mockData = """
             {
-                "status": "소셜 로그인이 완료되었습니다.",
-                "data": {
-                    "accessToken": "\(expectedAccessToken)",
-                    "refreshToken": "\(expectedRefreshToken)"
-                }
+                 "accessToken": "\(expectedAccessToken)",
+                 "refreshToken": "\(expectedRefreshToken)"
             }
             """.data(using: .utf8)!
 
@@ -237,11 +234,8 @@ final class NetworkProviderTests: XCTestCase {
 
             let mockData = """
             {
-                "status": "회원가입이 완료되었습니다.",
-                "data": {
-                    "accessToken": "\(expectedAccessToken)",
-                    "refreshToken": "\(expectedRefreshToken)"
-                }
+                "accessToken": "\(expectedAccessToken)",
+                "refreshToken": "\(expectedRefreshToken)"
             }
             """.data(using: .utf8)!
 
@@ -262,10 +256,10 @@ final class NetworkProviderTests: XCTestCase {
 
         let request = UserSignUpRequest(
             socialAccessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.dQw4w9WgXcQ",
-            authProvider: .kakao,
+            authProvider: OAuthProvider.kakao.rawValue,
             nickname: "derrick",
             profileCharacter: "poopHair",
-            gender: .male,
+            gender: Gender.male.rawValue,
             birthYear: "1992년",
             terms: [Term(
                 agree: true,
