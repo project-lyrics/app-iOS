@@ -93,7 +93,7 @@ final class ProfileEditButton: UIButton {
         }
     }
     
-    func setProfileImage(with image: UIImage) {
+    func setProfileImage(with image: UIImage?) {
         profileImageView.image = image
     }
 }

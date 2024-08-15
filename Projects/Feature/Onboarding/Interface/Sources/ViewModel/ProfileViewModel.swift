@@ -19,14 +19,12 @@ public final class ProfileViewModel {
 
     public struct Output {
         let isNextButtonEnabled: AnyPublisher<Bool, Never>
-        let profileImage: AnyPublisher<UIImage, Never>
+        let profileImage: AnyPublisher<UIImage?, Never>
         let signUpResult: AnyPublisher<SignUpResult, Never>
-        let profileImageErrorPublisher: AnyPublisher<String, Never>
     }
 
     private let signUpUseCase: SignUpUseCase
     private var userSignUpEntity: UserSignUpEntity
-    private var profileImageErrorPublisher = PassthroughSubject<String, Never>()
 
     public init(
         userSignUpEntity: UserSignUpEntity,
@@ -55,13 +53,10 @@ private extension ProfileViewModel {
             .eraseToAnyPublisher()
     }
 
-    func convertProfileImage(input: Input) -> AnyPublisher<UIImage, Never> {
+    func convertProfileImage(input: Input) -> AnyPublisher<UIImage?, Never> {
         input.profileImagePublisher
-            .map { [weak self] profileCharacter in
-                guard let image = ProfileCharacterType(rawValue: profileCharacter)?.image else {
-                    self?.profileImageErrorPublisher.send(profileCharacter)
-                    return UIImage()
-                }
+            .map { profileCharacter in
+                let image = ProfileCharacterType(rawValue: profileCharacter)?.image
                 return image
             }
             .eraseToAnyPublisher()
@@ -93,9 +88,5 @@ private extension ProfileViewModel {
                 return Just(SignUpResult.failure(error)).eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
-    }
-
-    func getProfileImageError() -> AnyPublisher<String, Never> {
-        return profileImageErrorPublisher.eraseToAnyPublisher()
     }
 }
