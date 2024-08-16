@@ -53,6 +53,8 @@ public extension ModulePath {
 
 public extension ModulePath {
     enum Domain: String, CaseIterable {
+        case Shared
+        case Note
         case Artist
         case OAuth
 

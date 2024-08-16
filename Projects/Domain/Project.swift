@@ -15,7 +15,9 @@ let targets: [Target] = [
             dependencies: [
                 .core,
                 .domain(implements: .OAuth),
-                .domain(implements: .Artist)
+                .domain(implements: .Artist),
+                .domain(implements: .Note),
+                .domain(implements: .Shared)
             ]
         )
     ),
