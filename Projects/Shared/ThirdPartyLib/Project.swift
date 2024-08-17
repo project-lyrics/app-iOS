@@ -25,7 +25,8 @@ let targets: [Target] = [
                 .SPM.PinLayout,
                 .SPM.KakaoSDKAuth,
                 .SPM.KakaoSDKUser,
-                .SPM.KakaoSDKCommon
+                .SPM.KakaoSDKCommon,
+                .Carthage.FlexLayout
             ]
         )
     )

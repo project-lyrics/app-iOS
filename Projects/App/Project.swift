@@ -23,8 +23,7 @@ let appTargets: [Target] = [
             infoPlist: Project.Environment.appInfoPlist(deploymentTarget: .dev), 
             entitlements: "Feelin.entitlements",
             dependencies: [
-                .coordinator,
-                .SPM.FlexLayout
+                .coordinator
             ],
             settings: Project.Environment.devTargetSettings
         )
@@ -36,8 +35,7 @@ let appTargets: [Target] = [
             infoPlist: Project.Environment.appInfoPlist(deploymentTarget: .qa),
             entitlements: "Feelin.entitlements",
             dependencies: [
-                .coordinator,
-                .SPM.FlexLayout
+                .coordinator
             ],
             settings: Project.Environment.qaTargetSettings
         )
@@ -49,8 +47,7 @@ let appTargets: [Target] = [
             infoPlist: Project.Environment.appInfoPlist(deploymentTarget: .prod),
             entitlements: "Feelin.entitlements",
             dependencies: [
-                .coordinator,
-                .SPM.FlexLayout
+                .coordinator
             ],
             settings: Project.Environment.prodTargetSettings
         )
@@ -59,9 +56,6 @@ let appTargets: [Target] = [
 
 let appProject: Project = .makeModule(
     name: Project.Environment.appName,
-    packages: [
-        .remote(url: "https://github.com/layoutBox/FlexLayout", requirement: .upToNextMajor(from: "2.0.7"))
-    ],
     targets: appTargets,
     schemes: appSchemes,
     additionalFiles: [
