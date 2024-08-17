@@ -3,10 +3,10 @@ import ProjectDescriptionHelpers
 import DependencyPlugin
 
 let project = Project.makeModule(
-    name: ModulePath.Domain.name+ModulePath.Domain.Artist.rawValue,
+    name: ModulePath.Domain.name+ModulePath.Domain.Note.rawValue,
     targets: [
         .domain(
-            interface: .Artist,
+            interface: .Note,
             factory: .init(
                 dependencies: [
                     .core,
@@ -15,27 +15,26 @@ let project = Project.makeModule(
             )
         ),
         .domain(
-            implements: .Artist,
+            implements: .Note,
             factory: .init(
                 dependencies: [
-                    .domain(interface: .Artist)
-                ]
-            )
-        ),
-
-        .domain(
-            testing: .Artist,
-            factory: .init(
-                dependencies: [
-                    .domain(interface: .Artist)
+                    .domain(interface: .Note)
                 ]
             )
         ),
         .domain(
-            tests: .Artist,
+            testing: .Note,
             factory: .init(
                 dependencies: [
-                    .domain(testing: .Artist)
+                    .domain(interface: .Note)
+                ]
+            )
+        ),
+        .domain(
+            tests: .Note,
+            factory: .init(
+                dependencies: [
+                    .domain(testing: .Note)
                 ]
             )
         ),

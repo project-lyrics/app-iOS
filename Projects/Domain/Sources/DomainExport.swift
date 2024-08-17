@@ -9,3 +9,7 @@
 @_exported import DomainOAuthInterface
 @_exported import DomainArtist
 @_exported import DomainArtistInterface
+@_exported import DomainNote
+@_exported import DomainNoteInterface
+@_exported import DomainShared
+@_exported import DomainSharedInterface
