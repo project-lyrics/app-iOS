@@ -4,9 +4,6 @@ import DependencyPlugin
 
 let project = Project.makeModule(
     name: ModulePath.Coordinator.name + ModulePath.Coordinator.Onboarding.rawValue,
-    packages: [
-        .remote(url: "https://github.com/layoutBox/FlexLayout", requirement: .upToNextMajor(from: "2.0.7"))
-    ],
     targets: [
         .coordinator(
             interface: .Onboarding,
@@ -16,7 +13,6 @@ let project = Project.makeModule(
                     .coordinator(interface: .Main),
                     .coordinator(interface: .App),
                     .coordinator(interface: .TabBar),
-                    .SPM.FlexLayout
                 ]
             )
         ),

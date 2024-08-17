@@ -15,8 +15,7 @@ let targets: [Target] = [
             dependencies: [
                 .feature(implements: .Onboarding),
                 .feature(implements: .Main),
-                .dependencyInjection,
-                .SPM.FlexLayout
+                .dependencyInjection
             ]
         )
     )

@@ -14,8 +14,7 @@ let targets: [Target] = [
         interface: .Onboarding,
         factory: .init(
             dependencies: [
-                .dependencyInjection,
-                .SPM.FlexLayout
+                .dependencyInjection
             ]
         )
     ),
@@ -50,7 +49,6 @@ let targets: [Target] = [
             dependencies: [
                 .feature(implements: .Onboarding),
                 .feature(interface: .Onboarding),
-                .SPM.FlexLayout
             ],
             settings: Project.Environment.exampleAppDefaultSettings
         )
