@@ -1,0 +1,26 @@
+//
+//  HomeError.swift
+//  FeatureMainInterface
+//
+//  Created by 황인우 on 8/17/24.
+//
+
+import Domain
+
+import Foundation
+
+public enum HomeError: LocalizedError {
+    case noteError(NoteError)
+    case artistError(ArtistError)
+    case unknownError(description: String)
+    
+    public init(error: Error) {
+        if let artistError = error as? ArtistError {
+            self = .artistError(artistError)
+        } else if let noteError = error as? NoteError {
+            self = .noteError(noteError)
+        } else {
+            self = .unknownError(description: error.localizedDescription)
+        }
+    }
+}

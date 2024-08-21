@@ -1,15 +1,15 @@
 //
-//  ArtistError.swift
-//  DomainArtist
+//  NoteError.swift
+//  DomainNote
 //
-//  Created by 황인우 on 7/14/24.
+//  Created by 황인우 on 8/17/24.
 //
 
 import Core
 
 import Foundation
 
-public enum ArtistError: LocalizedError {
+public enum NoteError: LocalizedError {
     case networkError(NetworkError)
     case keychainError(KeychainError)
     case unknown(errorDescription: String)

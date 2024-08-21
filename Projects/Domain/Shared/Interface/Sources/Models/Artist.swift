@@ -1,8 +1,8 @@
 //
 //  Artist.swift
-//  Domain
+//  DomainShared
 //
-//  Created by 황인우 on 6/16/24.
+//  Created by 황인우 on 8/17/24.
 //
 
 import Foundation
@@ -29,7 +29,7 @@ public struct Artist: Hashable {
     }
     
     public init(
-        dto: ArtistResponse,
+        dto: ArtistDTO,
         isFavorite: Bool
     ) {
         self.id = dto.id
