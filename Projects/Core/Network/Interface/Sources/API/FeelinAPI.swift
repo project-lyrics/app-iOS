@@ -105,7 +105,7 @@ extension FeelinAPI: HTTPNetworking {
 
     public var baseURL: String? {
         guard let baseURL = Bundle.main.infoDictionary?["Feelin_URL"] as? String else {
-            return "http://api.feelinapp.com:8080"
+            return "http://api.feelinapp.com"
         }
 
         return baseURL
