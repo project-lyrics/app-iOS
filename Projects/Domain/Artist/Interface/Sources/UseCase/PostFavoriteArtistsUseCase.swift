@@ -10,7 +10,11 @@ import Core
 import Foundation
 import Combine
 
-public struct PostFavoriteArtistsUseCase {
+public protocol PostFavoriteArtistsUseCaseInterface {
+    func execute(artistIds: [Int]) -> AnyPublisher<Void, ArtistError>
+}
+
+public struct PostFavoriteArtistsUseCase: PostFavoriteArtistsUseCaseInterface {
     private let artistAPIService: ArtistAPIServiceInterface
     
     public init(artistAPIService: ArtistAPIServiceInterface) {

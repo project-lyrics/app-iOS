@@ -96,6 +96,37 @@ public extension DIContainer {
             return ArtistAPIService(networkProvider: networkProvider)
         }
     }
+    
+    static func registerDependenciesForMainView() {
+        standard.register(.networkProvider) { _ in
+            let networkSession = NetworkSession(
+                urlSession: .shared,
+                requestInterceptor: TokenInterceptor(tokenStorage: TokenStorage())
+            )
+            
+            return NetworkProvider(networkSession: networkSession)
+        }
+        
+        standard.register(.notePaginationService) { _ in
+            return NotePaginationService()
+        }
+        
+        standard.register(.artistPaginationService) { resolver in
+            return ArtistPaginationService()
+        }
+        
+        standard.register(.noteAPIService.self) { resolver in
+            let networkProvider = try resolver.resolve(.networkProvider)
+            
+            return NoteAPIService(networkProvider: networkProvider)
+        }
+        
+        standard.register(.artistAPIService) { resolver in
+            let networkProvider = try resolver.resolve(.networkProvider)
+            
+            return ArtistAPIService(networkProvider: networkProvider)
+        }
+    }
 }
 
 // MARK: SignUp

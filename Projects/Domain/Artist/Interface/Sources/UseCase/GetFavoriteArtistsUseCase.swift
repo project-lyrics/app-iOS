@@ -1,8 +1,8 @@
 //
-//  SearchArtistsUseCase.swift
-//  DomainArtist
+//  GetFavoriteArtistsUseCase.swift
+//  DomainArtistInterface
 //
-//  Created by 황인우 on 7/17/24.
+//  Created by 황인우 on 8/15/24.
 //
 
 import Core
@@ -11,14 +11,14 @@ import DomainSharedInterface
 import Foundation
 import Combine
 
-public protocol SearchArtistsUseCaseInterface {
+public protocol GetFavoriteArtistsUseCaseInterface {
     func execute(
-        keyword: String,
+        isInitial: Bool,
         perPage: Int
     ) -> AnyPublisher<[Artist], ArtistError>
 }
 
-public struct SearchArtistsUseCase: SearchArtistsUseCaseInterface {
+public struct GetFavoriteArtistsUseCase: GetFavoriteArtistsUseCaseInterface {
     private let artistAPIService: ArtistAPIServiceInterface
     private let artistPaginationService: ArtistPaginationServiceInterface
     
@@ -31,19 +31,20 @@ public struct SearchArtistsUseCase: SearchArtistsUseCaseInterface {
     }
     
     public func execute(
-        keyword: String,
+        isInitial: Bool,
         perPage: Int
     ) -> AnyPublisher<[Artist], ArtistError> {
-        // 데이터 로딩 중 또는 추가 페이지가 없을 경우 빈 값 리턴
+        // 전체검색일 경우 searchWord를 emptyString으로 초기화
+        artistPaginationService.setCurrentSearchWord("")
+        
         if artistPaginationService.isLoading {
             return Empty()
                 .eraseToAnyPublisher()
         }
         
-        // 기존 키워드와 새로운 키워드를 비교하여 값이 다르면 page와 hasNext상태를 초기화 합니다.
-        if artistPaginationService.currentSearchWord != keyword {
-            artistPaginationService.setCurrentSearchWord(keyword)
-            artistPaginationService.update(
+        // 초기 get작업인 경우 페이지 정보를 초기화 합니다.
+        if isInitial {
+            self.artistPaginationService.update(
                 currentPage: nil,
                 hasNextPage: true
             )
@@ -54,38 +55,31 @@ public struct SearchArtistsUseCase: SearchArtistsUseCaseInterface {
                 .eraseToAnyPublisher()
         }
         
-        // 데이터 로딩 시작
         artistPaginationService.setLoading(true)
         
-        return artistAPIService.searchArtist(
-            keyword: keyword,
+        return artistAPIService.getFavoriteArtists(
             currentPage: artistPaginationService.currentPage,
             numberOfArtists: perPage
         )
         .receive(on: DispatchQueue.main)
-        .map { [weak artistPaginationService] artistsResponse in
-            
-            // 데이터로딩 완료 & 페이지 상태 업데이트
-            artistPaginationService?.setLoading(false)
-            artistPaginationService?.update(
+        .map { artistsResponse in
+            artistPaginationService.update(
                 currentPage: artistsResponse.nextCursor,
                 hasNextPage: artistsResponse.hasNext
             )
-            
+            artistPaginationService.setLoading(false)
             return artistsResponse.data.map { artistResponse in
                 return Artist(
-                    dto: artistResponse,
+                    dto: artistResponse.artist,
                     isFavorite: false
                 )
             }
         }
-        .catch({ [weak artistPaginationService] error -> AnyPublisher<[Artist], ArtistError> in
-            artistPaginationService?.setLoading(false)
-            
+        .catch({ error -> AnyPublisher<[Artist], ArtistError> in
+            artistPaginationService.setLoading(false)
             return Fail(error: error)
                 .eraseToAnyPublisher()
         })
         .eraseToAnyPublisher()
     }
-    
 }

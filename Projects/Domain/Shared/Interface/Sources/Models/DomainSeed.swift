@@ -311,7 +311,16 @@ public struct DomainSeed {
 {
   "nextCursor": 273,
   "hasNext": false,
-  "data": []
+  "data": [
+        {
+          "id": 1,
+          "artist": {
+            "id": 1,
+            "name": "검정치마",
+            "imageUrl": "https://i.scdn.co/image/ab6761610000e5eb8609536d21beed6769d09d7f"
+          }
+        }
+    ]
 }
 """.data(using: .utf8)!
     
