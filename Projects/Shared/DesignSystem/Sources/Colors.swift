@@ -12,6 +12,8 @@ public struct Colors {
     public static let alertSuccess = SharedDesignSystemAsset.Colors.alertSuccess.color
     public static let alertWarning = SharedDesignSystemAsset.Colors.alertWarning.color
     public static let background = SharedDesignSystemAsset.Colors.background.color
+    public static let backgroundSecondary = SharedDesignSystemAsset.Colors.backgroundSecondary.color
+    public static let backgroundTertiary = SharedDesignSystemAsset.Colors.backgroundTertiary.color
     public static let border = SharedDesignSystemAsset.Colors.border.color
     public static let dim = SharedDesignSystemAsset.Colors.dim.color
     public static let disabled = SharedDesignSystemAsset.Colors.disabled.color
