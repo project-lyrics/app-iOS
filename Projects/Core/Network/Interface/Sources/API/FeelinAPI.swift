@@ -19,6 +19,8 @@ public enum FeelinAPI<R> {
     case getArtists(cursor: Int?, size: Int)
     case searchArtists(query: String, cursor: Int?, size: Int)
     case postFavoriteArtists(ids: [Int])
+    case getFavoriteArtists(cursor: Int?, size: Int)
+    case getNotes(cursor: Int?, size: Int)
 }
 
 extension FeelinAPI: HTTPNetworking {
@@ -43,7 +45,9 @@ extension FeelinAPI: HTTPNetworking {
 
     public var queryParameters: Encodable? {
         switch self {
-        case .getArtists(let cursor, let size):
+        case .getArtists(let cursor, let size),
+                .getFavoriteArtists(let cursor, let size),
+                .getNotes(let cursor, let size):
             if let cursor = cursor {
                 return [
                     "cursor": cursor,
@@ -90,12 +94,6 @@ extension FeelinAPI: HTTPNetworking {
         case .signUp(let request):
             return request
 
-        case .signUp(let request):
-            return request
-
-        case .signUp(let request):
-            return request
-
         default:
             return nil
         }
@@ -133,6 +131,12 @@ extension FeelinAPI: HTTPNetworking {
             
         case .postFavoriteArtists:
             return "/api/v1/favorite-artists/batch"
+            
+        case .getFavoriteArtists:
+            return "/api/v1/favorite-artists"
+            
+        case .getNotes:
+            return "/api/v1/notes"
         }
     }
     
@@ -141,7 +145,7 @@ extension FeelinAPI: HTTPNetworking {
         case .login, .reissueAccessToken, .signUp, .postFavoriteArtists:
             return .post
 
-        case .checkUserValidity, .getArtists, .searchArtists:
+        case .checkUserValidity, .getArtists, .searchArtists, .getFavoriteArtists, .getNotes:
             return .get
         }
     }
