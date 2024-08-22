@@ -22,20 +22,21 @@ public extension Date {
             to: now
         )
         
-        if let seconds = components.second, seconds < 60 {
-            return "방금 전"
-        }
-        
-        if let minutes = components.minute, minutes > 0, minutes < 60 {
-            return "\(minutes)분 전"
+        // 순서가 중요함: 일 > 시간 > 분 > 초 순으로 비교
+        if let days = components.day, days > 0, days <= 7 {
+            return "\(days)일 전"
         }
         
         if let hours = components.hour, hours > 0, hours < 24 {
             return "\(hours)시간 전"
         }
         
-        if let days = components.day, days > 0, days <= 7 {
-            return "\(days)일 전"
+        if let minutes = components.minute, minutes > 0, minutes < 60 {
+            return "\(minutes)분 전"
+        }
+        
+        if let seconds = components.second, seconds < 60 {
+            return "방금 전"
         }
         
         // 7일 이상 경과한 경우
