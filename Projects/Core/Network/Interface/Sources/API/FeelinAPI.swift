@@ -20,7 +20,7 @@ public enum FeelinAPI<R> {
     case searchArtists(query: String, cursor: Int?, size: Int)
     case postFavoriteArtists(ids: [Int])
     case getFavoriteArtists(cursor: Int?, size: Int)
-    case getNotes(cursor: Int?, size: Int)
+    case getFavoriteArtistsRelatedNotes(cursor: Int?, size: Int, hasLyrics: Bool)
 }
 
 extension FeelinAPI: HTTPNetworking {
@@ -46,8 +46,7 @@ extension FeelinAPI: HTTPNetworking {
     public var queryParameters: Encodable? {
         switch self {
         case .getArtists(let cursor, let size),
-                .getFavoriteArtists(let cursor, let size),
-                .getNotes(let cursor, let size):
+                .getFavoriteArtists(let cursor, let size):
             if let cursor = cursor {
                 return [
                     "cursor": cursor,
@@ -58,6 +57,21 @@ extension FeelinAPI: HTTPNetworking {
             return [
                 "size": size
             ]
+        
+        case .getFavoriteArtistsRelatedNotes(let cursor, let size, let hasLyrics):
+            if let cursor = cursor {
+                return [
+                    "cursor": "\(cursor)",
+                    "size": "\(size)",
+                    "hasLyrics": "\(hasLyrics)"
+                ]
+            }
+            
+            return [
+                "size": "\(size)",
+                "hasLyrics": "\(hasLyrics)"
+            ]
+            
         case .searchArtists(let query, let cursor, let size):
             if let cursor = cursor {
                 return [
@@ -135,8 +149,8 @@ extension FeelinAPI: HTTPNetworking {
         case .getFavoriteArtists:
             return "/api/v1/favorite-artists"
             
-        case .getNotes:
-            return "/api/v1/notes"
+        case .getFavoriteArtistsRelatedNotes:
+            return "/api/v1/notes/favorite-artists"
         }
     }
     
@@ -145,7 +159,7 @@ extension FeelinAPI: HTTPNetworking {
         case .login, .reissueAccessToken, .signUp, .postFavoriteArtists:
             return .post
 
-        case .checkUserValidity, .getArtists, .searchArtists, .getFavoriteArtists, .getNotes:
+        case .checkUserValidity, .getArtists, .searchArtists, .getFavoriteArtists, .getFavoriteArtistsRelatedNotes:
             return .get
         }
     }
