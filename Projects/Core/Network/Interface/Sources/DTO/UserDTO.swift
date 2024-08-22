@@ -9,14 +9,14 @@ import Foundation
 
 import Shared
 
-public struct UserDTO: Decodable {
+public struct UserDTO: Codable {
     public let id: Int
     public let nickname: String
     public let profileCharacterType: ProfileCharacterTypeDTO
 }
 
 
-public enum ProfileCharacterTypeDTO: String, Decodable {
+public enum ProfileCharacterTypeDTO: String, Codable {
     case shortHair
     case braidedHair
     case partedHair

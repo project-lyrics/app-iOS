@@ -14,7 +14,7 @@ public struct NoteResponse: Decodable {
     public let createdAt: Date
     public let lyrics: LyricsDTO?
     public let publisher: UserDTO
-    public let song: SongDTO
+    public let song: SongResponse
     public let commentsCount: Int
     public let likesCount: Int
     public let isLiked: Bool

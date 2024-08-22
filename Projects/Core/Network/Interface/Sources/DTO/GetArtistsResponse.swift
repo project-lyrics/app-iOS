@@ -10,5 +10,5 @@ import Foundation
 public struct GetArtistsResponse: Decodable {
     public let nextCursor: Int?
     public let hasNext: Bool
-    public let data: [ArtistDTO]
+    public let data: [ArtistResponse]
 }

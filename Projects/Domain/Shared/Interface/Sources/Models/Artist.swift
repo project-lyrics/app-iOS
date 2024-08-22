@@ -11,9 +11,9 @@ import Core
 
 public struct Artist: Hashable {
     private let uuid: UUID = .init()
-    public var id: Int
-    public var name: String
-    public var imageSource: String?
+    public let id: Int
+    public let name: String
+    public let imageSource: String?
     public var isFavorite: Bool
     
     public init(
@@ -29,7 +29,7 @@ public struct Artist: Hashable {
     }
     
     public init(
-        dto: ArtistDTO,
+        dto: ArtistResponse,
         isFavorite: Bool
     ) {
         self.id = dto.id

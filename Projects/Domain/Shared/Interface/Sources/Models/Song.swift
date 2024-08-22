@@ -27,7 +27,7 @@ public struct Song: Hashable {
         self.artist = artist
     }
     
-    public init(dto: SongDTO) {
+    public init(dto: SongResponse) {
         self.id = dto.id
         self.name = dto.name
         self.imageUrl = dto.imageUrl

@@ -16,7 +16,7 @@ public struct Note: Hashable {
     public let content: String
     public let status: NoteStatus
     public let createdAt: Date
-    private (set) public var lyrics: Lyrics?
+    public let lyrics: Lyrics?
     public let publisher: User
     public let song: Song
     public let commentsCount: Int
@@ -57,6 +57,8 @@ public struct Note: Hashable {
         self.createdAt = dto.createdAt
         if let dtoLyrics = dto.lyrics {
             self.lyrics = Lyrics(dto: dtoLyrics)
+        } else {
+            self.lyrics = nil
         }
         self.publisher = User(dto: dto.publisher)
         self.song = Song(dto: dto.song)
@@ -64,24 +66,5 @@ public struct Note: Hashable {
         self.likesCount = dto.likesCount
         self.isLiked = dto.isLiked
         self.isBookmarked = dto.isBookmarked
-    }
-}
-
-public enum NoteStatus: Hashable {
-    case draft
-    case published
-    
-    public init(dto: NoteStatusDTO) {
-        switch dto {
-        case .draft:            self = .draft
-        case .published:         self = .published
-        }
-    }
-    
-    public var toDTO: NoteStatusDTO {
-        switch self {
-        case .draft:            return .draft
-        case .published:        return .published
-        }
     }
 }
