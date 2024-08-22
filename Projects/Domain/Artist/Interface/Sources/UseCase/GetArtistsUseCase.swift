@@ -6,6 +6,7 @@
 //
 
 import Core
+import DomainSharedInterface
 
 import Foundation
 import Combine
