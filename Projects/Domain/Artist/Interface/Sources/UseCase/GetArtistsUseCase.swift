@@ -19,7 +19,7 @@ public protocol GetArtistsUseCaseInterface {
     ) -> AnyPublisher<[Artist], ArtistError>
 }
 
-public struct GetArtistsUseCase {
+public struct GetArtistsUseCase: GetArtistsUseCaseInterface {
     private let artistAPIService: ArtistAPIServiceInterface
     private let artistPaginationService: ArtistPaginationServiceInterface
     

@@ -17,6 +17,7 @@ public struct Colors {
     public static let border = SharedDesignSystemAsset.Colors.border.color
     public static let dim = SharedDesignSystemAsset.Colors.dim.color
     public static let disabled = SharedDesignSystemAsset.Colors.disabled.color
+    public static let fixedGray08 = SharedDesignSystemAsset.Colors.fixedGray08.color
     public static let gray01 = SharedDesignSystemAsset.Colors.gray01.color
     public static let gray02 = SharedDesignSystemAsset.Colors.gray02.color
     public static let gray03 = SharedDesignSystemAsset.Colors.gray03.color

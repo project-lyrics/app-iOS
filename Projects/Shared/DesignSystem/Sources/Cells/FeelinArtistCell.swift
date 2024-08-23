@@ -10,8 +10,9 @@ import UIKit
 import FlexLayout
 import Kingfisher
 import PinLayout
+import SharedUtil
 
-public final class FeelinArtistCell: UICollectionViewCell {
+public final class FeelinArtistCell: UICollectionViewCell, Reusable {
     
     // MARK: - Property
     
@@ -73,6 +74,8 @@ public final class FeelinArtistCell: UICollectionViewCell {
                 .cornerRadius(self.frame.width / 2)
                 .define { flex in
                     flex.addItem(artistImageView)
+                        .height(self.frame.width)
+                        .width(self.frame.width)
                         .margin(inset, inset)
                         .cornerRadius((self.frame.width - (inset + inset)) / 2)
                 }
