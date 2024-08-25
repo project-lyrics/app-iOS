@@ -20,11 +20,11 @@ public protocol SearchArtistsUseCaseInterface {
 
 public struct SearchArtistsUseCase: SearchArtistsUseCaseInterface {
     private let artistAPIService: ArtistAPIServiceInterface
-    private let artistPaginationService: ArtistPaginationServiceInterface
+    private let artistPaginationService: PaginationServiceInterface
     
     public init(
         artistAPIService: ArtistAPIServiceInterface,
-        artistPaginationService: ArtistPaginationServiceInterface
+        artistPaginationService: PaginationServiceInterface
     ) {
         self.artistAPIService = artistAPIService
         self.artistPaginationService = artistPaginationService
@@ -87,5 +87,4 @@ public struct SearchArtistsUseCase: SearchArtistsUseCaseInterface {
         })
         .eraseToAnyPublisher()
     }
-    
 }

@@ -1,5 +1,5 @@
 //
-//  ArtistPaginationService.swift
+//  PaginationService.swift
 //  DomainArtist
 //
 //  Created by 황인우 on 7/15/24.
@@ -8,7 +8,7 @@
 import Combine
 import Foundation
 
-public protocol ArtistPaginationServiceInterface: AnyObject {
+public protocol PaginationServiceInterface: AnyObject {
     var currentSearchWord: String { get }
     var isLoading: Bool { get }
     var currentPage: Int? { get }
@@ -19,7 +19,7 @@ public protocol ArtistPaginationServiceInterface: AnyObject {
     func setCurrentSearchWord(_ word: String)
 }
 
-final public class ArtistPaginationService: ArtistPaginationServiceInterface {
+final public class PaginationService: PaginationServiceInterface {
     public var currentSearchWord: String = ""
     public var currentPage: Int?
     public var hasNextPage: Bool = true
