@@ -253,6 +253,7 @@ final class NoteCell: UICollectionViewCell, Reusable {
         self.likeAmountLabel.text = note.likesCount.shortenedText()
         self.commentAmountLabel.text = note.commentsCount.shortenedText()
         self.likeNoteButton.isSelected = note.isLiked
+        self.bookmarkButton.isSelected = note.isBookmarked
         
         self.likeAmountLabel.flex.markDirty()
         self.commentAmountLabel.flex.markDirty()
@@ -280,7 +281,9 @@ final class NoteCell: UICollectionViewCell, Reusable {
         self.likeAmountLabel.text = nil
         self.commentAmountLabel.text = nil
         self.likeNoteButton.isSelected = false
+        self.bookmarkButton.isSelected = false
         self.lyricsContentsView.configureView(with: nil)
+        self.flexContainer.flex.layout()
     }
     
     

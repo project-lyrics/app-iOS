@@ -19,6 +19,9 @@ public protocol NoteAPIServiceInterface {
     
     func postLike(noteID: Int) -> AnyPublisher<NoteLikeResponse, NoteError>
     func deleteLike(noteID: Int) -> AnyPublisher<NoteLikeResponse, NoteError>
+    
+    func postBookmark(noteID: Int) -> AnyPublisher<BookmarkResponse, NoteError>
+    func deleteBookmark(noteID: Int) -> AnyPublisher<BookmarkResponse, NoteError>
 }
 
 public struct NoteAPIService: NoteAPIServiceInterface {
@@ -53,6 +56,22 @@ public struct NoteAPIService: NoteAPIServiceInterface {
     
     public func deleteLike(noteID: Int) -> AnyPublisher<NoteLikeResponse, NoteError> {
         let endpoint = FeelinAPI<NoteLikeResponse>.deleteLikes(noteID: noteID)
+        
+        return networkProvider.request(endpoint)
+            .mapError(NoteError.init)
+            .eraseToAnyPublisher()
+    }
+    
+    public func postBookmark(noteID: Int) -> AnyPublisher<BookmarkResponse, NoteError> {
+        let endpoint = FeelinAPI<BookmarkResponse>.postBookmarks(noteID: noteID)
+        
+        return networkProvider.request(endpoint)
+            .mapError(NoteError.init)
+            .eraseToAnyPublisher()
+    }
+    
+    public func deleteBookmark(noteID: Int) -> AnyPublisher<BookmarkResponse, NoteError> {
+        let endpoint = FeelinAPI<BookmarkResponse>.deleteBookmarks(noteID: noteID)
         
         return networkProvider.request(endpoint)
             .mapError(NoteError.init)

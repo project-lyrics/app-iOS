@@ -23,6 +23,8 @@ public enum FeelinAPI<R> {
     case getFavoriteArtistsRelatedNotes(cursor: Int?, size: Int, hasLyrics: Bool)
     case postLikes(noteID: Int)
     case deleteLikes(noteID: Int)
+    case postBookmarks(noteID: Int)
+    case deleteBookmarks(noteID: Int)
 }
 
 extension FeelinAPI: HTTPNetworking {
@@ -88,7 +90,10 @@ extension FeelinAPI: HTTPNetworking {
                 "size": "\(size)"
             ]
             
-        case .postLikes(let noteID), .deleteLikes(let noteID):
+        case .postLikes(let noteID),
+                .deleteLikes(let noteID),
+                .postBookmarks(let noteID),
+                .deleteBookmarks(let noteID):
             return [
                 "noteId": noteID
             ]
@@ -162,18 +167,21 @@ extension FeelinAPI: HTTPNetworking {
         case .postLikes, .deleteLikes:
             return "/api/v1/likes"
             
+        case .postBookmarks, .deleteBookmarks:
+            return "/api/v1/bookmarks"
+            
         }
     }
     
     public var httpMethod: HTTPMethod {
         switch self {
-        case .login, .reissueAccessToken, .signUp, .postFavoriteArtists, .postLikes:
+        case .login, .reissueAccessToken, .signUp, .postFavoriteArtists, .postLikes, .postBookmarks:
             return .post
 
         case .checkUserValidity, .getArtists, .searchArtists, .getFavoriteArtists, .getFavoriteArtistsRelatedNotes:
             return .get
             
-        case .deleteLikes:
+        case .deleteLikes, .deleteBookmarks:
             return .delete
         }
     }

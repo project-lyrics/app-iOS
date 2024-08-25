@@ -99,15 +99,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             getNotesUseCase: GetFavoriteArtistsRelatedNotesUseCase(
                 noteAPIService: noteAPiService,
                 notePaginationService: notePaginationService
-            ), setNoteLikeUseCase: SetNoteLikeUseCase(noteAPIService: noteAPiService),
+            ), 
+            setNoteLikeUseCase: SetNoteLikeUseCase(noteAPIService: noteAPiService),
             getFavoriteArtistsUseCase: GetFavoriteArtistsUseCase(
                 artistAPIService: artistAPIService,
                 artistPaginationService: artistPaginationService
-            )
+            ),
+            setBookmarkUseCase: SetBookmarkUseCase(noteAPIService: noteAPiService)
         )
 //        let mainViewModel = MainViewModel(
 //            getNotesUseCase: MockGetNotesUseCase(),
-//            getFavoriteArtistsUseCase: MockGetFavoriteArtistsUseCase()
+//            setNoteLikeUseCase: MockSetNoteLikeUseCase(),
+//            getFavoriteArtistsUseCase: MockGetFavoriteArtistsUseCase(),
+//            setBookmarkUseCase: MockSetBookmarkUseCase()
 //        )
         
         window?.rootViewController = MainViewController(viewModel: mainViewModel)
@@ -133,7 +137,8 @@ struct MainViewController_Preview: PreviewProvider {
         let viewModelForPreview = MainViewModel(
             getNotesUseCase: MockGetNotesUseCase(), 
             setNoteLikeUseCase: MockSetNoteLikeUseCase(),
-            getFavoriteArtistsUseCase: MockGetFavoriteArtistsUseCase()
+            getFavoriteArtistsUseCase: MockGetFavoriteArtistsUseCase(),
+            setBookmarkUseCase: MockSetBookmarkUseCase()
         )
         return MainViewController(viewModel: viewModelForPreview)
             .asPreview()

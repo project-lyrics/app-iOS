@@ -25,22 +25,24 @@ final public class MainViewModel {
     @Published private (set) var fetchedFavoriteArtists: [Artist] = []
     @Published private (set) var error: HomeError?
     @Published private (set) var refreshState: RefreshState = .idle
-    @Published private (set) var updatedNoteIndex: Int? = nil
     
     private let getNotesUseCase: GetNotesUseCaseInterface
     private let getFavoriteArtistsUseCase: GetFavoriteArtistsUseCaseInterface
     private let setNoteLikeUseCase: SetNoteLikeUseCaseInterface
+    private let setBookmarkUseCase: SetBookmarkUseCaseInterface
     
     private var cancellables: Set<AnyCancellable> = .init()
     
     public init(
         getNotesUseCase: GetNotesUseCaseInterface,
         setNoteLikeUseCase: SetNoteLikeUseCaseInterface,
-        getFavoriteArtistsUseCase: GetFavoriteArtistsUseCaseInterface
+        getFavoriteArtistsUseCase: GetFavoriteArtistsUseCaseInterface,
+        setBookmarkUseCase: SetBookmarkUseCaseInterface
     ) {
         self.getNotesUseCase = getNotesUseCase
         self.setNoteLikeUseCase = setNoteLikeUseCase
         self.getFavoriteArtistsUseCase = getFavoriteArtistsUseCase
+        self.setBookmarkUseCase = setBookmarkUseCase
     }
     
     func fetchNotes(
@@ -158,24 +160,65 @@ extension MainViewModel {
         .sink { [weak self] result in
             switch result {
             case .success(let updatedNoteLike):
-                var noteToUpdate = self?.fetchedNotes.first(
-                    where: { $0.id == updatedNoteLike.noteID }
-                )
-                noteToUpdate?.likesCount = updatedNoteLike.likesCount
-                noteToUpdate?.isLiked = isLiked
-                
-                self?.updatedNoteIndex = self?.fetchedNotes.firstIndex(
-                    where: { $0.id == updatedNoteLike.noteID }
-                )
-                
-            case .failure(let error):
-                var noteToUpdate = self?.fetchedNotes.first(
+                var indexToUpdate = self?.fetchedNotes.firstIndex(
                     where: { $0.id == noteID }
                 )
-                noteToUpdate?.isLiked = !isLiked
-                self?.updatedNoteIndex = self?.fetchedNotes.firstIndex(
-                    where: { $0.id == noteToUpdate?.id }
+                
+                if let indexToUpdate = indexToUpdate {
+                    self?.fetchedNotes[indexToUpdate].isLiked = isLiked
+                    self?.fetchedNotes[indexToUpdate].likesCount = updatedNoteLike.likesCount
+                }
+                
+            case .failure(let error):
+                var indexToUpdate = self?.fetchedNotes.firstIndex(
+                    where: { $0.id == noteID }
                 )
+                
+                if let indexToUpdate = indexToUpdate {
+                    self?.fetchedNotes[indexToUpdate].isLiked = !isLiked
+                }
+                self?.error = .noteError(error)
+                
+            }
+        }
+        .store(in: &cancellables)
+    }
+}
+
+extension MainViewModel {
+    
+    // MARK: - Bookmark
+    
+    func setNoteBookmarkState(
+        noteID: Int,
+        isBookmarked: Bool
+    ) {
+        self.setBookmarkUseCase.execute(
+            isBookmarked: isBookmarked,
+            noteID: noteID
+        )
+        .mapToResult()
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] result in
+            switch result {
+            case .success(let bookmarkNoteID):
+                var indexToUpdate = self?.fetchedNotes.firstIndex(
+                    where: { $0.id == noteID }
+                )
+                
+                if let indexToUpdate = indexToUpdate {
+                    self?.fetchedNotes[indexToUpdate].isBookmarked = isBookmarked
+                }
+                
+            case .failure(let error):
+                var indexToUpdate = self?.fetchedNotes.firstIndex(
+                    where: { $0.id == noteID }
+                )
+                
+                if let indexToUpdate = indexToUpdate {
+                    self?.fetchedNotes[indexToUpdate].isBookmarked = !isBookmarked
+                }
+                
                 self?.error = .noteError(error)
                 
             }

@@ -71,20 +71,6 @@ private extension MainViewController {
             }
             .store(in: &cancellables)
         
-        viewModel.$updatedNoteIndex
-            .compactMap { $0 }
-            .sink { [weak self] index in
-                self?.mainCollectionView.reconfigureItems(
-                    at: [
-                        IndexPath(
-                            item: index,
-                            section: MainView.notesSectionIndex
-                        )
-                    ]
-                )
-            }
-            .store(in: &cancellables)
-        
         viewModel.$refreshState
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] refreshState in
@@ -225,7 +211,6 @@ extension MainViewController: UICollectionViewDataSource {
                 cell.configure(with: note)
                 
                 cell.likeNoteButton.publisher(for: .touchUpInside)
-                
                     // 0.6초 사이에 발생한 가장 최신 좋아요 상태만 방출
                     .debounce(
                         for: .milliseconds(600),
@@ -235,6 +220,19 @@ extension MainViewController: UICollectionViewDataSource {
                         viewModel?.setNoteLikeState(
                             noteID: note.id,
                             isLiked: control.isSelected
+                        )
+                    }
+                    .store(in: &cancellables)
+                
+                cell.bookmarkButton.publisher(for: .touchUpInside)
+                    .debounce(
+                        for: .milliseconds(600),
+                        scheduler: DispatchQueue.main
+                    )
+                    .sink { [weak viewModel] control in
+                        viewModel?.setNoteBookmarkState(
+                            noteID: note.id,
+                            isBookmarked: control.isSelected
                         )
                     }
                     .store(in: &cancellables)
