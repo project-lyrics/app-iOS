@@ -27,42 +27,10 @@ public enum FeelinAPI<R> {
     case deleteBookmarks(noteID: Int)
     case deleteNote(noteID: Int)
     case postNote(request: PostNoteRequest)
+    case searchSongs(query: String, cursor: Int?, size: Int)
 }
 
 extension FeelinAPI: HTTPNetworking {
-
-    public typealias Response = R
-
-    public var baseURL: String? {
-        guard let baseURL = Bundle.main.infoDictionary?["Feelin_URL"] as? String else {
-            return "http://api.feelinapp.com:8080"
-        }
-
-        return baseURL
-    }
-
-    public var path: String {
-        switch self {
-        case .login:                    return "/api/v1/auth/sign-in"
-        case .signUp:                   return "/api/v1/auth/sign-up"
-        case .checkUserValidity:        return "/api/v1/auth/validate-token"
-        case .reissueAccessToken:       return "/api/v1/auth/token"
-        case .getArtists:               return "/api/v1/artists"
-        case .searchArtists:            return "/api/v1/artists/search"
-        case .postFavoriteArtists:      return "/api/v1/favorite-artists/batch"
-        case .postNote:                 return "/api/v1/notes"
-        }
-    }
-
-    public var httpMethod: HTTPMethod {
-        switch self {
-        case .login, .reissueAccessToken, .signUp, .postFavoriteArtists, .postNote:
-            return .post
-
-        case .checkUserValidity, .getArtists, .searchArtists:
-            return .get
-        }
-    }
 
     public var headers: [String : String]? {
         var defaultHeader = ["Content-Type": "application/json"]
@@ -112,7 +80,8 @@ extension FeelinAPI: HTTPNetworking {
                 "hasLyrics": "\(hasLyrics)"
             ]
             
-        case .searchArtists(let query, let cursor, let size):
+        case .searchArtists(let query, let cursor, let size),
+             .searchSongs(let query, let cursor, let size):
             if let cursor = cursor {
                 return [
                     "query": "\(query)",
@@ -213,15 +182,18 @@ extension FeelinAPI: HTTPNetworking {
             return "/api/v1/notes/"
         case .postNote:                 
 		    return "/api/v1/notes"
+
+        case .searchSongs:
+            return "/api/v1/songs/search"
         }
     }
-    
+
     public var httpMethod: HTTPMethod {
         switch self {
         case .login, .reissueAccessToken, .signUp, .postFavoriteArtists, .postLikes, .postBookmarks, .postNote:
             return .post
 
-        case .checkUserValidity, .getArtists, .searchArtists, .getFavoriteArtists, .getFavoriteArtistsRelatedNotes:
+        case .checkUserValidity, .getArtists, .searchArtists, .getFavoriteArtists, .getFavoriteArtistsRelatedNotes, .searchSongs:
             return .get
             
         case .deleteLikes, .deleteBookmarks, .deleteNote:
