@@ -13,6 +13,35 @@ import PinLayout
 final class PostNoteView: UIView {
 
     private let rootFlexContainer = UIView()
+    private let navigationBar = NavigationBar()
+
+    lazy var closeButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+
+        let userInterfaceStyle = traitCollection.userInterfaceStyle
+        let image = userInterfaceStyle == .light ? FeelinImages.xDark : FeelinImages.xDark
+        button.setImage(image, for: .normal)
+
+        return button
+    }()
+
+    private let naviTitleLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "노트 작성"
+        label.font = SharedDesignSystemFontFamily.Pretendard.bold.font(size: 18)
+        label.textColor = Colors.gray09
+
+        return label
+    }()
+
+    lazy var completeButton = FeelinConfirmButton(
+        initialEnabled: false,
+        title: "완료",
+        setting: .text
+    )
+
     let rootScrollView = UIScrollView()
     let contentView = UIView()
 
@@ -44,6 +73,7 @@ final class PostNoteView: UIView {
         let label = UILabel()
         label.font = SharedDesignSystemFontFamily.Pretendard.medium.font(size: 14)
         label.textColor = Colors.gray08
+        label.text = "NO PAIN"
 
         return label
     }()
@@ -52,6 +82,7 @@ final class PostNoteView: UIView {
         let label = UILabel()
         label.textColor = Colors.gray04
         label.font = SharedDesignSystemFontFamily.Pretendard.medium.font(size: 12)
+        label.text = "실리카겔"
 
         return label
     }()
@@ -80,6 +111,8 @@ final class PostNoteView: UIView {
         textView.textColor = Colors.gray04
         textView.isScrollEnabled = false
         textView.backgroundColor = UIColor(patternImage: FeelinImages.image00Default)
+        textView.textContainer.maximumNumberOfLines = 3
+        textView.textContainer.lineBreakMode = .byTruncatingTail
 
         return textView
     }()
@@ -137,8 +170,15 @@ final class PostNoteView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        rootFlexContainer.pin.all()
-        rootScrollView.pin.all()
+        rootFlexContainer.pin.all(pin.safeArea)
+        rootFlexContainer.flex.layout()
+
+        rootScrollView.pin
+            .below(of: navigationBar)
+            .left()
+            .right()
+            .bottom()
+
         contentView.pin.top().left().right()
         contentView.flex.layout(mode: .adjustHeight)
         rootScrollView.contentSize = contentView.frame.size
@@ -154,17 +194,24 @@ final class PostNoteView: UIView {
     private func setUpLayout() {
         addSubview(rootFlexContainer)
 
-        rootScrollView.addSubview(addTrackLabel)
+        navigationBar.addLeftBarView(closeButton)
+        navigationBar.addTitleView(naviTitleLabel)
+        navigationBar.addRightBarView(completeButton)
 
         rootFlexContainer
             .flex
+            .direction(.column)
             .define { rootFlex in
-                rootFlex.addItem(rootScrollView)
-                    .define { rootScrollFlex in
+                rootFlex.addItem(navigationBar)
+                    .height(44)
+                    .marginTop(pin.safeArea.top)
 
+                rootFlex.addItem(rootScrollView)
+                    .marginTop(16)
+                    .define { rootScrollFlex in
                         rootScrollFlex.addItem(contentView)
-                            .direction(.column)
                             .paddingHorizontal(20)
+                            .direction(.column)
                             .define { contentFlex in
                                 artistInfoHeaderView(contentFlex)
                                 lyricsTextBodyView(contentFlex)
@@ -176,24 +223,26 @@ final class PostNoteView: UIView {
                     }
             }
 
-        rootFlexContainer.addSubview(noteCharCountLabel)
+        rootScrollView.addSubview(addTrackLabel)
+        rootScrollView.addSubview(noteCharCountLabel)
 
         NSLayoutConstraint.activate([
             addTrackLabel.centerYAnchor.constraint(
                 equalTo: iconImageView.centerYAnchor
             ),
             addTrackLabel.leadingAnchor.constraint(
-                equalTo: titleOfSongLabel.leadingAnchor
+                equalTo: iconImageView.trailingAnchor,
+                constant: 10
             )
         ])
 
         NSLayoutConstraint.activate([
             noteCharCountLabel.bottomAnchor.constraint(
                 equalTo: rootFlexContainer.bottomAnchor,
-                constant: -33
+                constant: -12
             ),
-            noteCharCountLabel.rightAnchor.constraint(
-                equalTo: rootFlexContainer.rightAnchor,
+            noteCharCountLabel.trailingAnchor.constraint(
+                equalTo: rootFlexContainer.trailingAnchor,
                 constant: -20
             )
         ])
@@ -221,6 +270,8 @@ final class PostNoteView: UIView {
                         flex.addItem(artistNameLabel)
                     }
                     .view?.isHidden = true
+
+                flex.addItem(addTrackLabel)
 
                 flex.addItem(addToPlayButton)
                     .size(40)
