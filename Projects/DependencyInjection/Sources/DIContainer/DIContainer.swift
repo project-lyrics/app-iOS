@@ -127,6 +127,17 @@ public extension DIContainer {
             return ArtistAPIService(networkProvider: networkProvider)
         }
     }
+
+    static func registerDependenciesForPostNote() {
+        standard.register(.paginationService) { _ in
+            return PaginationService()
+        }
+        
+        standard.register(.noteService) { resolver in
+            let networkProvider = try resolver.resolve(.networkProvider)
+            return NoteService(networkProvider: networkProvider)
+        }
+    }
 }
 
 // MARK: SignUp
