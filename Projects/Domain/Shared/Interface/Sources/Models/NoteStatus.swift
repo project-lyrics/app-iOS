@@ -12,7 +12,7 @@ import Core
 public enum NoteStatus: Hashable {
     case draft
     case published
-    
+
     public init(dto: NoteStatusDTO) {
         switch dto {
         case .draft:            self = .draft
