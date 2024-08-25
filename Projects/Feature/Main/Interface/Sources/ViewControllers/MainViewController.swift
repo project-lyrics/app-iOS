@@ -77,7 +77,28 @@ private extension MainViewController {
             self?.mainCollectionView.reloadData()
         }
         .store(in: &cancellables)
+        
+        viewModel.$refreshState
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] refreshState in
+                switch refreshState {
+                case .failed(let error):
+                    self?.showAlert(
+                        title: error.localizedDescription,
+                        message: nil,
+                        singleActionTitle: "확인"
+                    )
+                    
+                case .completed:
+                    self?.mainCollectionView.refreshControl?.endRefreshing()
+                    
+                default:
+                    return
+                }
+            })
+            .store(in: &cancellables)
     }
+    
     func bindAction() {
         mainCollectionView.didScrollToBottomPublisher()
             .sink { [viewModel] in
@@ -85,6 +106,12 @@ private extension MainViewController {
             }
             .store(in: &cancellables)
         
+        mainCollectionView.refreshControl?.isRefreshingPublisher
+            .filter { $0 == true }
+            .sink(receiveValue: { [viewModel] _ in
+                viewModel.refreshAllData()
+            })
+            .store(in: &cancellables)
     }
 }
 

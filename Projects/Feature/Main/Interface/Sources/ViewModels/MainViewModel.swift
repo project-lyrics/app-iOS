@@ -10,6 +10,13 @@ import Domain
 import Combine
 import Foundation
 
+enum RefreshState {
+    case idle        // 대기 상태
+    case refreshing  // 새로고침 중
+    case completed   // 새로고침 완료
+    case failed(HomeError)  // 새로고침 실패 (에러 포함)
+}
+
 final public class MainViewModel {
     typealias NoteFetchResult = Result<[Note], HomeError>
     typealias ArtistFetchResult = Result<[Artist], HomeError>
@@ -17,6 +24,7 @@ final public class MainViewModel {
     @Published private (set) var fetchedNotes: [Note] = []
     @Published private (set) var fetchedFavoriteArtists: [Artist] = []
     @Published private (set) var error: HomeError?
+    @Published private (set) var refreshState: RefreshState = .idle
     
     private let getNotesUseCase: GetNotesUseCaseInterface
     private let getFavoriteArtistsUseCase: GetFavoriteArtistsUseCaseInterface
@@ -78,5 +86,53 @@ final public class MainViewModel {
             }
         }
         .store(in: &cancellables)
+    }
+}
+
+extension MainViewModel {
+    
+    // MARK: - Refresh Data
+    
+    func refreshAllData() {
+        let getNotesPublisher = self.getNotesUseCase.execute(
+            isInitial: true,
+            perPage: 10,
+            mustHaveLyrics: false
+        )
+        .catch { [weak self] noteError in
+            self?.refreshState = .failed(.noteError(noteError))
+            
+            return Just<[Note]>([])
+                .eraseToAnyPublisher()
+        }
+        .eraseToAnyPublisher()
+        
+        let getFavoriteArtistsPublisher = self.getFavoriteArtistsUseCase.execute(
+            isInitial: true,
+            perPage: 30
+        )
+        .catch { [weak self] artistError in
+            self?.refreshState = .failed(.artistError(artistError))
+            
+            return Just<[Artist]>([])
+                .eraseToAnyPublisher()
+        }
+        .eraseToAnyPublisher()
+        
+        self.refreshState = .refreshing
+        
+        Publishers.Zip(
+            getNotesPublisher,
+            getFavoriteArtistsPublisher
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] (refreshedNotes, refreshedFavoriteArtists) in
+            self?.fetchedNotes = refreshedNotes
+            self?.fetchedFavoriteArtists = refreshedFavoriteArtists
+            
+            self?.refreshState = .completed
+        }
+        .store(in: &cancellables)
+        
     }
 }

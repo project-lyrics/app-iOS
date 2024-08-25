@@ -34,6 +34,8 @@ class MainView: UIView {
             frame: .zero,
             collectionViewLayout: compositionalLayout
         )
+        collectionView.refreshControl = UIRefreshControl()
+        
         collectionView.showsVerticalScrollIndicator = false
         
         collectionView.register(cellType: BannerCell.self)
