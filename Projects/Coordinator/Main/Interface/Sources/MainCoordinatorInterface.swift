@@ -22,3 +22,24 @@ private extension MainCoordinator {
         
     }
 }
+
+extension MainCoordinator: CoordinatorDelegate, 
+                           PostNoteViewControllerDelegate,
+                           SearchSongViewControllerDelegate {
+    public func didFinish(id songID: Int) {
+
+    }
+
+    public func didFinish() {
+
+    }
+
+    public func pushSearchSongViewController() {
+        let viewController = SearchSongViewController()
+        navigationController.pushViewController(viewController, animated: true)
+    }
+
+    public func didFinish(childCoordinator: Coordinator) {
+
+    }
+}
