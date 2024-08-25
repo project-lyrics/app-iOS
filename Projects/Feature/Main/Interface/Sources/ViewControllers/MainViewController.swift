@@ -45,6 +45,7 @@ public class MainViewController: UIViewController {
         self.viewModel.fetchNotes(isInitialFetch: true)
         self.viewModel.fetchFavoriteArtists(isInitialFetch: true)
         self.bindData()
+        self.bindAction()
     }
     
     private func setUpDelegates() {
@@ -76,6 +77,14 @@ private extension MainViewController {
             self?.mainCollectionView.reloadData()
         }
         .store(in: &cancellables)
+    }
+    func bindAction() {
+        mainCollectionView.didScrollToBottomPublisher()
+            .sink { [viewModel] in
+                viewModel.fetchNotes(isInitialFetch: false)
+            }
+            .store(in: &cancellables)
+        
     }
 }
 
