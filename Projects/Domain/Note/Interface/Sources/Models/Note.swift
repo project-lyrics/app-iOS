@@ -19,10 +19,10 @@ public struct Note: Hashable {
     public let lyrics: Lyrics?
     public let publisher: User
     public let song: Song
-    public let commentsCount: Int
-    public let likesCount: Int
-    public let isLiked: Bool
-    public let isBookmarked: Bool
+    public var commentsCount: Int
+    public var likesCount: Int
+    public var isLiked: Bool
+    public var isBookmarked: Bool
     
     public init(
         id: Int,

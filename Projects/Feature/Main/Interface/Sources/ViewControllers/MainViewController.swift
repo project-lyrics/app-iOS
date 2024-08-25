@@ -44,7 +44,8 @@ public class MainViewController: UIViewController {
         self.setUpDelegates()
         self.viewModel.fetchNotes(isInitialFetch: true)
         self.viewModel.fetchFavoriteArtists(isInitialFetch: true)
-        self.bindData()
+        
+        self.bindUI()
         self.bindAction()
     }
     
@@ -57,26 +58,32 @@ public class MainViewController: UIViewController {
 private extension MainViewController {
     
     // MARK: - Bindings
-    func bindData() {
+    
+    func bindUI() {
         viewModel.$error
             .compactMap { $0 }
             .sink { [weak self] error in
                 self?.showAlert(
-                    title: error.localizedDescription,
+                    title: error.errorDescription,
                     message: nil,
                     singleActionTitle: "확인"
                 )
             }
             .store(in: &cancellables)
         
-        Publishers.CombineLatest(
-            viewModel.$fetchedNotes,
-            viewModel.$fetchedFavoriteArtists
-        )
-        .sink { [weak self] _ in
-            self?.mainCollectionView.reloadData()
-        }
-        .store(in: &cancellables)
+        viewModel.$updatedNoteIndex
+            .compactMap { $0 }
+            .sink { [weak self] index in
+                self?.mainCollectionView.reconfigureItems(
+                    at: [
+                        IndexPath(
+                            item: index,
+                            section: MainView.notesSectionIndex
+                        )
+                    ]
+                )
+            }
+            .store(in: &cancellables)
         
         viewModel.$refreshState
             .receive(on: DispatchQueue.main)
@@ -84,7 +91,7 @@ private extension MainViewController {
                 switch refreshState {
                 case .failed(let error):
                     self?.showAlert(
-                        title: error.localizedDescription,
+                        title: error.errorDescription,
                         message: nil,
                         singleActionTitle: "확인"
                     )
@@ -97,6 +104,15 @@ private extension MainViewController {
                 }
             })
             .store(in: &cancellables)
+        
+        Publishers.CombineLatest(
+            viewModel.$fetchedNotes,
+            viewModel.$fetchedFavoriteArtists
+        )
+        .sink { [weak self] _ in
+            self?.mainCollectionView.reloadData()
+        }
+        .store(in: &cancellables)
     }
     
     func bindAction() {
@@ -207,6 +223,21 @@ extension MainViewController: UICollectionViewDataSource {
                 )
                 let note = viewModel.fetchedNotes[indexPath.item]
                 cell.configure(with: note)
+                
+                cell.likeNoteButton.publisher(for: .touchUpInside)
+                
+                    // 0.6초 사이에 발생한 가장 최신 좋아요 상태만 방출
+                    .debounce(
+                        for: .milliseconds(600),
+                        scheduler: DispatchQueue.main
+                    )
+                    .sink { [weak viewModel] control in
+                        viewModel?.setNoteLikeState(
+                            noteID: note.id,
+                            isLiked: control.isSelected
+                        )
+                    }
+                    .store(in: &cancellables)
                 
                 return cell
             }

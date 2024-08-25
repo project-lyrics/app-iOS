@@ -51,11 +51,11 @@ public class LyricsContentsView: UIView {
         self.addSubview(flexContainer)
     }
     
-    public func configureView(with lyrics: Lyrics) {
-        self.lyricsLabel.text = lyrics.content
-        self.backgroundImageView.image = lyrics.background.image
+    public func configureView(with lyrics: Lyrics?) {
+        self.lyricsLabel.text = lyrics?.content
+        self.backgroundImageView.image = lyrics?.background.image
         
-        switch lyrics.background {
+        switch lyrics?.background {
         case .black, .red:
             self.lyricsLabel.textColor = .white
             

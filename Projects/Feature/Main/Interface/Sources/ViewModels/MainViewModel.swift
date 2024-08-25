@@ -25,17 +25,21 @@ final public class MainViewModel {
     @Published private (set) var fetchedFavoriteArtists: [Artist] = []
     @Published private (set) var error: HomeError?
     @Published private (set) var refreshState: RefreshState = .idle
+    @Published private (set) var updatedNoteIndex: Int? = nil
     
     private let getNotesUseCase: GetNotesUseCaseInterface
     private let getFavoriteArtistsUseCase: GetFavoriteArtistsUseCaseInterface
+    private let setNoteLikeUseCase: SetNoteLikeUseCaseInterface
     
     private var cancellables: Set<AnyCancellable> = .init()
     
     public init(
         getNotesUseCase: GetNotesUseCaseInterface,
+        setNoteLikeUseCase: SetNoteLikeUseCaseInterface,
         getFavoriteArtistsUseCase: GetFavoriteArtistsUseCaseInterface
     ) {
         self.getNotesUseCase = getNotesUseCase
+        self.setNoteLikeUseCase = setNoteLikeUseCase
         self.getFavoriteArtistsUseCase = getFavoriteArtistsUseCase
     }
     
@@ -134,5 +138,48 @@ extension MainViewModel {
         }
         .store(in: &cancellables)
         
+    }
+}
+
+extension MainViewModel {
+    
+    // MARK: - Like/Dislike note
+    
+    func setNoteLikeState(
+        noteID: Int,
+        isLiked: Bool
+    ) {
+        self.setNoteLikeUseCase.execute(
+            isLiked: isLiked,
+            noteID: noteID
+        )
+        .mapToResult()
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] result in
+            switch result {
+            case .success(let updatedNoteLike):
+                var noteToUpdate = self?.fetchedNotes.first(
+                    where: { $0.id == updatedNoteLike.noteID }
+                )
+                noteToUpdate?.likesCount = updatedNoteLike.likesCount
+                noteToUpdate?.isLiked = isLiked
+                
+                self?.updatedNoteIndex = self?.fetchedNotes.firstIndex(
+                    where: { $0.id == updatedNoteLike.noteID }
+                )
+                
+            case .failure(let error):
+                var noteToUpdate = self?.fetchedNotes.first(
+                    where: { $0.id == noteID }
+                )
+                noteToUpdate?.isLiked = !isLiked
+                self?.updatedNoteIndex = self?.fetchedNotes.firstIndex(
+                    where: { $0.id == noteToUpdate?.id }
+                )
+                self?.error = .noteError(error)
+                
+            }
+        }
+        .store(in: &cancellables)
     }
 }

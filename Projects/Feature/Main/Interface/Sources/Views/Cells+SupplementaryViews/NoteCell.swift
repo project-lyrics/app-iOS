@@ -184,6 +184,7 @@ final class NoteCell: UICollectionViewCell, Reusable {
                 
                 flex.addItem(lyricsContentsView)
                     .marginTop(16)
+                
             }
             .paddingVertical(16)
             
@@ -251,6 +252,10 @@ final class NoteCell: UICollectionViewCell, Reusable {
         self.artistNameLabel.text = note.song.artist.name
         self.likeAmountLabel.text = note.likesCount.shortenedText()
         self.commentAmountLabel.text = note.commentsCount.shortenedText()
+        self.likeNoteButton.isSelected = note.isLiked
+        
+        self.likeAmountLabel.flex.markDirty()
+        self.commentAmountLabel.flex.markDirty()
         
         if let lyrics = note.lyrics {
             self.lyricsContentsView.configureView(with: lyrics)
@@ -258,6 +263,8 @@ final class NoteCell: UICollectionViewCell, Reusable {
         } else {
             self.lyricsContentsView.flex.isIncludedInLayout(false).markDirty()
         }
+        
+        self.flexContainer.flex.layout()
     }
     
     override func prepareForReuse() {
@@ -272,6 +279,8 @@ final class NoteCell: UICollectionViewCell, Reusable {
         self.artistNameLabel.text = nil
         self.likeAmountLabel.text = nil
         self.commentAmountLabel.text = nil
+        self.likeNoteButton.isSelected = false
+        self.lyricsContentsView.configureView(with: nil)
     }
     
     

@@ -95,20 +95,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         @Injected(.notePaginationService) var notePaginationService: NotePaginationServiceInterface
         @Injected(.artistPaginationService) var artistPaginationService: ArtistPaginationServiceInterface
         
-//        let mainViewModel = MainViewModel(
-//            getNotesUseCase: GetFavoriteArtistsRelatedNotesUseCase(
-//                noteAPIService: noteAPiService,
-//                notePaginationService: notePaginationService
-//            ),
-//            getFavoriteArtistsUseCase: GetFavoriteArtistsUseCase(
-//                artistAPIService: artistAPIService,
-//                artistPaginationService: artistPaginationService
-//            )
-//        )
         let mainViewModel = MainViewModel(
-            getNotesUseCase: MockGetNotesUseCase(),
-            getFavoriteArtistsUseCase: MockGetFavoriteArtistsUseCase()
+            getNotesUseCase: GetFavoriteArtistsRelatedNotesUseCase(
+                noteAPIService: noteAPiService,
+                notePaginationService: notePaginationService
+            ), setNoteLikeUseCase: SetNoteLikeUseCase(noteAPIService: noteAPiService),
+            getFavoriteArtistsUseCase: GetFavoriteArtistsUseCase(
+                artistAPIService: artistAPIService,
+                artistPaginationService: artistPaginationService
+            )
         )
+//        let mainViewModel = MainViewModel(
+//            getNotesUseCase: MockGetNotesUseCase(),
+//            getFavoriteArtistsUseCase: MockGetFavoriteArtistsUseCase()
+//        )
         
         window?.rootViewController = MainViewController(viewModel: mainViewModel)
         window?.makeKeyAndVisible()
@@ -131,7 +131,8 @@ import SwiftUI
 struct MainViewController_Preview: PreviewProvider {
     static var previews: some View {
         let viewModelForPreview = MainViewModel(
-            getNotesUseCase: MockGetNotesUseCase(),
+            getNotesUseCase: MockGetNotesUseCase(), 
+            setNoteLikeUseCase: MockSetNoteLikeUseCase(),
             getFavoriteArtistsUseCase: MockGetFavoriteArtistsUseCase()
         )
         return MainViewController(viewModel: viewModelForPreview)

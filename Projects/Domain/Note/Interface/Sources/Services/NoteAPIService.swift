@@ -16,6 +16,9 @@ public protocol NoteAPIServiceInterface {
         numberOfNotes: Int,
         hasLyrics: Bool
     ) -> AnyPublisher<GetNotesResponse, NoteError>
+    
+    func postLike(noteID: Int) -> AnyPublisher<NoteLikeResponse, NoteError>
+    func deleteLike(noteID: Int) -> AnyPublisher<NoteLikeResponse, NoteError>
 }
 
 public struct NoteAPIService: NoteAPIServiceInterface {
@@ -35,6 +38,22 @@ public struct NoteAPIService: NoteAPIServiceInterface {
             size: numberOfNotes,
             hasLyrics: hasLyrics
         )
+        return networkProvider.request(endpoint)
+            .mapError(NoteError.init)
+            .eraseToAnyPublisher()
+    }
+    
+    public func postLike(noteID: Int) -> AnyPublisher<NoteLikeResponse, NoteError> {
+        let endpoint = FeelinAPI<NoteLikeResponse>.postLikes(noteID: noteID)
+        
+        return networkProvider.request(endpoint)
+            .mapError(NoteError.init)
+            .eraseToAnyPublisher()
+    }
+    
+    public func deleteLike(noteID: Int) -> AnyPublisher<NoteLikeResponse, NoteError> {
+        let endpoint = FeelinAPI<NoteLikeResponse>.deleteLikes(noteID: noteID)
+        
         return networkProvider.request(endpoint)
             .mapError(NoteError.init)
             .eraseToAnyPublisher()
