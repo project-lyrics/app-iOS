@@ -26,6 +26,12 @@ final class PostSelectButton: UIView {
         return label
     }()
 
+    var isEnabled: Bool = false {
+        didSet {
+            updateUI(isEnabled)
+        }
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -73,6 +79,10 @@ final class PostSelectButton: UIView {
             }
     }
 
+    private func updateUI(_ isEnabled: Bool) {
+        titleLabel.textColor = isEnabled ? Colors.active : Colors.disabled
+        iconImageView.tintColor = isEnabled ? Colors.active : Colors.disabled
+    }
 
     func configure(title: String, image: UIImage) {
         titleLabel.text = title

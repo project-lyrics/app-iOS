@@ -8,39 +8,59 @@
 import UIKit
 
 public class FeelinConfirmButton: UIButton {
-    private var enabledBackgroundColor = Colors.active
-    private var disabledBackgroundColor = Colors.disabled
-    
+    public enum Setting {
+        case background
+        case text
+    }
+
+    private var enabledColor = Colors.active
+    private var disabledColor = Colors.disabled
+    private var setting: Setting = .background
+
     public init(
         initialEnabled: Bool = false,
         title: String,
-        enabledBackgroundColor: UIColor = Colors.active,
-        disabledBackgroundColor: UIColor = Colors.disabled
+        enabledColor: UIColor = Colors.active,
+        disabledColor: UIColor = Colors.disabled,
+        setting: FeelinConfirmButton.Setting = .background
     ) {
         super.init(frame: .zero)
+
         self.isEnabled = initialEnabled
-        self.enabledBackgroundColor = enabledBackgroundColor
-        self.disabledBackgroundColor = disabledBackgroundColor
+        self.enabledColor = enabledColor
+        self.disabledColor = disabledColor
+        self.setting = setting
+
         setupButton(title: title)
     }
-    
+
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         super.init(coder: coder)
     }
-    
+
     private func setupButton(title: String) {
         updateAppearance()
-        
+
         self.setTitle(title, for: .normal)
-        self.titleLabel?.font = SharedDesignSystemFontFamily.Pretendard.semiBold.font(size: 16)
+
+        let font = setting == .background ? SharedDesignSystemFontFamily.Pretendard.semiBold.font(size: 16) : SharedDesignSystemFontFamily.Pretendard.regular.font(size: 16)
+
+        self.titleLabel?.font = font
     }
-    
+
     private func updateAppearance() {
-        backgroundColor = isEnabled ? enabledBackgroundColor : disabledBackgroundColor
-        setTitleColor(.white, for: .normal)
+        if setting == .background {
+            backgroundColor = isEnabled ? enabledColor : disabledColor
+            setTitleColor(.white, for: .normal)
+        } else {
+            backgroundColor = .white
+
+            let titleColor = isEnabled ? Colors.primary : disabledColor
+            setTitleColor(titleColor, for: .normal)
+        }
     }
-    
+
     public override var isEnabled: Bool {
         didSet {
             updateAppearance()
