@@ -37,7 +37,7 @@ public struct MockGetNotesUseCase: GetNotesUseCaseInterface {
                     song: .init(
                         id: 1,
                         name: "테스트 노래",
-                        imageUrl: "1234.com",
+                        imageUrl: "https://i.scdn.co/image/ab67616d0000b2739c3a4e471c5e82a457dce2c0",
                         artist: .init(
                             id: 1,
                             name: "테스트 아티스트",

@@ -256,6 +256,11 @@ extension MainViewController: UICollectionViewDataSource {
                     viewType: FavoriteArtistsHeaderView.self
                 )
                 
+                viewModel.$fetchedFavoriteArtists
+                    .map { !$0.isEmpty }
+                    .assign(to: \.isEnabled, on: favoriteArtistsHeaderView.viewAllButton)
+                    .store(in: &cancellables)
+                
                 return favoriteArtistsHeaderView
                 
             case SectionDividerView.reuseIdentifier:
