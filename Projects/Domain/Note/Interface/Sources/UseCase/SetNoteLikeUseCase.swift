@@ -28,8 +28,6 @@ public struct SetNoteLikeUseCase: SetNoteLikeUseCaseInterface {
         isLiked: Bool,
         noteID: Int
     ) -> AnyPublisher<NoteLike, NoteError> {
-        print("set notelike usecase isLiked: \(isLiked)")
-        
         if isLiked {
             return noteAPIService.postLike(noteID: noteID)
                 .map(NoteLike.init)

@@ -60,7 +60,6 @@ public class LyricsContentsView: UIView {
             self.lyricsLabel.textColor = .white
             
         default:
-            // 라이트모드 다크모드 상관 없이 고정 Gray08값을 주어야 하기 hex값 사용.
             self.lyricsLabel.textColor = Colors.fixedGray08
         }
         
