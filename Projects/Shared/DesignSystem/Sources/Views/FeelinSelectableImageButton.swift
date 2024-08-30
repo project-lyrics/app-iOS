@@ -22,6 +22,12 @@ public class FeelinSelectableImageButton: UIButton {
         self.setUpButton()
     }
     
+    public override var isSelected: Bool {
+        didSet {
+            updateButtonImage()
+        }
+    }
+    
     @available(*, unavailable)
     public required init?(coder: NSCoder) {
         fatalError()

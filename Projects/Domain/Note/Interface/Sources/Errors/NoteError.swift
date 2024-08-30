@@ -14,7 +14,7 @@ public enum NoteError: LocalizedError {
     case keychainError(KeychainError)
     case unknown(errorDescription: String)
     
-    public var errorDescription: String? {
+    public var errorDescription: String {
         switch self {
         case .networkError(let error):
             return error.errorMessage

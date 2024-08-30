@@ -28,37 +28,93 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window = UIWindow(windowScene: windowScene)
         
-        DIContainer.standard.register(.networkProvider) { resolver in
-            return NetworkProvider(
-                networkSession: .init(requestInterceptor: MockTokenInterceptor())
-            )
-        }
-        DIContainer.registerDependenciesForArtistSelectView()
+//        DIContainer.standard.register(.networkProvider) { resolver in
+//            return NetworkProvider(
+//                networkSession: .init(requestInterceptor: MockTokenInterceptor())
+//            )
+//        }
+//        DIContainer.registerDependenciesForArtistSelectView()
+//        
+//        @Injected(.artistAPIService) var artistAPIService: ArtistAPIServiceInterface
+//        @Injected(.artistPaginationService) var artistPaginationService: ArtistPaginationServiceInterface
+//        
+//        let getArtistsUseCase = GetArtistsUseCase(
+//            artistAPIService: artistAPIService,
+//            artistPaginationService: artistPaginationService
+//        )
+//        
+//        let searchArtistsUseCase = SearchArtistsUseCase(
+//            artistAPIService: artistAPIService,
+//            artistPaginationService: artistPaginationService
+//        )
+//        
+//        let postFavoriteArtistsUseCase = PostFavoriteArtistsUseCase(artistAPIService: artistAPIService)
+//        
+//        let viewModel = ArtistSelectViewModel(
+//            getArtistsUseCase: getArtistsUseCase,
+//            searchArtistsUseCase: searchArtistsUseCase,
+//            postFavoriteArtistsUseCase: postFavoriteArtistsUseCase
+//        )
+//        
+//        let artistSelectViewController = ArtistSelectViewController(viewModel: viewModel)
+//        
+//        window?.rootViewController = artistSelectViewController
+//        window?.makeKeyAndVisible()
+        // --------------------ArtistSelectViewController-------------------
         
+        DIContainer.standard.register(.networkProvider) { _ in
+            let networkSession = NetworkSession(
+                urlSession: .shared,
+                requestInterceptor: MockTokenInterceptor()
+            )
+            
+            return NetworkProvider(networkSession: networkSession)
+        }
+        
+        DIContainer.standard.register(.notePaginationService) { _ in
+            return NotePaginationService()
+        }
+        
+        DIContainer.standard.register(.artistPaginationService) { resolver in
+            return ArtistPaginationService()
+        }
+        
+        DIContainer.standard.register(.noteAPIService.self) { resolver in
+            let networkProvider = try resolver.resolve(.networkProvider)
+            
+            return NoteAPIService(networkProvider: networkProvider)
+        }
+        
+        DIContainer.standard.register(.artistAPIService) { resolver in
+            let networkProvider = try resolver.resolve(.networkProvider)
+            
+            return ArtistAPIService(networkProvider: networkProvider)
+        }
         @Injected(.artistAPIService) var artistAPIService: ArtistAPIServiceInterface
+        @Injected(.noteAPIService) var noteAPiService: NoteAPIServiceInterface
+        @Injected(.notePaginationService) var notePaginationService: NotePaginationServiceInterface
         @Injected(.artistPaginationService) var artistPaginationService: ArtistPaginationServiceInterface
         
-        let getArtistsUseCase = GetArtistsUseCase(
-            artistAPIService: artistAPIService,
-            artistPaginationService: artistPaginationService
+        let mainViewModel = MainViewModel(
+            getNotesUseCase: GetFavoriteArtistsRelatedNotesUseCase(
+                noteAPIService: noteAPiService,
+                notePaginationService: notePaginationService
+            ), 
+            setNoteLikeUseCase: SetNoteLikeUseCase(noteAPIService: noteAPiService),
+            getFavoriteArtistsUseCase: GetFavoriteArtistsUseCase(
+                artistAPIService: artistAPIService,
+                artistPaginationService: artistPaginationService
+            ),
+            setBookmarkUseCase: SetBookmarkUseCase(noteAPIService: noteAPiService)
         )
+//        let mainViewModel = MainViewModel(
+//            getNotesUseCase: MockGetNotesUseCase(),
+//            setNoteLikeUseCase: MockSetNoteLikeUseCase(),
+//            getFavoriteArtistsUseCase: MockGetFavoriteArtistsUseCase(),
+//            setBookmarkUseCase: MockSetBookmarkUseCase()
+//        )
         
-        let searchArtistsUseCase = SearchArtistsUseCase(
-            artistAPIService: artistAPIService,
-            artistPaginationService: artistPaginationService
-        )
-        
-        let postFavoriteArtistsUseCase = PostFavoriteArtistsUseCase(artistAPIService: artistAPIService)
-        
-        let viewModel = ArtistSelectViewModel(
-            getArtistsUseCase: getArtistsUseCase,
-            searchArtistsUseCase: searchArtistsUseCase, 
-            postFavoriteArtistsUseCase: postFavoriteArtistsUseCase
-        )
-        
-        let artistSelectViewController = ArtistSelectViewController(viewModel: viewModel)
-        
-        window?.rootViewController = artistSelectViewController
+        window?.rootViewController = MainViewController(viewModel: mainViewModel)
         window?.makeKeyAndVisible()
     }
     
@@ -72,3 +128,21 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     func sceneDidEnterBackground(_ scene: UIScene) { }
 }
+
+#if canImport(SwiftUI)
+import SwiftUI
+
+struct MainViewController_Preview: PreviewProvider {
+    static var previews: some View {
+        let viewModelForPreview = MainViewModel(
+            getNotesUseCase: MockGetNotesUseCase(), 
+            setNoteLikeUseCase: MockSetNoteLikeUseCase(),
+            getFavoriteArtistsUseCase: MockGetFavoriteArtistsUseCase(),
+            setBookmarkUseCase: MockSetBookmarkUseCase()
+        )
+        return MainViewController(viewModel: viewModelForPreview)
+            .asPreview()
+    }
+}
+
+#endif

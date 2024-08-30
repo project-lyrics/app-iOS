@@ -11,7 +11,14 @@ import DomainSharedInterface
 import Foundation
 import Combine
 
-public struct SearchArtistsUseCase {
+public protocol SearchArtistsUseCaseInterface {
+    func execute(
+        keyword: String,
+        perPage: Int
+    ) -> AnyPublisher<[Artist], ArtistError>
+}
+
+public struct SearchArtistsUseCase: SearchArtistsUseCaseInterface {
     private let artistAPIService: ArtistAPIServiceInterface
     private let artistPaginationService: ArtistPaginationServiceInterface
     

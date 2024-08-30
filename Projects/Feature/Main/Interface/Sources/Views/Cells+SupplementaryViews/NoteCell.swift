@@ -7,11 +7,12 @@
 
 import UIKit
 
+import Domain
 import FlexLayout
 import PinLayout
 import Shared
 
-final class NoteCell: UICollectionViewCell {
+final class NoteCell: UICollectionViewCell, Reusable {
     
     private let flexContainer = UIView()
     
@@ -19,7 +20,7 @@ final class NoteCell: UICollectionViewCell {
     
     private let authorCharacterImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = ProfileCharacterType.braidedHair.image
+        imageView.contentMode = .scaleAspectFill
         
         return imageView
     }()
@@ -27,16 +28,16 @@ final class NoteCell: UICollectionViewCell {
     private let authorNameLabel: UILabel = {
         let label = UILabel()
         label.font = SharedDesignSystemFontFamily.Pretendard.semiBold.font(size: 14)
-        label.text = "실카사랑단"
         label.textColor = Colors.gray09
+        
         return label
     }()
     
     private let noteWrittenTimeLabel: UILabel = {
         let label = UILabel()
         label.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 12)
-        label.text = "5분 전"
         label.textColor = Colors.gray03
+        
         return label
     }()
     
@@ -55,12 +56,11 @@ final class NoteCell: UICollectionViewCell {
         label.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 14)
         label.textColor = Colors.gray09
         label.numberOfLines = 3
-        label.text = "실리카겔 노래 중에 이 노래를 제일 좋아하는 사람 있나요?\n20대 때 처음 들었는데, 아직도 그때 그 순간을 잊지 못하겠네요.\n배경에 은은하게 깔리는 베이스가 매력적인 노래 같습니다. 저 같은 분 또 계신지 궁금하네요!"
         
         return label
     }()
     
-    private let lyricsContentsView = LyricsContentsView()
+    private var lyricsContentsView: LyricsContentsView = .init()
     
     private let albumImageView: UIImageView = {
         let imageView = UIImageView()
@@ -70,7 +70,6 @@ final class NoteCell: UICollectionViewCell {
     
     private let musicTitleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Realize"
         label.font = SharedDesignSystemFontFamily.Pretendard.medium.font(size: 14)
         label.textColor = Colors.gray08
         
@@ -79,7 +78,6 @@ final class NoteCell: UICollectionViewCell {
     
     private let artistNameLabel: UILabel = {
         let label = UILabel()
-        label.text = "실리카겔"
         label.font = SharedDesignSystemFontFamily.Pretendard.medium.font(size: 12)
         label.textColor = Colors.gray04
         
@@ -109,7 +107,6 @@ final class NoteCell: UICollectionViewCell {
         let label = UILabel()
         label.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 14)
         label.textColor = Colors.gray03
-        label.text = "0"
         
         return label
     }()
@@ -123,7 +120,6 @@ final class NoteCell: UICollectionViewCell {
     
     private var commentAmountLabel: UILabel = {
         let label = UILabel()
-        label.text = "0"
         label.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 14)
         label.textColor = Colors.gray03
         
@@ -156,51 +152,146 @@ final class NoteCell: UICollectionViewCell {
         super.layoutSubviews()
         
         flexContainer.pin.all()
-        flexContainer.flex.layout()
+        flexContainer.flex.layout(mode: .adjustHeight)
     }
+    
+    // MARK: - Layout
     
     private func setUpLayout() {
         self.addSubview(flexContainer)
         
         flexContainer.flex.define { flex in
+            // 작성자 정보 row
             flex.addItem().direction(.row).define { flex in
                 flex.addItem(authorCharacterImageView)
+                    .height(32)
                     .width(32)
+                
                 flex.addItem(authorNameLabel)
+                    .marginLeft(8)
+                    .paddingRight(8)
+                
                 flex.addItem(noteWrittenTimeLabel)
-                flex.addItem().grow(1)
+                    .grow(1)
+                
                 flex.addItem(moreAboutContentButton)
             }
-            .height(32)
+            .paddingTop(24)
             
-            flex.addItem(noteContentLabel)
             
-            flex.addItem(lyricsContentsView)
+            flex.addItem().define { flex in
+                flex.addItem(noteContentLabel)
+                
+                flex.addItem(lyricsContentsView)
+                    .marginTop(16)
+                
+            }
+            .paddingVertical(16)
+            
             
             flex.addItem()
                 .backgroundColor(Colors.gray03)
-                .height(1)
             
-            flex.addItem().direction(.row).define { flex in
+            flex.addItem().backgroundColor(Colors.gray01).height(1)
+            
+            // 아티스트 앨범 row
+            flex.addItem().direction(.row).alignItems(.center).define { flex in
                 flex.addItem(albumImageView)
+                    .width(40)
+                    .height(40)
                 
                 flex.addItem().direction(.column).define { flex in
                     flex.addItem(musicTitleLabel)
                     
                     flex.addItem(artistNameLabel)
                 }
-                flex.addItem().grow(1)
+                .paddingLeft(10)
+                .grow(1)
+                .paddingVertical(12)
+                
                 flex.addItem(playMusicButton)
+                    .paddingBottom(24)
             }
+            
+            flex.addItem().backgroundColor(Colors.gray01).height(1)
+
+            
+            // 좋아요 & 댓글 row
             flex.addItem().direction(.row).define { flex in
                 flex.addItem(likeNoteButton)
+                    .paddingRight(4)
+                
                 flex.addItem(likeAmountLabel)
+                
+                flex.addItem().width(16)
+                
                 flex.addItem(commentButton)
+                    .paddingRight(4)
+                
                 flex.addItem(commentAmountLabel)
+                
                 flex.addItem().grow(1)
+                
                 flex.addItem(bookmarkButton)
             }
+            .paddingTop(24)
+            .paddingBottom(28)
         }
+    }
+    
+    // MARK: - Configure UI
+    func configure(with note: Note) {
+        self.authorCharacterImageView.image = note.publisher.profileCharacterType.image
+        self.authorNameLabel.text = note.publisher.nickname
+        self.noteWrittenTimeLabel.text = note.createdAt.formattedTimeInterval()
+        self.noteContentLabel.text = note.content
+        self.albumImageView.kf.setImage(
+            with: try?note.song.imageUrl.asURL()
+        )
+        self.musicTitleLabel.text = note.song.name
+        self.artistNameLabel.text = note.song.artist.name
+        self.likeAmountLabel.text = note.likesCount.shortenedText()
+        self.commentAmountLabel.text = note.commentsCount.shortenedText()
+        self.likeNoteButton.isSelected = note.isLiked
+        self.bookmarkButton.isSelected = note.isBookmarked
+        
+        self.likeAmountLabel.flex.markDirty()
+        self.commentAmountLabel.flex.markDirty()
+        
+        if let lyrics = note.lyrics {
+            self.lyricsContentsView.configureView(with: lyrics)
+            self.lyricsContentsView.flex.isIncludedInLayout(true).markDirty()
+        } else {
+            self.lyricsContentsView.flex.isIncludedInLayout(false).markDirty()
+        }
+        
+        self.flexContainer.flex.layout()
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        self.authorCharacterImageView.image = nil
+        self.authorNameLabel.text = nil
+        self.noteWrittenTimeLabel.text = nil
+        self.noteContentLabel.text = nil
+        self.albumImageView.image = nil
+        self.musicTitleLabel.text = nil
+        self.artistNameLabel.text = nil
+        self.likeAmountLabel.text = nil
+        self.commentAmountLabel.text = nil
+        self.likeNoteButton.isSelected = false
+        self.bookmarkButton.isSelected = false
+        self.lyricsContentsView.configureView(with: nil)
+        self.flexContainer.flex.layout()
+    }
+    
+    
+    override func sizeThatFits(_ size: CGSize) -> CGSize {
+        self.flexContainer.pin.width(size.width)
+        self.flexContainer.flex.layout(mode: .adjustHeight)
+        
+        return self.flexContainer.frame.size
     }
 }
 

@@ -1,15 +1,16 @@
 //
 //  LyricsContentsView.swift
-//  SharedDesignSystem
+//  FeatureMainInterface
 //
-//  Created by 황인우 on 8/4/24.
+//  Created by 황인우 on 8/22/24.
 //
 
 import UIKit
 
 import FlexLayout
 import PinLayout
-import SharedUtil
+import Domain
+import Shared
 
 public class LyricsContentsView: UIView {
     private let flexContainer = UIView()
@@ -26,6 +27,7 @@ public class LyricsContentsView: UIView {
         label.numberOfLines = 3
         label.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 16)
         label.textAlignment = .center
+        
         return label
     }()
     
@@ -49,19 +51,29 @@ public class LyricsContentsView: UIView {
         self.addSubview(flexContainer)
     }
     
-    public func configureView(
-        lyricsContent: String,
-        backgroundImage: UIImage
-    ) {
-        self.lyricsLabel.text = lyricsContent
-        self.backgroundImageView.image = backgroundImage
+    public func configureView(with lyrics: Lyrics?) {
+        self.lyricsLabel.text = lyrics?.content
+        self.backgroundImageView.image = lyrics?.background.image
+        
+        switch lyrics?.background {
+        case .black, .red:
+            self.lyricsLabel.textColor = .white
+            
+        default:
+            self.lyricsLabel.textColor = Colors.fixedGray08
+        }
+        
         
         flexContainer.flex.define { flex in
-            flex.addItem(backgroundImageView).define { flex in
-                flex.addItem(lyricsLabel)
-                    .alignSelf(.center)
-                    .padding(30, 52)
-            }
+            flex.addItem(backgroundImageView)
+                .justifyContent(.center)
+                .alignItems(.center)
+                .define { flex in
+                    flex.addItem(lyricsLabel)
+                        .height(60)
+                        .width(240)
+                }
+                .height(132)
         }
     }
 }

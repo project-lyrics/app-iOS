@@ -21,24 +21,24 @@ public extension Publisher where Output == DataTaskResult {
                     .init(apiFailResponse: feelinServerFailResponse)
                 )
             }
-
+            
             switch response.statusCode {
             case 200..<300:
                 return DataTaskResult(
                     data: data,
                     response: response
                 )
-
+                
             case 400..<451:
                 throw NetworkError.clientError(
                     NetworkError.ClientError(rawValue: response.statusCode) ?? .badRequestError
                 )
-
+                
             case 500..<512:
                 throw NetworkError.serverError(
                     NetworkError.ServerError(rawValue: response.statusCode) ?? .internalServerError
                 )
-
+                
             default:
                 throw NetworkError.unknownError("Response Unknown Error: \(response.statusCode)")
             }
@@ -52,11 +52,15 @@ public extension Publisher where Output == DataTaskResult {
         }
         .eraseToAnyPublisher()
     }
-
+    
     func validateJSONValue<Output: Decodable>(to outputType: Output.Type) -> AnyPublisher<Output, NetworkError> {
         return tryMap {
+            let dateFormatter = DateFormatter()
+            
+            // MARK: - 2024.07.24 기획팀과 논의 된 시간 포맷에 따라서 아래와 같이 Date형식을 수정
+            dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
             let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .iso8601
+            decoder.dateDecodingStrategy = .formatted(dateFormatter)
             return try decoder.decode(outputType, from: $0.data)
         }
         .mapError { error in
@@ -71,7 +75,7 @@ public extension Publisher where Output == DataTaskResult {
         }
         .eraseToAnyPublisher()
     }
-
+    
     func debug(prefix: String = "") -> Publishers.Print<Self> {
         return print(prefix + "publisher", to: CombineTimeLogger())
     }

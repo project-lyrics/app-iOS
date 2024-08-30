@@ -18,17 +18,17 @@ final public class ArtistSelectViewModel {
     @Published private (set) var error: ArtistSelectionError?
     @Published private (set) var favoriteArtists: [Artist] = []
     
-    private let getArtistsUseCase: GetArtistsUseCase
-    private let searchArtistsUseCase: SearchArtistsUseCase
-    private let postFavoriteArtistsUseCase: PostFavoriteArtistsUseCase
+    private let getArtistsUseCase: GetArtistsUseCaseInterface
+    private let searchArtistsUseCase: SearchArtistsUseCaseInterface
+    private let postFavoriteArtistsUseCase: PostFavoriteArtistsUseCaseInterface
     
     private let favoriteArtistLimit: Int = 30
     private var cancellables: Set<AnyCancellable> = .init()
     
     public init(
-        getArtistsUseCase: GetArtistsUseCase,
-        searchArtistsUseCase: SearchArtistsUseCase,
-        postFavoriteArtistsUseCase: PostFavoriteArtistsUseCase
+        getArtistsUseCase: GetArtistsUseCaseInterface,
+        searchArtistsUseCase: SearchArtistsUseCaseInterface,
+        postFavoriteArtistsUseCase: PostFavoriteArtistsUseCaseInterface
     ) {
         self.getArtistsUseCase = getArtistsUseCase
         self.searchArtistsUseCase = searchArtistsUseCase
@@ -185,7 +185,6 @@ final public class ArtistSelectViewModel {
         }
     }
     
-    @discardableResult
     func markFavoriteArtist(
         at index: Int,
         isSearching: Bool

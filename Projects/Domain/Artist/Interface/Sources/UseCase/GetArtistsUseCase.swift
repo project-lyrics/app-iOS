@@ -10,8 +10,16 @@ import DomainSharedInterface
 
 import Foundation
 import Combine
+import DomainSharedInterface
 
-public struct GetArtistsUseCase {
+public protocol GetArtistsUseCaseInterface {
+    func execute(
+        isInitial: Bool,
+        perPage: Int
+    ) -> AnyPublisher<[Artist], ArtistError>
+}
+
+public struct GetArtistsUseCase: GetArtistsUseCaseInterface {
     private let artistAPIService: ArtistAPIServiceInterface
     private let artistPaginationService: ArtistPaginationServiceInterface
     

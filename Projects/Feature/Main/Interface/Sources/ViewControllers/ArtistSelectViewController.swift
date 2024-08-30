@@ -102,7 +102,9 @@ public final class ArtistSelectViewController: UIViewController {
                 right: 0
             )
         }
-        artistSelectView.rootFlexContainer.flex.paddingBottom(height)
+        artistSelectView.rootFlexContainer.flex.paddingBottom(
+            height
+        )
         artistSelectView.rootFlexContainer.flex.layout()
     }
     

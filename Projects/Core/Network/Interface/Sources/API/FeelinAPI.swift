@@ -19,6 +19,12 @@ public enum FeelinAPI<R> {
     case getArtists(cursor: Int?, size: Int)
     case searchArtists(query: String, cursor: Int?, size: Int)
     case postFavoriteArtists(ids: [Int])
+    case getFavoriteArtists(cursor: Int?, size: Int)
+    case getFavoriteArtistsRelatedNotes(cursor: Int?, size: Int, hasLyrics: Bool)
+    case postLikes(noteID: Int)
+    case deleteLikes(noteID: Int)
+    case postBookmarks(noteID: Int)
+    case deleteBookmarks(noteID: Int)
 }
 
 extension FeelinAPI: HTTPNetworking {
@@ -43,7 +49,8 @@ extension FeelinAPI: HTTPNetworking {
 
     public var queryParameters: Encodable? {
         switch self {
-        case .getArtists(let cursor, let size):
+        case .getArtists(let cursor, let size),
+                .getFavoriteArtists(let cursor, let size):
             if let cursor = cursor {
                 return [
                     "cursor": cursor,
@@ -54,6 +61,21 @@ extension FeelinAPI: HTTPNetworking {
             return [
                 "size": size
             ]
+        
+        case .getFavoriteArtistsRelatedNotes(let cursor, let size, let hasLyrics):
+            if let cursor = cursor {
+                return [
+                    "cursor": "\(cursor)",
+                    "size": "\(size)",
+                    "hasLyrics": "\(hasLyrics)"
+                ]
+            }
+            
+            return [
+                "size": "\(size)",
+                "hasLyrics": "\(hasLyrics)"
+            ]
+            
         case .searchArtists(let query, let cursor, let size):
             if let cursor = cursor {
                 return [
@@ -66,6 +88,14 @@ extension FeelinAPI: HTTPNetworking {
             return [
                 "query": "\(query)",
                 "size": "\(size)"
+            ]
+            
+        case .postLikes(let noteID),
+                .deleteLikes(let noteID),
+                .postBookmarks(let noteID),
+                .deleteBookmarks(let noteID):
+            return [
+                "noteId": noteID
             ]
             
         default:
@@ -86,12 +116,6 @@ extension FeelinAPI: HTTPNetworking {
             return [
                 "artistIds": ids
             ]
-
-        case .signUp(let request):
-            return request
-
-        case .signUp(let request):
-            return request
 
         case .signUp(let request):
             return request
@@ -133,16 +157,32 @@ extension FeelinAPI: HTTPNetworking {
             
         case .postFavoriteArtists:
             return "/api/v1/favorite-artists/batch"
+            
+        case .getFavoriteArtists:
+            return "/api/v1/favorite-artists"
+            
+        case .getFavoriteArtistsRelatedNotes:
+            return "/api/v1/notes/favorite-artists"
+            
+        case .postLikes, .deleteLikes:
+            return "/api/v1/likes"
+            
+        case .postBookmarks, .deleteBookmarks:
+            return "/api/v1/bookmarks"
+            
         }
     }
     
     public var httpMethod: HTTPMethod {
         switch self {
-        case .login, .reissueAccessToken, .signUp, .postFavoriteArtists:
+        case .login, .reissueAccessToken, .signUp, .postFavoriteArtists, .postLikes, .postBookmarks:
             return .post
 
-        case .checkUserValidity, .getArtists, .searchArtists:
+        case .checkUserValidity, .getArtists, .searchArtists, .getFavoriteArtists, .getFavoriteArtistsRelatedNotes:
             return .get
+            
+        case .deleteLikes, .deleteBookmarks:
+            return .delete
         }
     }
 }

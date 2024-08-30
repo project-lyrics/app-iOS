@@ -44,7 +44,7 @@ public enum KeychainError: LocalizedError {
         }
     }
     
-    var errorDescription: String {
+    public var errorDescription: String {
         switch self {
         case .functionNotImplemented:
             return "기능 또는 작업이 구현되지 않았습니다."
