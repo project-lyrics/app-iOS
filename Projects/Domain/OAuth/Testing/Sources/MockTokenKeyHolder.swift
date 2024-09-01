@@ -6,6 +6,7 @@
 //
 
 import DomainOAuthInterface
+import Core
 import Foundation
 import SharedUtil
 

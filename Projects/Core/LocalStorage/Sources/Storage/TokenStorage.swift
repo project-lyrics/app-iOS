@@ -5,8 +5,10 @@
 //  Created by 황인우 on 5/15/24.
 //
 
-import CoreLocalStorageInterface
 import Foundation
+
+import CoreLocalStorageInterface
+import SharedUtil
 
 // MARK: - TokenStorage
 public struct TokenStorage: TokenStorageInterface {

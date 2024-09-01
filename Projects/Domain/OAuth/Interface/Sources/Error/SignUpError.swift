@@ -5,8 +5,10 @@
 //  Created by Derrick kim on 7/9/24.
 //
 
-import Core
 import Foundation
+
+import Core
+import Shared
 
 public enum SignUpError: LocalizedError, Equatable {
     public static func == (lhs: SignUpError, rhs: SignUpError) -> Bool {

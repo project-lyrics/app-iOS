@@ -1,8 +1,8 @@
 //
 //  TokenKeyHolder.swift
-//  DomainOAuthInterface
+//  CoreLocalStorage
 //
-//  Created by 황인우 on 6/12/24.
+//  Created by 황인우 on 8/31/24.
 //
 
 import Foundation
@@ -20,7 +20,7 @@ public struct TokenKeyHolder: TokenKeyHolderInterface {
         if let accessTokenKey = Bundle.main.accessTokenKey {
             return accessTokenKey
         } else {
-            throw AuthError.unExpectedError(BundleError.missingItem(itemName: "AccessTokenKey"))
+            throw BundleError.missingItem(itemName: "AccessTokenKey")
         }
     }
     
@@ -28,7 +28,7 @@ public struct TokenKeyHolder: TokenKeyHolderInterface {
         if let refreshTokenKey = Bundle.main.refreshTokenKey {
             return refreshTokenKey
         } else {
-            throw AuthError.unExpectedError(BundleError.missingItem(itemName: "RefreshTokenKey"))
+            throw BundleError.missingItem(itemName: "RefreshTokenKey")
         }
     }
 }

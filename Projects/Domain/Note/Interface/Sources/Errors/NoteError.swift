@@ -5,9 +5,10 @@
 //  Created by 황인우 on 8/17/24.
 //
 
-import Core
-
 import Foundation
+
+import Core
+import Shared
 
 public enum NoteError: LocalizedError {
     case networkError(NetworkError)

@@ -5,9 +5,11 @@
 //  Created by 황인우 on 5/26/24.
 //
 
-import Core
 import Foundation
+
+import Core
 import KakaoSDKCommon
+import Shared
 
 public enum AuthError: LocalizedError, Equatable {
     public static func == (lhs: AuthError, rhs: AuthError) -> Bool {

@@ -127,7 +127,8 @@ public extension Project {
                     "kakaolink"
                 ],
                 "ACCESS_TOKEN_KEY": "${ACCESS_TOKEN_KEY}",
-                "REFRESH_TOKEN_KEY": "${REFRESH_TOKEN_KEY}"
+                "REFRESH_TOKEN_KEY": "${REFRESH_TOKEN_KEY}",
+                "USER_ID_KEY": "${USER_ID_KEY}"
             ])
         }
     }

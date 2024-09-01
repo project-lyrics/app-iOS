@@ -19,8 +19,6 @@ final class RequestInterceptTest: XCTestCase {
     var fakeTokenStorage: FakeTokenStorage!
     var tokenInterceptor: MockTokenInterceptor!
     var urlSession: URLSession!
-    
-    
 
     override func setUpWithError() throws {
         try super.setUpWithError()
@@ -78,7 +76,7 @@ final class RequestInterceptTest: XCTestCase {
             networkSession: mockNetworkSession
         )
 
-        let accessToken: AccessToken! = try fakeTokenStorage.read(key: "FeelinGoodAccessRight")
+        let accessToken: AccessToken! = try fakeTokenStorage.read(key: tokenInterceptor.dummyAccessTokenKey)
         let endpoint = FeelinAPI<UserValidityResponse>.checkUserValidity(accessToken: accessToken.token)
 
         // when
@@ -96,6 +94,14 @@ final class RequestInterceptTest: XCTestCase {
     
     func test_토큰유효성_검증_과정에서_401에러외에는_oAuthInterceptor의_retry_method가_호출되지_않는다() throws {
         // given
+        try fakeTokenStorage.save(
+            token: AccessToken(
+                token: "fakeAccessToken",
+                expiration: .init()
+            ),
+            for: tokenInterceptor.dummyAccessTokenKey
+        )
+        
         MockURLProtocol.requestHandler = { request in
             let mockResponse = HTTPURLResponse(
                 url: request.url!,
@@ -125,7 +131,7 @@ final class RequestInterceptTest: XCTestCase {
             networkSession: mockNetworkSession
         )
         
-        let accessToken: AccessToken! = try fakeTokenStorage.read(key: "FeelinGoodAccessRight")
+        let accessToken: AccessToken! = try fakeTokenStorage.read(key: tokenInterceptor.dummyAccessTokenKey)
         let endpoint = FeelinAPI<TokenResponse>.checkUserValidity(accessToken: accessToken.token)
         
         // when

@@ -1,8 +1,8 @@
 //
 //  JWTError.swift
-//  CoreNetworkInterface
+//  CoreLocalStorage
 //
-//  Created by 황인우 on 5/31/24.
+//  Created by 황인우 on 8/31/24.
 //
 
 import Foundation
