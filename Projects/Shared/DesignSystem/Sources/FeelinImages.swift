@@ -46,11 +46,12 @@ public struct FeelinImages {
     public static let notificationLightOff = SharedDesignSystemAsset.Images.notificationLightOff.image
     public static let notificationLightOn = SharedDesignSystemAsset.Images.notificationLightOn.image
     public static let pencil = SharedDesignSystemAsset.Images.pencil.image
+    public static let pencilEdit = SharedDesignSystemAsset.Images.pencilEdit.image
     public static let playIcon = SharedDesignSystemAsset.Images.playIcon.image
+    public static let report = SharedDesignSystemAsset.Images.report.image
     public static let searchDark = SharedDesignSystemAsset.Images.searchDark.image
     public static let searchLight = SharedDesignSystemAsset.Images.searchLight.image
-    public static let trashDark = SharedDesignSystemAsset.Images.trashDark.image
-    public static let trashLight = SharedDesignSystemAsset.Images.trashLight.image
+    public static let trash = SharedDesignSystemAsset.Images.trash.image
     public static let writingDark = SharedDesignSystemAsset.Images.writingDark.image
     public static let writingLight = SharedDesignSystemAsset.Images.writingLight.image
     public static let xCircleDark = SharedDesignSystemAsset.Images.xCircleDark.image
