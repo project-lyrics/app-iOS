@@ -7,7 +7,8 @@
 
 import Foundation
 
-public struct TokenResponse: Decodable {
+public struct UserAuthResponse: Decodable {
     public let accessToken: String
     public let refreshToken: String
+    public let userId: Int
 }

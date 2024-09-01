@@ -15,7 +15,7 @@ import Shared
 extension SignUpService: SignUpServiceInterface {
     public func signUp(_ entity: UserSignUpEntity) -> AnyPublisher<SignUpResult, SignUpError> {
         let request = entity.toDTO()
-        let endpoint = FeelinAPI<TokenResponse>.signUp(request: request)
+        let endpoint = FeelinAPI<UserAuthResponse>.signUp(request: request)
 
         return networkProvider.request(endpoint)
             .tryMap { [jwtDecoder] response -> (AccessToken, RefreshToken) in

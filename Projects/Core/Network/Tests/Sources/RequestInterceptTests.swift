@@ -77,7 +77,7 @@ final class RequestInterceptTest: XCTestCase {
         )
 
         let accessToken: AccessToken! = try fakeTokenStorage.read(key: tokenInterceptor.dummyAccessTokenKey)
-        let endpoint = FeelinAPI<UserValidityResponse>.checkUserValidity(accessToken: accessToken.token)
+        let endpoint = FeelinAPI<FeelinDefaultResponse>.checkUserValidity(accessToken: accessToken.token)
 
         // when
         XCTAssertThrowsError(try awaitPublisher(sut.request(endpoint)), "") { error in
@@ -132,7 +132,7 @@ final class RequestInterceptTest: XCTestCase {
         )
         
         let accessToken: AccessToken! = try fakeTokenStorage.read(key: tokenInterceptor.dummyAccessTokenKey)
-        let endpoint = FeelinAPI<TokenResponse>.checkUserValidity(accessToken: accessToken.token)
+        let endpoint = FeelinAPI<UserAuthResponse>.checkUserValidity(accessToken: accessToken.token)
         
         // when
         XCTAssertThrowsError(try awaitPublisher(sut.request(endpoint)), "") { error in

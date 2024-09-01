@@ -129,7 +129,7 @@ final class NetworkProviderTests: XCTestCase {
                 "errorMessage" : "잘못된 요청입니다.",
             }
         """.data(using: .utf8)!
-        let endpoint = FeelinAPI<TokenResponse>.login(
+        let endpoint = FeelinAPI<UserAuthResponse>.login(
             oAuthProvider: .kakao,
             oAuthAccessToken: expectedOauthToken
         )
@@ -202,7 +202,7 @@ final class NetworkProviderTests: XCTestCase {
         
         networkProvider = NetworkProvider(networkSession: mockNetworkSession)
         
-        let endpoint = FeelinAPI<TokenResponse>.login(
+        let endpoint = FeelinAPI<UserAuthResponse>.login(
             oAuthProvider: .kakao,
             oAuthAccessToken: expectedOauthToken
         )
@@ -267,7 +267,7 @@ final class NetworkProviderTests: XCTestCase {
                 agreement: "url"
             )]
         )
-        let endpoint = FeelinAPI<TokenResponse>.signUp(
+        let endpoint = FeelinAPI<UserAuthResponse>.signUp(
             request: request
         )
 

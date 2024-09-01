@@ -15,6 +15,7 @@ public enum SignUpError: LocalizedError, Equatable {
         return lhs.localizedDescription == rhs.localizedDescription
     }
 
+    case bundleError(BundleError)
     case keychainError(KeychainError)
     case networkError(NetworkError)
     case jwtParsingError(JWTError)
