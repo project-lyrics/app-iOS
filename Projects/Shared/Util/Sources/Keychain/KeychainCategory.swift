@@ -10,13 +10,13 @@ import Foundation
 public enum KeychainCategory: Equatable {
     case accessToken
     case refreshToken
-    case userID
+    case userInfo
     
     public var key: String? {
         switch self {
         case .accessToken:      return Bundle.main.accessTokenKey
         case .refreshToken:     return Bundle.main.refreshTokenKey
-        case .userID:           return Bundle.main.userIDKey
+        case .userInfo:         return Bundle.main.userInfoKey
         }
     }
 }

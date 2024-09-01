@@ -16,7 +16,7 @@ public extension Bundle {
         return self.object(forInfoDictionaryKey: "REFRESH_TOKEN_KEY") as? String
     }
     
-    var userIDKey: String? {
-        return self.object(forInfoDictionaryKey: "USER_ID_KEY") as? String
+    var userInfoKey: String? {
+        return self.object(forInfoDictionaryKey: "USER_INFO_KEY") as? String
     }
 }

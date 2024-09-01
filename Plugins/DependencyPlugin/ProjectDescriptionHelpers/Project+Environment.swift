@@ -128,7 +128,7 @@ public extension Project {
                 ],
                 "ACCESS_TOKEN_KEY": "${ACCESS_TOKEN_KEY}",
                 "REFRESH_TOKEN_KEY": "${REFRESH_TOKEN_KEY}",
-                "USER_ID_KEY": "${USER_ID_KEY}"
+                "USER_INFO_KEY": "${USER_INFO_KEY}"
             ])
         }
     }
