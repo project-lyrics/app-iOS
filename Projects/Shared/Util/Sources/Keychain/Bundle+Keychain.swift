@@ -1,13 +1,13 @@
 //
-//  Bundle+.swift
-//  DomainOAuthInterface
+//  Bundle+Keychain.swift
+//  SharedUtil
 //
-//  Created by 황인우 on 6/13/24.
+//  Created by 황인우 on 8/31/24.
 //
 
 import Foundation
 
-extension Bundle {
+public extension Bundle {
     var accessTokenKey: String? {
         return self.object(forInfoDictionaryKey: "ACCESS_TOKEN_KEY") as? String
     }

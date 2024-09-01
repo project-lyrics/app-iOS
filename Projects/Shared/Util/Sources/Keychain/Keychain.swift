@@ -1,12 +1,11 @@
 //
 //  Keychain.swift
-//  CoreLocalStorageInterface
+//  SharedUtil
 //
-//  Created by 황인우 on 5/15/24.
+//  Created by 황인우 on 8/31/24.
 //
 
 import Foundation
-import CoreLocalStorageInterface
 
 public struct Keychain {
     public struct Option {
@@ -35,7 +34,7 @@ public struct Keychain {
         self.init(option: option)
     }
     
-    func save(
+    public func save(
         key: String,
         data: Data
     ) throws {
@@ -77,7 +76,7 @@ public struct Keychain {
         }
     }
     
-    func read(key: String) throws -> Data? {
+    public func read(key: String) throws -> Data? {
         var query = option.query()
         query[kSecAttrAccount] = key
         query[kSecReturnData] = true
@@ -102,7 +101,7 @@ public struct Keychain {
     }
     
     @discardableResult
-    func delete(key: String) throws -> Bool {
+    public func delete(key: String) throws -> Bool {
         var query = option.query()
         query[kSecAttrAccount] = key
         
