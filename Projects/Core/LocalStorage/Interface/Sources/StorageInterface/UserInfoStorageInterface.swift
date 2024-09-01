@@ -7,6 +7,8 @@
 
 import Foundation
 
+import SharedUtil
+
 public protocol UserInfoStorageInterface {
     func read() throws -> UserInformation?
     func save(userInformation: UserInformation) throws

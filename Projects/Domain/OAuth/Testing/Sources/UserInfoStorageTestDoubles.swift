@@ -6,8 +6,10 @@
 //
 
 import Combine
-import Core
 import Foundation
+
+import Core
+import SharedUtil
 
 public class FakeUserInfoStorage: UserInfoStorageInterface {
     private (set) public var userInfo: UserInformation?

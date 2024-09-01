@@ -1,6 +1,6 @@
 //
 //  UserInformation.swift
-//  CoreLocalStorage
+//  SharedUtil
 //
 //  Created by 황인우 on 9/1/24.
 //
