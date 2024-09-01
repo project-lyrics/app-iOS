@@ -95,6 +95,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         @Injected(.notePaginationService) var notePaginationService: NotePaginationServiceInterface
         @Injected(.artistPaginationService) var artistPaginationService: ArtistPaginationServiceInterface
         
+        @KeychainWrapper<UserInformation>(.userInfo)
+        var userInfo
+        
+        // 테스트용 유저 아이디
+        userInfo = .init(userID: 3)
+        
         let mainViewModel = MainViewModel(
             getNotesUseCase: GetFavoriteArtistsRelatedNotesUseCase(
                 noteAPIService: noteAPiService,

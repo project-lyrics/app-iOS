@@ -16,6 +16,10 @@ public class MainViewController: UIViewController {
     
     private var cancellables: Set<AnyCancellable> = .init()
     
+    // MARK: - Keychain
+    @KeychainWrapper<UserInformation>(.userInfo)
+    var userInfo
+    
     // MARK: - UI Components
     
     private var mainView: MainView = .init()
@@ -237,6 +241,18 @@ extension MainViewController: UICollectionViewDataSource {
                     }
                     .store(in: &cancellables)
                 
+                let noteMenuViewController = self.makeNoteMenuViewController(checking: note)
+                
+                cell.moreAboutContentButton.publisher(for: .touchUpInside)
+                    .sink { [weak self] _ in
+                        if let noteMenuViewController = noteMenuViewController {
+                            self?.present(noteMenuViewController, animated: false)
+                        } else {
+                            // TODO: - 비회원 알림을 추후 보여줘야 한다.
+                        }
+                    }
+                    .store(in: &cancellables)
+                
                 return cell
             }
             
@@ -292,5 +308,31 @@ extension MainViewController: UICollectionViewDataSource {
         default:
             return UICollectionReusableView()
         }
+    }
+}
+
+// MARK: - Note Menu
+
+private extension MainViewController {
+    func makeNoteMenuViewController(checking note: Note) -> NoteMenuViewConroller? {
+        if let userId = self.userInfo?.userID {
+            let bottomSheetHeight = userId == note.id
+            ? 180
+            : 130
+            
+            let menuType = userId == note.id
+            ? NoteMenuType.me
+            : NoteMenuType.other
+            
+            let noteMenuViewController = NoteMenuViewConroller(
+                bottomSheetHeight: 180,
+                bottomSheetView: NoteMenuView(menuType: menuType)
+            )
+            noteMenuViewController.modalPresentationStyle = .overFullScreen
+            
+            return noteMenuViewController
+        }
+        
+        return nil
     }
 }

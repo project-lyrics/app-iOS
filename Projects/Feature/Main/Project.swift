@@ -54,5 +54,8 @@ let targets: [Target] = [
 
 let project = Project.makeModule(
     name: ModulePath.Feature.name + ModulePath.Feature.Main.rawValue,
-    targets: targets
+    targets: targets,
+    additionalFiles: [
+        .folderReference(path: .relativeToRoot("./Projects/App/xcconfigs"))
+    ]
 )
