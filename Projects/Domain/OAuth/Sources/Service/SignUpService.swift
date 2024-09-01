@@ -18,24 +18,29 @@ extension SignUpService: SignUpServiceInterface {
         let endpoint = FeelinAPI<UserAuthResponse>.signUp(request: request)
 
         return networkProvider.request(endpoint)
-            .tryMap { [jwtDecoder] response -> (AccessToken, RefreshToken) in
+            .tryMap { [jwtDecoder] response -> (AccessToken, RefreshToken, UserInformation) in
                 return (
                     try jwtDecoder.decode(response.accessToken, as: AccessToken.self),
-                    try jwtDecoder.decode(response.refreshToken, as: RefreshToken.self)
+                    try jwtDecoder.decode(response.refreshToken, as: RefreshToken.self),
+                    UserInformation(userID: response.userId)
                 )
             }
-            .tryMap { [tokenStorage, tokenKeyHolder] (accessToken, refreshToken) in
+            .tryMap { [tokenStorage, userInfoStorage, tokenKeyHolder] (accessToken, refreshToken, userInfo) in
                 let accessTokenKey = try tokenKeyHolder.fetchAccessTokenKey()
                 let refreshTokenKey = try tokenKeyHolder.fetchRefreshTokenKey()
 
                 try tokenStorage.save(token: accessToken, for: accessTokenKey)
                 try tokenStorage.save(token: refreshToken, for: refreshTokenKey)
+                try userInfoStorage.save(userInformation: userInfo)
             }
             .map { _ in
                 return SignUpResult.success
             }
             .mapError({ error in
                 switch error {
+                case let error as BundleError:
+                    return SignUpError.bundleError(error)
+                    
                 case let error as KeychainError:
                     return SignUpError.keychainError(error)
 

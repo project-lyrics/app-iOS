@@ -39,9 +39,7 @@ public class MockTokenStorage: TokenStorageInterface {
     public var saveCalled: Bool = false
     public var deleteCalled: Bool = false
 
-    public var readKey: String?
-    public var saveKey: String?
-    public var deleteKey: String?
+    public var tokenKey: String?
     
     public var saveResultCount: Int = 0
     public var readResultCount: Int = 0
@@ -51,21 +49,21 @@ public class MockTokenStorage: TokenStorageInterface {
 
     public func read<T: TokenType>(key: String) throws -> T? {
         readCalled = true
-        readKey = key
+        tokenKey = key
         readResultCount += 1
         return readResult as? T
     }
 
     public func save<T: TokenType>(token: T, for key: String) throws {
         saveCalled = true
-        saveKey = key
+        tokenKey = key
         saveResultCount += 1
     }
 
     @discardableResult
     public func delete(for key: String) throws -> Bool {
         deleteCalled = true
-        deleteKey = key
+        tokenKey = key
         deleteResultCount += 1
         return deleteResult
     }

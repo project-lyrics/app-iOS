@@ -133,12 +133,22 @@ public extension DIContainer {
 
 public extension DIContainer {
     static func registerSignUpService() {
+        standard.register(.tokenStorage) { resolver in
+            return TokenStorage()
+        }
+        
+        standard.register(.userInfoStorage) { _ in
+            return UserInfoStorage()
+        }
+        
         standard.register(.signUpService) { resolver in
             let tokenStorage = try resolver.resolve(.tokenStorage)
+            let userInfoStorage = try resolver.resolve(.userInfoStorage)
             let networkProvider = try resolver.resolve(.networkProvider)
             return SignUpService(
                 networkProvider: networkProvider,
-                tokenStorage: tokenStorage
+                tokenStorage: tokenStorage,
+                userInfoStorage: userInfoStorage
             )
         }
     }
