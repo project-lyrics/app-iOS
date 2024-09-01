@@ -25,6 +25,7 @@ public enum FeelinAPI<R> {
     case deleteLikes(noteID: Int)
     case postBookmarks(noteID: Int)
     case deleteBookmarks(noteID: Int)
+    case deleteNote(noteID: Int)
 }
 
 extension FeelinAPI: HTTPNetworking {
@@ -93,7 +94,8 @@ extension FeelinAPI: HTTPNetworking {
         case .postLikes(let noteID),
                 .deleteLikes(let noteID),
                 .postBookmarks(let noteID),
-                .deleteBookmarks(let noteID):
+                .deleteBookmarks(let noteID),
+                .deleteNote(let noteID):
             return [
                 "noteId": noteID
             ]
@@ -170,6 +172,8 @@ extension FeelinAPI: HTTPNetworking {
         case .postBookmarks, .deleteBookmarks:
             return "/api/v1/bookmarks"
             
+        case .deleteNote:
+            return "/api/v1/notes/"
         }
     }
     
@@ -181,7 +185,7 @@ extension FeelinAPI: HTTPNetworking {
         case .checkUserValidity, .getArtists, .searchArtists, .getFavoriteArtists, .getFavoriteArtistsRelatedNotes:
             return .get
             
-        case .deleteLikes, .deleteBookmarks:
+        case .deleteLikes, .deleteBookmarks, .deleteNote:
             return .delete
         }
     }

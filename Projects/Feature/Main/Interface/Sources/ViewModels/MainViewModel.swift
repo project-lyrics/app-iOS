@@ -30,6 +30,7 @@ final public class MainViewModel {
     private let getFavoriteArtistsUseCase: GetFavoriteArtistsUseCaseInterface
     private let setNoteLikeUseCase: SetNoteLikeUseCaseInterface
     private let setBookmarkUseCase: SetBookmarkUseCaseInterface
+    private let deleteNoteUseCase: DeleteNoteUseCaseInterface
     
     private var cancellables: Set<AnyCancellable> = .init()
     
@@ -37,12 +38,14 @@ final public class MainViewModel {
         getNotesUseCase: GetNotesUseCaseInterface,
         setNoteLikeUseCase: SetNoteLikeUseCaseInterface,
         getFavoriteArtistsUseCase: GetFavoriteArtistsUseCaseInterface,
-        setBookmarkUseCase: SetBookmarkUseCaseInterface
+        setBookmarkUseCase: SetBookmarkUseCaseInterface,
+        deleteNoteUseCase: DeleteNoteUseCaseInterface
     ) {
         self.getNotesUseCase = getNotesUseCase
         self.setNoteLikeUseCase = setNoteLikeUseCase
         self.getFavoriteArtistsUseCase = getFavoriteArtistsUseCase
         self.setBookmarkUseCase = setBookmarkUseCase
+        self.deleteNoteUseCase = deleteNoteUseCase
     }
     
     func fetchNotes(
@@ -143,10 +146,9 @@ extension MainViewModel {
     }
 }
 
+// MARK: - Like/Dislike note
+
 extension MainViewModel {
-    
-    // MARK: - Like/Dislike note
-    
     func setNoteLikeState(
         noteID: Int,
         isLiked: Bool
@@ -160,7 +162,7 @@ extension MainViewModel {
         .sink { [weak self] result in
             switch result {
             case .success(let updatedNoteLike):
-                var indexToUpdate = self?.fetchedNotes.firstIndex(
+                let indexToUpdate = self?.fetchedNotes.firstIndex(
                     where: { $0.id == noteID }
                 )
                 
@@ -170,7 +172,7 @@ extension MainViewModel {
                 }
                 
             case .failure(let error):
-                var indexToUpdate = self?.fetchedNotes.firstIndex(
+                let indexToUpdate = self?.fetchedNotes.firstIndex(
                     where: { $0.id == noteID }
                 )
                 
@@ -185,10 +187,9 @@ extension MainViewModel {
     }
 }
 
+// MARK: - Bookmark
+
 extension MainViewModel {
-    
-    // MARK: - Bookmark
-    
     func setNoteBookmarkState(
         noteID: Int,
         isBookmarked: Bool
@@ -202,8 +203,8 @@ extension MainViewModel {
         .sink { [weak self] result in
             switch result {
             case .success(let bookmarkNoteID):
-                var indexToUpdate = self?.fetchedNotes.firstIndex(
-                    where: { $0.id == noteID }
+                let indexToUpdate = self?.fetchedNotes.firstIndex(
+                    where: { $0.id == bookmarkNoteID }
                 )
                 
                 if let indexToUpdate = indexToUpdate {
@@ -211,7 +212,7 @@ extension MainViewModel {
                 }
                 
             case .failure(let error):
-                var indexToUpdate = self?.fetchedNotes.firstIndex(
+                let indexToUpdate = self?.fetchedNotes.firstIndex(
                     where: { $0.id == noteID }
                 )
                 
@@ -224,5 +225,24 @@ extension MainViewModel {
             }
         }
         .store(in: &cancellables)
+    }
+}
+
+// MARK: - Edit, Delete, Report Note
+extension MainViewModel {
+    func deleteNote(id: Int) {
+        self.deleteNoteUseCase.execute(noteID: id)
+            .mapToResult()
+            .receive(on: DispatchQueue.main)
+            .sink { result in
+                switch result {
+                case .success:
+                    self.fetchedNotes.removeAll(where: { $0.id == id })
+                    
+                case .failure(let noteError):
+                    self.error = .noteError(noteError)
+                }
+            }
+            .store(in: &cancellables)
     }
 }

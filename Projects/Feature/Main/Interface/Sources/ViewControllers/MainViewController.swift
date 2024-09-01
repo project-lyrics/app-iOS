@@ -25,6 +25,12 @@ public class MainViewController: UIViewController {
     private var mainView: MainView = .init()
     
     
+    // MARK: - NoteMenu Subjects
+    
+    let onReportNote: PassthroughSubject<Int, Never> = .init()
+    let onEditNote: PassthroughSubject<Int, Never> = .init()
+    let onDeleteNote: PassthroughSubject<Int, Never> = .init()
+    
     // MARK: - Init
     
     public init(viewModel: MainViewModel) {
@@ -117,6 +123,29 @@ private extension MainViewController {
             .sink(receiveValue: { [viewModel] _ in
                 viewModel.refreshAllData()
             })
+            .store(in: &cancellables)
+        
+        onReportNote.eraseToAnyPublisher()
+            .sink { noteID in
+                // TODO: - 추후 신고화면으로 이동
+            }
+            .store(in: &cancellables)
+        
+        onEditNote.eraseToAnyPublisher()
+            .sink { noteID in
+                // TODO: - 추후 게시글 수정화면으로 이동
+            }
+            .store(in: &cancellables)
+        
+        onDeleteNote.eraseToAnyPublisher()
+            .sink { [weak self] noteID in
+                self?.showAlert(
+                    title: "노트를 삭제하시겠습니까?",
+                    message: nil,
+                    rightActionCompletion: {
+                        self?.viewModel.deleteNote(id: noteID)
+                    })
+            }
             .store(in: &cancellables)
     }
 }
@@ -325,8 +354,12 @@ private extension MainViewController {
             : NoteMenuType.other
             
             let noteMenuViewController = NoteMenuViewConroller(
+                noteID: note.id,
                 bottomSheetHeight: 180,
-                bottomSheetView: NoteMenuView(menuType: menuType)
+                bottomSheetView: NoteMenuView(menuType: menuType),
+                onReport: self.onReportNote,
+                onEdit: self.onEditNote,
+                onDelete: self.onDeleteNote
             )
             noteMenuViewController.modalPresentationStyle = .overFullScreen
             

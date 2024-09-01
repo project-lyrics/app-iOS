@@ -111,7 +111,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 artistAPIService: artistAPIService,
                 artistPaginationService: artistPaginationService
             ),
-            setBookmarkUseCase: SetBookmarkUseCase(noteAPIService: noteAPiService)
+            setBookmarkUseCase: SetBookmarkUseCase(noteAPIService: noteAPiService),
+            deleteNoteUseCase: DeleteNoteUseCase(noteAPIService: noteAPiService)
         )
 //        let mainViewModel = MainViewModel(
 //            getNotesUseCase: MockGetNotesUseCase(),
@@ -144,7 +145,8 @@ struct MainViewController_Preview: PreviewProvider {
             getNotesUseCase: MockGetNotesUseCase(), 
             setNoteLikeUseCase: MockSetNoteLikeUseCase(),
             getFavoriteArtistsUseCase: MockGetFavoriteArtistsUseCase(),
-            setBookmarkUseCase: MockSetBookmarkUseCase()
+            setBookmarkUseCase: MockSetBookmarkUseCase(),
+            deleteNoteUseCase: MockDeleteNoteUseCase()
         )
         return MainViewController(viewModel: viewModelForPreview)
             .asPreview()
