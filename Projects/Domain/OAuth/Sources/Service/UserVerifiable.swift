@@ -6,9 +6,11 @@
 //
 
 import Combine
+import Foundation
+
 import Core
 import DomainOAuthInterface
-import Foundation
+import Shared
 
 extension UserVerifiable {
     public func verifyUser(

@@ -9,7 +9,7 @@ let project = Project.makeModule(
             interface: .LocalStorage,
             factory: .init(
                 dependencies: [
-                    .shared
+                    .shared(implements: .Util)
                 ]
             )
         ),

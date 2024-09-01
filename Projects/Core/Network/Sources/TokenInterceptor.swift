@@ -8,6 +8,8 @@
 import Combine
 import CoreLocalStorageInterface
 import CoreNetworkInterface
+import Shared
+
 import Foundation
 
 extension TokenInterceptor: URLRequestInterceptor {
@@ -15,6 +17,8 @@ extension TokenInterceptor: URLRequestInterceptor {
         var request = urlRequest
         
         do {
+            let accessTokenKey = try tokenKeyHolder.fetchAccessTokenKey()
+            
             guard let accessToken: AccessToken = try tokenStorage.read(key: accessTokenKey) else {
                 return Fail(error: NetworkError.urlRequestError(.headerError(reason: "키체인에 저장되어있는 액세스 토큰이 없습니다.")))
                     .eraseToAnyPublisher()
@@ -23,6 +27,10 @@ extension TokenInterceptor: URLRequestInterceptor {
                 "Bearer \(accessToken.token)",
                 forHTTPHeaderField: "Authorization"
             )
+            
+        } catch let error as BundleError {
+            return Fail(error: NetworkError.requestInterceptError("TokenKeyHolder 에서 tokenKey를 불러오는 과정에서 에러가 발생했습니다. 에러: \(error.errorDescription ?? error.localizedDescription)"))
+                .eraseToAnyPublisher()
             
         } catch let error as KeychainError {
             return Fail(error: NetworkError.requestInterceptError("Token Interceptor에서 액세스 토큰을 불러오는 과정에서 에러가 발생했습니다. 에러: \(error.errorDescription ?? error.localizedDescription)"))
@@ -51,6 +59,8 @@ extension TokenInterceptor: URLRequestInterceptor {
         var request = request
         
         do {
+            let refreshTokenKey = try self.tokenKeyHolder.fetchRefreshTokenKey()
+            
             guard let refreshToken: RefreshToken = try tokenStorage.read(key: refreshTokenKey) else {
                 return Just(.doNotRetryWithError(NetworkError.requestInterceptError("키체인에 저장되어있는 액세스 토큰이 없습니다.")))
                     .eraseToAnyPublisher()
@@ -65,6 +75,10 @@ extension TokenInterceptor: URLRequestInterceptor {
             let reissueRequest = try reissueEndpoint.makeURLRequest()
             
             return reissueToken(request: reissueRequest, with: session)
+            
+        } catch let error as BundleError {
+            return Just(.doNotRetryWithError(NetworkError.requestInterceptError("TokenKeyHolder 에서 tokenKey를 불러오는 과정에서 에러가 발생했습니다. 에러: \(error.errorDescription ?? error.localizedDescription)")))
+                .eraseToAnyPublisher()
             
         } catch let error as NetworkError {
             return Just(.doNotRetryWithError(error))
@@ -101,7 +115,10 @@ extension TokenInterceptor: URLRequestInterceptor {
                     try jwtDecoder.decode(tokenResponse.refreshToken, as: RefreshToken.self)
                 )
             }
-            .tryMap { [accessTokenKey, refreshTokenKey, tokenStorage] (accessToken, refreshToken) -> RetryResult in
+            .tryMap { [tokenKeyHolder, tokenStorage] (accessToken, refreshToken) -> RetryResult in
+                let accessTokenKey = try tokenKeyHolder.fetchAccessTokenKey()
+                let refreshTokenKey = try tokenKeyHolder.fetchRefreshTokenKey()
+                
                 try tokenStorage.save(token: accessToken, for: accessTokenKey)
                 try tokenStorage.save(token: refreshToken, for: refreshTokenKey)
                 

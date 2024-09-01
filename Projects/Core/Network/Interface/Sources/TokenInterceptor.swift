@@ -9,14 +9,18 @@ import Combine
 import CoreLocalStorageInterface
 import Foundation
 
+import Shared
+
 final public class TokenInterceptor {
-    // MARK: - 추후 accessTokenKey와 refreshTokenKey는 숨겨야 합니다.
-    public let accessTokenKey: String = "FeelinGoodAccessRight"
-    public let refreshTokenKey: String = "FeelinGoodRefreshRight"
     public let tokenStorage: TokenStorageInterface
     public let jwtDecoder: JWTDecoder = .init()
+    public let tokenKeyHolder: TokenKeyHolderInterface
     
-    public init(tokenStorage: TokenStorageInterface) {
+    public init(
+        tokenStorage: TokenStorageInterface,
+        tokenKeyHolder: TokenKeyHolderInterface = TokenKeyHolder()
+    ) {
         self.tokenStorage = tokenStorage
+        self.tokenKeyHolder = tokenKeyHolder
     }
 }

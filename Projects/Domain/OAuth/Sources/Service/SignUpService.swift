@@ -7,8 +7,10 @@
 
 import Combine
 import Foundation
+
 import Core
 import DomainOAuthInterface
+import Shared
 
 extension SignUpService: SignUpServiceInterface {
     public func signUp(_ entity: UserSignUpEntity) -> AnyPublisher<SignUpResult, SignUpError> {

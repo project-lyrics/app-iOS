@@ -5,9 +5,10 @@
 //  Created by 황인우 on 7/14/24.
 //
 
-import Core
-
 import Foundation
+
+import Core
+import Shared
 
 public enum ArtistError: LocalizedError {
     case networkError(NetworkError)

@@ -19,7 +19,11 @@ public struct MockNoteAPIService: NoteAPIServiceInterface {
         self.scenario = scenario
     }
     
-    public func getNotes(currentPage: Int?, numberOfNotes: Int) -> AnyPublisher<GetNotesResponse, NoteError> {
+    public func getFavoriteArtistsRelatedNotes(
+        currentPage: Int?,
+        numberOfNotes: Int,
+        hasLyrics: Bool
+    ) -> AnyPublisher<GetNotesResponse, NoteError> {
         switch scenario {
         case .success:
             let seedJsonData = DomainSeed.getNoteResponseJsonData
@@ -33,5 +37,29 @@ public struct MockNoteAPIService: NoteAPIServiceInterface {
             return Fail(error: noteError)
                 .eraseToAnyPublisher()
         }
+    }
+    
+    public func postLike(noteID: Int) -> AnyPublisher<NoteLikeResponse, NoteError> {
+        return Empty()
+            .setFailureType(to: NoteError.self)
+            .eraseToAnyPublisher()
+    }
+    
+    public func deleteLike(noteID: Int) -> AnyPublisher<NoteLikeResponse, NoteError> {
+        return Empty()
+            .setFailureType(to: NoteError.self)
+            .eraseToAnyPublisher()
+    }
+    
+    public func postBookmark(noteID: Int) -> AnyPublisher<BookmarkResponse, NoteError> {
+        return Empty()
+            .setFailureType(to: NoteError.self)
+            .eraseToAnyPublisher()
+    }
+    
+    public func deleteBookmark(noteID: Int) -> AnyPublisher<BookmarkResponse, NoteError> {
+        return Empty()
+            .setFailureType(to: NoteError.self)
+            .eraseToAnyPublisher()
     }
 }
