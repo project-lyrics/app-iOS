@@ -343,11 +343,11 @@ extension MainViewController: UICollectionViewDataSource {
 private extension MainViewController {
     func makeNoteMenuViewController(checking note: Note) -> NoteMenuViewConroller? {
         if let userId = self.userInfo?.userID {
-            let bottomSheetHeight: CGFloat = userId == note.id
+            let bottomSheetHeight: CGFloat = userId == note.publisher.id
             ? 180
             : 130
             
-            let menuType = userId == note.id
+            let menuType = userId == note.publisher.id
             ? NoteMenuType.me
             : NoteMenuType.other
             
