@@ -140,7 +140,7 @@ private extension MainViewController {
         onDeleteNote.eraseToAnyPublisher()
             .sink { [weak self] noteID in
                 self?.showAlert(
-                    title: "노트를 삭제하시겠습니까?",
+                    title: "노트를 삭제하시겠어요?",
                     message: nil,
                     rightActionCompletion: {
                         self?.viewModel.deleteNote(id: noteID)
