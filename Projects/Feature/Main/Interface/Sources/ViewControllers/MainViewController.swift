@@ -60,7 +60,6 @@ public class MainViewController: UIViewController {
     }
     
     private func setUpDelegates() {
-        mainView.mainCollectionView.delegate = self
         mainView.mainCollectionView.dataSource = self
     }
 }
@@ -154,10 +153,6 @@ private extension MainViewController {
     var mainCollectionView: UICollectionView {
         return self.mainView.mainCollectionView
     }
-}
-
-extension MainViewController: UICollectionViewDelegate {
-    
 }
 
 extension MainViewController: UICollectionViewDataSource {
@@ -280,6 +275,17 @@ extension MainViewController: UICollectionViewDataSource {
                     }
                     .store(in: &cancellables)
                 
+                cell.playMusicButton.publisher(for: .touchUpInside)
+                    .throttle(
+                        for: .milliseconds(600),
+                        scheduler: DispatchQueue.main,
+                        latest: false
+                    )
+                    .sink { [unowned self] _ in
+                        self.openYouTube(query: "\(note.song.artist.name) \(note.song.name)")
+                    }
+                    .store(in: &cancellables)
+                
                 return cell
             }
             
@@ -365,5 +371,38 @@ private extension MainViewController {
         }
         
         return nil
+    }
+}
+
+// MARK: - YouTube Music
+
+private extension MainViewController {
+    var youTubeMusicURLScheme: String  {
+        return "youtubemusic://"
+    }
+    
+    func isYouTubeMusicInstalled() -> Bool {
+        if let url = URL(string: youTubeMusicURLScheme) {
+            return UIApplication.shared.canOpenURL(url)
+        }
+        return false
+    }
+    
+    func openYouTube(query: String) {
+        let encodedQuery = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+        
+        if isYouTubeMusicInstalled() {
+            let youtubeMusicPath = "\(youTubeMusicURLScheme)search/\(encodedQuery ?? query)"
+            
+            if let url = URL(string: youtubeMusicPath) {
+                UIApplication.shared.open(url)
+            }
+        } else {
+            let youtubeMusicWebPath = "https://music.youtube.com/search?q=\(encodedQuery ?? query)"
+            
+            if let url = URL(string: youtubeMusicWebPath) {
+                UIApplication.shared.open(url)
+            }
+        }
     }
 }

@@ -118,7 +118,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 //            getNotesUseCase: MockGetNotesUseCase(),
 //            setNoteLikeUseCase: MockSetNoteLikeUseCase(),
 //            getFavoriteArtistsUseCase: MockGetFavoriteArtistsUseCase(),
-//            setBookmarkUseCase: MockSetBookmarkUseCase()
+//            setBookmarkUseCase: MockSetBookmarkUseCase(), deleteNoteUseCase: MockDeleteNoteUseCase()
 //        )
         
         window?.rootViewController = MainViewController(viewModel: mainViewModel)

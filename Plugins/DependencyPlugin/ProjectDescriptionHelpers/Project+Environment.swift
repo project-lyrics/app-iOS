@@ -124,7 +124,9 @@ public extension Project {
                 "BASE_SERVER_URL": "\(baseServerURL)",
                 "LSApplicationQueriesSchemes": [
                     "kakaokompassauth",
-                    "kakaolink"
+                    "kakaolink",
+                    "youtubemusic",
+                    
                 ],
                 "ACCESS_TOKEN_KEY": "${ACCESS_TOKEN_KEY}",
                 "REFRESH_TOKEN_KEY": "${REFRESH_TOKEN_KEY}",
