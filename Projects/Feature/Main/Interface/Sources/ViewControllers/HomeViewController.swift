@@ -1,5 +1,5 @@
 //
-//  MainViewController.swift
+//  HomeViewController.swift
 //  FeatureMainInterface
 //
 //  Created by 황인우 on 8/11/24.
@@ -11,8 +11,8 @@ import Shared
 import Combine
 import UIKit
 
-public class MainViewController: UIViewController {
-    var viewModel: MainViewModel
+public class HomeViewController: UIViewController {
+    var viewModel: HomeViewModel
     
     private var cancellables: Set<AnyCancellable> = .init()
     
@@ -22,7 +22,7 @@ public class MainViewController: UIViewController {
     
     // MARK: - UI Components
     
-    private var mainView: MainView = .init()
+    private var homeView: HomeView = .init()
     
     
     // MARK: - NoteMenu Subjects
@@ -33,7 +33,7 @@ public class MainViewController: UIViewController {
     
     // MARK: - Init
     
-    public init(viewModel: MainViewModel) {
+    public init(viewModel: HomeViewModel) {
         self.viewModel = viewModel
         
         super.init(nibName: nil, bundle: .main)
@@ -45,7 +45,7 @@ public class MainViewController: UIViewController {
     }
     
     public override func loadView() {
-        self.view = mainView
+        self.view = homeView
     }
     
     override public func viewDidLoad() {
@@ -60,11 +60,11 @@ public class MainViewController: UIViewController {
     }
     
     private func setUpDelegates() {
-        mainView.mainCollectionView.dataSource = self
+        homeView.mainCollectionView.dataSource = self
     }
 }
 
-private extension MainViewController {
+private extension HomeViewController {
     
     // MARK: - Bindings
     
@@ -149,18 +149,18 @@ private extension MainViewController {
     }
 }
 
-private extension MainViewController {
+private extension HomeViewController {
     var mainCollectionView: UICollectionView {
-        return self.mainView.mainCollectionView
+        return self.homeView.mainCollectionView
     }
 }
 
-extension MainViewController: UICollectionViewDataSource {
+extension HomeViewController: UICollectionViewDataSource {
     public func numberOfSections(in collectionView: UICollectionView) -> Int {
         let totalSectionIndice = [
-            MainView.bannerSectionIndex,
-            MainView.favoriteArtistSectionIndex,
-            MainView.notesSectionIndex
+            HomeView.bannerSectionIndex,
+            HomeView.favoriteArtistSectionIndex,
+            HomeView.notesSectionIndex
         ]
         
         return totalSectionIndice.count
@@ -168,14 +168,14 @@ extension MainViewController: UICollectionViewDataSource {
     
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch section {
-        case MainView.bannerSectionIndex:
+        case HomeView.bannerSectionIndex:
             return 1
             
-        case MainView.favoriteArtistSectionIndex:
+        case HomeView.favoriteArtistSectionIndex:
             // 찾아보기 cell 포함한 갯수이기에 1을 더한다.
             return viewModel.fetchedFavoriteArtists.count + 1
             
-        case MainView.notesSectionIndex:
+        case HomeView.notesSectionIndex:
             return viewModel.fetchedNotes.isEmpty
             ? 1     // EmptyNoteCell
             : viewModel.fetchedNotes.count
@@ -187,7 +187,7 @@ extension MainViewController: UICollectionViewDataSource {
     
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         switch indexPath.section {
-        case MainView.bannerSectionIndex:
+        case HomeView.bannerSectionIndex:
             let cell = collectionView.dequeueReusableCell(
                 for: indexPath,
                 cellType: BannerCell.self
@@ -195,7 +195,7 @@ extension MainViewController: UICollectionViewDataSource {
             
             return cell
             
-        case MainView.favoriteArtistSectionIndex:
+        case HomeView.favoriteArtistSectionIndex:
             let searchArtistItemIndex = 0
             let searchArtistItemCount = 1
             
@@ -221,7 +221,7 @@ extension MainViewController: UICollectionViewDataSource {
                 return cell
             }
             
-        case MainView.notesSectionIndex:
+        case HomeView.notesSectionIndex:
             if viewModel.fetchedNotes.isEmpty {
                 let cell = collectionView.dequeueReusableCell(
                     for: indexPath,
@@ -296,7 +296,7 @@ extension MainViewController: UICollectionViewDataSource {
     
     public func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         switch indexPath.section {
-        case MainView.favoriteArtistSectionIndex:
+        case HomeView.favoriteArtistSectionIndex:
             switch kind {
             case FavoriteArtistsHeaderView.reuseIdentifier:
                 let favoriteArtistsHeaderView = collectionView.dequeueReusableSupplementaryView(
@@ -325,7 +325,7 @@ extension MainViewController: UICollectionViewDataSource {
                 return UICollectionReusableView()
             }
             
-        case MainView.notesSectionIndex:
+        case HomeView.notesSectionIndex:
             if kind == NotesHeaderView.reuseIdentifier {
                 let notesHeaderView = collectionView.dequeueReusableSupplementaryView(
                     ofKind: kind,
@@ -346,7 +346,7 @@ extension MainViewController: UICollectionViewDataSource {
 
 // MARK: - Note Menu
 
-private extension MainViewController {
+private extension HomeViewController {
     func makeNoteMenuViewController(checking note: Note) -> NoteMenuViewConroller? {
         if let userId = self.userInfo?.userID {
             let bottomSheetHeight: CGFloat = userId == note.publisher.id
@@ -376,7 +376,7 @@ private extension MainViewController {
 
 // MARK: - YouTube Music
 
-private extension MainViewController {
+private extension HomeViewController {
     var youTubeMusicURLScheme: String  {
         return "youtubemusic://"
     }

@@ -101,7 +101,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // 테스트용 유저 아이디
         userInfo = .init(userID: 1)
         
-        let mainViewModel = MainViewModel(
+        let homeViewModel = HomeViewModel(
             getNotesUseCase: GetFavoriteArtistsRelatedNotesUseCase(
                 noteAPIService: noteAPiService,
                 notePaginationService: notePaginationService
@@ -114,14 +114,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             setBookmarkUseCase: SetBookmarkUseCase(noteAPIService: noteAPiService),
             deleteNoteUseCase: DeleteNoteUseCase(noteAPIService: noteAPiService)
         )
-//        let mainViewModel = MainViewModel(
+//        let homeViewModel = HomeViewModel(
 //            getNotesUseCase: MockGetNotesUseCase(),
 //            setNoteLikeUseCase: MockSetNoteLikeUseCase(),
 //            getFavoriteArtistsUseCase: MockGetFavoriteArtistsUseCase(),
 //            setBookmarkUseCase: MockSetBookmarkUseCase(), deleteNoteUseCase: MockDeleteNoteUseCase()
 //        )
         
-        window?.rootViewController = MainViewController(viewModel: mainViewModel)
+        window?.rootViewController = HomeViewController(viewModel: homeViewModel)
         window?.makeKeyAndVisible()
     }
     
@@ -139,16 +139,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 #if canImport(SwiftUI)
 import SwiftUI
 
-struct MainViewController_Preview: PreviewProvider {
+struct HomeViewController_Preview: PreviewProvider {
     static var previews: some View {
-        let viewModelForPreview = MainViewModel(
+        let viewModelForPreview = HomeViewModel(
             getNotesUseCase: MockGetNotesUseCase(), 
             setNoteLikeUseCase: MockSetNoteLikeUseCase(),
             getFavoriteArtistsUseCase: MockGetFavoriteArtistsUseCase(),
             setBookmarkUseCase: MockSetBookmarkUseCase(),
             deleteNoteUseCase: MockDeleteNoteUseCase()
         )
-        return MainViewController(viewModel: viewModelForPreview)
+        return HomeViewController(viewModel: viewModelForPreview)
             .asPreview()
     }
 }

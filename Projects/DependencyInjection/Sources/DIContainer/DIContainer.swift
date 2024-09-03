@@ -97,7 +97,7 @@ public extension DIContainer {
         }
     }
     
-    static func registerDependenciesForMainView() {
+    static func registerDependenciesForHomeView() {
         standard.register(.networkProvider) { _ in
             let networkSession = NetworkSession(
                 urlSession: .shared,

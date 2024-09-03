@@ -1,5 +1,5 @@
 //
-//  MainViewModel.swift
+//  HomeViewModel.swift
 //  FeatureMainInterface
 //
 //  Created by 황인우 on 8/17/24.
@@ -17,7 +17,7 @@ enum RefreshState {
     case failed(HomeError)  // 새로고침 실패 (에러 포함)
 }
 
-final public class MainViewModel {
+final public class HomeViewModel {
     typealias NoteFetchResult = Result<[Note], HomeError>
     typealias ArtistFetchResult = Result<[Artist], HomeError>
     
@@ -98,7 +98,7 @@ final public class MainViewModel {
     }
 }
 
-extension MainViewModel {
+extension HomeViewModel {
     
     // MARK: - Refresh Data
     
@@ -148,7 +148,7 @@ extension MainViewModel {
 
 // MARK: - Like/Dislike note
 
-extension MainViewModel {
+extension HomeViewModel {
     func setNoteLikeState(
         noteID: Int,
         isLiked: Bool
@@ -189,7 +189,7 @@ extension MainViewModel {
 
 // MARK: - Bookmark
 
-extension MainViewModel {
+extension HomeViewModel {
     func setNoteBookmarkState(
         noteID: Int,
         isBookmarked: Bool
@@ -229,7 +229,7 @@ extension MainViewModel {
 }
 
 // MARK: - Edit, Delete, Report Note
-extension MainViewModel {
+extension HomeViewModel {
     func deleteNote(id: Int) {
         self.deleteNoteUseCase.execute(noteID: id)
             .mapToResult()
