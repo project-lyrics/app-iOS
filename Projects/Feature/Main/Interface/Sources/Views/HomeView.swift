@@ -1,5 +1,5 @@
 //
-//  MainView.swift
+//  HomeView.swift
 //  FeatureMainInterface
 //
 //  Created by 황인우 on 8/11/24.
@@ -9,21 +9,21 @@ import Shared
 
 import UIKit
 
-class MainView: UIView {
+class HomeView: UIView {
     
     // MARK: - UI Components
     
     private (set) var mainCollectionView: UICollectionView = {
         let compositionalLayout = UICollectionViewCompositionalLayout { (sectionIndex, environment) -> NSCollectionLayoutSection? in
             switch sectionIndex {
-            case MainView.bannerSectionIndex:
-                return MainView.createBannerSection()
+            case HomeView.bannerSectionIndex:
+                return HomeView.createBannerSection()
                 
-            case MainView.favoriteArtistSectionIndex:
-                return MainView.createArtistSection()
+            case HomeView.favoriteArtistSectionIndex:
+                return HomeView.createArtistSection()
                 
-            case MainView.notesSectionIndex:
-                return MainView.createNotesSection()
+            case HomeView.notesSectionIndex:
+                return HomeView.createNotesSection()
                 
             default:
                 return nil
@@ -80,7 +80,7 @@ class MainView: UIView {
 
 // MARK: - UICollectionViewCompositionalLayout
 
-extension MainView {
+extension HomeView {
     static let bannerSectionIndex = 0
     static let favoriteArtistSectionIndex = 1
     static let notesSectionIndex = 2

@@ -22,21 +22,25 @@ open class BottomSheetViewController<View: UIView>: UIViewController {
         return view
     }()
     
-    public let bottomSheetView: View = {
-        let view = View()
-        view.clipsToBounds = true
-        view.layer.cornerRadius = 20
-        view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-        return view
-    }()
+    public var bottomSheetView: View
     
     // MARK: - init
     
-    public init(bottomSheetHeight: CGFloat) {
+    public init(
+        bottomSheetHeight: CGFloat,
+        bottomSheetView: View? = nil
+    ) {
+        // 커스텀 이니셜라이저가 있는 뷰 같은 경우 외부에서 주입하기 위한 설정
+        if let bottomSheetView = bottomSheetView {
+            self.bottomSheetView = bottomSheetView
+        } else {
+            self.bottomSheetView = View()
+        }
         self.bottomSheetHeight = bottomSheetHeight
         
         super.init(nibName: nil, bundle: nil)
         
+        setUpBottomSheetView()
         setUpLayout()
         setUpGestureRecognizer()
     }
@@ -71,6 +75,12 @@ open class BottomSheetViewController<View: UIView>: UIViewController {
     }
     
     // MARK: - set up
+    
+    private func setUpBottomSheetView() {
+        self.bottomSheetView.clipsToBounds = true
+        self.bottomSheetView.layer.cornerRadius = 20
+        self.bottomSheetView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+    }
     
     private func setUpLayout() {
         view.addSubview(dimmedView)

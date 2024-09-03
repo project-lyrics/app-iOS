@@ -1,5 +1,5 @@
 //
-//  MainViewModel.swift
+//  HomeViewModel.swift
 //  FeatureMainInterface
 //
 //  Created by 황인우 on 8/17/24.
@@ -17,7 +17,7 @@ enum RefreshState {
     case failed(HomeError)  // 새로고침 실패 (에러 포함)
 }
 
-final public class MainViewModel {
+final public class HomeViewModel {
     typealias NoteFetchResult = Result<[Note], HomeError>
     typealias ArtistFetchResult = Result<[Artist], HomeError>
     
@@ -30,6 +30,7 @@ final public class MainViewModel {
     private let getFavoriteArtistsUseCase: GetFavoriteArtistsUseCaseInterface
     private let setNoteLikeUseCase: SetNoteLikeUseCaseInterface
     private let setBookmarkUseCase: SetBookmarkUseCaseInterface
+    private let deleteNoteUseCase: DeleteNoteUseCaseInterface
     
     private var cancellables: Set<AnyCancellable> = .init()
     
@@ -37,12 +38,14 @@ final public class MainViewModel {
         getNotesUseCase: GetNotesUseCaseInterface,
         setNoteLikeUseCase: SetNoteLikeUseCaseInterface,
         getFavoriteArtistsUseCase: GetFavoriteArtistsUseCaseInterface,
-        setBookmarkUseCase: SetBookmarkUseCaseInterface
+        setBookmarkUseCase: SetBookmarkUseCaseInterface,
+        deleteNoteUseCase: DeleteNoteUseCaseInterface
     ) {
         self.getNotesUseCase = getNotesUseCase
         self.setNoteLikeUseCase = setNoteLikeUseCase
         self.getFavoriteArtistsUseCase = getFavoriteArtistsUseCase
         self.setBookmarkUseCase = setBookmarkUseCase
+        self.deleteNoteUseCase = deleteNoteUseCase
     }
     
     func fetchNotes(
@@ -95,7 +98,7 @@ final public class MainViewModel {
     }
 }
 
-extension MainViewModel {
+extension HomeViewModel {
     
     // MARK: - Refresh Data
     
@@ -143,10 +146,9 @@ extension MainViewModel {
     }
 }
 
-extension MainViewModel {
-    
-    // MARK: - Like/Dislike note
-    
+// MARK: - Like/Dislike note
+
+extension HomeViewModel {
     func setNoteLikeState(
         noteID: Int,
         isLiked: Bool
@@ -160,7 +162,7 @@ extension MainViewModel {
         .sink { [weak self] result in
             switch result {
             case .success(let updatedNoteLike):
-                var indexToUpdate = self?.fetchedNotes.firstIndex(
+                let indexToUpdate = self?.fetchedNotes.firstIndex(
                     where: { $0.id == noteID }
                 )
                 
@@ -170,7 +172,7 @@ extension MainViewModel {
                 }
                 
             case .failure(let error):
-                var indexToUpdate = self?.fetchedNotes.firstIndex(
+                let indexToUpdate = self?.fetchedNotes.firstIndex(
                     where: { $0.id == noteID }
                 )
                 
@@ -185,10 +187,9 @@ extension MainViewModel {
     }
 }
 
-extension MainViewModel {
-    
-    // MARK: - Bookmark
-    
+// MARK: - Bookmark
+
+extension HomeViewModel {
     func setNoteBookmarkState(
         noteID: Int,
         isBookmarked: Bool
@@ -202,8 +203,8 @@ extension MainViewModel {
         .sink { [weak self] result in
             switch result {
             case .success(let bookmarkNoteID):
-                var indexToUpdate = self?.fetchedNotes.firstIndex(
-                    where: { $0.id == noteID }
+                let indexToUpdate = self?.fetchedNotes.firstIndex(
+                    where: { $0.id == bookmarkNoteID }
                 )
                 
                 if let indexToUpdate = indexToUpdate {
@@ -211,7 +212,7 @@ extension MainViewModel {
                 }
                 
             case .failure(let error):
-                var indexToUpdate = self?.fetchedNotes.firstIndex(
+                let indexToUpdate = self?.fetchedNotes.firstIndex(
                     where: { $0.id == noteID }
                 )
                 
@@ -224,5 +225,24 @@ extension MainViewModel {
             }
         }
         .store(in: &cancellables)
+    }
+}
+
+// MARK: - Edit, Delete, Report Note
+extension HomeViewModel {
+    func deleteNote(id: Int) {
+        self.deleteNoteUseCase.execute(noteID: id)
+            .mapToResult()
+            .receive(on: DispatchQueue.main)
+            .sink { result in
+                switch result {
+                case .success:
+                    self.fetchedNotes.removeAll(where: { $0.id == id })
+                    
+                case .failure(let noteError):
+                    self.error = .noteError(noteError)
+                }
+            }
+            .store(in: &cancellables)
     }
 }

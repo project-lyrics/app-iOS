@@ -70,7 +70,7 @@ extension TokenInterceptor: URLRequestInterceptor {
                 forHTTPHeaderField: "Authorization"
             )
             
-            let reissueEndpoint = FeelinAPI<ReissueTokenResponse>.reissueAccessToken(refreshToken: refreshToken.token)
+            let reissueEndpoint = FeelinAPI<UserAuthResponse>.reissueAccessToken(refreshToken: refreshToken.token)
             
             let reissueRequest = try reissueEndpoint.makeURLRequest()
             
@@ -107,8 +107,7 @@ extension TokenInterceptor: URLRequestInterceptor {
         return session
             .dataTaskPublisher(for: request)
             .validateResponse()
-            .validateJSONValue(to: ReissueTokenResponse.self)
-            .map(\.data)
+            .validateJSONValue(to: UserAuthResponse.self)
             .tryMap { [jwtDecoder] tokenResponse -> (AccessToken, RefreshToken) in
                 return (
                     try jwtDecoder.decode(tokenResponse.accessToken, as: AccessToken.self),

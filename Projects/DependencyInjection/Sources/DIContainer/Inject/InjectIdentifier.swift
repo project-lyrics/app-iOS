@@ -32,7 +32,11 @@ public extension InjectIdentifier {
 
     static var tokenStorage: InjectIdentifier<TokenStorageInterface> {
         .by(type: TokenStorageInterface.self, key: "tokenStorage")
-    }    
+    }
+    
+    static var userInfoStorage: InjectIdentifier<UserInfoStorageInterface> {
+        .by(type: UserInfoStorageInterface.self, key: "userInfoStorage")
+    }
 
     static var recentLoginRecordStorage: InjectIdentifier<RecentLoginRecordStorageInterface> {
         .by(type: RecentLoginRecordStorageInterface.self, key: "recentLoginRecordStorage")

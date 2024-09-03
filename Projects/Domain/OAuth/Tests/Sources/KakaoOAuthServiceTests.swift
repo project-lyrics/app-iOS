@@ -49,9 +49,10 @@ final class KakaoOAuthServiceTests: XCTestCase {
     func test_카카오_로그인_성공() throws {
         // given
         networkProviderTestDouble = MockNetworkProvider(
-            response: TokenResponse(
+            response: UserAuthResponse(
                 accessToken: expectedAccessToken,
-                refreshToken: expectedRefreshToken
+                refreshToken: expectedRefreshToken, 
+                userId: 1
             ),
             error: nil
         )
@@ -84,9 +85,10 @@ final class KakaoOAuthServiceTests: XCTestCase {
     func test_로그인시_번들에_AccessToken이_없으면_bundle에러가_발생한다() throws {
         // given
         networkProviderTestDouble = MockNetworkProvider(
-            response: TokenResponse(
+            response: UserAuthResponse(
                 accessToken: expectedAccessToken,
-                refreshToken: expectedRefreshToken
+                refreshToken: expectedRefreshToken,
+                userId: 1
             ),
             error: nil
         )
@@ -116,9 +118,10 @@ final class KakaoOAuthServiceTests: XCTestCase {
         // given
         kakaoUserAPITestDouble.error = KakaoOAuthError.ClientFailed(reason: .TokenNotFound, errorMessage: "Mock error")
         networkProviderTestDouble = MockNetworkProvider(
-            response: TokenResponse(
+            response: UserAuthResponse(
                 accessToken: expectedAccessToken,
-                refreshToken: expectedRefreshToken
+                refreshToken: expectedRefreshToken,
+                userId: 1
             ),
             error: nil
         )

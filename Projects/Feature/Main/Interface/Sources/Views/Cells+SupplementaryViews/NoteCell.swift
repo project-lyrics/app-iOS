@@ -86,7 +86,7 @@ final class NoteCell: UICollectionViewCell, Reusable {
     
     private (set) var playMusicButton: UIButton = {
         let button = UIButton()
-        let buttonImage = FeelinImages.playIcon
+        let buttonImage = FeelinImages.play
             .withRenderingMode(.alwaysTemplate)
         button.setImage(buttonImage, for: .normal)
         button.tintColor = Colors.gray03

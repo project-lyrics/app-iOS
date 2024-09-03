@@ -1,15 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "Chat_Dark.png",
+      "filename" : "chat_dark_1x.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "chat_dark_2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "chat_dark_3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

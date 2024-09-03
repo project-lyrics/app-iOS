@@ -95,7 +95,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         @Injected(.notePaginationService) var notePaginationService: NotePaginationServiceInterface
         @Injected(.artistPaginationService) var artistPaginationService: ArtistPaginationServiceInterface
         
-        let mainViewModel = MainViewModel(
+        @KeychainWrapper<UserInformation>(.userInfo)
+        var userInfo
+        
+        // 테스트용 유저 아이디
+        userInfo = .init(userID: 1)
+        
+        let homeViewModel = HomeViewModel(
             getNotesUseCase: GetFavoriteArtistsRelatedNotesUseCase(
                 noteAPIService: noteAPiService,
                 notePaginationService: notePaginationService
@@ -105,16 +111,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 artistAPIService: artistAPIService,
                 artistPaginationService: artistPaginationService
             ),
-            setBookmarkUseCase: SetBookmarkUseCase(noteAPIService: noteAPiService)
+            setBookmarkUseCase: SetBookmarkUseCase(noteAPIService: noteAPiService),
+            deleteNoteUseCase: DeleteNoteUseCase(noteAPIService: noteAPiService)
         )
-//        let mainViewModel = MainViewModel(
+//        let homeViewModel = HomeViewModel(
 //            getNotesUseCase: MockGetNotesUseCase(),
 //            setNoteLikeUseCase: MockSetNoteLikeUseCase(),
 //            getFavoriteArtistsUseCase: MockGetFavoriteArtistsUseCase(),
-//            setBookmarkUseCase: MockSetBookmarkUseCase()
+//            setBookmarkUseCase: MockSetBookmarkUseCase(), deleteNoteUseCase: MockDeleteNoteUseCase()
 //        )
         
-        window?.rootViewController = MainViewController(viewModel: mainViewModel)
+        window?.rootViewController = HomeViewController(viewModel: homeViewModel)
         window?.makeKeyAndVisible()
     }
     
@@ -132,15 +139,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 #if canImport(SwiftUI)
 import SwiftUI
 
-struct MainViewController_Preview: PreviewProvider {
+struct HomeViewController_Preview: PreviewProvider {
     static var previews: some View {
-        let viewModelForPreview = MainViewModel(
+        let viewModelForPreview = HomeViewModel(
             getNotesUseCase: MockGetNotesUseCase(), 
             setNoteLikeUseCase: MockSetNoteLikeUseCase(),
             getFavoriteArtistsUseCase: MockGetFavoriteArtistsUseCase(),
-            setBookmarkUseCase: MockSetBookmarkUseCase()
+            setBookmarkUseCase: MockSetBookmarkUseCase(),
+            deleteNoteUseCase: MockDeleteNoteUseCase()
         )
-        return MainViewController(viewModel: viewModelForPreview)
+        return HomeViewController(viewModel: viewModelForPreview)
             .asPreview()
     }
 }
