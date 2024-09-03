@@ -1,15 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "Heart_Inactive_Dark.png",
+      "filename" : "heart_inactive_dark_1x.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "heart_inactive_dark_2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "heart_inactive_dark_3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

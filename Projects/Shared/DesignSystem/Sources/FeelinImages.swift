@@ -47,7 +47,6 @@ public struct FeelinImages {
     public static let notificationLightOn = SharedDesignSystemAsset.Images.notificationLightOn.image
     public static let pencil = SharedDesignSystemAsset.Images.pencil.image
     public static let pencilEdit = SharedDesignSystemAsset.Images.pencilEdit.image
-    public static let playIcon = SharedDesignSystemAsset.Images.playIcon.image
     public static let report = SharedDesignSystemAsset.Images.report.image
     public static let searchDark = SharedDesignSystemAsset.Images.searchDark.image
     public static let searchLight = SharedDesignSystemAsset.Images.searchLight.image
