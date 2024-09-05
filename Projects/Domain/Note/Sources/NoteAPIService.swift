@@ -11,6 +11,7 @@ import DomainNoteInterface
 import Combine
 import Foundation
 
+
 public struct NoteAPIService: NoteAPIServiceInterface {
 
     private let networkProvider: NetworkProviderInterface
@@ -92,6 +93,22 @@ public struct NoteAPIService: NoteAPIServiceInterface {
             query: keyword,
             artistID: artistID
         )
+        return networkProvider.request(endpoint)
+            .mapError(NoteError.init)
+            .eraseToAnyPublisher()
+    }
+    
+    public func getSearchedNotes(
+        pageNumber: Int,
+        pageSize: Int,
+        query: String
+    ) -> AnyPublisher<SearchedNotesResponse, NoteError> {
+        let endpoint = FeelinAPI<SearchedNotesResponse>.getSearchedNotes(
+            pageNumber: pageNumber,
+            pageSize: pageSize,
+            query: query
+        )
+        
         return networkProvider.request(endpoint)
             .mapError(NoteError.init)
             .eraseToAnyPublisher()

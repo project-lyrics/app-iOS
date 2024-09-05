@@ -62,4 +62,28 @@ public struct MockNoteAPIService: NoteAPIServiceInterface {
             .setFailureType(to: NoteError.self)
             .eraseToAnyPublisher()
     }
+    
+    public func postNote(value: PostNoteValue) -> AnyPublisher<FeelinSuccessResponse, NoteError> {
+        return Empty()
+            .setFailureType(to: NoteError.self)
+            .eraseToAnyPublisher()
+    }
+    
+    public func searchSong(keyword: String, currentPage: Int, numberOfSongs: Int, artistID: Int) -> AnyPublisher<SearchSongResponse, NoteError> {
+        return Empty()
+            .setFailureType(to: NoteError.self)
+            .eraseToAnyPublisher()
+    }
+    
+    public func deleteNote(noteID: Int) -> AnyPublisher<NoteChangeResponse, NoteError> {
+        return Empty()
+            .setFailureType(to: NoteError.self)
+            .eraseToAnyPublisher()
+    }
+    
+    public func getSearchedNotes(pageNumber: Int, pageSize: Int, query: String) -> AnyPublisher<SearchedNotesResponse, NoteError> {
+        return Empty()
+            .setFailureType(to: NoteError.self)
+            .eraseToAnyPublisher()
+    }
 }

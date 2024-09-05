@@ -1,14 +1,16 @@
 //
-//  ArtistPaginationService.swift
-//  DomainArtist
+//  SearchedNotePaginationService.swift
+//  DomainNoteInterface
 //
-//  Created by 황인우 on 7/15/24.
+//  Created by 황인우 on 9/4/24.
 //
 
 import Combine
 import Foundation
 
-final public class ArtistPaginationService: KeywordPaginationServiceInterface {
+import DomainSharedInterface
+
+final public class SearchedNotePaginationService: KeywordPaginationServiceInterface {
     public var currentSearchWord: String = ""
     public var currentPage: Int?
     public var hasNextPage: Bool = true

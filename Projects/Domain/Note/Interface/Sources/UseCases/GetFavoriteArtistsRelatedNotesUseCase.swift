@@ -68,9 +68,7 @@ public struct GetFavoriteArtistsRelatedNotesUseCase: GetNotesUseCaseInterface {
                 hasNextPage: notesResponse.hasNext
             )
             notePaginationService.setLoading(false)
-            return notesResponse.data.map { noteResponse in
-                return Note(dto: noteResponse)
-            }
+            return notesResponse.data.map(Note.init)
         }
         .catch({ error -> AnyPublisher<[Note], NoteError> in
             notePaginationService.setLoading(false)

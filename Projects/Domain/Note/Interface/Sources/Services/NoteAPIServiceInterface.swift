@@ -35,5 +35,10 @@ public protocol NoteAPIServiceInterface {
         numberOfSongs: Int,
         artistID: Int
     ) -> AnyPublisher<SearchSongResponse, NoteError>
-
+    
+    func getSearchedNotes(
+        pageNumber: Int,
+        pageSize: Int,
+        query: String
+    ) -> AnyPublisher<SearchedNotesResponse, NoteError>
 }

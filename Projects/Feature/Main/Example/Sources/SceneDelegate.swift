@@ -89,66 +89,67 @@ extension SceneDelegate {
 //        window?.makeKeyAndVisible()
         // --------------------ArtistSelectViewController-------------------
         
-        DIContainer.standard.register(.networkProvider) { _ in
-            let networkSession = NetworkSession(
-                urlSession: .shared,
-                requestInterceptor: MockTokenInterceptor()
-            )
-            
-            return NetworkProvider(networkSession: networkSession)
-        }
-        
-        DIContainer.standard.register(.notePaginationService) { _ in
-            return NotePaginationService()
-        }
-        
-        DIContainer.standard.register(.artistPaginationService) { resolver in
-            return ArtistPaginationService()
-        }
-        
-        DIContainer.standard.register(.noteAPIService.self) { resolver in
-            let networkProvider = try resolver.resolve(.networkProvider)
-            
-            return NoteAPIService(networkProvider: networkProvider)
-        }
-        
-        DIContainer.standard.register(.artistAPIService) { resolver in
-            let networkProvider = try resolver.resolve(.networkProvider)
-            
-            return ArtistAPIService(networkProvider: networkProvider)
-        }
-        @Injected(.artistAPIService) var artistAPIService: ArtistAPIServiceInterface
-        @Injected(.noteAPIService) var noteAPiService: NoteAPIServiceInterface
-        @Injected(.notePaginationService) var notePaginationService: NotePaginationServiceInterface
-        @Injected(.artistPaginationService) var artistPaginationService: ArtistPaginationServiceInterface
-        
-        @KeychainWrapper<UserInformation>(.userInfo)
-        var userInfo
-        
-        // 테스트용 유저 아이디
-        userInfo = .init(userID: 1)
-        
-        let homeViewModel = HomeViewModel(
-            getNotesUseCase: GetFavoriteArtistsRelatedNotesUseCase(
-                noteAPIService: noteAPiService,
-                notePaginationService: notePaginationService
-            ), 
-            setNoteLikeUseCase: SetNoteLikeUseCase(noteAPIService: noteAPiService),
-            getFavoriteArtistsUseCase: GetFavoriteArtistsUseCase(
-                artistAPIService: artistAPIService,
-                artistPaginationService: artistPaginationService
-            ),
-            setBookmarkUseCase: SetBookmarkUseCase(noteAPIService: noteAPiService),
-            deleteNoteUseCase: DeleteNoteUseCase(noteAPIService: noteAPiService)
-        )
+//        DIContainer.standard.register(.networkProvider) { _ in
+//            let networkSession = NetworkSession(
+//                urlSession: .shared,
+//                requestInterceptor: MockTokenInterceptor()
+//            )
+//            
+//            return NetworkProvider(networkSession: networkSession)
+//        }
+//        
+//        DIContainer.standard.register(.notePaginationService) { _ in
+//            return NotePaginationService()
+//        }
+//        
+//        DIContainer.standard.register(.artistPaginationService) { resolver in
+//            return ArtistPaginationService()
+//        }
+//        
+//        DIContainer.standard.register(.noteAPIService.self) { resolver in
+//            let networkProvider = try resolver.resolve(.networkProvider)
+//            
+//            return NoteAPIService(networkProvider: networkProvider)
+//        }
+//        
+//        DIContainer.standard.register(.artistAPIService) { resolver in
+//            let networkProvider = try resolver.resolve(.networkProvider)
+//            
+//            return ArtistAPIService(networkProvider: networkProvider)
+//        }
+//        @Injected(.artistAPIService) var artistAPIService: ArtistAPIServiceInterface
+//        @Injected(.noteAPIService) var noteAPiService: NoteAPIServiceInterface
+//        @Injected(.notePaginationService) var notePaginationService: NotePaginationServiceInterface
+//        @Injected(.artistPaginationService) var artistPaginationService: KeywordPaginationServiceInterface
+//        
+//        @KeychainWrapper<UserInformation>(.userInfo)
+//        var userInfo
+//        
+//        // 테스트용 유저 아이디
+//        userInfo = .init(userID: 1)
+//        
 //        let homeViewModel = HomeViewModel(
-//            getNotesUseCase: MockGetNotesUseCase(),
-//            setNoteLikeUseCase: MockSetNoteLikeUseCase(),
-//            getFavoriteArtistsUseCase: MockGetFavoriteArtistsUseCase(),
-//            setBookmarkUseCase: MockSetBookmarkUseCase(), deleteNoteUseCase: MockDeleteNoteUseCase()
+//            getNotesUseCase: GetFavoriteArtistsRelatedNotesUseCase(
+//                noteAPIService: noteAPiService,
+//                notePaginationService: notePaginationService
+//            ), 
+//            setNoteLikeUseCase: SetNoteLikeUseCase(noteAPIService: noteAPiService),
+//            getFavoriteArtistsUseCase: GetFavoriteArtistsUseCase(
+//                artistAPIService: artistAPIService,
+//                artistPaginationService: artistPaginationService
+//            ),
+//            setBookmarkUseCase: SetBookmarkUseCase(noteAPIService: noteAPiService),
+//            deleteNoteUseCase: DeleteNoteUseCase(noteAPIService: noteAPiService)
 //        )
-        
-		HomeViewController(viewModel: homeViewModel)
+////        let homeViewModel = HomeViewModel(
+////            getNotesUseCase: MockGetNotesUseCase(),
+////            setNoteLikeUseCase: MockSetNoteLikeUseCase(),
+////            getFavoriteArtistsUseCase: MockGetFavoriteArtistsUseCase(),
+////            setBookmarkUseCase: MockSetBookmarkUseCase(), deleteNoteUseCase: MockDeleteNoteUseCase()
+////        )
+//        
+//        window?.rootViewController = HomeViewController(viewModel: homeViewModel)
+//        window?.makeKeyAndVisible()
     }
 }
 
@@ -213,18 +214,18 @@ extension SceneDelegate: PostNoteViewControllerDelegate, SearchSongViewControlle
 #if canImport(SwiftUI)
 import SwiftUI
 
-struct HomeViewController_Preview: PreviewProvider {
-    static var previews: some View {
-        let viewModelForPreview = HomeViewModel(
-            getNotesUseCase: MockGetNotesUseCase(), 
-            setNoteLikeUseCase: MockSetNoteLikeUseCase(),
-            getFavoriteArtistsUseCase: MockGetFavoriteArtistsUseCase(),
-            setBookmarkUseCase: MockSetBookmarkUseCase(),
-            deleteNoteUseCase: MockDeleteNoteUseCase()
-        )
-        return HomeViewController(viewModel: viewModelForPreview)
-            .asPreview()
-    }
-}
+//struct HomeViewController_Preview: PreviewProvider {
+//    static var previews: some View {
+//        let viewModelForPreview = HomeViewModel(
+//            getNotesUseCase: MockGetNotesUseCase(), 
+//            setNoteLikeUseCase: MockSetNoteLikeUseCase(),
+//            getFavoriteArtistsUseCase: MockGetFavoriteArtistsUseCase(),
+//            setBookmarkUseCase: MockSetBookmarkUseCase(),
+//            deleteNoteUseCase: MockDeleteNoteUseCase()
+//        )
+//        return HomeViewController(viewModel: viewModelForPreview)
+//            .asPreview()
+//    }
+//}
 
 #endif
