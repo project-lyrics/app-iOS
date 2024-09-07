@@ -60,7 +60,7 @@ public class HomeViewController: UIViewController {
     }
     
     private func setUpDelegates() {
-        homeView.mainCollectionView.dataSource = self
+        homeView.homeCollectionView.dataSource = self
     }
 }
 
@@ -92,7 +92,7 @@ private extension HomeViewController {
                     )
                     
                 case .completed:
-                    self?.mainCollectionView.refreshControl?.endRefreshing()
+                    self?.homeCollectionView.refreshControl?.endRefreshing()
                     
                 default:
                     return
@@ -105,19 +105,19 @@ private extension HomeViewController {
             viewModel.$fetchedFavoriteArtists
         )
         .sink { [weak self] _ in
-            self?.mainCollectionView.reloadData()
+            self?.homeCollectionView.reloadData()
         }
         .store(in: &cancellables)
     }
     
     func bindAction() {
-        mainCollectionView.didScrollToBottomPublisher()
+        homeCollectionView.didScrollToBottomPublisher()
             .sink { [viewModel] in
                 viewModel.fetchNotes(isInitialFetch: false)
             }
             .store(in: &cancellables)
         
-        mainCollectionView.refreshControl?.isRefreshingPublisher
+        homeCollectionView.refreshControl?.isRefreshingPublisher
             .filter { $0 == true }
             .sink(receiveValue: { [viewModel] _ in
                 viewModel.refreshAllData()
@@ -150,8 +150,8 @@ private extension HomeViewController {
 }
 
 private extension HomeViewController {
-    var mainCollectionView: UICollectionView {
-        return self.homeView.mainCollectionView
+    var homeCollectionView: UICollectionView {
+        return self.homeView.homeCollectionView
     }
 }
 
