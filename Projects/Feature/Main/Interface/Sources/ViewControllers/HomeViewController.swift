@@ -11,14 +11,15 @@ import Shared
 import Combine
 import UIKit
 
-public class HomeViewController: UIViewController {
+public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHandling {
     var viewModel: HomeViewModel
     
     private var cancellables: Set<AnyCancellable> = .init()
     
     // MARK: - Keychain
+    
     @KeychainWrapper<UserInformation>(.userInfo)
-    var userInfo
+    public var userInfo
     
     // MARK: - UI Components
     
@@ -27,9 +28,9 @@ public class HomeViewController: UIViewController {
     
     // MARK: - NoteMenu Subjects
     
-    let onReportNote: PassthroughSubject<Int, Never> = .init()
-    let onEditNote: PassthroughSubject<Int, Never> = .init()
-    let onDeleteNote: PassthroughSubject<Int, Never> = .init()
+    public let onReportNote: PassthroughSubject<Int, Never> = .init()
+    public let onEditNote: PassthroughSubject<Int, Never> = .init()
+    public let onDeleteNote: PassthroughSubject<Int, Never> = .init()
     
     // MARK: - Init
     
@@ -340,69 +341,6 @@ extension HomeViewController: UICollectionViewDataSource {
             
         default:
             return UICollectionReusableView()
-        }
-    }
-}
-
-// MARK: - Note Menu
-
-private extension HomeViewController {
-    func makeNoteMenuViewController(checking note: Note) -> NoteMenuViewConroller? {
-        if let userId = self.userInfo?.userID {
-            let bottomSheetHeight: CGFloat = userId == note.publisher.id
-            ? 180
-            : 130
-            
-            let menuType = userId == note.publisher.id
-            ? NoteMenuType.me
-            : NoteMenuType.other
-            
-            let noteMenuViewController = NoteMenuViewConroller(
-                noteID: note.id,
-                bottomSheetHeight: bottomSheetHeight,
-                bottomSheetView: NoteMenuView(menuType: menuType),
-                onReport: self.onReportNote,
-                onEdit: self.onEditNote,
-                onDelete: self.onDeleteNote
-            )
-            noteMenuViewController.modalPresentationStyle = .overFullScreen
-            
-            return noteMenuViewController
-        }
-        
-        return nil
-    }
-}
-
-// MARK: - YouTube Music
-
-private extension HomeViewController {
-    var youTubeMusicURLScheme: String  {
-        return "youtubemusic://"
-    }
-    
-    func isYouTubeMusicInstalled() -> Bool {
-        if let url = URL(string: youTubeMusicURLScheme) {
-            return UIApplication.shared.canOpenURL(url)
-        }
-        return false
-    }
-    
-    func openYouTube(query: String) {
-        let encodedQuery = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
-        
-        if isYouTubeMusicInstalled() {
-            let youtubeMusicPath = "\(youTubeMusicURLScheme)search/\(encodedQuery ?? query)"
-            
-            if let url = URL(string: youtubeMusicPath) {
-                UIApplication.shared.open(url)
-            }
-        } else {
-            let youtubeMusicWebPath = "https://music.youtube.com/search?q=\(encodedQuery ?? query)"
-            
-            if let url = URL(string: youtubeMusicWebPath) {
-                UIApplication.shared.open(url)
-            }
         }
     }
 }

@@ -10,7 +10,7 @@ import Shared
 import Combine
 import UIKit
 
-class NoteMenuViewConroller: BottomSheetViewController<NoteMenuView> {
+public class NoteMenuViewConroller: BottomSheetViewController<NoteMenuView> {
     private let noteID: Int
     
     private var cancellable: Set<AnyCancellable> = .init()
@@ -38,7 +38,7 @@ class NoteMenuViewConroller: BottomSheetViewController<NoteMenuView> {
         )
     }
     
-    override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         
         self.bindAction()
