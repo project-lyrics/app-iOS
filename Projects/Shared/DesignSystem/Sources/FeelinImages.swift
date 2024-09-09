@@ -22,6 +22,8 @@ public struct FeelinImages {
     public static let chatDark = SharedDesignSystemAsset.Images.chatDark.image
     public static let checkBoxInactive = SharedDesignSystemAsset.Images.checkBoxInactive.image
     public static let checkBoxActive = SharedDesignSystemAsset.Images.checkBoxActive.image
+    public static let checkmarkActive = SharedDesignSystemAsset.Images.checkmarkActive.image
+    public static let checkmarkInactive = SharedDesignSystemAsset.Images.checkmarkInactive.image
     public static let emptyNoteLight = SharedDesignSystemAsset.Images.emptyNoteLight
     public static let emptyNoteDark = SharedDesignSystemAsset.Images.emptyNoteDark
     public static let feedbackBanner = SharedDesignSystemAsset.Images.feedbackBanner.image
@@ -47,6 +49,8 @@ public struct FeelinImages {
     public static let notificationLightOn = SharedDesignSystemAsset.Images.notificationLightOn.image
     public static let pencil = SharedDesignSystemAsset.Images.pencil.image
     public static let pencilEdit = SharedDesignSystemAsset.Images.pencilEdit.image
+    public static let replyActive = SharedDesignSystemAsset.Images.replyActive.image
+    public static let replyInactive = SharedDesignSystemAsset.Images.replyInactive.image
     public static let report = SharedDesignSystemAsset.Images.report.image
     public static let searchDark = SharedDesignSystemAsset.Images.searchDark.image
     public static let searchLight = SharedDesignSystemAsset.Images.searchLight.image
