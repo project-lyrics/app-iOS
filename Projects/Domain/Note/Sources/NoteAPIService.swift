@@ -11,7 +11,6 @@ import DomainNoteInterface
 import Combine
 import Foundation
 
-
 public struct NoteAPIService: NoteAPIServiceInterface {
 
     private let networkProvider: NetworkProviderInterface
@@ -107,6 +106,24 @@ public struct NoteAPIService: NoteAPIServiceInterface {
             pageNumber: pageNumber,
             pageSize: pageSize,
             query: query
+        )
+        
+        return networkProvider.request(endpoint)
+            .mapError(NoteError.init)
+            .eraseToAnyPublisher()
+    }
+    
+    public func getSongNotes(
+        currentPage: Int?,
+        numberOfNotes: Int,
+        hasLyrics: Bool,
+        songID: Int
+    ) -> AnyPublisher<GetNotesResponse, NoteError> {
+        let endpoint = FeelinAPI<GetNotesResponse>.getSongNotes(
+            cursor: currentPage,
+            size: numberOfNotes,
+            hasLyrics: hasLyrics,
+            songID: songID
         )
         
         return networkProvider.request(endpoint)

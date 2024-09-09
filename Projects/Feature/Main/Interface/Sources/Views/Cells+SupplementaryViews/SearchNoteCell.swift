@@ -115,7 +115,7 @@ final class SearchNoteCell: UITableViewCell, Reusable {
             .padding(12, 20)
     }
     
-    public func configure(
+    func configure(
         songName: String,
         artistName: String,
         noteCount: Int,

@@ -11,7 +11,7 @@ import Core
 
 public struct SearchedNote: Hashable {
     private let uuid: UUID = .init()
-    public let id: Int
+    public let songID: Int
     public let songName: String
     public let artistName: String
     public let albumImageUrl: String
@@ -24,7 +24,7 @@ public struct SearchedNote: Hashable {
         imageUrl: String,
         noteCount: Int
     ) {
-        self.id = id
+        self.songID = id
         self.songName = songName
         self.artistName = artistName
         self.albumImageUrl = imageUrl
@@ -32,7 +32,7 @@ public struct SearchedNote: Hashable {
     }
     
     public init(dto: SearchedNoteResponse) {
-        self.id = dto.id
+        self.songID = dto.id
         self.songName = dto.songName
         self.artistName = dto.artistName
         self.albumImageUrl = dto.imageUrl

@@ -29,6 +29,7 @@ public enum FeelinAPI<R> {
     case postNote(request: PostNoteRequest)
     case searchSongs(cursor: Int, size: Int, query: String, artistID: Int)
     case getSearchedNotes(pageNumber: Int, pageSize: Int, query: String)
+    case getSongNotes(cursor: Int?, size: Int, hasLyrics: Bool, songID: Int)
 }
 
 extension FeelinAPI: HTTPNetworking {
@@ -119,6 +120,22 @@ extension FeelinAPI: HTTPNetworking {
                 "pageSize": "\(pageSize)"
             ]
             
+        case .getSongNotes(let cursor, let size, let hasLyrics, let songID):
+            if let cursor = cursor {
+                return [
+                    "cursor": "\(cursor)",
+                    "size": "\(size)",
+                    "hasLyrics": "\(hasLyrics)",
+                    "songId": "\(songID)"
+                ]
+            }
+            
+            return [
+                "size": "\(size)",
+                "hasLyrics": "\(hasLyrics)",
+                "songId": "\(songID)"
+            ]
+            
         default:
             return nil
         }
@@ -203,6 +220,9 @@ extension FeelinAPI: HTTPNetworking {
             
         case .getSearchedNotes:
             return "/api/v1/songs/search"
+            
+        case .getSongNotes:
+            return "/api/v1/notes/songs"
         }
     }
 
@@ -210,8 +230,8 @@ extension FeelinAPI: HTTPNetworking {
         switch self {
         case .login, .reissueAccessToken, .signUp, .postFavoriteArtists, .postLikes, .postBookmarks, .postNote:
             return .post
-
-        case .checkUserValidity, .getArtists, .searchArtists, .getFavoriteArtists, .getFavoriteArtistsRelatedNotes, .searchSongs, .getSearchedNotes:
+            
+        case .checkUserValidity, .getArtists, .searchArtists, .getFavoriteArtists, .getFavoriteArtistsRelatedNotes, .searchSongs, .getSearchedNotes, .getSongNotes:
             return .get
             
         case .deleteLikes, .deleteBookmarks, .deleteNote:

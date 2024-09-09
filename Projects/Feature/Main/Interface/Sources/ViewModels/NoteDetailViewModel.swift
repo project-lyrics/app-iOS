@@ -1,8 +1,8 @@
 //
-//  HomeViewModel.swift
+//  NoteDetailViewModel.swift
 //  FeatureMainInterface
 //
-//  Created by 황인우 on 8/17/24.
+//  Created by 황인우 on 9/7/24.
 //
 
 import Domain
@@ -10,136 +10,68 @@ import Domain
 import Combine
 import Foundation
 
-enum RefreshState {
-    case idle        // 대기 상태
-    case refreshing  // 새로고침 중
-    case completed   // 새로고침 완료
-    case failed(HomeError)  // 새로고침 실패 (에러 포함)
-}
-
-final public class HomeViewModel {
-    typealias NoteFetchResult = Result<[Note], HomeError>
-    typealias ArtistFetchResult = Result<[Artist], HomeError>
+final public class NoteDetailViewModel {
     
     @Published private (set) var fetchedNotes: [Note] = []
-    @Published private (set) var fetchedFavoriteArtists: [Artist] = []
-    @Published private (set) var error: HomeError?
-    @Published private (set) var refreshState: RefreshState = .idle
+    @Published var mustHaveLyrics: Bool = false
+    @Published private (set) var error: NoteError?
     
-    private let getNotesUseCase: GetNotesUseCaseInterface
-    private let getFavoriteArtistsUseCase: GetFavoriteArtistsUseCaseInterface
+    private var cancellables: Set<AnyCancellable> = .init()
+    
+    let selectedNote: SearchedNote
+    
+    private let getSongNotesUseCase: GetSongNotesUseCaseInterface
     private let setNoteLikeUseCase: SetNoteLikeUseCaseInterface
     private let setBookmarkUseCase: SetBookmarkUseCaseInterface
     private let deleteNoteUseCase: DeleteNoteUseCaseInterface
     
-    private var cancellables: Set<AnyCancellable> = .init()
-    
     public init(
-        getNotesUseCase: GetNotesUseCaseInterface,
+        selectedNote: SearchedNote,
+        getSongNotesUseCase: GetSongNotesUseCaseInterface,
         setNoteLikeUseCase: SetNoteLikeUseCaseInterface,
-        getFavoriteArtistsUseCase: GetFavoriteArtistsUseCaseInterface,
         setBookmarkUseCase: SetBookmarkUseCaseInterface,
         deleteNoteUseCase: DeleteNoteUseCaseInterface
     ) {
-        self.getNotesUseCase = getNotesUseCase
+        self.selectedNote = selectedNote
+        self.getSongNotesUseCase = getSongNotesUseCase
         self.setNoteLikeUseCase = setNoteLikeUseCase
-        self.getFavoriteArtistsUseCase = getFavoriteArtistsUseCase
         self.setBookmarkUseCase = setBookmarkUseCase
         self.deleteNoteUseCase = deleteNoteUseCase
+        
+        
+        // mustHaveLyrics가 변경될 때 데이터를 새로 가져오는 로직
+        $mustHaveLyrics
+            .dropFirst()
+            .sink { [weak self] mustHaveLyrics in
+                self?.getSongNotes(isInitial: true)
+            }
+            .store(in: &cancellables)
     }
     
-    func fetchNotes(
-        isInitialFetch: Bool,
+    func getSongNotes(
+        isInitial: Bool,
         perPage: Int = 10
     ) {
-        self.getNotesUseCase.execute(
-            isInitial: isInitialFetch,
+        let songID = self.selectedNote.songID
+        
+        self.getSongNotesUseCase.execute(
+            isInitial: isInitial,
             perPage: perPage,
-            mustHaveLyrics: false
+            mustHaveLyrics: self.mustHaveLyrics,
+            songID: songID
         )
         .mapToResult()
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] result in
-            switch result {
-            case .success(let notes):
-                if isInitialFetch {
-                    self?.fetchedNotes = notes
-                } else {
-                    self?.fetchedNotes.append(contentsOf: notes)
-                }
-            case .failure(let error):
-                self?.error = .noteError(error)
-            }
-        }
-        .store(in: &cancellables)
-       
-    }
-    
-    func fetchFavoriteArtists(isInitialFetch: Bool) {
-        self.getFavoriteArtistsUseCase.execute(
-            isInitial: isInitialFetch,
-            perPage: 30
-        )
-        .mapToResult()
-        .receive(on: DispatchQueue.main)
         .sink { result in
             switch result {
-            case .success(let artists):
-                if isInitialFetch {
-                    self.fetchedFavoriteArtists = artists
+            case .success(let fetchedNotes):
+                if isInitial {
+                    self.fetchedNotes = fetchedNotes
                 } else {
-                    self.fetchedFavoriteArtists.append(contentsOf: artists)
+                    self.fetchedNotes.append(contentsOf: fetchedNotes)
                 }
             case .failure(let error):
-                self.error = .artistError(error)
+                self.error = error
             }
-        }
-        .store(in: &cancellables)
-    }
-}
-
-extension HomeViewModel {
-    
-    // MARK: - Refresh Data
-    
-    func refreshAllData() {
-        let getNotesPublisher = self.getNotesUseCase.execute(
-            isInitial: true,
-            perPage: 10,
-            mustHaveLyrics: false
-        )
-        .catch { [weak self] noteError in
-            self?.refreshState = .failed(.noteError(noteError))
-            
-            return Just<[Note]>([])
-                .eraseToAnyPublisher()
-        }
-        .eraseToAnyPublisher()
-        
-        let getFavoriteArtistsPublisher = self.getFavoriteArtistsUseCase.execute(
-            isInitial: true,
-            perPage: 30
-        )
-        .catch { [weak self] artistError in
-            self?.refreshState = .failed(.artistError(artistError))
-            
-            return Just<[Artist]>([])
-                .eraseToAnyPublisher()
-        }
-        .eraseToAnyPublisher()
-        
-        self.refreshState = .refreshing
-        
-        Publishers.Zip(
-            getNotesPublisher,
-            getFavoriteArtistsPublisher
-        )
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] (refreshedNotes, refreshedFavoriteArtists) in
-            self?.fetchedNotes = refreshedNotes
-            self?.fetchedFavoriteArtists = refreshedFavoriteArtists
-            
-            self?.refreshState = .completed
         }
         .store(in: &cancellables)
         
@@ -148,7 +80,7 @@ extension HomeViewModel {
 
 // MARK: - Like/Dislike note
 
-extension HomeViewModel {
+extension NoteDetailViewModel {
     func setNoteLikeState(
         noteID: Int,
         isLiked: Bool
@@ -179,7 +111,7 @@ extension HomeViewModel {
                 if let indexToUpdate = indexToUpdate {
                     self?.fetchedNotes[indexToUpdate].isLiked = !isLiked
                 }
-                self?.error = .noteError(error)
+                self?.error = error
                 
             }
         }
@@ -189,7 +121,7 @@ extension HomeViewModel {
 
 // MARK: - Bookmark
 
-extension HomeViewModel {
+extension NoteDetailViewModel {
     func setNoteBookmarkState(
         noteID: Int,
         isBookmarked: Bool
@@ -220,7 +152,7 @@ extension HomeViewModel {
                     self?.fetchedNotes[indexToUpdate].isBookmarked = !isBookmarked
                 }
                 
-                self?.error = .noteError(error)
+                self?.error = error
                 
             }
         }
@@ -230,7 +162,7 @@ extension HomeViewModel {
 
 // MARK: - Edit, Delete, Report Note
 
-extension HomeViewModel {
+extension NoteDetailViewModel {
     func deleteNote(id: Int) {
         self.deleteNoteUseCase.execute(noteID: id)
             .mapToResult()
@@ -241,7 +173,7 @@ extension HomeViewModel {
                     self.fetchedNotes.removeAll(where: { $0.id == id })
                     
                 case .failure(let noteError):
-                    self.error = .noteError(noteError)
+                    self.error = noteError
                 }
             }
             .store(in: &cancellables)

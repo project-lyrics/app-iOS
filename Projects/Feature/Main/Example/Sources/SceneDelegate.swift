@@ -150,6 +150,80 @@ extension SceneDelegate {
 //        
 //        window?.rootViewController = HomeViewController(viewModel: homeViewModel)
 //        window?.makeKeyAndVisible()
+        // --------------------MainViewController-------------------
+        
+        DIContainer.standard.register(.networkProvider) { _ in
+            return NetworkProvider(
+                networkSession: .init(requestInterceptor: MockTokenInterceptor())
+            )
+        }
+        
+        DIContainer.standard.register(.noteAPIService) { resolver in
+            let networkProvider = try resolver.resolve(.networkProvider)
+            return NoteAPIService(networkProvider: networkProvider)
+        }
+        
+        @Injected(.noteAPIService) var noteAPiService: NoteAPIServiceInterface
+        
+        @KeychainWrapper<UserInformation>(.userInfo)
+        var userInfo
+        
+        // 테스트용 유저 아이디
+        userInfo = .init(userID: 1)
+        
+        let getSearchedNoteUseCase = GetSearchedNotesUseCase(
+            noteAPIService: noteAPiService,
+            searchedNotePaginationService: SearchedNotePaginationService()
+        )
+        
+        let searchNoteViewModel = SearchNoteViewModel(getSearchedNotesUseCase: getSearchedNoteUseCase)
+        
+        window?.rootViewController = SearchNoteViewController(viewModel: searchNoteViewModel)
+        window?.makeKeyAndVisible()
+        
+        // --------------------SearchNoteViewController-------------------
+        
+        DIContainer.standard.register(.networkProvider) { _ in
+            return NetworkProvider(networkSession: .init(requestInterceptor: MockTokenInterceptor()))
+        }
+        
+        DIContainer.standard.register(.noteAPIService) { resolver in
+            let networkProvider = try resolver.resolve(.networkProvider)
+            
+            return NoteAPIService(networkProvider: networkProvider)
+        }
+        
+        @Injected(.noteAPIService) var noteAPIService: NoteAPIServiceInterface
+        
+        let getSongNotesUseCase = GetSongNotesUseCase(
+            noteAPIService: noteAPIService,
+            notePaginationService: NotePaginationService()
+        )
+        
+        let setNoteLikeUseCase = SetNoteLikeUseCase(noteAPIService: noteAPIService)
+        
+        let setBookmarkUseCase = SetBookmarkUseCase(noteAPIService: noteAPIService)
+        
+        let deleteNoteUseCase = DeleteNoteUseCase(noteAPIService: noteAPIService)
+        
+        let selectedNote = SearchedNote(
+            id: 1,
+            songName: "Flying Bobs",
+            artistName: "검정치마",
+            imageUrl: "https://i.scdn.co/image/ab67616d0000b2739c3a4e471c5e82a457dce2c0",
+            noteCount: 1
+        )
+        
+        let noteDetailViewModel = NoteDetailViewModel(
+            selectedNote: selectedNote,
+            getSongNotesUseCase: getSongNotesUseCase,
+            setNoteLikeUseCase: setNoteLikeUseCase,
+            setBookmarkUseCase: setBookmarkUseCase,
+            deleteNoteUseCase: deleteNoteUseCase
+        )
+        
+        window?.rootViewController = NoteDetailViewController(viewModel: noteDetailViewModel)
+        window?.makeKeyAndVisible()
     }
 }
 
@@ -227,5 +301,39 @@ import SwiftUI
 //            .asPreview()
 //    }
 //}
+
+//struct SearchNoteViewController_Preview: PreviewProvider {
+//    static var previews: some View {
+//        let viewModelForPreview = SearchNoteViewModel(
+//            getSearchedNotesUseCase: MockGetSearchedNotesUseCase()
+//        )
+//        
+//        return SearchNoteViewController(viewModel: viewModelForPreview)
+//            .asPreview()
+//    }
+//}
+
+struct NoteDetailViewController_Preview: PreviewProvider {
+    static var previews: some View {
+        let selectedNote = SearchedNote(
+            id: 1,
+            songName: "사랑하긴 했었나요 스쳐가는 인연이었나요 \n 짧지않은 우리 함께했던 시간들이 자꾸 내 마음을 가둬두네",
+            artistName: "잔나비",
+            imageUrl: "https://i.scdn.co/image/ab67616d0000b2739c3a4e471c5e82a457dce2c0",
+            noteCount: 1
+        )
+        
+        let viewModelForPreview = NoteDetailViewModel(
+            selectedNote: selectedNote,
+            getSongNotesUseCase: MockGetSongNotesUseCase(),
+            setNoteLikeUseCase: MockSetNoteLikeUseCase(),
+            setBookmarkUseCase: MockSetBookmarkUseCase(),
+            deleteNoteUseCase: MockDeleteNoteUseCase()
+        )
+        
+        return NoteDetailViewController(viewModel: viewModelForPreview)
+            .asPreview()
+    }
+}
 
 #endif
