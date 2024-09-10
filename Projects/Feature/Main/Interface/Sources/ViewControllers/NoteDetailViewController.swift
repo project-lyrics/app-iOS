@@ -200,22 +200,30 @@ public final class NoteDetailViewController: UIViewController, NoteMenuHandling,
     
     private func updateSnapshot(notes: [Note]) {
         var snapshot = noteDetailDataSource.snapshot()
-
+        
         // 섹션이 없을 경우 추가
         if !snapshot.sectionIdentifiers.contains(.note) {
             snapshot.appendSections([.note])
-        } else {
-            // 섹션에 이미 있는 기존 아이템 삭제
-            let currentItems = snapshot.itemIdentifiers(inSection: .note)
-            snapshot.deleteItems(currentItems)  // 기존 아이템 제거
         }
         
-        // 새로운 데이터를 추가
+        // 기존 섹션의 아이템을 가져오기
+        let currentItems = snapshot.itemIdentifiers(inSection: .note)
         let noteRows = notes.map { Row.note($0) }
-        snapshot.appendItems(noteRows, toSection: .note)
-
-        // 스냅샷을 적용하면서 애니메이션 적용
-        noteDetailDataSource.apply(snapshot, animatingDifferences: true)
+        
+        // 새로운 데이터와 기존 데이터를 비교하여 다른 경우에만 업데이트
+        if currentItems != noteRows {
+            // 기존 아이템 삭제
+            snapshot.deleteItems(currentItems)
+            
+            // 새로운 데이터 추가
+            snapshot.appendItems(noteRows, toSection: .note)
+            
+            // 스냅샷을 적용
+            noteDetailDataSource.apply(snapshot, animatingDifferences: true)
+        } else {
+            // 그 외에는 cell 갯수는 변화가 없으나 컨텐츠에 변화가 있다고 판단. reloadData 수행
+            noteDetailDataSource.applySnapshotUsingReloadData(snapshot)
+        }
     }
 }
 
