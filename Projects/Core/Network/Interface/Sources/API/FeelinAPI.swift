@@ -27,7 +27,7 @@ public enum FeelinAPI<R> {
     case deleteBookmarks(noteID: Int)
     case deleteNote(noteID: Int)
     case postNote(request: PostNoteRequest)
-    case searchSongs(query: String, cursor: Int?, size: Int)
+    case searchSongs(cursor: Int, size: Int, query: String, artistID: Int)
 }
 
 extension FeelinAPI: HTTPNetworking {
@@ -80,8 +80,7 @@ extension FeelinAPI: HTTPNetworking {
                 "hasLyrics": "\(hasLyrics)"
             ]
             
-        case .searchArtists(let query, let cursor, let size),
-             .searchSongs(let query, let cursor, let size):
+        case .searchArtists(let query, let cursor, let size):
             if let cursor = cursor {
                 return [
                     "query": "\(query)",
@@ -104,6 +103,15 @@ extension FeelinAPI: HTTPNetworking {
                 "noteId": noteID
             ]
             
+
+        case .searchSongs(let cursor, let size, let query, let artistID):
+            return [
+                "query": "\(query)",
+                "cursor": "\(cursor)",
+                "size": "\(size)",
+                "artistId": "\(artistID)"
+            ]
+
         default:
             return nil
         }
@@ -156,13 +164,13 @@ extension FeelinAPI: HTTPNetworking {
 
         case .reissueAccessToken:
             return "/api/v1/auth/token"
-            
+
         case .getArtists:
             return "/api/v1/artists"
-            
+
         case .searchArtists:
             return "/api/v1/artists/search"
-            
+
         case .postFavoriteArtists:
             return "/api/v1/favorite-artists/batch"
             
@@ -184,7 +192,7 @@ extension FeelinAPI: HTTPNetworking {
 		    return "/api/v1/notes"
 
         case .searchSongs:
-            return "/api/v1/songs/search"
+            return "/api/v1/songs/search/artists"
         }
     }
 
