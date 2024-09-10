@@ -99,6 +99,23 @@ extension SearchNoteViewController: UITableViewDelegate {
 
 private extension SearchNoteViewController {
     func bindUI() {
+        CombineKeyboard.keyboardHeightPublisher
+            .sink { [unowned self] height in
+                UIView.animate(withDuration: 0) {
+                    if !height.isZero {
+                        self.searchNoteTableView.contentInset = .init(
+                            top: 0,
+                            left: 0,
+                            bottom: height,
+                            right: 0
+                        )
+                    } else {
+                        self.searchNoteTableView.contentInset = .zero
+                    }
+                }
+            }
+            .store(in: &cancellables)
+        
         viewModel.$error
             .compactMap { $0 }
             .sink { [weak self] error in
