@@ -32,6 +32,63 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
     public let onEditNote: PassthroughSubject<Int, Never> = .init()
     public let onDeleteNote: PassthroughSubject<Int, Never> = .init()
     
+    // MARK: - DiffableDataSource
+    
+    private typealias HomeDataSource = UICollectionViewDiffableDataSource<Section, Row>
+    private typealias HomeSnapshot = NSDiffableDataSourceSnapshot<Section, Row>
+
+    private enum Section: Hashable {
+        case banner
+        case favoriteArtists
+        case notes
+    }
+
+    private enum Row: Hashable {
+        case banner
+        case favoriteArtist(Artist)
+        case searchArtist
+        case note(Note)
+        case emptyNote
+    }
+
+    private lazy var homeDataSource: HomeDataSource = {
+        let dataSource = HomeDataSource(collectionView: self.homeCollectionView) { collectionView, indexPath, item in
+            switch item {
+            case .banner:
+                let cell = collectionView.dequeueReusableCell(for: indexPath, cellType: BannerCell.self)
+                return cell
+                
+            case .searchArtist:
+                let cell = collectionView.dequeueReusableCell(for: indexPath, cellType: SearchArtistCell.self)
+                return cell
+                
+            case .favoriteArtist(let artist):
+                let cell = collectionView.dequeueReusableCell(for: indexPath, cellType: FeelinArtistCell.self)
+                cell.configure(artistName: artist.name, artistImageURL: try? artist.imageSource?.asURL())
+                return cell
+                
+            case .emptyNote:
+                let cell = collectionView.dequeueReusableCell(for: indexPath, cellType: EmptyNoteCell.self)
+                
+                return cell
+                
+            case .note(let note):
+                let cell = collectionView.dequeueReusableCell(for: indexPath, cellType: NoteCell.self)
+                cell.configure(with: note)
+                
+                cell.likeNoteButton.publisher(for: .touchUpInside)
+                    .debounce(for: .milliseconds(600), scheduler: DispatchQueue.main)
+                    .sink { [weak self] control in
+                        self?.viewModel.setNoteLikeState(noteID: note.id, isLiked: control.isSelected)
+                    }
+                    .store(in: &self.cancellables)
+                
+                return cell
+            }
+        }
+        return dataSource
+    }()
+    
     // MARK: - Init
     
     public init(viewModel: HomeViewModel) {
@@ -49,6 +106,26 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
         self.view = homeView
     }
     
+    private func updateSnapshot() {
+        var snapshot = HomeSnapshot()
+        
+        snapshot.appendSections([.banner])
+        snapshot.appendItems([.banner], toSection: .banner)
+        
+        snapshot.appendSections([.favoriteArtists])
+        snapshot.appendItems([.searchArtist], toSection: .favoriteArtists)
+        let favoriteArtistItems = viewModel.fetchedFavoriteArtists.map { Row.favoriteArtist($0) }
+        snapshot.appendItems(favoriteArtistItems, toSection: .favoriteArtists)
+        
+        snapshot.appendSections([.notes])
+        let noteItems = viewModel.fetchedNotes.isEmpty
+            ? [Row.emptyNote]
+            : viewModel.fetchedNotes.map { Row.note($0) }
+        snapshot.appendItems(noteItems, toSection: .notes)
+        
+        homeDataSource.apply(snapshot, animatingDifferences: true)
+    }
+
     override public func viewDidLoad() {
         super.viewDidLoad()
         
