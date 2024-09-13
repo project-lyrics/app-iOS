@@ -59,6 +59,12 @@ public final class LyricsBackgroundView: UIView {
 
         backgroundColor = Colors.background
         self.setUpLayout()
+
+        self.backgroundCollectionView.selectItem(
+            at: IndexPath(item: 0, section: 0),
+            animated: false,
+            scrollPosition: .top
+        )
     }
 
     @available(*, unavailable)
@@ -76,7 +82,7 @@ public final class LyricsBackgroundView: UIView {
     private func setUpLayout() {
         self.addSubview(flexContainer)
         backgroundColor = Colors.background
-        
+
         flexContainer
             .flex
             .direction(.column)
@@ -108,7 +114,7 @@ public final class LyricsBackgroundView: UIView {
 
 // MARK: - UICollectionViewDataSource
 
-extension LyricsBackgroundView: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+extension LyricsBackgroundView: UICollectionViewDataSource, UICollectionViewDelegate {
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return LyricsBackground.allCases.count
     }
@@ -136,3 +142,4 @@ struct LyricsBackgroundView_Preview: PreviewProvider {
     }
 }
 #endif
+

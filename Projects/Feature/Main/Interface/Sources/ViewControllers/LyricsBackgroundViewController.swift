@@ -13,7 +13,7 @@ import Shared
 
 public final class LyricsBackgroundViewController: BottomSheetViewController<LyricsBackgroundView> {
     private var selectedBackgroundIndex: Int = 0
-    public let lyricsBackgroundSelectionIndexPublisher = CurrentValueSubject<Int, Never>(0)
+    public let backgroundPublisher = CurrentValueSubject<LyricsBackground?, Never>(.default)
 
     private var cancellables = Set<AnyCancellable>()
 
@@ -33,11 +33,11 @@ public final class LyricsBackgroundViewController: BottomSheetViewController<Lyr
         confirmButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in
                 guard let self = self else { return }
-                lyricsBackgroundSelectionIndexPublisher.send(selectedBackgroundIndex)
+                backgroundPublisher.send(LyricsBackground.allCases[selectedBackgroundIndex])
                 dismiss(animated: true)
             }
             .store(in: &cancellables)
-
+        
         lyricsBackgroundCollectionView.publisher(for: [.didSelectItem, .didDeselectItem])
             .sink { [weak self] indexPath in
                 guard let self = self else { return }
