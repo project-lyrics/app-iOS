@@ -72,10 +72,10 @@ public final class SearchSongWebView: UIView {
             .flex
             .direction(.column)
             .marginTop(24)
+            .marginHorizontal(20)
             .define { flex in
                 flex.addItem()
                     .direction(.row)
-                    .marginHorizontal(20)
                     .marginBottom(20)
                     .define { flex in
                         flex.addItem(titleLabel)
@@ -87,7 +87,6 @@ public final class SearchSongWebView: UIView {
 
                 flex.addItem(webView)
                     .height(88%)
-                    .marginHorizontal(20)
             }
     }
 }
