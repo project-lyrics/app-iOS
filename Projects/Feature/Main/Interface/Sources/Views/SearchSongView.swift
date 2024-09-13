@@ -40,11 +40,10 @@ final class SearchSongView: UIView {
         return label
     }()
 
-    let searchBarView = SearchBarView()
+    let searchBarView = FeelinSearchBar(placeholder: "곡 검색")
 
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: 350, height: 64)
         layout.minimumLineSpacing = 0
         layout.scrollDirection = .vertical
 
@@ -53,8 +52,8 @@ final class SearchSongView: UIView {
         collectionView.register(cellType: SongCollectionViewCell.self)
         collectionView.allowsMultipleSelection = false
         collectionView.showsVerticalScrollIndicator = false
-        return collectionView
 
+        return collectionView
     }()
 
     override init(frame: CGRect) {
@@ -70,6 +69,10 @@ final class SearchSongView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
 
+        if let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+            layout.itemSize = CGSize(width: collectionView.bounds.width, height: 64)
+        }
+
         flexContainer.pin.all(pin.safeArea)
         flexContainer.flex.layout()
     }
@@ -83,18 +86,18 @@ final class SearchSongView: UIView {
         flexContainer
             .flex
             .direction(.column)
+            .marginHorizontal(20)
             .define { flex in
                 flex.addItem(navigationBar)
                     .height(44)
                     .marginTop(pin.safeArea.top)
 
                 flex.addItem(searchBarView)
-                    .marginHorizontal(20)
                     .marginTop(16)
-
+                
                 flex.addItem(collectionView)
-                    .marginHorizontal(20)
                     .marginTop(16)
+                    .grow(1)
             }
     }
 }
