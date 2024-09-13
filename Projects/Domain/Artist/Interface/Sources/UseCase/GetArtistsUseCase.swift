@@ -21,11 +21,11 @@ public protocol GetArtistsUseCaseInterface {
 
 public struct GetArtistsUseCase: GetArtistsUseCaseInterface {
     private let artistAPIService: ArtistAPIServiceInterface
-    private let artistPaginationService: PaginationServiceInterface
-    
+    private let artistPaginationService: ArtistPaginationServiceInterface
+
     public init(
         artistAPIService: ArtistAPIServiceInterface,
-        artistPaginationService: PaginationServiceInterface
+        artistPaginationService: ArtistPaginationServiceInterface
     ) {
         self.artistAPIService = artistAPIService
         self.artistPaginationService = artistPaginationService
