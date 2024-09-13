@@ -9,7 +9,11 @@ import Core
 import Foundation
 import Combine
 
-public struct PostNoteUseCase {
+public protocol PostNoteUseCaseInterface {
+    func execute(value: PostNoteValue) -> AnyPublisher<NoteResult, NoteError>
+}
+
+public struct PostNoteUseCase: PostNoteUseCaseInterface {
     private let noteService: NoteServiceInterface
 
     public init(
