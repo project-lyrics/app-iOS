@@ -129,8 +129,8 @@ public extension DIContainer {
     }
 
     static func registerDependenciesForPostNote() {
-        standard.register(.paginationService) { _ in
-            return PaginationService()
+        standard.register(.songPaginationService) { _ in
+            return SongPaginationService()
         }
         
         standard.register(.noteService) { resolver in
