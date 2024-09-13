@@ -14,7 +14,7 @@ extension NoteService: NoteServiceInterface {
         value: PostNoteValue
     ) -> AnyPublisher<NoteResult, NoteError> {
         let request = value.toDTO()
-        let endpoint = FeelinAPI<FeelinDefaultResponse>.postNote(
+        let endpoint = FeelinAPI<FeelinSuccessResponse>.postNote(
             request: request
         )
 
@@ -28,13 +28,15 @@ extension NoteService: NoteServiceInterface {
 
     public func searchSong(
         keyword: String,
-        currentPage: Int?,
-        numberOfSongs: Int
+        currentPage: Int,
+        numberOfSongs: Int,
+        artistID: Int
     ) -> AnyPublisher<SearchSongResponse, NoteError> {
         let endpoint = FeelinAPI<SearchSongResponse>.searchSongs(
-            query: keyword,
             cursor: currentPage,
-            size: numberOfSongs
+            size: numberOfSongs,
+            query: keyword,
+            artistID: artistID
         )
         return networkProvider.request(endpoint)
             .mapError(NoteError.init)

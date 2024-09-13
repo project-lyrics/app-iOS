@@ -15,8 +15,9 @@ public protocol NoteServiceInterface {
     ) -> AnyPublisher<NoteResult, NoteError>
     func searchSong(
         keyword: String,
-        currentPage: Int?,
-        numberOfSongs: Int
+        currentPage: Int,
+        numberOfSongs: Int,
+        artistID: Int
     ) -> AnyPublisher<SearchSongResponse, NoteError>
 }
 

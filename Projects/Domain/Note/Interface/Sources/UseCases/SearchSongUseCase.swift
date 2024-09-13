@@ -11,13 +11,21 @@ import Combine
 import Core
 import DomainSharedInterface
 
-public struct SearchSongUseCase {
+public protocol SearchSongUseCaseInterface {
+    func execute(
+        keyword: String,
+        numberOfSongs: Int,
+        artistID: Int
+    ) -> AnyPublisher<[Song], NoteError>
+}
+
+public struct SearchSongUseCase: SearchSongUseCaseInterface {
     private let noteService: NoteServiceInterface
-    private let songPaginationService: PaginationServiceInterface
+    private let songPaginationService: SongPaginationServiceInterface
 
     public init(
         noteService: NoteServiceInterface,
-        songPaginationService: PaginationServiceInterface
+        songPaginationService: SongPaginationServiceInterface
     ) {
         self.noteService = noteService
         self.songPaginationService = songPaginationService
@@ -25,7 +33,8 @@ public struct SearchSongUseCase {
 
     public func execute(
         keyword: String,
-        numberOfSongs: Int
+        numberOfSongs: Int,
+        artistID: Int
     ) -> AnyPublisher<[Song], NoteError> {
         if songPaginationService.isLoading {
             return Empty()
@@ -36,7 +45,7 @@ public struct SearchSongUseCase {
         if songPaginationService.currentSearchWord != keyword {
             songPaginationService.setCurrentSearchWord(keyword)
             songPaginationService.update(
-                currentPage: nil,
+                currentPage: 0,
                 hasNextPage: true
             )
         }
@@ -52,7 +61,8 @@ public struct SearchSongUseCase {
         return noteService.searchSong(
             keyword: keyword,
             currentPage: songPaginationService.currentPage,
-            numberOfSongs: numberOfSongs
+            numberOfSongs: numberOfSongs, 
+            artistID: artistID
         )
         .receive(on: DispatchQueue.main)
         .map { [weak songPaginationService] songsResponse in
