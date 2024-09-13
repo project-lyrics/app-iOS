@@ -82,7 +82,6 @@ final class SongCollectionViewCell: UICollectionViewCell, Reusable {
             .flex
             .direction(.row)
             .justifyContent(.center)
-            .marginHorizontal(20)
             .marginVertical(12)
             .define { flex in
                 flex.addItem(songIconImageView)
