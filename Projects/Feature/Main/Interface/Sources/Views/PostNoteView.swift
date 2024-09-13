@@ -7,6 +7,9 @@
 
 import UIKit
 import Shared
+import Domain
+
+import Kingfisher
 import FlexLayout
 import PinLayout
 
@@ -18,10 +21,7 @@ final class PostNoteView: UIView {
     lazy var closeButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-
-        let userInterfaceStyle = traitCollection.userInterfaceStyle
-        let image = userInterfaceStyle == .light ? FeelinImages.xDark : FeelinImages.xDark
-        button.setImage(image, for: .normal)
+        button.setImage(FeelinImages.xLight, for: .normal)
 
         return button
     }()
@@ -52,14 +52,14 @@ final class PostNoteView: UIView {
         return view
     }()
 
-    let iconImageView: UIImageView = {
+    private let iconImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = FeelinImages.album
 
         return imageView
     }()
 
-    let addTrackLabel: UILabel = {
+    private let addTrackLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "곡을 추가해주세요."
@@ -69,7 +69,7 @@ final class PostNoteView: UIView {
         return label
     }()
 
-    let titleOfSongLabel: UILabel = {
+    private let titleOfSongLabel: UILabel = {
         let label = UILabel()
         label.font = SharedDesignSystemFontFamily.Pretendard.medium.font(size: 14)
         label.textColor = Colors.gray08
@@ -78,7 +78,7 @@ final class PostNoteView: UIView {
         return label
     }()
 
-    let artistNameLabel: UILabel = {
+    private let artistNameLabel: UILabel = {
         let label = UILabel()
         label.textColor = Colors.gray04
         label.font = SharedDesignSystemFontFamily.Pretendard.medium.font(size: 12)
@@ -155,11 +155,22 @@ final class PostNoteView: UIView {
         return label
     }()
 
+    private var keyboardHeightConstraint: NSLayoutConstraint?
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
         setUpDefaults()
         setUpLayout()
+    }
+
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        endEditing(true)
+    }
+
+    deinit {
+        removeKeyboardObservers()
     }
 
     @available(*, unavailable)
@@ -189,6 +200,8 @@ final class PostNoteView: UIView {
 
         selectLyricsBackgroundButton.configure(title: "가사 배경", image: FeelinImages.gallery)
         searchLyricsButton.configure(title: "가사 검색", image: FeelinImages.searchDark)
+
+        setUpKeyboardEvent()
     }
 
     private func setUpLayout() {
@@ -200,6 +213,7 @@ final class PostNoteView: UIView {
 
         rootFlexContainer
             .flex
+            .paddingHorizontal(20)
             .direction(.column)
             .define { rootFlex in
                 rootFlex.addItem(navigationBar)
@@ -207,6 +221,7 @@ final class PostNoteView: UIView {
                     .marginTop(pin.safeArea.top)
 
                 rootFlex.addItem(rootScrollView)
+                    .direction(.column)
                     .marginTop(16)
                     .define { rootScrollFlex in
                         rootScrollFlex.addItem(contentView)
@@ -224,7 +239,7 @@ final class PostNoteView: UIView {
             }
 
         rootScrollView.addSubview(addTrackLabel)
-        rootScrollView.addSubview(noteCharCountLabel)
+        addSubview(noteCharCountLabel)
 
         NSLayoutConstraint.activate([
             addTrackLabel.centerYAnchor.constraint(
@@ -236,13 +251,12 @@ final class PostNoteView: UIView {
             )
         ])
 
+        keyboardHeightConstraint = noteCharCountLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -33)
+        keyboardHeightConstraint?.isActive = true
+
         NSLayoutConstraint.activate([
-            noteCharCountLabel.bottomAnchor.constraint(
-                equalTo: rootFlexContainer.bottomAnchor,
-                constant: -12
-            ),
             noteCharCountLabel.trailingAnchor.constraint(
-                equalTo: rootFlexContainer.trailingAnchor,
+                equalTo: trailingAnchor,
                 constant: -20
             )
         ])
@@ -267,11 +281,10 @@ final class PostNoteView: UIView {
                     .grow(1)
                     .define { flex in
                         flex.addItem(titleOfSongLabel)
+                            .view?.isHidden = true
                         flex.addItem(artistNameLabel)
+                            .view?.isHidden = true
                     }
-                    .view?.isHidden = true
-
-                flex.addItem(addTrackLabel)
 
                 flex.addItem(addToPlayButton)
                     .size(40)
@@ -292,7 +305,7 @@ final class PostNoteView: UIView {
                     .define { flex in
                         flex.addItem(lyricsTextView)
                             .height(132)
-                            .position(.relative)
+                            .width(100%)
                             .define { flex in
                                 flex.addItem(lyricsCharCountLabel)
                                     .position(.absolute)
@@ -314,5 +327,70 @@ final class PostNoteView: UIView {
                         flex.addItem(searchLyricsButton)
                     }
             }
+    }
+
+    private func setUpKeyboardEvent() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+    }
+
+    private func removeKeyboardObservers() {
+        NotificationCenter.default.removeObserver(
+            self,
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        NotificationCenter.default.removeObserver(
+            self,
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+    }
+
+    @objc private func keyboardWillShow(notification: NSNotification) {
+        if let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
+            let keyboardHeight = keyboardFrame.height
+            rootScrollView.contentInset.bottom = keyboardHeight
+            rootScrollView.verticalScrollIndicatorInsets.bottom = keyboardHeight
+
+            keyboardHeightConstraint?.constant = -keyboardHeight - 12
+            UIView.animate(withDuration: 0.3) {
+                self.layoutIfNeeded()
+            }
+        }
+    }
+
+    @objc private func keyboardWillHide(notification: NSNotification) {
+        rootScrollView.contentInset.bottom = 0
+        rootScrollView.verticalScrollIndicatorInsets.bottom = 0
+
+        keyboardHeightConstraint?.constant = -12
+        UIView.animate(withDuration: 0.3) {
+            self.layoutIfNeeded()
+        }
+    }
+
+    func configure(_ item: Song) {
+        let imageUrl = URL(string: item.imageUrl)
+        iconImageView.kf.setImage(with: imageUrl)
+
+        titleOfSongLabel.text = item.name
+        artistNameLabel.text = item.artist.name
+
+        addToPlayButton.setImage(FeelinImages.play, for: .normal)
+
+        addTrackLabel.isHidden = true
+        titleOfSongLabel.isHidden = false
+        artistNameLabel.isHidden = false
     }
 }
