@@ -114,9 +114,9 @@ public final class PostNoteViewController: UIViewController {
             }
             .store(in: &cancellables)
 
-        let lyricsTextViewTypePublisher = lyricsTextView.textPublisher(for: [.didBeginEditing, .didChange])
+        let lyricsTextViewTypePublisher = lyricsTextView.textPublisher(for: [ .didChange])
             .map { [weak self] _ in self?.lyricsTextView.text }
-            .prepend(lyricsTextView.text) // 구독 시 바로 현재 텍스트를 방출
+            .prepend(nil)
             .eraseToAnyPublisher()
 
         let lyricsBackgroundSelectPublisher = lyricsBackgroundViewController.backgroundPublisher.eraseToAnyPublisher()
@@ -170,22 +170,12 @@ public final class PostNoteViewController: UIViewController {
             .assign(to: \.isEnabled, on: completeButton)
             .store(in: &cancellables)
 
-        // 가사 텍스트 뷰 편집 가능 여부 바인딩
-        output.isSelectedSong
-            .assign(to: \.isUserInteractionEnabled, on: lyricsTextView)
-            .store(in: &cancellables)
-
         output.isSelectedSong
             .assign(to: \.isEnabled, on: searchLyricsButton)
             .store(in: &cancellables)
 
         output.isEnabledLyricsBackgroundButton
             .assign(to: \.isEnabled, on: selectLyricsBackgroundButton)
-            .store(in: &cancellables)
-
-        // 가사 배경 버튼 활성화 여부 바인딩
-        output.isEnabledLyricsBackgroundButton
-            .assign(to: \.isUserInteractionEnabled, on: selectLyricsBackgroundButton)
             .store(in: &cancellables)
 
         output.isSelectedLyricsBackground

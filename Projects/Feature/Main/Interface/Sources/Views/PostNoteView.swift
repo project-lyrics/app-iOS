@@ -374,7 +374,7 @@ final class PostNoteView: UIView {
         rootScrollView.contentInset.bottom = 0
         rootScrollView.verticalScrollIndicatorInsets.bottom = 0
 
-        keyboardHeightConstraint?.constant = -12
+        keyboardHeightConstraint?.constant = -33
         UIView.animate(withDuration: 0.3) {
             self.layoutIfNeeded()
         }
