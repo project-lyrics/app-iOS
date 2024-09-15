@@ -32,7 +32,6 @@ final class SearchSongView: UIView {
 
     private let naviTitleLabel: UILabel = {
         let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "곡 추가"
         label.font = SharedDesignSystemFontFamily.Pretendard.bold.font(size: 18)
         label.textColor = Colors.gray09
