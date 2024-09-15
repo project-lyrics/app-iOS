@@ -10,7 +10,7 @@ import Foundation
 import Combine
 
 public protocol PostNoteUseCaseInterface {
-    func execute(value: PostNoteValue) -> AnyPublisher<NoteResult, NoteError>
+    func execute(value: PostNoteValue) ->AnyPublisher<FeelinSuccessResponse, NoteError>
 }
 
 public struct PostNoteUseCase: PostNoteUseCaseInterface {
@@ -22,8 +22,7 @@ public struct PostNoteUseCase: PostNoteUseCaseInterface {
         self.noteAPIService = noteAPIService
     }
 
-    public func execute(value: PostNoteValue) -> AnyPublisher<NoteResult, NoteError> {
-        return noteService.postNote(value: value)
+    public func execute(value: PostNoteValue) -> AnyPublisher<FeelinSuccessResponse, NoteError> {
         return noteAPIService.postNote(value: value)
             .eraseToAnyPublisher()
     }
