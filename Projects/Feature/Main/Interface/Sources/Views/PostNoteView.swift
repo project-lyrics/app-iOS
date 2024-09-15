@@ -73,7 +73,6 @@ final class PostNoteView: UIView {
         let label = UILabel()
         label.font = SharedDesignSystemFontFamily.Pretendard.medium.font(size: 14)
         label.textColor = Colors.gray08
-        label.text = "NO PAIN"
 
         return label
     }()
@@ -82,7 +81,6 @@ final class PostNoteView: UIView {
         let label = UILabel()
         label.textColor = Colors.gray04
         label.font = SharedDesignSystemFontFamily.Pretendard.medium.font(size: 12)
-        label.text = "실리카겔"
 
         return label
     }()

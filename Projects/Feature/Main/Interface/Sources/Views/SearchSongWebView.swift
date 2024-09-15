@@ -24,8 +24,8 @@ public final class SearchSongWebView: UIView {
         label.font = SharedDesignSystemFontFamily.Pretendard.semiBold.font(size: 16)
         label.textColor = Colors.gray09
         label.textAlignment = .left
-
         label.text = "가사 검색"
+        
         return label
     }()
 
@@ -37,10 +37,6 @@ public final class SearchSongWebView: UIView {
 
     let webView: WKWebView = {
         let webView = WKWebView()
-        let url = URL(string: "https://search.naver.com/search.naver?query=%EC%8B%A4%EB%A6%AC%EC%B9%B4%EA%B2%94+no+pain")!
-        let urlRequest = URLRequest(url: url)
-        webView.load(urlRequest)
-
         return webView
     }()
 

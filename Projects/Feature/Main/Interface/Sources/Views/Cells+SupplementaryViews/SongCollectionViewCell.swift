@@ -21,18 +21,12 @@ final class SongCollectionViewCell: UICollectionViewCell, Reusable {
     private let songIconImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
-        imageView.kf.setImage(
-            with: URL(
-                string: "https://flexible.img.hani.co.kr/flexible/normal/970/760/imgdb/original/2024/0124/20240124502847.jpg"
-            )
-        )
 
         return imageView
     }()
 
     private let songLabel = {
         let label = UILabel()
-        label.text = "APEX"
         label.font = SharedDesignSystemFontFamily.Pretendard.medium.font(size: 14)
         label.textColor = Colors.gray08
         label.textAlignment = .left
@@ -42,7 +36,6 @@ final class SongCollectionViewCell: UICollectionViewCell, Reusable {
 
     private let artistNameLabel = {
         let label = UILabel()
-        label.text = "실리카겔"
         label.font = SharedDesignSystemFontFamily.Pretendard.medium.font(size: 12)
         label.textColor = Colors.gray04
         label.textAlignment = .left
