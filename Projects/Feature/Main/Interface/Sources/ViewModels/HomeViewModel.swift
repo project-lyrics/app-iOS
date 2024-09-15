@@ -235,13 +235,13 @@ extension HomeViewModel {
         self.deleteNoteUseCase.execute(noteID: id)
             .mapToResult()
             .receive(on: DispatchQueue.main)
-            .sink { result in
+            .sink { [weak self] result in
                 switch result {
                 case .success:
-                    self.fetchedNotes.removeAll(where: { $0.id == id })
+                    self?.fetchedNotes.removeAll(where: { $0.id == id })
                     
                 case .failure(let noteError):
-                    self.error = .noteError(noteError)
+                    self?.error = .noteError(noteError)
                 }
             }
             .store(in: &cancellables)

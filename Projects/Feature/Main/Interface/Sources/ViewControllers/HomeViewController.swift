@@ -25,7 +25,6 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
     
     private var homeView: HomeView = .init()
     
-    
     // MARK: - NoteMenu Subjects
     
     public let onReportNote: PassthroughSubject<Int, Never> = .init()
@@ -35,14 +34,13 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
     // MARK: - DiffableDataSource
     
     private typealias HomeDataSource = UICollectionViewDiffableDataSource<Section, Row>
-    private typealias HomeSnapshot = NSDiffableDataSourceSnapshot<Section, Row>
-
+    
     private enum Section: Hashable {
         case banner
         case favoriteArtists
         case notes
     }
-
+    
     private enum Row: Hashable {
         case banner
         case favoriteArtist(Artist)
@@ -50,7 +48,7 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
         case note(Note)
         case emptyNote
     }
-
+    
     private lazy var homeDataSource: HomeDataSource = {
         let dataSource = HomeDataSource(collectionView: self.homeCollectionView) { collectionView, indexPath, item in
             switch item {
@@ -83,9 +81,93 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
                     }
                     .store(in: &self.cancellables)
                 
+                cell.bookmarkButton.publisher(for: .touchUpInside)
+                    .debounce(
+                        for: .milliseconds(600),
+                        scheduler: DispatchQueue.main
+                    )
+                    .sink { [unowned self] control in
+                        self.viewModel.setNoteBookmarkState(
+                            noteID: note.id,
+                            isBookmarked: control.isSelected
+                        )
+                    }
+                    .store(in: &self.cancellables)
+                
+                cell.moreAboutContentButton.publisher(for: .touchUpInside)
+                    .sink { [unowned self] _ in
+                        if let noteMenuViewController = self.makeNoteMenuViewController(checking: note) {
+                            self.present(noteMenuViewController, animated: false)
+                        } else {
+                            // TODO: - 비회원 알림을 추후 보여줘야 한다.
+                        }
+                    }
+                    .store(in: &self.cancellables)
+                
+                cell.playMusicButton.publisher(for: .touchUpInside)
+                    .throttle(
+                        for: .milliseconds(600),
+                        scheduler: DispatchQueue.main,
+                        latest: false
+                    )
+                    .sink { [unowned self] _ in
+                        self.openYouTube(query: "\(note.song.artist.name) \(note.song.name)")
+                    }
+                    .store(in: &self.cancellables)
+                
                 return cell
             }
         }
+        
+        dataSource.supplementaryViewProvider = { [unowned self] (collectionView, kind, indexPath) in
+            switch indexPath.section {
+            case HomeView.favoriteArtistSectionIndex:
+                switch kind {
+                case FavoriteArtistsHeaderView.reuseIdentifier:
+                    let favoriteArtistsHeaderView = collectionView.dequeueReusableSupplementaryView(
+                        ofKind: kind,
+                        for: indexPath,
+                        viewType: FavoriteArtistsHeaderView.self
+                    )
+                    
+                    viewModel.$fetchedFavoriteArtists
+                        .map { !$0.isEmpty }
+                        .assign(to: \.isEnabled, on: favoriteArtistsHeaderView.viewAllButton)
+                        .store(in: &cancellables)
+                    
+                    return favoriteArtistsHeaderView
+                    
+                case SectionDividerView.reuseIdentifier:
+                    let sectionDividerView = collectionView.dequeueReusableSupplementaryView(
+                        ofKind: kind,
+                        for: indexPath,
+                        viewType: SectionDividerView.self
+                    )
+                    
+                    return sectionDividerView
+                    
+                default:
+                    return UICollectionReusableView()
+                }
+                
+            case HomeView.notesSectionIndex:
+                if kind == NotesHeaderView.reuseIdentifier {
+                    let notesHeaderView = collectionView.dequeueReusableSupplementaryView(
+                        ofKind: kind,
+                        for: indexPath,
+                        viewType: NotesHeaderView.self
+                    )
+                    
+                    return notesHeaderView
+                } else {
+                    return UICollectionReusableView()
+                }
+                
+            default:
+                return UICollectionReusableView()
+            }
+        }
+        
         return dataSource
     }()
     
@@ -106,39 +188,89 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
         self.view = homeView
     }
     
-    private func updateSnapshot() {
-        var snapshot = HomeSnapshot()
+    private func updateBanner() {
+        var snapshot = homeDataSource.snapshot()
         
-        snapshot.appendSections([.banner])
-        snapshot.appendItems([.banner], toSection: .banner)
-        
-        snapshot.appendSections([.favoriteArtists])
-        snapshot.appendItems([.searchArtist], toSection: .favoriteArtists)
-        let favoriteArtistItems = viewModel.fetchedFavoriteArtists.map { Row.favoriteArtist($0) }
-        snapshot.appendItems(favoriteArtistItems, toSection: .favoriteArtists)
-        
-        snapshot.appendSections([.notes])
-        let noteItems = viewModel.fetchedNotes.isEmpty
-            ? [Row.emptyNote]
-            : viewModel.fetchedNotes.map { Row.note($0) }
-        snapshot.appendItems(noteItems, toSection: .notes)
-        
+        // banner 섹션을 추가 (초기 로드만)
+        if !snapshot.sectionIdentifiers.contains(.banner) {
+            snapshot.appendSections([.banner])
+            snapshot.appendItems([.banner], toSection: .banner)
+        }
         homeDataSource.apply(snapshot, animatingDifferences: true)
     }
-
-    override public func viewDidLoad() {
-        super.viewDidLoad()
+    
+    private func updateFavoriteArtists(_ favoriteArtists: [Artist]) {
+        var snapshot = homeDataSource.snapshot()
         
-        self.setUpDelegates()
-        self.viewModel.fetchNotes(isInitialFetch: true)
-        self.viewModel.fetchFavoriteArtists(isInitialFetch: true)
-        
-        self.bindUI()
-        self.bindAction()
+        // favoriteArtists 섹션을 업데이트
+        if snapshot.sectionIdentifiers.contains(.favoriteArtists) {
+            let currentItems = snapshot.itemIdentifiers(inSection: .favoriteArtists)
+            let newArtistItems = favoriteArtists.map { Row.favoriteArtist($0) }
+            if currentItems != newArtistItems {
+                snapshot.deleteItems(currentItems)
+                snapshot.appendItems(newArtistItems, toSection: .favoriteArtists)
+            }
+        } else {
+            snapshot.appendSections([.favoriteArtists])
+            snapshot.appendItems(favoriteArtists.map { Row.favoriteArtist($0) }, toSection: .favoriteArtists)
+        }
+        homeDataSource.apply(snapshot, animatingDifferences: true)
     }
     
-    private func setUpDelegates() {
-        homeView.homeCollectionView.dataSource = self
+    private func updateNotes(_ notes: [Note]) {
+        var snapshot = homeDataSource.snapshot()
+        
+        // notes 섹션이 있는 경우
+        if snapshot.sectionIdentifiers.contains(.notes) {
+            let currentItems = snapshot.itemIdentifiers(inSection: .notes)
+            
+            if notes.isEmpty {
+                // notes가 비어있으면 Row.emptyNote를 추가
+                if !currentItems.contains(.emptyNote) {
+                    snapshot.deleteItems(currentItems)
+                    snapshot.appendItems([.emptyNote], toSection: .notes)
+                }
+            } else {
+                // notes가 1개 이상이면 Row.emptyNote를 삭제하고 notes를 추가
+                let newNoteItems = notes.map { Row.note($0) }
+                
+                if currentItems.contains(.emptyNote) {
+                    snapshot.deleteItems([.emptyNote])
+                }
+
+                // 기존 노트 항목과 새로운 항목이 다를 경우 업데이트
+                if currentItems != newNoteItems {
+                    snapshot.deleteItems(currentItems)
+                    snapshot.appendItems(newNoteItems, toSection: .notes)
+                }
+            }
+
+            // 애니메이션 적용 여부: 항목 개수가 바뀌었을 때만 애니메이션 적용
+            let itemCountChanged = notes.count != currentItems.count
+            homeDataSource.apply(snapshot, animatingDifferences: itemCountChanged)
+
+        } else {
+            // notes 섹션이 처음 추가될 때
+            snapshot.appendSections([.notes])
+            
+            if notes.isEmpty {
+                // notes가 비어있으면 Row.emptyNote 추가
+                snapshot.appendItems([.emptyNote], toSection: .notes)
+            } else {
+                // notes가 있으면 Row.note 추가
+                snapshot.appendItems(notes.map { Row.note($0) }, toSection: .notes)
+            }
+
+            homeDataSource.apply(snapshot, animatingDifferences: false)
+        }
+    }
+    
+    override public func viewDidLoad() {
+        super.viewDidLoad()
+        self.viewModel.fetchNotes(isInitialFetch: true)
+        self.viewModel.fetchFavoriteArtists(isInitialFetch: true)
+        self.bindUI()
+        self.bindAction()
     }
 }
 
@@ -147,6 +279,8 @@ private extension HomeViewController {
     // MARK: - Bindings
     
     func bindUI() {
+        self.updateBanner()
+        
         viewModel.$error
             .compactMap { $0 }
             .sink { [weak self] error in
@@ -178,14 +312,17 @@ private extension HomeViewController {
             })
             .store(in: &cancellables)
         
-        Publishers.CombineLatest(
-            viewModel.$fetchedNotes,
-            viewModel.$fetchedFavoriteArtists
-        )
-        .sink { [weak self] _ in
-            self?.homeCollectionView.reloadData()
-        }
-        .store(in: &cancellables)
+        viewModel.$fetchedFavoriteArtists
+            .sink { [weak self] fetchedArtists in
+                self?.updateFavoriteArtists(fetchedArtists)
+            }
+            .store(in: &cancellables)
+        
+        viewModel.$fetchedNotes
+            .sink { [weak self] fetchedNotes in
+                self?.updateNotes(fetchedNotes)
+            }
+            .store(in: &cancellables)
     }
     
     func bindAction() {
@@ -230,194 +367,5 @@ private extension HomeViewController {
 private extension HomeViewController {
     var homeCollectionView: UICollectionView {
         return self.homeView.homeCollectionView
-    }
-}
-
-extension HomeViewController: UICollectionViewDataSource {
-    public func numberOfSections(in collectionView: UICollectionView) -> Int {
-        let totalSectionIndice = [
-            HomeView.bannerSectionIndex,
-            HomeView.favoriteArtistSectionIndex,
-            HomeView.notesSectionIndex
-        ]
-        
-        return totalSectionIndice.count
-    }
-    
-    public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        switch section {
-        case HomeView.bannerSectionIndex:
-            return 1
-            
-        case HomeView.favoriteArtistSectionIndex:
-            // 찾아보기 cell 포함한 갯수이기에 1을 더한다.
-            return viewModel.fetchedFavoriteArtists.count + 1
-            
-        case HomeView.notesSectionIndex:
-            return viewModel.fetchedNotes.isEmpty
-            ? 1     // EmptyNoteCell
-            : viewModel.fetchedNotes.count
-            
-        default:
-            return 0
-        }
-    }
-    
-    public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        switch indexPath.section {
-        case HomeView.bannerSectionIndex:
-            let cell = collectionView.dequeueReusableCell(
-                for: indexPath,
-                cellType: BannerCell.self
-            )
-            
-            return cell
-            
-        case HomeView.favoriteArtistSectionIndex:
-            let searchArtistItemIndex = 0
-            let searchArtistItemCount = 1
-            
-            if indexPath.item == searchArtistItemIndex {
-                let cell = collectionView.dequeueReusableCell(
-                    for: indexPath,
-                    cellType: SearchArtistCell.self
-                )
-                
-                return cell
-                
-            } else {
-                let cell = collectionView.dequeueReusableCell(
-                    for: indexPath,
-                    cellType: FeelinArtistCell.self
-                )
-                let artist = self.viewModel.fetchedFavoriteArtists[indexPath.item - searchArtistItemCount]
-                cell.configure(
-                    artistName: artist.name,
-                    artistImageURL: try? artist.imageSource?.asURL()
-                )
-                
-                return cell
-            }
-            
-        case HomeView.notesSectionIndex:
-            if viewModel.fetchedNotes.isEmpty {
-                let cell = collectionView.dequeueReusableCell(
-                    for: indexPath,
-                    cellType: EmptyNoteCell.self
-                )
-                
-                return cell
-                
-            } else {
-                let cell = collectionView.dequeueReusableCell(
-                    for: indexPath,
-                    cellType: NoteCell.self
-                )
-                let note = viewModel.fetchedNotes[indexPath.item]
-                cell.configure(with: note)
-                
-                cell.likeNoteButton.publisher(for: .touchUpInside)
-                    // 0.6초 사이에 발생한 가장 최신 좋아요 상태만 방출
-                    .debounce(
-                        for: .milliseconds(600),
-                        scheduler: DispatchQueue.main
-                    )
-                    .sink { [weak viewModel] control in
-                        viewModel?.setNoteLikeState(
-                            noteID: note.id,
-                            isLiked: control.isSelected
-                        )
-                    }
-                    .store(in: &cancellables)
-                
-                cell.bookmarkButton.publisher(for: .touchUpInside)
-                    .debounce(
-                        for: .milliseconds(600),
-                        scheduler: DispatchQueue.main
-                    )
-                    .sink { [weak viewModel] control in
-                        viewModel?.setNoteBookmarkState(
-                            noteID: note.id,
-                            isBookmarked: control.isSelected
-                        )
-                    }
-                    .store(in: &cancellables)
-                
-                cell.moreAboutContentButton.publisher(for: .touchUpInside)
-                    .sink { [weak self] _ in
-                        if let noteMenuViewController = self?.makeNoteMenuViewController(checking: note) {
-                            self?.present(noteMenuViewController, animated: false)
-                        } else {
-                            // TODO: - 비회원 알림을 추후 보여줘야 한다.
-                        }
-                    }
-                    .store(in: &cancellables)
-                
-                cell.playMusicButton.publisher(for: .touchUpInside)
-                    .throttle(
-                        for: .milliseconds(600),
-                        scheduler: DispatchQueue.main,
-                        latest: false
-                    )
-                    .sink { [unowned self] _ in
-                        self.openYouTube(query: "\(note.song.artist.name) \(note.song.name)")
-                    }
-                    .store(in: &cancellables)
-                
-                return cell
-            }
-            
-        default:
-            return UICollectionViewCell()
-        }
-    }
-    
-    public func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        switch indexPath.section {
-        case HomeView.favoriteArtistSectionIndex:
-            switch kind {
-            case FavoriteArtistsHeaderView.reuseIdentifier:
-                let favoriteArtistsHeaderView = collectionView.dequeueReusableSupplementaryView(
-                    ofKind: kind,
-                    for: indexPath,
-                    viewType: FavoriteArtistsHeaderView.self
-                )
-                
-                viewModel.$fetchedFavoriteArtists
-                    .map { !$0.isEmpty }
-                    .assign(to: \.isEnabled, on: favoriteArtistsHeaderView.viewAllButton)
-                    .store(in: &cancellables)
-                
-                return favoriteArtistsHeaderView
-                
-            case SectionDividerView.reuseIdentifier:
-                let sectionDividerView = collectionView.dequeueReusableSupplementaryView(
-                    ofKind: kind,
-                    for: indexPath,
-                    viewType: SectionDividerView.self
-                )
-                
-                return sectionDividerView
-                
-            default:
-                return UICollectionReusableView()
-            }
-            
-        case HomeView.notesSectionIndex:
-            if kind == NotesHeaderView.reuseIdentifier {
-                let notesHeaderView = collectionView.dequeueReusableSupplementaryView(
-                    ofKind: kind,
-                    for: indexPath,
-                    viewType: NotesHeaderView.self
-                )
-                
-                return notesHeaderView
-            } else {
-                return UICollectionReusableView()
-            }
-            
-        default:
-            return UICollectionReusableView()
-        }
     }
 }
