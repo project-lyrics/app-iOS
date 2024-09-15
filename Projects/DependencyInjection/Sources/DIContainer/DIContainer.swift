@@ -133,9 +133,9 @@ public extension DIContainer {
             return SongPaginationService()
         }
         
-        standard.register(.noteService) { resolver in
+        standard.register(.noteAPIService) { resolver in
             let networkProvider = try resolver.resolve(.networkProvider)
-            return NoteService(networkProvider: networkProvider)
+            return NoteAPIService(networkProvider: networkProvider)
         }
     }
 }

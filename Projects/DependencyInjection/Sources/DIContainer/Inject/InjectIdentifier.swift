@@ -73,10 +73,6 @@ public extension InjectIdentifier {
         .by(type: ArtistPaginationServiceInterface.self, key: "ArtistPaginationService")
     }
 
-    static var noteService: InjectIdentifier<NoteServiceInterface> {
-        .by(type: NoteServiceInterface.self, key: "noteService")
-    }
-    
     static var noteAPIService: InjectIdentifier<NoteAPIServiceInterface> {
         .by(type: NoteAPIServiceInterface.self, key: "noteAPIService")
     }

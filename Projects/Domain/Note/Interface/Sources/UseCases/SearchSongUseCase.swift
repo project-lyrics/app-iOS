@@ -20,14 +20,14 @@ public protocol SearchSongUseCaseInterface {
 }
 
 public struct SearchSongUseCase: SearchSongUseCaseInterface {
-    private let noteService: NoteServiceInterface
+    private let noteAPIService: NoteAPIServiceInterface
     private let songPaginationService: SongPaginationServiceInterface
 
     public init(
-        noteService: NoteServiceInterface,
+        noteAPIService: NoteAPIServiceInterface,
         songPaginationService: SongPaginationServiceInterface
     ) {
-        self.noteService = noteService
+        self.noteAPIService = noteAPIService
         self.songPaginationService = songPaginationService
     }
 
@@ -58,7 +58,7 @@ public struct SearchSongUseCase: SearchSongUseCaseInterface {
         // 데이터 로딩 시작
         songPaginationService.setLoading(true)
 
-        return noteService.searchSong(
+        return noteAPIService.searchSong(
             keyword: keyword,
             currentPage: songPaginationService.currentPage,
             numberOfSongs: numberOfSongs, 

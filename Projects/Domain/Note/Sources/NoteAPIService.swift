@@ -2,37 +2,23 @@
 //  NoteAPIService.swift
 //  DomainNote
 //
-//  Created by 황인우 on 8/17/24.
+//  Created by Derrick kim on 8/18/24.
 //
 
 import Core
+import DomainNoteInterface
 
 import Combine
 import Foundation
 
-public protocol NoteAPIServiceInterface {
-    func getFavoriteArtistsRelatedNotes(
-        currentPage: Int?,
-        numberOfNotes: Int,
-        hasLyrics: Bool
-    ) -> AnyPublisher<GetNotesResponse, NoteError>
-    
-    func postLike(noteID: Int) -> AnyPublisher<NoteLikeResponse, NoteError>
-    func deleteLike(noteID: Int) -> AnyPublisher<NoteLikeResponse, NoteError>
-    
-    func postBookmark(noteID: Int) -> AnyPublisher<BookmarkResponse, NoteError>
-    func deleteBookmark(noteID: Int) -> AnyPublisher<BookmarkResponse, NoteError>
-    
-    func deleteNote(noteID: Int) -> AnyPublisher<NoteChangeResponse, NoteError>
-}
-
 public struct NoteAPIService: NoteAPIServiceInterface {
-    var networkProvider: NetworkProviderInterface
-    
+
+    private let networkProvider: NetworkProviderInterface
+
     public init(networkProvider: NetworkProviderInterface) {
         self.networkProvider = networkProvider
     }
-    
+
     public func getFavoriteArtistsRelatedNotes(
         currentPage: Int?,
         numberOfNotes: Int,
@@ -47,42 +33,65 @@ public struct NoteAPIService: NoteAPIServiceInterface {
             .mapError(NoteError.init)
             .eraseToAnyPublisher()
     }
-    
+
     public func postLike(noteID: Int) -> AnyPublisher<NoteLikeResponse, NoteError> {
         let endpoint = FeelinAPI<NoteLikeResponse>.postLikes(noteID: noteID)
-        
+
         return networkProvider.request(endpoint)
             .mapError(NoteError.init)
             .eraseToAnyPublisher()
     }
-    
+
     public func deleteLike(noteID: Int) -> AnyPublisher<NoteLikeResponse, NoteError> {
         let endpoint = FeelinAPI<NoteLikeResponse>.deleteLikes(noteID: noteID)
-        
+
         return networkProvider.request(endpoint)
             .mapError(NoteError.init)
             .eraseToAnyPublisher()
     }
-    
+
     public func postBookmark(noteID: Int) -> AnyPublisher<BookmarkResponse, NoteError> {
         let endpoint = FeelinAPI<BookmarkResponse>.postBookmarks(noteID: noteID)
-        
+
         return networkProvider.request(endpoint)
             .mapError(NoteError.init)
             .eraseToAnyPublisher()
     }
-    
+
     public func deleteBookmark(noteID: Int) -> AnyPublisher<BookmarkResponse, NoteError> {
         let endpoint = FeelinAPI<BookmarkResponse>.deleteBookmarks(noteID: noteID)
-        
+
         return networkProvider.request(endpoint)
             .mapError(NoteError.init)
             .eraseToAnyPublisher()
     }
-    
+
     public func deleteNote(noteID: Int) -> AnyPublisher<NoteChangeResponse, NoteError> {
         let endpoint = FeelinAPI<NoteChangeResponse>.deleteNote(noteID: noteID)
-        
+
+        return networkProvider.request(endpoint)
+            .mapError(NoteError.init)
+            .eraseToAnyPublisher()
+    }
+
+    public func postNote(value: PostNoteValue) -> AnyPublisher<FeelinSuccessResponse, NoteError> {
+        let request = value.toDTO()
+        let endpoint = FeelinAPI<FeelinSuccessResponse>.postNote(
+            request: request
+        )
+
+        return networkProvider.request(endpoint)
+            .mapError(NoteError.init)
+            .eraseToAnyPublisher()
+    }
+
+    public func searchSong(keyword: String, currentPage: Int, numberOfSongs: Int, artistID: Int) -> AnyPublisher<SearchSongResponse, NoteError> {
+        let endpoint = FeelinAPI<SearchSongResponse>.searchSongs(
+            cursor: currentPage,
+            size: numberOfSongs,
+            query: keyword,
+            artistID: artistID
+        )
         return networkProvider.request(endpoint)
             .mapError(NoteError.init)
             .eraseToAnyPublisher()

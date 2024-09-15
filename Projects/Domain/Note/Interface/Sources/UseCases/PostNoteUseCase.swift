@@ -14,16 +14,17 @@ public protocol PostNoteUseCaseInterface {
 }
 
 public struct PostNoteUseCase: PostNoteUseCaseInterface {
-    private let noteService: NoteServiceInterface
+    private let noteAPIService: NoteAPIServiceInterface
 
     public init(
-        noteService: NoteServiceInterface
+        noteAPIService: NoteAPIServiceInterface
     ) {
-        self.noteService = noteService
+        self.noteAPIService = noteAPIService
     }
 
     public func execute(value: PostNoteValue) -> AnyPublisher<NoteResult, NoteError> {
         return noteService.postNote(value: value)
+        return noteAPIService.postNote(value: value)
             .eraseToAnyPublisher()
     }
 }
