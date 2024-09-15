@@ -9,8 +9,11 @@ import UIKit
 import Combine
 
 import Domain
+import Core
 
 public final class PostNoteViewModel {
+    typealias PostNoteResult = Result<FeelinSuccessResponse, NoteError>
+
     struct Input {
         let songTapPublisher: AnyPublisher<Song, Never>
         let lyricsTextViewTypePublisher: AnyPublisher<String?, Never>
@@ -25,7 +28,7 @@ public final class PostNoteViewModel {
         let isEnabledLyricsBackgroundButton: AnyPublisher<Bool, Never>
         let isSelectedSong: AnyPublisher<Bool, Never>
         let isSelectedLyricsBackground: AnyPublisher<LyricsBackground?, Never>
-        let postNoteResult: AnyPublisher<NoteResult, Never>
+        let postNoteResult: AnyPublisher<PostNoteResult, Never>
     }
 
     private var cancellables = Set<AnyCancellable>()
@@ -89,22 +92,22 @@ private extension PostNoteViewModel {
             .eraseToAnyPublisher()
     }
 
-    func postNote(_ input: Input) -> AnyPublisher<NoteResult, Never> {
+    func postNote(_ input: Input) -> AnyPublisher<PostNoteResult, Never> {
         let requiredFieldsPublisher = Publishers.CombineLatest3(
             input.songTapPublisher,
             input.noteTextViewTypePublisher,
             input.postNoteStatusPublisher
         )
-        .eraseToAnyPublisher()
+            .eraseToAnyPublisher()
 
         let optionalFieldsPublisher = Publishers.CombineLatest(
             input.lyricsTextViewTypePublisher,
             input.lyricsBackgroundSelectPublisher
         )
-        .map { (lyrics, background) -> (String?, LyricsBackground?) in
-            return (lyrics, background)
-        }
-        .eraseToAnyPublisher()
+            .map { (lyrics, background) -> (String?, LyricsBackground?) in
+                return (lyrics, background)
+            }
+            .eraseToAnyPublisher()
 
         // 필수 필드와 선택 필드를 결합
         let combinedPublisher = requiredFieldsPublisher
@@ -133,15 +136,11 @@ private extension PostNoteViewModel {
 
     }
 
-    func postNote(_ requestValue: PostNoteValue) -> AnyPublisher<NoteResult, Never> {
+    func postNote(_ requestValue: PostNoteValue) -> AnyPublisher<PostNoteResult, Never> {
         return self.postNoteUseCase
             .execute(value: requestValue)
-            .mapError(NoteError.init)
             .receive(on: DispatchQueue.main)
-            .catch { error in
-                return Just(.failure(error))
-                    .eraseToAnyPublisher()
-            }
-            .eraseToAnyPublisher()
+            .mapError(NoteError.init)
+            .mapToResult()
     }
 }
