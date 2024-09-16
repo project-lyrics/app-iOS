@@ -186,7 +186,6 @@ public final class PostNoteViewController: UIViewController {
             }
             .store(in: &cancellables)
 
-        // PostNote 처리 결과 바인딩
         output.postNoteResult
             .receive(on: DispatchQueue.main)
             .sink { [weak self] result in

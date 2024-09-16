@@ -34,8 +34,8 @@ private extension MainCoordinator {
     }
 
     func postNoteDependencies(artistID: Int) -> PostNoteViewModel {
-        @Injected(.noteService) var noteService: NoteServiceInterface
-        let postNoteUseCase: PostNoteUseCaseInterface = PostNoteUseCase(noteService: noteService)
+        @Injected(.noteAPIService) var noteAPIService: NoteAPIServiceInterface
+        let postNoteUseCase: PostNoteUseCaseInterface = PostNoteUseCase(noteAPIService: noteAPIService)
         let viewModel = PostNoteViewModel(postNoteUseCase: postNoteUseCase, artistID: artistID)
 
         return viewModel
@@ -65,13 +65,13 @@ extension MainCoordinator: CoordinatorDelegate,
     }
 
     public func pushSearchSongViewController(artistID: Int) {
-        @Injected(.noteService) var noteService: NoteServiceInterface
+        @Injected(.noteAPIService) var noteAPIService: NoteAPIServiceInterface
         @Injected(.songPaginationService) var songPaginationService: SongPaginationServiceInterface
 
         songPaginationService.resetPagination()
 
         let searchSongUseCase = SearchSongUseCase(
-            noteService: noteService,
+            noteAPIService: noteAPIService,
             songPaginationService: songPaginationService
         )
         let searchSongViewModel = SearchSongViewModel(
