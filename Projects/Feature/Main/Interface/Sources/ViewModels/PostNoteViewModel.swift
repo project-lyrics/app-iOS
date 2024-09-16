@@ -126,14 +126,15 @@ private extension PostNoteViewModel {
             }
             .eraseToAnyPublisher()
 
-        // 완료 버튼 탭과 결합된 필드로 노트를 게시
         return input.completeButtonTapPublisher
-            .combineLatest(combinedPublisher)
-            .flatMap { (_, value) in
-                return self.postNote(value)
-            }
-            .eraseToAnyPublisher()
-
+              .combineLatest(combinedPublisher)
+              .flatMap { [weak self] (_, value) -> AnyPublisher<PostNoteResult, Never> in
+                  guard let self = self else {
+                      return Empty().eraseToAnyPublisher()
+                  }
+                  return self.postNote(value)
+              }
+              .eraseToAnyPublisher()
     }
 
     func postNote(_ requestValue: PostNoteValue) -> AnyPublisher<PostNoteResult, Never> {
