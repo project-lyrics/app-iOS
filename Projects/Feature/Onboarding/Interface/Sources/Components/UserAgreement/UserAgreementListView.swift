@@ -21,7 +21,11 @@ final class UseAgreementListView: UIView {
     }
 
     private lazy var allAgreeLabel: UILabel = {
-        let label = self.createAgreeDescriptionLabel("전체동의")
+        let label = UILabel()
+        label.text = description
+        label.font = SharedDesignSystemFontFamily.Pretendard.semiBold.font(size: 16)
+        label.textColor = Colors.gray04
+        label.text = "전체동의"
         return label
     }()
 
@@ -46,15 +50,24 @@ final class UseAgreementListView: UIView {
     }()
 
     lazy var ageAgreeButton: UIButton = {
-        return self.createAgreementButton(TermEntity.ageAgree.title)
+        let contentView = SelectableAgreementView()
+        contentView.setTitle(TermEntity.ageAgree.title)
+        let button = CheckBoxButton(additionalView: contentView)
+        return button
     }()
 
     lazy var serviceUsageAgreeButton: UIButton = {
-        return self.createAgreementButton(TermEntity.serviceUsage.title)
+        let contentView = SelectableAgreementView()
+        contentView.setTitle(TermEntity.serviceUsage.title)
+        let button = CheckBoxButton(additionalView: contentView)
+        return button
     }()
 
     lazy var personalInfoAgreeButton: UIButton = {
-        return self.createAgreementButton(TermEntity.personalInfo.title)
+        let contentView = SelectableAgreementView()
+        contentView.setTitle(TermEntity.personalInfo.title)
+        let button = CheckBoxButton(additionalView: contentView)
+        return button
     }()
 
     lazy var checkServiceUsageButton: UIButton = {
@@ -91,6 +104,7 @@ final class UseAgreementListView: UIView {
                     .height(52)
 
                 flex.addItem(ageAgreeButton)
+                    .marginLeft(18)
                     .marginTop(24)
                     .height(28)
 
@@ -98,6 +112,7 @@ final class UseAgreementListView: UIView {
                     .direction(.row)
                     .define { flex in
                         flex.addItem(serviceUsageAgreeButton)
+                            .marginLeft(18)
                             .grow(1)
 
                         flex.addItem(checkServiceUsageButton)
@@ -109,6 +124,7 @@ final class UseAgreementListView: UIView {
                     .direction(.row)
                     .define { flex in
                         flex.addItem(personalInfoAgreeButton)
+                            .marginLeft(18)
                             .grow(1)
 
                         flex.addItem(checkPersonalInfoUsageButton)
@@ -122,55 +138,6 @@ final class UseAgreementListView: UIView {
 
 // MARK: - View Factory
 private extension UseAgreementListView {
-    func createAgreementButton(_ description: String) -> UIButton {
-        let subFlexContainer = UIView()
-
-        subFlexContainer.flex.direction(.row).define { flex in
-            flex.addItem(self.createMandatoryBorderedView())
-                .marginLeft(12)
-                .marginRight(6)
-
-            flex.addItem(self.createAgreeDescriptionLabel(description))
-        }
-        let button = CheckBoxButton(additionalView: subFlexContainer)
-
-        return button
-    }
-
-    func createAgreeDescriptionLabel(_ description: String) -> UILabel {
-        let label = UILabel()
-        label.text = description
-        label.font = SharedDesignSystemFontFamily.Pretendard.semiBold.font(size: 16)
-        label.textColor = Colors.gray04
-
-        return label
-    }
-
-    func createMandatoryBorderedView() -> UIView {
-        let subflexContainer = UIView()
-
-        let label = UILabel()
-        label.text = "필수"
-        label.font = SharedDesignSystemFontFamily.Pretendard.medium.font(size: 14)
-        label.textColor = Colors.gray05
-        label.textAlignment = .center
-
-        subflexContainer.flex
-            .justifyContent(.center)
-            .alignItems(.center)
-            .addItem()
-            .size(.init(width: 49, height: 28))
-            .cornerRadius(14)
-            .border(2, Colors.gray01)
-            .define { flex in
-                flex.addItem(label)
-                    .marginVertical(4)
-                    .marginHorizontal(12)
-            }
-
-        return subflexContainer
-    }
-
     func createCheckUsageButton(title: String) -> UIButton {
         var configuration = UIButton.Configuration.plain()
         configuration.title = title
