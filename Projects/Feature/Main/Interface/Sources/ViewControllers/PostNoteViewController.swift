@@ -77,6 +77,7 @@ public final class PostNoteViewController: UIViewController {
 
     private func bind() {
         addToPlayButton.publisher(for: .touchUpInside)
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 guard let self = self else { return }
                 coordinator?.pushSearchSongViewController(artistID: viewModel.artistID)
@@ -84,12 +85,14 @@ public final class PostNoteViewController: UIViewController {
             .store(in: &cancellables)
 
         closeButton.publisher(for: .touchUpInside)
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.dismiss(animated: true)
             }
             .store(in: &cancellables)
 
         selectedSongPublisher
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] song in
                 self?.postNoteView.configure(song)
             }
