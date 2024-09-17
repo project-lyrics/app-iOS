@@ -72,9 +72,7 @@ final class SearchSongView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        if let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-            layout.itemSize = CGSize(width: collectionView.bounds.width, height: 64)
-        }
+        setUpSongsCollectionViewLayout()
         rootFlexContainer.pin.all(pin.safeArea)
         rootFlexContainer.flex.layout()
     }
@@ -103,5 +101,9 @@ final class SearchSongView: UIView {
                     .marginTop(16)
                     .grow(1)
             }
+    }
+
+    private func setUpSongsCollectionViewLayout() {
+        flowLayout.itemSize = CGSize(width: collectionView.frame.width, height: 64)
     }
 }
