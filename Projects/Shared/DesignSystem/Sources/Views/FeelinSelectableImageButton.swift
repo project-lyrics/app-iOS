@@ -21,18 +21,18 @@ public class FeelinSelectableImageButton: UIButton {
         super.init(frame: frame)
         self.setUpButton()
     }
-    
+
+    @available(*, unavailable)
+    public required init?(coder: NSCoder) {
+        fatalError()
+    }
+
     public override var isSelected: Bool {
         didSet {
             updateButtonImage()
         }
     }
-    
-    @available(*, unavailable)
-    public required init?(coder: NSCoder) {
-        fatalError()
-    }
-    
+
     private func setUpButton() {
         updateButtonImage()
         addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
@@ -48,11 +48,11 @@ public class FeelinSelectableImageButton: UIButton {
         setImage(image, for: .normal)
     }
     
-    public func replaceSelectedImage(with image: UIImage) {
+    private func replaceSelectedImage(with image: UIImage) {
         self.selectedImage = image
     }
     
-    public func replaceUnSelectedImage(with image: UIImage) {
+    private func replaceUnSelectedImage(with image: UIImage) {
         self.unSelectedImage = image
     }
 }

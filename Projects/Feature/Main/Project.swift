@@ -8,7 +8,8 @@ let targets: [Target] = [
         factory: .init(
             dependencies: [
                 .dependencyInjection,
-                .shared
+                .shared,
+                .domain
             ]
         )
     ),

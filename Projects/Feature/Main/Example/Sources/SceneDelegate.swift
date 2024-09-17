@@ -16,7 +16,7 @@ import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
-    
+
     func scene(
         _ scene: UIScene,
         willConnectTo session: UISceneSession,
@@ -25,9 +25,36 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else {
             return
         }
-        
+
         window = UIWindow(windowScene: windowScene)
-        
+
+        let navigationController = UINavigationController(rootViewController: pushPostNoteViewController(artistID: 12))
+        navigationController.navigationBar.isHidden = true
+        window?.rootViewController = navigationController
+        window?.makeKeyAndVisible()
+    }
+
+    func sceneDidDisconnect(_ scene: UIScene) { }
+
+    func sceneDidBecomeActive(_ scene: UIScene) { }
+
+    func sceneWillResignActive(_ scene: UIScene) { }
+
+    func sceneWillEnterForeground(_ scene: UIScene) { }
+
+    func sceneDidEnterBackground(_ scene: UIScene) { }
+
+    func registerNetwork() {
+        DIContainer.standard.register(.networkProvider) { resolver in
+            return NetworkProvider(
+                networkSession: .init(requestInterceptor: MockTokenInterceptor())
+            )
+        }
+    }
+}
+
+extension SceneDelegate {
+    func artistDependencies() {
 //        DIContainer.standard.register(.networkProvider) { resolver in
 //            return NetworkProvider(
 //                networkSession: .init(requestInterceptor: MockTokenInterceptor())
@@ -121,19 +148,66 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 //            setBookmarkUseCase: MockSetBookmarkUseCase(), deleteNoteUseCase: MockDeleteNoteUseCase()
 //        )
         
-        window?.rootViewController = HomeViewController(viewModel: homeViewModel)
-        window?.makeKeyAndVisible()
+		HomeViewController(viewModel: homeViewModel)
     }
-    
-    func sceneDidDisconnect(_ scene: UIScene) { }
-    
-    func sceneDidBecomeActive(_ scene: UIScene) { }
-    
-    func sceneWillResignActive(_ scene: UIScene) { }
-    
-    func sceneWillEnterForeground(_ scene: UIScene) { }
-    
-    func sceneDidEnterBackground(_ scene: UIScene) { }
+}
+
+extension SceneDelegate: PostNoteViewControllerDelegate, SearchSongViewControllerDelegate {
+    func popViewController() {
+
+    }
+
+    func didFinish() {
+
+    }
+
+    func didFinish(selectedItem: DomainSharedInterface.Song) {
+
+    }
+
+    func registerPostNoteDI() {
+        DIContainer.registerDependenciesForPostNote()
+    }
+
+    func postNoteDependencies(artistID: Int) -> PostNoteViewModel {
+        @Injected(.noteAPIService) var noteAPIService: NoteAPIServiceInterface
+        let postNoteUseCase: PostNoteUseCaseInterface = PostNoteUseCase(noteAPIService: noteAPIService)
+        let viewModel = PostNoteViewModel(postNoteUseCase: postNoteUseCase, artistID: artistID)
+
+        return viewModel
+    }
+
+    func pushPostNoteViewController(artistID: Int) -> PostNoteViewController {
+        registerNetwork()
+        registerPostNoteDI()
+        let viewModel = postNoteDependencies(artistID: artistID)
+        let postNoteViewController = PostNoteViewController(viewModel: viewModel)
+        postNoteViewController.coordinator = self
+        return postNoteViewController
+    }
+
+    func pushSearchSongViewController(artistID: Int) {
+        @Injected(.noteAPIService) var noteAPIService: NoteAPIServiceInterface
+        @Injected(.songPaginationService) var songPaginationService: SongPaginationServiceInterface
+
+        songPaginationService.resetPagination()
+
+        let searchSongUseCase = SearchSongUseCase(
+            noteAPIService: noteAPIService,
+            songPaginationService: songPaginationService
+        )
+        let searchSongViewModel = SearchSongViewModel(
+            searchSongUseCase: searchSongUseCase,
+            artistID: artistID
+        )
+
+        let searchSongViewController = SearchSongViewController(viewModel: searchSongViewModel)
+        searchSongViewController.coordinator = self
+
+        if let postNoteViewController = UIApplication.shared.windows.first?.rootViewController?.children.first(where: { $0 is PostNoteViewController }) as? PostNoteViewController {
+            postNoteViewController.navigationController?.pushViewController(searchSongViewController, animated: true)
+        }
+    }
 }
 
 #if canImport(SwiftUI)

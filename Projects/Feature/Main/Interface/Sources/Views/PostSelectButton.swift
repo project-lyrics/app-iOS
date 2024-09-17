@@ -17,6 +17,7 @@ final class PostSelectButton: UIView {
     private let iconImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
+        imageView.tintColor = Colors.disabled
         return imageView
     }()
 
@@ -25,6 +26,12 @@ final class PostSelectButton: UIView {
         label.textColor = Colors.disabled
         return label
     }()
+
+    var isEnabled: Bool = false {
+        didSet {
+            updateUI(isEnabled)
+        }
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -73,9 +80,13 @@ final class PostSelectButton: UIView {
             }
     }
 
+    private func updateUI(_ isEnabled: Bool) {
+        titleLabel.textColor = isEnabled ? Colors.gray05 : Colors.disabled
+        iconImageView.tintColor = isEnabled ? Colors.gray05 : Colors.disabled
+    }
 
     func configure(title: String, image: UIImage) {
         titleLabel.text = title
-        iconImageView.image = image
+        iconImageView.image = image.withRenderingMode(.alwaysTemplate)
     }
 }

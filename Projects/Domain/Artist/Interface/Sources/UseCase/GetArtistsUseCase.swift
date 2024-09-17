@@ -22,7 +22,7 @@ public protocol GetArtistsUseCaseInterface {
 public struct GetArtistsUseCase: GetArtistsUseCaseInterface {
     private let artistAPIService: ArtistAPIServiceInterface
     private let artistPaginationService: ArtistPaginationServiceInterface
-    
+
     public init(
         artistAPIService: ArtistAPIServiceInterface,
         artistPaginationService: ArtistPaginationServiceInterface

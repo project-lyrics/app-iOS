@@ -25,7 +25,7 @@ public struct Lyrics: Hashable {
     }
 }
 
-public enum LyricsBackground: Equatable {
+public enum LyricsBackground: Equatable, CaseIterable {
     case `default`
     case skyblue
     case blue
@@ -70,7 +70,7 @@ public enum LyricsBackground: Equatable {
         }
     }
     
-    var toDTO: LyricsBackgroundDTO {
+    public var toDTO: LyricsBackgroundDTO {
         switch self {
         case .default:          return .default
         case .skyblue:          return .skyblue

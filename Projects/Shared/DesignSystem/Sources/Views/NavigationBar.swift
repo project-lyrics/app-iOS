@@ -6,19 +6,18 @@ public final class NavigationBar: UIView {
     private let leftBarView = UIView()
     private let titleView = UIView()
     private let rightBarView = UIView()
-
+    
     public init() {
         super.init(frame: .zero)
         backgroundColor = Colors.background
         setupDefault()
-        addUIComponents()
     }
-
+    
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError()
     }
-
+    
     public override func layoutSubviews() {
         super.layoutSubviews()
         rootFlexContainer.pin.all()
@@ -27,42 +26,80 @@ public final class NavigationBar: UIView {
 }
 
 public extension NavigationBar {
-    func addTitleView(_ contentView: UIView) {
-        titleView.flex.define { flex in
-            flex.addItem(contentView).grow(1).shrink(1).marginHorizontal(5)
-        }
-        titleView.flex.layout()
-    }
-
     func addLeftBarView(_ contentView: UIView) {
-        leftBarView.flex.define { flex in
-            flex.addItem(contentView).width(40).height(40)
-        }
-        leftBarView.flex.layout()
+        leftBarView.flex
+            .define { flex in
+                flex.addItem(contentView)
+            }
+        rootFlexContainer.flex.layout()
     }
-
+    
+    func addTitleView(_ contentView: UIView) {
+        titleView.flex
+            .grow(1)
+            .define { flex in
+                flex.addItem(contentView)
+            }
+        rootFlexContainer.flex.layout()
+    }
+    
     func addRightBarView(_ contentView: UIView) {
-        rightBarView.flex.define { flex in
-            flex.addItem(contentView).width(60).height(40)
-        }
-        rightBarView.flex.layout()
+        rightBarView.flex
+            .define { flex in
+                flex.addItem(contentView)
+            }
+        rootFlexContainer.flex.layout()
     }
 }
 
 private extension NavigationBar {
     func setupDefault() {
-        rootFlexContainer.flex.direction(.row).alignItems(.center)
-        leftBarView.flex.width(40).height(40)
-        titleView.flex.grow(1).alignItems(.center).justifyContent(.center)
-        rightBarView.flex.width(60).height(40)
-    }
-
-    func addUIComponents() {
         addSubview(rootFlexContainer)
-        rootFlexContainer.flex.define { flex in
-            flex.addItem(leftBarView)
-            flex.addItem(titleView).grow(1).shrink(1)
-            flex.addItem(rightBarView)
-        }
+        
+        rootFlexContainer.flex
+            .direction(.row)
+            .alignItems(.center)
+            .define { flex in
+                flex.addItem(leftBarView)
+                    .justifyContent(.center)
+                    .alignItems(.center)
+                    .size(24)
+                    .margin(
+                        UIEdgeInsets(
+                            top: 10,
+                            left: 0,
+                            bottom: 10,
+                            right: 8
+                        )
+                    )
+                
+                flex.addItem(titleView)
+                    .justifyContent(.center)
+                    .alignItems(.center)
+                    .grow(1)
+                    .shrink(1)
+                    .margin(
+                        UIEdgeInsets(
+                            top: 10,
+                            left: 16,
+                            bottom: 10,
+                            right: 16
+                        )
+                    )
+                
+                flex.addItem(rightBarView)
+                    .justifyContent(.center)
+                    .alignItems(.center)
+                    .size(44)
+                    .margin(
+                        UIEdgeInsets(
+                            top: 5,
+                            left: 0,
+                            bottom: 5,
+                            right: 0
+                        )
+                    )
+            }
     }
 }
+
