@@ -61,6 +61,7 @@ public final class SearchSongViewController: UIViewController {
 
     private func bind() {
         backButton.publisher(for: .touchUpInside)
+            .receive(on: DispatchQueue.main)
             .sink { _ in
                 self.coordinator?.popViewController()
             }
@@ -70,16 +71,21 @@ public final class SearchSongViewController: UIViewController {
             .receive(on: DispatchQueue.main)
             .sink { songs in
                 guard !songs.isEmpty else { return }
-                
+
                 self.songCollectionView.reloadData()
             }
             .store(in: &cancellables)
-        
+
         songCollectionView.publisher(for: [.didSelectItem, .didDeselectItem])
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] indexPath in
                 guard let self = self else { return }
 
-                self.coordinator?.didFinish(selectedItem: viewModel.fetchedSongs[indexPath.row])
+                coordinator?.didFinish(
+                    selectedItem: viewModel.fetchedSongs[indexPath.row]
+                )
+
+                songSearchBar.resignFirstResponder()
             }
             .store(in: &cancellables)
 
@@ -108,11 +114,26 @@ public final class SearchSongViewController: UIViewController {
             }
             .store(in: &cancellables)
 
-        self.songSearchBar.clearButton.publisher(for: .touchUpInside)
+        songSearchBar.clearButton.publisher(for: .touchUpInside)
+            .receive(on: DispatchQueue.main)
             .sink { [weak viewModel] _ in
                 viewModel?.searchSongs()
             }
             .store(in: &cancellables)
+
+        CombineKeyboard.keyboardHeightPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] height in
+                self?.updateOnKeyboardHeightChange(height)
+            }
+            .store(in: &cancellables)
+    }
+
+    private func updateOnKeyboardHeightChange(_ height: CGFloat) {
+        searchSongView.rootFlexContainer.flex
+            .paddingBottom(height)
+
+        searchSongView.rootFlexContainer.flex.layout()
     }
 }
 

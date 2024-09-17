@@ -15,7 +15,7 @@ final class SearchSongView: UIView {
 
     // MARK: - UI Components
 
-    private let flexContainer = UIView()
+    let rootFlexContainer = UIView()
 
     private let navigationBar = NavigationBar()
 
@@ -41,12 +41,16 @@ final class SearchSongView: UIView {
 
     let searchBarView = FeelinSearchBar(placeholder: "곡 검색")
 
-    lazy var collectionView: UICollectionView = {
+    private (set) var flowLayout: UICollectionViewFlowLayout = {
         let layout = UICollectionViewFlowLayout()
         layout.minimumLineSpacing = 0
         layout.scrollDirection = .vertical
 
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        return layout
+    }()
+
+    lazy var collectionView: UICollectionView = {
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
         collectionView.backgroundColor = .clear
         collectionView.register(cellType: SongCollectionViewCell.self)
         collectionView.allowsMultipleSelection = false
@@ -71,30 +75,31 @@ final class SearchSongView: UIView {
         if let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
             layout.itemSize = CGSize(width: collectionView.bounds.width, height: 64)
         }
-
-        flexContainer.pin.all(pin.safeArea)
-        flexContainer.flex.layout()
+        rootFlexContainer.pin.all(pin.safeArea)
+        rootFlexContainer.flex.layout()
     }
 
     private func setUpLayout() {
-        self.addSubview(flexContainer)
+        self.addSubview(rootFlexContainer)
 
         navigationBar.addLeftBarView(backButton)
         navigationBar.addTitleView(naviTitleLabel)
 
-        flexContainer
+        rootFlexContainer
             .flex
             .direction(.column)
-            .marginHorizontal(20)
             .define { flex in
                 flex.addItem(navigationBar)
+                    .marginHorizontal(20)
                     .height(44)
                     .marginTop(pin.safeArea.top)
 
                 flex.addItem(searchBarView)
+                    .marginHorizontal(20)
                     .marginTop(16)
                 
                 flex.addItem(collectionView)
+                    .marginHorizontal(20)
                     .marginTop(16)
                     .grow(1)
             }
