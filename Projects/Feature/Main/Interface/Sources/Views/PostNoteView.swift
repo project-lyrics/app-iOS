@@ -386,6 +386,9 @@ final class PostNoteView: UIView {
         artistNameLabel.text = item.artist.name
 
         addToPlayButton.setImage(FeelinImages.play, for: .normal)
+      
+        titleOfSongLabel.flex.markDirty()
+        artistNameLabel.flex.markDirty()
 
         addTrackLabel.isHidden = true
         titleOfSongLabel.isHidden = false

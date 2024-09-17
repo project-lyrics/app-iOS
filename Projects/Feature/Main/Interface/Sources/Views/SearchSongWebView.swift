@@ -68,11 +68,11 @@ public final class SearchSongWebView: UIView {
             .flex
             .direction(.column)
             .marginTop(24)
-            .marginHorizontal(20)
             .define { flex in
                 flex.addItem()
                     .direction(.row)
                     .marginBottom(20)
+                    .marginHorizontal(20)
                     .define { flex in
                         flex.addItem(titleLabel)
                             .grow(1)

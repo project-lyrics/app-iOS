@@ -18,21 +18,15 @@ public final class SearchSongWebViewController: BottomSheetViewController<Search
 
     private var cancellables = Set<AnyCancellable>()
 
-    public let songPublisher = PassthroughSubject<Song?, Never>()
-
     // MARK: - Lifecycle
 
     public override func viewDidLoad() {
         super.viewDidLoad()
-        setupBindings()
+        bindCancelButton()
+        loadSongWebPage()
     }
 
     // MARK: - Private Methods
-
-    private func setupBindings() {
-        bindCancelButton()
-        bindModelPublisher()
-    }
 
     private func bindCancelButton() {
         cancelButton.publisher(for: .touchUpInside)
@@ -42,23 +36,13 @@ public final class SearchSongWebViewController: BottomSheetViewController<Search
             .store(in: &cancellables)
     }
 
-    private func bindModelPublisher() {
-        songPublisher
-            .compactMap { $0 } // 모델 값이 nil이 아닌 경우에만 처리
-            .sink { [weak self] song in
-                self?.loadSongWebPage(for: song)
-            }
-            .store(in: &cancellables)
-    }
-
-    private func loadSongWebPage(for song: Song) {
-        guard let urlRequest = createURLRequest(for: song) else { return }
+    private func loadSongWebPage() {
+        guard let urlRequest = createURLRequest() else { return }
         webView.load(urlRequest)
     }
 
-    private func createURLRequest(for song: Song) -> URLRequest? {
-        let query = "\(song.artist.name)+\(song.name)"
-        guard let url = URL(string: "https://search.naver.com/search.naver?query=\(query)") else { return nil }
+    private func createURLRequest() -> URLRequest? {
+        guard let url = URL(string: "https://search.melon.com/search/mcom_index.htm") else { return nil }
         return URLRequest(url: url)
     }
 }

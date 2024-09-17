@@ -91,7 +91,6 @@ public final class PostNoteViewController: UIViewController {
 
         selectedSongPublisher
             .sink { [weak self] song in
-                self?.searchSongWebViewController.songPublisher.send(song)
                 self?.postNoteView.configure(song)
             }
             .store(in: &cancellables)
