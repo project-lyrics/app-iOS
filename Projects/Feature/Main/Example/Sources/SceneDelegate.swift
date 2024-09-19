@@ -225,7 +225,7 @@ extension SceneDelegate {
 //        window?.rootViewController = NoteDetailViewController(viewModel: noteDetailViewModel)
 //        window?.makeKeyAndVisible()
         
-        // --------------------NoteCommentsViewController-------------------
+        // --------------------NoteDetailViewController-------------------
         
         @KeychainWrapper<UserInformation>(.userInfo)
         var userInfo
@@ -272,6 +272,8 @@ extension SceneDelegate {
 //        
 //        window?.rootViewController = NoteCommentsViewController(viewModel: noteCommentsViewModel)
 //        window?.makeKeyAndVisible()
+        
+        // --------------------NoteCommentsViewController-------------------
     }
 }
 
