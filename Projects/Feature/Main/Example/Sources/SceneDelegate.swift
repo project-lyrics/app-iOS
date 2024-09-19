@@ -227,21 +227,20 @@ extension SceneDelegate {
         
         // --------------------NoteDetailViewController-------------------
         
-        @KeychainWrapper<UserInformation>(.userInfo)
-        var userInfo
-        
-        // 테스트용 유저 아이디
-        userInfo = .init(userID: 4)
-        
-//        let noteCommentsViewModel = NoteCommentsViewModel(
-//            noteID: 1,
-//            setNoteLikeUseCase: MockSetNoteLikeUseCase(),
-//            setBookmarkUseCase: MockSetBookmarkUseCase(),
-//            deleteNoteUseCase: MockDeleteNoteUseCase(),
-//            getNoteWithCommentsUseCase: MockGetNoteWithCommentsUseCase(),
-//            writeCommentUseCase: MockWriteCommentUseCase(),
-//            deleteCommentUseCase: MockDeleteCommentUseCase()
-//        )
+//        @KeychainWrapper<UserInformation>(.userInfo)
+//        var userInfo
+//        
+//        userInfo = .init(userID: 4)
+//        
+////        let noteCommentsViewModel = NoteCommentsViewModel(
+////            noteID: 1,
+////            setNoteLikeUseCase: MockSetNoteLikeUseCase(),
+////            setBookmarkUseCase: MockSetBookmarkUseCase(),
+////            deleteNoteUseCase: MockDeleteNoteUseCase(),
+////            getNoteWithCommentsUseCase: MockGetNoteWithCommentsUseCase(),
+////            writeCommentUseCase: MockWriteCommentUseCase(),
+////            deleteCommentUseCase: MockDeleteCommentUseCase()
+////        )
 //        DIContainer.standard.register(.networkProvider) { _ in
 //            return NetworkProvider(networkSession: .init(requestInterceptor: MockTokenInterceptor()))
 //        }

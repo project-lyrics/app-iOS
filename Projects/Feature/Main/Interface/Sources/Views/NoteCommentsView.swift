@@ -48,6 +48,8 @@ class NoteCommentsView: UIView {
             ofKind: CommentHeaderView.reuseIdentifier
         )
         
+        collectionView.showsVerticalScrollIndicator = false
+        
         return collectionView
     }()
     
