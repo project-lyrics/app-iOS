@@ -30,6 +30,9 @@ public enum FeelinAPI<R> {
     case searchSongs(cursor: Int, size: Int, query: String, artistID: Int)
     case getSearchedNotes(pageNumber: Int, pageSize: Int, query: String)
     case getSongNotes(cursor: Int?, size: Int, hasLyrics: Bool, songID: Int)
+    case getNoteWithComments(noteId: Int)
+    case postComment(body: PostCommentRequest)
+    case deleteComment(commentId: Int)
 }
 
 extension FeelinAPI: HTTPNetworking {
@@ -99,8 +102,7 @@ extension FeelinAPI: HTTPNetworking {
         case .postLikes(let noteID),
                 .deleteLikes(let noteID),
                 .postBookmarks(let noteID),
-                .deleteBookmarks(let noteID),
-                .deleteNote(let noteID):
+                .deleteBookmarks(let noteID):
             return [
                 "noteId": noteID
             ]
@@ -160,6 +162,10 @@ extension FeelinAPI: HTTPNetworking {
 
         case .postNote(let request):
             return request
+            
+        case .postComment(let postCommentBody):
+            return postCommentBody
+            
         default:
             return nil
         }
@@ -210,31 +216,39 @@ extension FeelinAPI: HTTPNetworking {
         case .postBookmarks, .deleteBookmarks:
             return "/api/v1/bookmarks"
             
-        case .deleteNote:
-            return "/api/v1/notes/"
         case .postNote:                 
 		    return "/api/v1/notes"
 
         case .searchSongs:
             return "/api/v1/songs/search/artists"
             
+        case .deleteNote(let noteID), 
+                .getNoteWithComments(let noteID):
+            return "/api/v1/notes/\(noteID)"
+            
         case .getSearchedNotes:
             return "/api/v1/songs/search"
             
         case .getSongNotes:
             return "/api/v1/notes/songs"
+            
+        case .postComment:
+            return "/api/v1/comments"
+            
+        case .deleteComment(let commentID):
+            return "/api/v1/comments/\(commentID)"
         }
     }
 
     public var httpMethod: HTTPMethod {
         switch self {
-        case .login, .reissueAccessToken, .signUp, .postFavoriteArtists, .postLikes, .postBookmarks, .postNote:
+        case .login, .reissueAccessToken, .signUp, .postFavoriteArtists, .postLikes, .postBookmarks, .postNote, .postComment:
             return .post
-            
-        case .checkUserValidity, .getArtists, .searchArtists, .getFavoriteArtists, .getFavoriteArtistsRelatedNotes, .searchSongs, .getSearchedNotes, .getSongNotes:
+
+        case .checkUserValidity, .getArtists, .searchArtists, .getFavoriteArtists, .getFavoriteArtistsRelatedNotes, .searchSongs, .getSearchedNotes, .getSongNotes, .getNoteWithComments:
             return .get
             
-        case .deleteLikes, .deleteBookmarks, .deleteNote:
+        case .deleteLikes, .deleteBookmarks, .deleteNote, .deleteComment:
             return .delete
         }
     }
