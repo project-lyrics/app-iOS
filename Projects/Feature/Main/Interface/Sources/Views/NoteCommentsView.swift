@@ -11,7 +11,7 @@ import Shared
 import Combine
 import UIKit
 
-class NoteCommentsView: UIView {
+final class NoteCommentsView: UIView {
     private var cancellables: Set<AnyCancellable> = .init()
 
     // MARK: - UI Components

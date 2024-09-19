@@ -81,6 +81,17 @@ public struct MockNoteAPIService: NoteAPIServiceInterface {
             .eraseToAnyPublisher()
     }
     
+    public func getSongNotes(
+        currentPage: Int?,
+        numberOfNotes: Int,
+        hasLyrics: Bool,
+        songID: Int
+    ) -> AnyPublisher<GetNotesResponse, NoteError> {
+        return Empty()
+            .setFailureType(to: NoteError.self)
+            .eraseToAnyPublisher()
+    }
+    
     public func getSearchedNotes(pageNumber: Int, pageSize: Int, query: String) -> AnyPublisher<SearchedNotesResponse, NoteError> {
         return Empty()
             .setFailureType(to: NoteError.self)

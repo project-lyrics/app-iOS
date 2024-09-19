@@ -9,7 +9,7 @@ import Shared
 
 import UIKit
 
-class IncludeNoteButton: UIButton {
+final class IncludeNoteButton: UIButton {
     
     // MARK: - UI Components
     

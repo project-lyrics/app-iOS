@@ -30,9 +30,9 @@ public enum FeelinAPI<R> {
     case searchSongs(cursor: Int, size: Int, query: String, artistID: Int)
     case getSearchedNotes(pageNumber: Int, pageSize: Int, query: String)
     case getSongNotes(cursor: Int?, size: Int, hasLyrics: Bool, songID: Int)
-    case getNoteWithComments(noteId: Int)
+    case getNoteWithComments(noteID: Int)
     case postComment(body: PostCommentRequest)
-    case deleteComment(commentId: Int)
+    case deleteComment(commentID: Int)
 }
 
 extension FeelinAPI: HTTPNetworking {
@@ -100,9 +100,9 @@ extension FeelinAPI: HTTPNetworking {
             ]
             
         case .postLikes(let noteID),
-                .deleteLikes(let noteID),
-                .postBookmarks(let noteID),
-                .deleteBookmarks(let noteID):
+             .deleteLikes(let noteID),
+             .postBookmarks(let noteID),
+             .deleteBookmarks(let noteID):
             return [
                 "noteId": noteID
             ]
@@ -210,7 +210,8 @@ extension FeelinAPI: HTTPNetworking {
         case .getFavoriteArtistsRelatedNotes:
             return "/api/v1/notes/favorite-artists"
             
-        case .postLikes, .deleteLikes:
+        case .postLikes, 
+             .deleteLikes:
             return "/api/v1/likes"
             
         case .postBookmarks, .deleteBookmarks:
@@ -222,8 +223,8 @@ extension FeelinAPI: HTTPNetworking {
         case .searchSongs:
             return "/api/v1/songs/search/artists"
             
-        case .deleteNote(let noteID), 
-                .getNoteWithComments(let noteID):
+        case .deleteNote(let noteID),
+             .getNoteWithComments(let noteID):
             return "/api/v1/notes/\(noteID)"
             
         case .getSearchedNotes:
@@ -242,13 +243,31 @@ extension FeelinAPI: HTTPNetworking {
 
     public var httpMethod: HTTPMethod {
         switch self {
-        case .login, .reissueAccessToken, .signUp, .postFavoriteArtists, .postLikes, .postBookmarks, .postNote, .postComment:
+        case .login,
+             .reissueAccessToken,
+             .signUp,
+             .postFavoriteArtists,
+             .postLikes,
+             .postBookmarks,
+             .postNote,
+             .postComment:
             return .post
 
-        case .checkUserValidity, .getArtists, .searchArtists, .getFavoriteArtists, .getFavoriteArtistsRelatedNotes, .searchSongs, .getSearchedNotes, .getSongNotes, .getNoteWithComments:
+        case .checkUserValidity, 
+             .getArtists,
+             .searchArtists,
+             .getFavoriteArtists,
+             .getFavoriteArtistsRelatedNotes,
+             .searchSongs,
+             .getSearchedNotes,
+             .getSongNotes,
+             .getNoteWithComments:
             return .get
             
-        case .deleteLikes, .deleteBookmarks, .deleteNote, .deleteComment:
+        case .deleteLikes, 
+             .deleteBookmarks,
+             .deleteNote,
+             .deleteComment:
             return .delete
         }
     }

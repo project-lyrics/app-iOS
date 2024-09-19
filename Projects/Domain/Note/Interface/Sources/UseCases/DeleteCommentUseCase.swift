@@ -20,7 +20,7 @@ public struct DeleteCommentUseCase: DeleteCommentUseCaseInterface {
     }
     
     public func execute(commentID: Int) -> AnyPublisher<Bool, NoteError> {
-        return commentAPIService.deleteComment(commentId: commentID)
+        return commentAPIService.deleteComment(commentID: commentID)
             .map(\.success)
             .eraseToAnyPublisher()
     }

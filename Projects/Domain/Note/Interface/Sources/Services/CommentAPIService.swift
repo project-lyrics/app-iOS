@@ -12,8 +12,8 @@ import Foundation
 
 public protocol CommentAPIServiceInterface {
     func getNoteWithComments(noteID: Int) -> AnyPublisher<NoteCommentsResponse, NoteError>
-    func postComment(body: PostCommentRequest) -> AnyPublisher<PostCommentResponse, NoteError>
-    func deleteComment(commentId: Int) -> AnyPublisher<DeleteCommentResponse, NoteError>
+    func postComment(body: PostCommentRequest) -> AnyPublisher<FeelinSuccessResponse, NoteError>
+    func deleteComment(commentID: Int) -> AnyPublisher<FeelinSuccessResponse, NoteError>
 }
 
 public struct CommentAPIService: CommentAPIServiceInterface {
@@ -24,23 +24,23 @@ public struct CommentAPIService: CommentAPIServiceInterface {
     }
     
     public func getNoteWithComments(noteID: Int) -> AnyPublisher<NoteCommentsResponse, NoteError> {
-        let endpoint = FeelinAPI<NoteCommentsResponse>.getNoteWithComments(noteId: noteID)
+        let endpoint = FeelinAPI<NoteCommentsResponse>.getNoteWithComments(noteID: noteID)
         
         return networkProvider.request(endpoint)
             .mapError(NoteError.init)
             .eraseToAnyPublisher()
     }
     
-    public func postComment(body: PostCommentRequest) -> AnyPublisher<PostCommentResponse, NoteError> {
-        let endpoint = FeelinAPI<PostCommentResponse>.postComment(body: body)
+    public func postComment(body: PostCommentRequest) -> AnyPublisher<FeelinSuccessResponse, NoteError> {
+        let endpoint = FeelinAPI<FeelinSuccessResponse>.postComment(body: body)
         
         return networkProvider.request(endpoint)
             .mapError(NoteError.init)
             .eraseToAnyPublisher()
     }
     
-    public func deleteComment(commentId: Int) -> AnyPublisher<DeleteCommentResponse, NoteError> {
-        let endpoint = FeelinAPI<DeleteCommentResponse>.deleteComment(commentId: commentId)
+    public func deleteComment(commentID: Int) -> AnyPublisher<FeelinSuccessResponse, NoteError> {
+        let endpoint = FeelinAPI<FeelinSuccessResponse>.deleteComment(commentID: commentID)
         
         return networkProvider.request(endpoint)
             .mapError(NoteError.init)

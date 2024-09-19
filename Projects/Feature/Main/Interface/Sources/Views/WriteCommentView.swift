@@ -11,7 +11,7 @@ import Shared
 import Combine
 import UIKit
 
-class WriteCommentView: UIView, UITextViewDelegate {
+final class WriteCommentView: UIView, UITextViewDelegate {
     
     // MARK: - Subjects & Publishers
     

@@ -10,7 +10,7 @@ import Shared
 
 import UIKit
 
-class NoteDetailHeaderView: UICollectionReusableView, Reusable {
+final class NoteDetailHeaderView: UICollectionReusableView, Reusable {
     
     // MARK: - UI components
     

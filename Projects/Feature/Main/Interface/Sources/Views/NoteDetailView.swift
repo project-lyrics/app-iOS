@@ -9,7 +9,7 @@ import UIKit
 
 import Shared
 
-class NoteDetailView: UIView {
+final class NoteDetailView: UIView {
     
     // MARK: - UI Components
     
