@@ -13,7 +13,7 @@ class HomeView: UIView {
     
     // MARK: - UI Components
     
-    private (set) var mainCollectionView: UICollectionView = {
+    private (set) var homeCollectionView: UICollectionView = {
         let compositionalLayout = UICollectionViewCompositionalLayout { (sectionIndex, environment) -> NSCollectionLayoutSection? in
             switch sectionIndex {
             case HomeView.bannerSectionIndex:
@@ -63,7 +63,7 @@ class HomeView: UIView {
     
     init() {
         super.init(frame: .zero)
-        addSubview(mainCollectionView)
+        addSubview(homeCollectionView)
     }
     
     @available(*, unavailable)
@@ -74,7 +74,7 @@ class HomeView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        mainCollectionView.pin.all()
+        homeCollectionView.pin.all()
     }
 }
 

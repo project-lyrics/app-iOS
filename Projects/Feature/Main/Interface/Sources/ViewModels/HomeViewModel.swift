@@ -10,13 +10,6 @@ import Domain
 import Combine
 import Foundation
 
-enum RefreshState {
-    case idle        // 대기 상태
-    case refreshing  // 새로고침 중
-    case completed   // 새로고침 완료
-    case failed(HomeError)  // 새로고침 실패 (에러 포함)
-}
-
 final public class HomeViewModel {
     typealias NoteFetchResult = Result<[Note], HomeError>
     typealias ArtistFetchResult = Result<[Artist], HomeError>
@@ -24,7 +17,7 @@ final public class HomeViewModel {
     @Published private (set) var fetchedNotes: [Note] = []
     @Published private (set) var fetchedFavoriteArtists: [Artist] = []
     @Published private (set) var error: HomeError?
-    @Published private (set) var refreshState: RefreshState = .idle
+    @Published private (set) var refreshState: RefreshState<HomeError> = .idle
     
     private let getNotesUseCase: GetNotesUseCaseInterface
     private let getFavoriteArtistsUseCase: GetFavoriteArtistsUseCaseInterface
@@ -229,18 +222,19 @@ extension HomeViewModel {
 }
 
 // MARK: - Edit, Delete, Report Note
+
 extension HomeViewModel {
     func deleteNote(id: Int) {
         self.deleteNoteUseCase.execute(noteID: id)
             .mapToResult()
             .receive(on: DispatchQueue.main)
-            .sink { result in
+            .sink { [weak self] result in
                 switch result {
                 case .success:
-                    self.fetchedNotes.removeAll(where: { $0.id == id })
+                    self?.fetchedNotes.removeAll(where: { $0.id == id })
                     
                 case .failure(let noteError):
-                    self.error = .noteError(noteError)
+                    self?.error = .noteError(noteError)
                 }
             }
             .store(in: &cancellables)

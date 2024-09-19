@@ -96,4 +96,38 @@ public struct NoteAPIService: NoteAPIServiceInterface {
             .mapError(NoteError.init)
             .eraseToAnyPublisher()
     }
+    
+    public func getSearchedNotes(
+        pageNumber: Int,
+        pageSize: Int,
+        query: String
+    ) -> AnyPublisher<SearchedNotesResponse, NoteError> {
+        let endpoint = FeelinAPI<SearchedNotesResponse>.getSearchedNotes(
+            pageNumber: pageNumber,
+            pageSize: pageSize,
+            query: query
+        )
+        
+        return networkProvider.request(endpoint)
+            .mapError(NoteError.init)
+            .eraseToAnyPublisher()
+    }
+    
+    public func getSongNotes(
+        currentPage: Int?,
+        numberOfNotes: Int,
+        hasLyrics: Bool,
+        songID: Int
+    ) -> AnyPublisher<GetNotesResponse, NoteError> {
+        let endpoint = FeelinAPI<GetNotesResponse>.getSongNotes(
+            cursor: currentPage,
+            size: numberOfNotes,
+            hasLyrics: hasLyrics,
+            songID: songID
+        )
+        
+        return networkProvider.request(endpoint)
+            .mapError(NoteError.init)
+            .eraseToAnyPublisher()
+    }
 }

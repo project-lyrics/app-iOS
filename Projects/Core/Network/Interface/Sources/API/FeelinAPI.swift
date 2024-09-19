@@ -28,6 +28,11 @@ public enum FeelinAPI<R> {
     case deleteNote(noteID: Int)
     case postNote(request: PostNoteRequest)
     case searchSongs(cursor: Int, size: Int, query: String, artistID: Int)
+    case getSearchedNotes(pageNumber: Int, pageSize: Int, query: String)
+    case getSongNotes(cursor: Int?, size: Int, hasLyrics: Bool, songID: Int)
+    case getNoteWithComments(noteID: Int)
+    case postComment(body: PostCommentRequest)
+    case deleteComment(commentID: Int)
 }
 
 extension FeelinAPI: HTTPNetworking {
@@ -95,14 +100,12 @@ extension FeelinAPI: HTTPNetworking {
             ]
             
         case .postLikes(let noteID),
-                .deleteLikes(let noteID),
-                .postBookmarks(let noteID),
-                .deleteBookmarks(let noteID),
-                .deleteNote(let noteID):
+             .deleteLikes(let noteID),
+             .postBookmarks(let noteID),
+             .deleteBookmarks(let noteID):
             return [
                 "noteId": noteID
             ]
-            
 
         case .searchSongs(let cursor, let size, let query, let artistID):
             return [
@@ -112,6 +115,29 @@ extension FeelinAPI: HTTPNetworking {
                 "artistId": "\(artistID)"
             ]
 
+        case .getSearchedNotes(let pageNumber, let pageSize, let query):
+            return [
+                "query": "\(query)",
+                "pageNumber": "\(pageNumber)",
+                "pageSize": "\(pageSize)"
+            ]
+            
+        case .getSongNotes(let cursor, let size, let hasLyrics, let songID):
+            if let cursor = cursor {
+                return [
+                    "cursor": "\(cursor)",
+                    "size": "\(size)",
+                    "hasLyrics": "\(hasLyrics)",
+                    "songId": "\(songID)"
+                ]
+            }
+            
+            return [
+                "size": "\(size)",
+                "hasLyrics": "\(hasLyrics)",
+                "songId": "\(songID)"
+            ]
+            
         default:
             return nil
         }
@@ -136,6 +162,10 @@ extension FeelinAPI: HTTPNetworking {
 
         case .postNote(let request):
             return request
+            
+        case .postComment(let postCommentBody):
+            return postCommentBody
+            
         default:
             return nil
         }
@@ -180,31 +210,64 @@ extension FeelinAPI: HTTPNetworking {
         case .getFavoriteArtistsRelatedNotes:
             return "/api/v1/notes/favorite-artists"
             
-        case .postLikes, .deleteLikes:
+        case .postLikes, 
+             .deleteLikes:
             return "/api/v1/likes"
             
         case .postBookmarks, .deleteBookmarks:
             return "/api/v1/bookmarks"
             
-        case .deleteNote:
-            return "/api/v1/notes/"
         case .postNote:                 
 		    return "/api/v1/notes"
 
         case .searchSongs:
             return "/api/v1/songs/search/artists"
+            
+        case .deleteNote(let noteID),
+             .getNoteWithComments(let noteID):
+            return "/api/v1/notes/\(noteID)"
+            
+        case .getSearchedNotes:
+            return "/api/v1/songs/search"
+            
+        case .getSongNotes:
+            return "/api/v1/notes/songs"
+            
+        case .postComment:
+            return "/api/v1/comments"
+            
+        case .deleteComment(let commentID):
+            return "/api/v1/comments/\(commentID)"
         }
     }
 
     public var httpMethod: HTTPMethod {
         switch self {
-        case .login, .reissueAccessToken, .signUp, .postFavoriteArtists, .postLikes, .postBookmarks, .postNote:
+        case .login,
+             .reissueAccessToken,
+             .signUp,
+             .postFavoriteArtists,
+             .postLikes,
+             .postBookmarks,
+             .postNote,
+             .postComment:
             return .post
 
-        case .checkUserValidity, .getArtists, .searchArtists, .getFavoriteArtists, .getFavoriteArtistsRelatedNotes, .searchSongs:
+        case .checkUserValidity, 
+             .getArtists,
+             .searchArtists,
+             .getFavoriteArtists,
+             .getFavoriteArtistsRelatedNotes,
+             .searchSongs,
+             .getSearchedNotes,
+             .getSongNotes,
+             .getNoteWithComments:
             return .get
             
-        case .deleteLikes, .deleteBookmarks, .deleteNote:
+        case .deleteLikes, 
+             .deleteBookmarks,
+             .deleteNote,
+             .deleteComment:
             return .delete
         }
     }

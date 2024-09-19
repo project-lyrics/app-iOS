@@ -8,18 +8,7 @@
 import Combine
 import Foundation
 
-public protocol ArtistPaginationServiceInterface: AnyObject {
-    var currentSearchWord: String { get }
-    var isLoading: Bool { get }
-    var currentPage: Int? { get }
-    var hasNextPage: Bool { get }
-    
-    func update(currentPage: Int?, hasNextPage: Bool)
-    func setLoading(_ loading: Bool)
-    func setCurrentSearchWord(_ word: String)
-}
-
-final public class ArtistPaginationService: ArtistPaginationServiceInterface {
+final public class ArtistPaginationService: KeywordPaginationServiceInterface {
     public var currentSearchWord: String = ""
     public var currentPage: Int?
     public var hasNextPage: Bool = true
