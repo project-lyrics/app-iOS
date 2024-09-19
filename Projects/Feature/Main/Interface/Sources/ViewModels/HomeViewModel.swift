@@ -10,13 +10,6 @@ import Domain
 import Combine
 import Foundation
 
-enum RefreshState {
-    case idle        // 대기 상태
-    case refreshing  // 새로고침 중
-    case completed   // 새로고침 완료
-    case failed(HomeError)  // 새로고침 실패 (에러 포함)
-}
-
 final public class HomeViewModel {
     typealias NoteFetchResult = Result<[Note], HomeError>
     typealias ArtistFetchResult = Result<[Artist], HomeError>
@@ -24,7 +17,7 @@ final public class HomeViewModel {
     @Published private (set) var fetchedNotes: [Note] = []
     @Published private (set) var fetchedFavoriteArtists: [Artist] = []
     @Published private (set) var error: HomeError?
-    @Published private (set) var refreshState: RefreshState = .idle
+    @Published private (set) var refreshState: RefreshState<HomeError> = .idle
     
     private let getNotesUseCase: GetNotesUseCaseInterface
     private let getFavoriteArtistsUseCase: GetFavoriteArtistsUseCaseInterface

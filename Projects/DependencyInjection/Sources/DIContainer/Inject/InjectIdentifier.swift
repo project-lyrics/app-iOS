@@ -77,6 +77,10 @@ public extension InjectIdentifier {
         .by(type: NoteAPIServiceInterface.self, key: "noteAPIService")
     }
     
+    static var commentAPIService: InjectIdentifier<CommentAPIServiceInterface> {
+        .by(type: CommentAPIServiceInterface.self, key: "commentAPIService")
+    }
+    
     static var notePaginationService: InjectIdentifier<NotePaginationServiceInterface> {
         .by(type: NotePaginationServiceInterface.self, key: "notePaginationService")
     }

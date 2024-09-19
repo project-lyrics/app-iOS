@@ -327,15 +327,15 @@ private extension HomeViewController {
     
     func bindAction() {
         homeCollectionView.didScrollToBottomPublisher()
-            .sink { [viewModel] in
-                viewModel.fetchNotes(isInitialFetch: false)
+            .sink { [weak viewModel] in
+                viewModel?.fetchNotes(isInitialFetch: false)
             }
             .store(in: &cancellables)
         
         homeCollectionView.refreshControl?.isRefreshingPublisher
-            .filter { $0 == true }
-            .sink(receiveValue: { [viewModel] _ in
-                viewModel.refreshAllData()
+            .filter { $0 }
+            .sink(receiveValue: { [weak viewModel] _ in
+                viewModel?.refreshAllData()
             })
             .store(in: &cancellables)
         
@@ -356,6 +356,7 @@ private extension HomeViewController {
                 self?.showAlert(
                     title: "노트를 삭제하시겠어요?",
                     message: nil,
+                    rightActionTitle: "삭제",
                     rightActionCompletion: {
                         self?.viewModel.deleteNote(id: noteID)
                     })
