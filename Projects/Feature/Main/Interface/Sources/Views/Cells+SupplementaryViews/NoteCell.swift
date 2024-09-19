@@ -14,9 +14,9 @@ import Shared
 
 final class NoteCell: UICollectionViewCell, Reusable {
     
-    private let flexContainer = UIView()
-    
     // MARK: - UI Components
+    
+    private let flexContainer = UIView()
     
     private let authorCharacterImageView: UIImageView = {
         let imageView = UIImageView()
@@ -240,7 +240,7 @@ final class NoteCell: UICollectionViewCell, Reusable {
     }
     
     // MARK: - Configure UI
-    func configure(with note: Note) {
+    func configure(with note: Note, showsFullNoteContents: Bool = false) {
         self.authorCharacterImageView.image = note.publisher.profileCharacterType.image
         self.authorNameLabel.text = note.publisher.nickname
         self.noteWrittenTimeLabel.text = note.createdAt.formattedTimeInterval()
@@ -255,6 +255,13 @@ final class NoteCell: UICollectionViewCell, Reusable {
         self.likeNoteButton.isSelected = note.isLiked
         self.bookmarkButton.isSelected = note.isBookmarked
         
+        if showsFullNoteContents {
+            self.noteContentLabel.numberOfLines = 0
+        } else {
+            self.noteContentLabel.numberOfLines = 3
+        }
+        
+        self.noteContentLabel.flex.markDirty()
         self.likeAmountLabel.flex.markDirty()
         self.commentAmountLabel.flex.markDirty()
         
