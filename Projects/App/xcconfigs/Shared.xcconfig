@@ -10,6 +10,7 @@
 
 #include "./KakaoSecretKeys.xcconfig"
 #include "./TokenKeys.xcconfig"
+#include "./Secrets.xcconfig"
 
 OTHER_SWIFT_FLAGS[config=DEV][sdk=*] = $(inherited) -DDEV
 OTHER_SWIFT_FLAGS[config=QA][sdk=*] = $(inherited) -DQA

@@ -61,6 +61,7 @@ let appProject: Project = .makeModule(
     additionalFiles: [
         "./xcconfigs/Shared.xcconfig",
         "./xcconfigs/KakaoSecretKeys.xcconfig",
-        "./xcconfigs/TokenKeys.xcconfig"
+        "./xcconfigs/TokenKeys.xcconfig",
+        "./xcconfigs/Secrets.xcconfig"
     ]
 )
