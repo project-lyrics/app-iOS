@@ -137,7 +137,7 @@ public final class ReportViewController: UIViewController {
         guard let reasonTextView = selectedReportReasonView?.reasonTextView else { return }
 
         if reasonTextView.text.isEmpty {
-            reasonTextView.text = Const.reasonPlaceholder
+            reasonTextView.setUpTextView(text: Const.reasonPlaceholder, textColor: Colors.gray04)
         }
 
         reasonTextView.textPublisher(for: [.didChange, .didBeginEditing])
