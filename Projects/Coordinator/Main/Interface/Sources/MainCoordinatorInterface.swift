@@ -33,14 +33,12 @@ private extension MainCoordinator {
         DIContainer.registerDependenciesForPostNote()
     }
 
-    func postNoteDependencies(artistID: Int) -> PostNoteViewModel {
-        @Injected(.noteAPIService) var noteAPIService: NoteAPIServiceInterface
-        let postNoteUseCase: PostNoteUseCaseInterface = PostNoteUseCase(noteAPIService: noteAPIService)
-        let viewModel = PostNoteViewModel(postNoteUseCase: postNoteUseCase, artistID: artistID)
-
-        return viewModel
+    func registerReportNoteService() {
+        DIContainer.registerReportNoteService()
     }
 }
+
+// MARK: 노트작성
 
 extension MainCoordinator: CoordinatorDelegate,
                            PostNoteViewControllerDelegate,
@@ -65,6 +63,25 @@ extension MainCoordinator: CoordinatorDelegate,
     }
 
     public func pushSearchSongViewController(artistID: Int) {
+        let searchSongViewModel = searchSongDependencies(artistID: artistID)
+        let searchSongViewController = SearchSongViewController(viewModel: searchSongViewModel)
+        searchSongViewController.coordinator = self
+        navigationController.pushViewController(searchSongViewController, animated: true)
+    }
+
+    public func didFinish(childCoordinator: Coordinator) {
+
+    }
+
+    func postNoteDependencies(artistID: Int) -> PostNoteViewModel {
+        @Injected(.noteAPIService) var noteAPIService: NoteAPIServiceInterface
+        let postNoteUseCase: PostNoteUseCaseInterface = PostNoteUseCase(noteAPIService: noteAPIService)
+        let viewModel = PostNoteViewModel(postNoteUseCase: postNoteUseCase, artistID: artistID)
+
+        return viewModel
+    }
+
+    func searchSongDependencies(artistID: Int) -> SearchSongViewModel {
         @Injected(.noteAPIService) var noteAPIService: NoteAPIServiceInterface
         @Injected(.songPaginationService) var songPaginationService: SongPaginationServiceInterface
 
@@ -74,17 +91,15 @@ extension MainCoordinator: CoordinatorDelegate,
             noteAPIService: noteAPIService,
             songPaginationService: songPaginationService
         )
-        let searchSongViewModel = SearchSongViewModel(
+        let viewModel = SearchSongViewModel(
             searchSongUseCase: searchSongUseCase,
             artistID: artistID
         )
 
-        let searchSongViewController = SearchSongViewController(viewModel: searchSongViewModel)
-        searchSongViewController.coordinator = self
-        navigationController.pushViewController(searchSongViewController, animated: true)
+        return viewModel
     }
+}
 
-    public func didFinish(childCoordinator: Coordinator) {
 
     }
 }
