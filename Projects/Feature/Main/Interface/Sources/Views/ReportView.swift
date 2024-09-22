@@ -66,7 +66,7 @@ final class ReportView: UIView {
 
     let agreementButton: UIButton = {
         let contentView = SelectableAgreementView()
-        contentView.setTitle(TermEntity.ageAgree.title)
+        contentView.setTitle("개인정보 수집에 동의합니다.")
         let button = CheckBoxButton(additionalView: contentView)
         return button
     }()
