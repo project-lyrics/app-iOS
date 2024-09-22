@@ -113,7 +113,6 @@ private extension ReportViewModel {
         return self.reportNoteUseCase
             .execute(value: requestValue)
             .receive(on: DispatchQueue.main)
-            .mapError(ReportError.init)
             .mapToResult()
     }
 }

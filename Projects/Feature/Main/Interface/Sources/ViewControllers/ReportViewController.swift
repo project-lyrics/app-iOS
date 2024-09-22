@@ -99,7 +99,7 @@ public final class ReportViewController: UIViewController {
                         self?.coordinator?.popViewController()
                     })
                 case .failure(let error):
-                    self?.showAlert(title: "이미 신고되었어요.", message: nil, singleActionTitle: "확인", actionCompletion: {
+                    self?.showAlert(title: error.errorDescription, message: nil, singleActionTitle: "확인", actionCompletion: {
                         self?.coordinator?.popViewController()
                     })
                 }
