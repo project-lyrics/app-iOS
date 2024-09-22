@@ -21,6 +21,8 @@ public final class ReportViewController: UIViewController {
     }
 
     private var cancellables = Set<AnyCancellable>()
+    private let reportReasonTapPublisher = PassthroughSubject<ReportReason, Never>()
+    private let reportReasonTypePublisher = PassthroughSubject<String?, Never>()
 
     private var selectedReportReasonView: ReportReasonView?
     private let reportView = ReportView()
@@ -61,19 +63,52 @@ public final class ReportViewController: UIViewController {
             }
             .store(in: &cancellables)
 
-        reportReasonView.subviews.forEach { subview in
-            if let reasonView = subview as? ReportReasonView {
-                reasonView.selectedItemPublisher
+        reportReasonView.subviews
+            .map { $0 as? ReportReasonView }
+            .forEach { reasonView in
+                reasonView?.selectedItemPublisher
                     .sink { [weak self] item in
+                        self?.reportReasonTapPublisher.send(item)
                         self?.handleSelectedReportReasonView(of: reasonView, with: item)
                     }
                     .store(in: &cancellables)
             }
-        }
+
+        let agreementTapPublisher = agreementButton.publisher(for: .touchUpInside).eraseToAnyPublisher()
+        let reportButtonTapPublisher = reportButton.publisher(for: .touchUpInside).eraseToAnyPublisher()
+
+        let input = ReportViewModel.Input(
+            reportReasonTapPublisher: reportReasonTapPublisher.eraseToAnyPublisher(),
+            reportReasonTypePublisher: reportReasonTypePublisher.eraseToAnyPublisher(),
+            agreementTapPublisher: agreementTapPublisher,
+            reportButtonTapPublisher: reportButtonTapPublisher
+        )
+
+        let output = viewModel.transform(input: input)
+
+        output.isEnabledReportButton
+            .assign(to: \.isEnabled, on: reportButton)
+            .store(in: &cancellables)
+
+        output.reportNoteResult
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] result in
+                switch result {
+                case .success:
+                    self?.showAlert(title: "신고가 접수되었어요.", message: nil, singleActionTitle: "확인", actionCompletion: {
+                        self?.coordinator?.popViewController()
+                    })
+                case .failure(let error):
+                    self?.showAlert(title: "이미 신고되었어요.", message: nil, singleActionTitle: "확인", actionCompletion: {
+                        self?.coordinator?.popViewController()
+                    })
+                }
+            }
+            .store(in: &cancellables)
     }
 
     private func handleSelectedReportReasonView(
-        of selectedView: ReportReasonView,
+        of selectedView: ReportReasonView?,
         with item: ReportReason?
     ) {
         if let previouslySelectedView = self.selectedReportReasonView,
@@ -82,8 +117,8 @@ public final class ReportViewController: UIViewController {
             previouslySelectedView.flex.markDirty()
         }
 
-        selectedView.setSelected(true, with: item)
-        selectedView.flex.markDirty()
+        selectedView?.setSelected(true, with: item)
+        selectedView?.flex.markDirty()
         self.selectedReportReasonView = selectedView
 
         if item == .other {
@@ -91,6 +126,7 @@ public final class ReportViewController: UIViewController {
             reportReasonView.flex.layout(mode: .adjustHeight)
             setUpReportReasonTextView()
         } else {
+            reportReasonTypePublisher.send(nil)
             view.endEditing(true)
         }
 
@@ -108,6 +144,9 @@ public final class ReportViewController: UIViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] text in
                 self?.adjustTextViewHeight(reasonTextView)
+
+                guard text != "", text != Const.reasonPlaceholder else { return }
+                self?.reportReasonTypePublisher.send(text)
             }
             .store(in: &cancellables)
     }
