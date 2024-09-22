@@ -100,6 +100,28 @@ extension MainCoordinator: CoordinatorDelegate,
     }
 }
 
+// MARK: 신고하기
 
+extension MainCoordinator: ReportViewControllerDelegate {
+    public func pushReportViewController(noteID: Int?, commentID: Int?) {
+        registerReportNoteService()
+
+        let viewModel = reportNoteDependencies(noteID: noteID, commentID: commentID)
+        let reportViewController = ReportViewController(viewModel: viewModel)
+        reportViewController.coordinator = self
+        navigationController.pushViewController(reportViewController, animated: true)
+    }
+
+    func reportNoteDependencies(noteID: Int?, commentID: Int?) -> ReportViewModel {
+        @Injected(.reportAPIService) var reportNoteService: ReportAPIServiceInterface
+        let reportNoteUseCase: ReportNoteUseCaseInterface = ReportNoteUseCase(reportAPIService: reportNoteService)
+
+        let viewModel = ReportViewModel(
+            noteID: noteID,
+            commentID: commentID,
+            reportNoteUseCase: reportNoteUseCase
+        )
+
+        return viewModel
     }
 }
