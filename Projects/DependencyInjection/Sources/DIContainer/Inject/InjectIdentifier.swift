@@ -92,6 +92,11 @@ public extension InjectIdentifier {
     static var songPaginationService: InjectIdentifier<SongPaginationServiceInterface> {
         .by(type: SongPaginationServiceInterface.self, key: "SongPaginationService")
     }
+
+    static var reportAPIService: InjectIdentifier<ReportAPIServiceInterface> {
+        .by(type: ReportAPIServiceInterface.self, key: "reportAPIService")
+    }
+
 }
 
 extension InjectIdentifier: Hashable {
