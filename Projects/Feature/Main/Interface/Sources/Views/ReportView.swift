@@ -158,9 +158,7 @@ private extension ReportView {
             .direction(.column)
             .define { flex in
                 ReportReason.allCases.forEach {
-                    let reportReasonView = ReportReasonView()
-                    reportReasonView.configure(model: $0)
-
+                    let reportReasonView = ReportReasonView(model: $0)
                     flex.addItem(reportReasonView)
                         .marginBottom($0 != .other ? 16 : 0)
                 }

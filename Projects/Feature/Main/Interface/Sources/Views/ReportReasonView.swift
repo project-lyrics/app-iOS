@@ -19,8 +19,8 @@ final class ReportReasonView: UIView {
         static let reasonPlaceholder = "신고사유를 작성해주세요."
     }
 
-    let selectedItemPublisher = PassthroughSubject<ReportReason?, Never>()
-    private var model: ReportReason?
+    let selectedItemPublisher = PassthroughSubject<ReportReason, Never>()
+
     private var cancellables = Set<AnyCancellable>()
 
     private let rootFlexContainer = UIView()
@@ -56,11 +56,16 @@ final class ReportReasonView: UIView {
         return textView
     }()
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setupLayout()
-        setUpTextViewText()
-        setUpTapAction()
+    private let model: ReportReason
+
+    init(model: ReportReason) {
+        self.model = model
+        super.init(frame: .zero)
+
+        self.setupLayout()
+        self.setUpTextViewText()
+        self.setUpTapAction()
+        self.configure(model: model)
     }
 
     @available(*, unavailable)
@@ -129,8 +134,7 @@ final class ReportReasonView: UIView {
             .store(in: &cancellables)
     }
 
-    func configure(model: ReportReason) {
-        self.model = model
+    private func configure(model: ReportReason) {
         contentLabel.text = model.title
     }
 
