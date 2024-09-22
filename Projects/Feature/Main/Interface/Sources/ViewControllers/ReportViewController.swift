@@ -8,6 +8,7 @@
 import Combine
 import UIKit
 
+import Domain
 import Shared
 
 public protocol ReportViewControllerDelegate: AnyObject {
@@ -154,34 +155,5 @@ extension ReportViewController {
 
     var reportButton: UIButton {
         return reportView.reportButton
-    }
-}
-
-public enum ReportReason: CaseIterable {
-    case communityInappropriateness
-    case userOrArtistDefamation
-    case offensiveContent
-    case commercialAd
-    case inappropriateInfoDisclosure
-    case politicalOrReligiousContent
-    case other
-
-    public var title: String {
-        switch self {
-        case .communityInappropriateness:
-            return "커뮤니티 성격에 맞지 않음"
-        case .userOrArtistDefamation:
-            return "타 유저 혹은 아티스트 비방"
-        case .offensiveContent:
-            return "불쾌감을 조성하는 음란성 / 선정적인 내용"
-        case .commercialAd:
-            return "상업적 광고"
-        case .inappropriateInfoDisclosure:
-            return "부적절한 정보 유출"
-        case .politicalOrReligiousContent:
-            return "정치적인 내용 / 종교 포교 시도"
-        case .other:
-            return "기타"
-        }
     }
 }

@@ -7,7 +7,7 @@
 
 import UIKit
 
-import DomainOAuthInterface
+import Domain
 import Shared
 
 import FlexLayout
