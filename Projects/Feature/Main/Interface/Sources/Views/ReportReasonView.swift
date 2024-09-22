@@ -14,7 +14,7 @@ import FlexLayout
 import PinLayout
 
 final class ReportReasonView: UIView {
-    enum Const {
+    private enum Const {
         static let reasonPlaceholder = "신고사유를 작성해주세요."
     }
 

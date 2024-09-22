@@ -17,7 +17,7 @@ final class ReportView: UIView {
     // MARK: - UI Components
 
     let rootFlexContainer = UIView()
-    private let rootScrollView = UIScrollView()
+    let contentView = UIView()
 
     private let navigationBar = NavigationBar()
 
@@ -50,50 +50,21 @@ final class ReportView: UIView {
         return label
     }()
 
-    lazy var tableView: UITableView = {
-        let tableView = UITableView()
-        tableView.separatorStyle = .none
-        tableView.isScrollEnabled = false
-        tableView.allowsMultipleSelection = false
-        tableView.register(cellType: ReportReasonTableViewCell.self)
+    lazy var reportReasonView = createReportReasonView()
 
-        return tableView
+    private let warningDescriptionTextView: UITextView = {
+        let textView = UITextView()
+        textView.text = "*관리자 검토 진행 후 신고가 반려될 수 있으며, 고의적인 허위신고가 반복될 경우 서비스 이용이 제한될 수 있습니다."
+        textView.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 12)
+        textView.textColor = Colors.gray04
+        textView.textAlignment = .left
+        textView.isEditable = false
+        textView.isScrollEnabled = false
+
+        return textView
     }()
 
-    private let emailTitleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "이메일"
-        label.font = SharedDesignSystemFontFamily.Pretendard.bold.font(size: 18)
-        label.textColor = Colors.gray09
-
-        return label
-    }()
-
-    private let emailTextField = {
-        let textField = UITextField()
-        textField.placeholder = "처리 결과 수신을 원하시면 이메일을 입력해주세요."
-        textField.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 14)
-        textField.textColor = Colors.gray04
-        textField.backgroundColor = Colors.inputField
-
-        let leftPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 12, height: 0))
-        textField.leftView = leftPaddingView
-        textField.leftViewMode = .always
-
-        return textField
-    }()
-
-    private let warningDescriptionLabel: UILabel = {
-        let label = UILabel()
-        label.text = "*관리자 검토 진행 후 신고가 반려될 수 있으며, 고의적인 허위신고가 반복될 경우 서비스 이용이 제한될 수 있습니다."
-        label.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 12)
-        label.textColor = Colors.gray04
-        label.numberOfLines = 0
-
-        return label
-    }()
-
-    lazy var agreementButton: UIButton = {
+    let agreementButton: UIButton = {
         let contentView = SelectableAgreementView()
         contentView.setTitle(TermEntity.ageAgree.title)
         let button = CheckBoxButton(additionalView: contentView)
@@ -117,6 +88,14 @@ final class ReportView: UIView {
 
         rootFlexContainer.pin.all(pin.safeArea)
         rootFlexContainer.flex.layout()
+
+        contentView.pin
+            .below(of: navigationBar)
+            .left()
+            .right()
+            .bottom()
+
+        contentView.flex.layout(mode: .adjustHeight)
     }
 
     private func setUpLayout() {
@@ -129,52 +108,65 @@ final class ReportView: UIView {
             .flex
             .direction(.column)
             .marginHorizontal(20)
-            .marginBottom(pin.safeArea.bottom + 23)
-            .define { flex in
-                flex.addItem(rootScrollView)
+            .define { rootFlex in
+                rootFlex.addItem(navigationBar)
+                    .height(44)
+                    .marginTop(pin.safeArea.top)
+
+                rootFlex.addItem(contentView)
+                    .grow(1)
                     .direction(.column)
-                    .define { flex in
-                        flex.addItem(navigationBar)
-                            .height(44)
-                            .marginTop(pin.safeArea.top)
+                    .define { contentFlex in
+                        contentFlex.addItem(reportReasonTitleLabel)
+                            .marginTop(24)
 
-                        flex.addItem()
-                            .define { flex in
-                                flex.addItem(reportReasonTitleLabel)
-                                    .marginTop(24)
+                        contentFlex.addItem(reportReasonView)
+                            .marginTop(16)
 
-                                flex.addItem(tableView)
-                                    .marginTop(16)
-                                    .grow(1)
-                            }
+                        contentFlex.addItem(warningDescriptionTextView)
+                            .marginTop(24)
+                            .shrink(0)
 
-                        flex.addItem()
-                            .marginTop(40)
-                            .define { flex in
-                                flex.addItem(emailTitleLabel)
-
-                                flex.addItem(emailTextField)
-                                    .marginTop(12)
-                                    .cornerRadius(8)
-                                    .height(44)
-
-                                flex.addItem(warningDescriptionLabel)
-                                    .marginTop(18)
-                            }
-
-                        flex.addItem()
-                            .marginTop(65)
-                            .define { flex in
-                                flex.addItem(agreementButton)
-                                    .grow(1)
-
-                                flex.addItem(reportButton)
-                                    .marginTop(36)
-                                    .cornerRadius(8)
-                                    .height(56)
-                            }
+                        contentFlex.addItem()
+                            .height(38)
+                            .grow(1)
+                            .shrink(0)
                     }
+
+                rootFlex.addItem()
+                    .position(.absolute)
+                    .bottom(pin.safeArea.bottom)
+                    .left(0).right(0)
+                    .define { bottomFlex in
+                        bottomFlex.addItem(agreementButton)
+
+                        bottomFlex.addItem(reportButton)
+                            .marginTop(36)
+                            .cornerRadius(8)
+                            .height(56)
+                    }
+
             }
+    }
+}
+
+private extension ReportView {
+    func createReportReasonView() -> UIView {
+        let containerView = UIView()
+
+        containerView.flex
+            .direction(.column)
+            .define { flex in
+                ReportReason.allCases.forEach {
+                    let reportReasonView = ReportReasonView()
+                    reportReasonView.configure(model: $0)
+
+                    flex.addItem(reportReasonView)
+                        .marginBottom($0 != .other ? 16 : 0)
+                }
+            }
+
+        return containerView
     }
 }
 
