@@ -34,19 +34,22 @@ public final class LyricsBackgroundView: UIView {
         return button
     }()
 
-    lazy var backgroundCollectionView: UICollectionView = {
+    private let flowLayout = {
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: 350, height: 132)
         layout.minimumLineSpacing = 12
         layout.scrollDirection = .vertical
+        return layout
+    }()
 
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+    lazy var backgroundCollectionView: UICollectionView = {
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
         collectionView.backgroundColor = .clear
         collectionView.register(cellType: LyricsBackgroundCollectionViewCell.self)
         collectionView.allowsMultipleSelection = false
-        collectionView.delegate = self
-        collectionView.dataSource = self
         collectionView.showsVerticalScrollIndicator = false
+        collectionView.dataSource = self
+
         return collectionView
     }()
 
@@ -114,7 +117,7 @@ public final class LyricsBackgroundView: UIView {
 
 // MARK: - UICollectionViewDataSource
 
-extension LyricsBackgroundView: UICollectionViewDataSource, UICollectionViewDelegate {
+extension LyricsBackgroundView: UICollectionViewDataSource {
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return LyricsBackground.allCases.count
     }

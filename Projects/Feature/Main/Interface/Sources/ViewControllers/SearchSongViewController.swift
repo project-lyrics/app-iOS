@@ -56,7 +56,6 @@ public final class SearchSongViewController: UIViewController {
         view.backgroundColor = Colors.background
 
         songCollectionView.dataSource = self
-        songCollectionView.delegate = self
     }
 
     private func bind() {
@@ -151,7 +150,7 @@ extension SearchSongViewController {
     }
 }
 
-extension SearchSongViewController: UICollectionViewDataSource, UICollectionViewDelegate {
+extension SearchSongViewController: UICollectionViewDataSource {
 
     public func collectionView(
         _ collectionView: UICollectionView,
