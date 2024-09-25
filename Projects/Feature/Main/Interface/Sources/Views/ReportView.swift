@@ -17,6 +17,7 @@ final class ReportView: UIView {
     // MARK: - UI Components
 
     let rootFlexContainer = UIView()
+    let rootScrollView = UIScrollView()
     let contentView = UIView()
 
     private let navigationBar = NavigationBar()
@@ -89,18 +90,21 @@ final class ReportView: UIView {
         rootFlexContainer.pin.all(pin.safeArea)
         rootFlexContainer.flex.layout()
 
-        contentView.pin
+        rootScrollView.pin
             .below(of: navigationBar)
             .left()
             .right()
             .bottom()
 
+        contentView.pin.top().left().right()
         contentView.flex.layout(mode: .adjustHeight)
+
+        rootScrollView.contentSize = contentView.frame.size
     }
 
     private func setUpLayout() {
         self.addSubview(rootFlexContainer)
-
+        
         navigationBar.addLeftBarView(backButton)
         navigationBar.addTitleView(naviTitleLabel)
 
@@ -113,24 +117,28 @@ final class ReportView: UIView {
                     .height(44)
                     .marginTop(pin.safeArea.top)
 
-                rootFlex.addItem(contentView)
-                    .grow(1)
+                rootFlex.addItem(rootScrollView)
                     .direction(.column)
-                    .define { contentFlex in
-                        contentFlex.addItem(reportReasonTitleLabel)
-                            .marginTop(24)
+                    .define { scrollFlex in
+                        scrollFlex.addItem(contentView)
+                            .direction(.column)
+                            .define { contentFlex in
+                                contentFlex.addItem(reportReasonTitleLabel)
+                                    .marginTop(24)
 
-                        contentFlex.addItem(reportReasonView)
-                            .marginTop(16)
+                                contentFlex.addItem(reportReasonView)
+                                    .width(100%)
+                                    .marginTop(16)
 
-                        contentFlex.addItem(warningDescriptionTextView)
-                            .marginTop(24)
-                            .shrink(0)
+                                contentFlex.addItem(warningDescriptionTextView)
+                                    .marginTop(24)
+                                    .shrink(0)
 
-                        contentFlex.addItem()
-                            .height(38)
-                            .grow(1)
-                            .shrink(0)
+                                contentFlex.addItem()
+                                    .height(38)
+                                    .grow(1)
+                                    .shrink(0)
+                            }
                     }
 
                 rootFlex.addItem()
@@ -145,7 +153,6 @@ final class ReportView: UIView {
                             .cornerRadius(8)
                             .height(56)
                     }
-
             }
     }
 }

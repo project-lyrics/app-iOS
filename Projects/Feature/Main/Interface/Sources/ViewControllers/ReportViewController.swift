@@ -51,6 +51,10 @@ public final class ReportViewController: UIViewController {
         bind()
     }
 
+    public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        view.endEditing(true)
+    }
+
     private func setUpDefault() {
         view.backgroundColor = Colors.background
     }
@@ -105,6 +109,25 @@ public final class ReportViewController: UIViewController {
                 }
             }
             .store(in: &cancellables)
+
+        CombineKeyboard.keyboardHeightPublisher
+            .sink { [weak self] keyboardHeight in
+                self?.rootScrollView.contentInset.bottom = keyboardHeight
+                self?.rootScrollView.verticalScrollIndicatorInsets.bottom = keyboardHeight
+
+                // 스크롤 위치 조정을 위해 caretRect를 사용
+                guard let textView = self?.selectedReportReasonView?.reasonTextView,
+                      let end = textView.selectedTextRange?.end else { return }
+                let caretRect = textView.caretRect(for: end)
+
+                // caret 위치로 스크롤 조정
+                self?.rootScrollView.scrollRectToVisible(caretRect, animated: true)
+
+                UIView.animate(withDuration: 0.3) {
+                    self?.view.layoutIfNeeded()
+                }
+            }
+            .store(in: &cancellables)
     }
 
     private func handleSelectedReportReasonView(
@@ -125,12 +148,24 @@ public final class ReportViewController: UIViewController {
             reportReasonView.flex.markDirty()
             reportReasonView.flex.layout(mode: .adjustHeight)
             setUpReportReasonTextView()
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.scrollToTextView(textView: selectedView?.reasonTextView)
+            }
         } else {
             reportReasonTypePublisher.send(nil)
             view.endEditing(true)
         }
 
         reportView.contentView.flex.layout(mode: .adjustHeight)
+    }
+
+    private func scrollToTextView(textView: UITextView?) {
+        guard let textView = textView,
+              let end = textView.selectedTextRange?.end else { return }
+
+        let caretRect = textView.caretRect(for: end)
+        rootScrollView.scrollRectToVisible(caretRect, animated: true)
     }
 
     private func setUpReportReasonTextView() {
@@ -175,7 +210,13 @@ public final class ReportViewController: UIViewController {
         }
 
         reportView.reportReasonView.flex.layout()
-        reportView.contentView.flex.layout()
+        contentView.flex.layout(mode: .adjustHeight)
+
+        // rootScrollView의 contentSize를 업데이트
+        rootScrollView.contentSize = contentView.frame.size
+
+        // 스크롤 위치 조정을 위해 caretRect를 사용
+        scrollToTextView(textView: textView)
     }
 }
 
@@ -184,8 +225,16 @@ extension ReportViewController {
         return reportView.backButton
     }
 
+    var rootScrollView: UIScrollView {
+        return reportView.rootScrollView
+    }
+
     var reportReasonView: UIView {
         return reportView.reportReasonView
+    }
+
+    var contentView: UIView {
+        return reportView.contentView
     }
 
     var agreementButton: UIButton {
