@@ -121,6 +121,9 @@ open class ButtonBarView: UICollectionView {
     // MARK: - Helpers
 
     private func updateContentOffset(animated: Bool, pagerScroll: PagerScroll, toFrame: CGRect, toIndex: Int) {
+        // 만약 pagerScroll이 .no가 아니거나,
+        // .scrollOnlyIfOutOfScreen인 경우에만 해당 셀이 화면 밖에 있을 때 스크롤을 수행한다.
+        // 셀이 화면 왼쪽 바깥에 있거나, 셀이 화면 오른쪽 바깥에 있을 경우 스크롤을 진행한다.
         guard pagerScroll != .no || (pagerScroll != .scrollOnlyIfOutOfScreen && (toFrame.origin.x < contentOffset.x || toFrame.origin.x >= (contentOffset.x + frame.size.width - contentInset.left))) else { return }
         let targetContentOffset = contentSize.width > frame.size.width ? contentOffsetForCell(withFrame: toFrame, andIndex: toIndex) : 0
         setContentOffset(CGPoint(x: targetContentOffset, y: 0), animated: animated)

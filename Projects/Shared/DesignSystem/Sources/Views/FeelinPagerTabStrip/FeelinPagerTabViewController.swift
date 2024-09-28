@@ -9,7 +9,6 @@ import UIKit
 
 public enum PagerTabStripError: Error {
     case viewControllerOutOfBounds
-
 }
 
 open class FeelinPagerTabViewController: UIViewController, UIScrollViewDelegate {
