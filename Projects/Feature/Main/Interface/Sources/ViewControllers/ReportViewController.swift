@@ -21,8 +21,8 @@ public final class ReportViewController: UIViewController {
     }
 
     private var cancellables = Set<AnyCancellable>()
-    private let reportReasonTapPublisher = PassthroughSubject<ReportReason, Never>()
-    private let reportReasonTypePublisher = PassthroughSubject<String?, Never>()
+    private let selectedReportReasonPublisher = PassthroughSubject<ReportReason, Never>()
+    private let reportReasonDescriptionPublisher = CurrentValueSubject<String?, Never>(nil)
 
     private var selectedReportReasonView: ReportReasonView?
     private let reportView = ReportView()
@@ -72,7 +72,7 @@ public final class ReportViewController: UIViewController {
             .forEach { reasonView in
                 reasonView?.selectedItemPublisher
                     .sink { [weak self] item in
-                        self?.reportReasonTapPublisher.send(item)
+                        self?.selectedReportReasonPublisher.send(item)
                         self?.handleSelectedReportReasonView(of: reasonView, with: item)
                     }
                     .store(in: &cancellables)
@@ -82,8 +82,8 @@ public final class ReportViewController: UIViewController {
         let reportButtonTapPublisher = reportButton.publisher(for: .touchUpInside).eraseToAnyPublisher()
 
         let input = ReportViewModel.Input(
-            reportReasonTapPublisher: reportReasonTapPublisher.eraseToAnyPublisher(),
-            reportReasonTypePublisher: reportReasonTypePublisher.eraseToAnyPublisher(),
+            selectedReportReasonPublisher: selectedReportReasonPublisher.eraseToAnyPublisher(),
+            reportReasonDescriptionPublisher: reportReasonDescriptionPublisher.eraseToAnyPublisher(),
             agreementTapPublisher: agreementTapPublisher,
             reportButtonTapPublisher: reportButtonTapPublisher
         )
@@ -147,13 +147,12 @@ public final class ReportViewController: UIViewController {
         if item == .other {
             reportReasonView.flex.markDirty()
             reportReasonView.flex.layout(mode: .adjustHeight)
-            setUpReportReasonTextView()
+            setUpTextView()
 
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 self.scrollToTextView(textView: selectedView?.reasonTextView)
             }
         } else {
-            reportReasonTypePublisher.send(nil)
             view.endEditing(true)
         }
 
@@ -168,7 +167,7 @@ public final class ReportViewController: UIViewController {
         rootScrollView.scrollRectToVisible(caretRect, animated: true)
     }
 
-    private func setUpReportReasonTextView() {
+    private func setUpTextView() {
         guard let reasonTextView = selectedReportReasonView?.reasonTextView else { return }
 
         if reasonTextView.text.isEmpty {
@@ -181,7 +180,7 @@ public final class ReportViewController: UIViewController {
                 self?.adjustTextViewHeight(reasonTextView)
 
                 guard text != "", text != Const.reasonPlaceholder else { return }
-                self?.reportReasonTypePublisher.send(text)
+                self?.reportReasonDescriptionPublisher.send(text)
             }
             .store(in: &cancellables)
     }

@@ -15,8 +15,8 @@ public final class ReportViewModel {
     typealias ReportNoteResult = Result<FeelinSuccessResponse, ReportError>
 
     struct Input {
-        let reportReasonTapPublisher: AnyPublisher<ReportReason, Never>
-        let reportReasonTypePublisher: AnyPublisher<String?, Never>
+        let selectedReportReasonPublisher: AnyPublisher<ReportReason, Never>
+        let reportReasonDescriptionPublisher: AnyPublisher<String?, Never>
         let agreementTapPublisher: AnyPublisher<UIControl, Never>
         let reportButtonTapPublisher: AnyPublisher<UIControl, Never>
     }
@@ -60,8 +60,8 @@ private extension ReportViewModel {
     }
 
     func isSelectedReportReason(_ input: Input) -> AnyPublisher<Bool, Never> {
-        return input.reportReasonTapPublisher
-            .combineLatest(input.reportReasonTypePublisher)
+        return input.selectedReportReasonPublisher
+            .combineLatest(input.reportReasonDescriptionPublisher)
             .map { reason, typedReasonText in
                 if reason == .other, let typedReasonText{
                     return typedReasonText.isEmpty == false
@@ -74,13 +74,13 @@ private extension ReportViewModel {
 
     func reportNote(_ input: Input) -> AnyPublisher<ReportNoteResult, Never> {
         let requiredFieldsPublisher = Publishers.CombineLatest(
-            input.reportReasonTapPublisher,
+            input.selectedReportReasonPublisher,
             input.agreementTapPublisher
         )
             .eraseToAnyPublisher()
 
         let optionalFieldsPublisher = input
-            .reportReasonTypePublisher
+            .reportReasonDescriptionPublisher
             .prepend(nil)
 
         let combinedPublisher = requiredFieldsPublisher
