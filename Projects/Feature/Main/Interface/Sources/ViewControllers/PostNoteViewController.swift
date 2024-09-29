@@ -95,6 +95,7 @@ public final class PostNoteViewController: UIViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] song in
                 self?.postNoteView.configure(song)
+                self?.postNoteView.flex.layout()
             }
             .store(in: &cancellables)
 

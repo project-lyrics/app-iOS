@@ -3,39 +3,39 @@ import ProjectDescriptionHelpers
 import DependencyPlugin
 
 let project = Project.makeModule(
-    name: ModulePath.Domain.name+ModulePath.Domain.Note.rawValue,
+    name: ModulePath.Domain.name+ModulePath.Domain.Report.rawValue,
     targets: [
         .domain(
-            interface: .Note,
+            interface: .Report,
             factory: .init(
                 dependencies: [
-                    .core,
-                    .domain(interface: .Shared)
-                ]
-            )
-        ),
-        .domain(
-            implements: .Note,
-            factory: .init(
-                dependencies: [
-                    .domain(interface: .Note)
-                ]
-            )
-        ),
-        .domain(
-            testing: .Note,
-            factory: .init(
-                dependencies: [
-                    .domain(interface: .Note),
                     .core
                 ]
             )
         ),
         .domain(
-            tests: .Note,
+            implements: .Report,
             factory: .init(
                 dependencies: [
-                    .domain(testing: .Note)
+                    .domain(interface: .Report)
+                ]
+            )
+        ),
+
+        .domain(
+            testing: .Report,
+            factory: .init(
+                dependencies: [
+                    .domain(interface: .Report),
+                    .core
+                ]
+            )
+        ),
+        .domain(
+            tests: .Report,
+            factory: .init(
+                dependencies: [
+                    .domain(testing: .Report)
                 ]
             )
         ),

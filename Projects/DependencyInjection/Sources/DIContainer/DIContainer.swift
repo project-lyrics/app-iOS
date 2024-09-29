@@ -164,3 +164,14 @@ public extension DIContainer {
         }
     }
 }
+
+// MARK: Report
+
+public extension DIContainer {
+    static func registerReportNoteService() {
+        standard.register(.reportAPIService) { resolver in
+            let networkProvider = try resolver.resolve(.networkProvider)
+            return ReportAPIService(networkProvider: networkProvider)
+        }
+    }
+}

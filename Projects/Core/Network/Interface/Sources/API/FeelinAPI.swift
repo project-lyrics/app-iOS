@@ -33,6 +33,7 @@ public enum FeelinAPI<R> {
     case getNoteWithComments(noteID: Int)
     case postComment(body: PostCommentRequest)
     case deleteComment(commentID: Int)
+    case reportNote(request: ReportRequest)
 }
 
 extension FeelinAPI: HTTPNetworking {
@@ -166,6 +167,10 @@ extension FeelinAPI: HTTPNetworking {
         case .postComment(let postCommentBody):
             return postCommentBody
             
+
+        case .reportNote(let request):
+            return request
+
         default:
             return nil
         }
@@ -238,6 +243,9 @@ extension FeelinAPI: HTTPNetworking {
             
         case .deleteComment(let commentID):
             return "/api/v1/comments/\(commentID)"
+
+        case .reportNote:
+            return "/api/v1/reports"
         }
     }
 
@@ -250,7 +258,8 @@ extension FeelinAPI: HTTPNetworking {
              .postLikes,
              .postBookmarks,
              .postNote,
-             .postComment:
+             .postComment, 
+             .reportNote:
             return .post
 
         case .checkUserValidity, 
