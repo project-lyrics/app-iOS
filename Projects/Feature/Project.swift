@@ -15,6 +15,7 @@ let targets: [Target] = [
             dependencies: [
                 .feature(implements: .Onboarding),
                 .feature(implements: .Home),
+                .feature(implements: .MyPage),
                 .dependencyInjection
             ]
         )
