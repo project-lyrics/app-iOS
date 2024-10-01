@@ -58,6 +58,7 @@ public extension ModulePath {
         case Note
         case Artist
         case OAuth
+        case Notification
 
         public static let name: String = "Domain"
     }
