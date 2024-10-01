@@ -37,8 +37,9 @@ public extension ModulePath {
 
 public extension ModulePath {
     enum Coordinator: String, CaseIterable {
-        case SearchNote
         case Home
+        case SearchNote
+        case MyPage
         case TabBar
         case Onboarding
         case App
