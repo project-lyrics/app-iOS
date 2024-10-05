@@ -1,8 +1,8 @@
 //
-//  ArtistSelectViewController.swift
-//  FeatureMain
+//  SearchMoreFavoriteArtistViewController.swift
+//  FeatureMainInterface
 //
-//  Created by 황인우 on 6/19/24.
+//  Created by 황인우 on 10/5/24.
 //
 
 import Combine
@@ -11,9 +11,8 @@ import UIKit
 import Domain
 import Shared
 
-public final class ArtistSelectViewController: UIViewController {
-    private let viewModel: ArtistSelectViewModel
-    
+public class SearchMoreFavoriteArtistViewController: UIViewController {
+    private let viewModel: SearchMoreFavoriteArtistViewModel
     private var cancellables: Set<AnyCancellable> = .init()
     
     // MARK: - Diffable DataSource
@@ -30,13 +29,8 @@ public final class ArtistSelectViewController: UIViewController {
             
             cell.configure(
                 artistName: artist.name,
-                artistImageURL: try? artist.imageSource?.asURL(),
-                imageBorderWidth: 2,
-                imageBorderInset: 5
+                artistImageURL: try? artist.imageSource?.asURL()
             )
-            artist.isFavorite ?
-            cell.setArtistBorder(color: Colors.active) :
-            cell.setArtistBorder(color: Colors.disabled)
         }
         
         return ArtistListDataSource(
@@ -52,11 +46,11 @@ public final class ArtistSelectViewController: UIViewController {
     
     // MARK: - View
     
-    private var artistSelectView: ArtistSelectView = .init()
+    private var searchMoreFavoriteArtistView: SearchMoreFavoriteArtistView = .init()
     
     // MARK: - Init
     
-    public init(viewModel: ArtistSelectViewModel) {
+    public init(viewModel: SearchMoreFavoriteArtistViewModel) {
         self.viewModel = viewModel
         
         super.init(nibName: nil, bundle: .main)
@@ -67,8 +61,10 @@ public final class ArtistSelectViewController: UIViewController {
         fatalError()
     }
     
+    // MARK: - View Lifecycle
+    
     public override func loadView() {
-        self.view = artistSelectView
+        self.view = searchMoreFavoriteArtistView
     }
     
     public override func viewDidLoad() {
@@ -92,22 +88,14 @@ public final class ArtistSelectViewController: UIViewController {
     }
     
     private func updateOnKeyboardHeightChange(_ height: CGFloat) {
-        if !height.isZero {
-            artistSelectView.flowLayout.sectionInset = .zero
-        } else {
-            // 키보드가 없는 화면에서 collectionView에 inset이 0일 경우 유저가 아티스트 목록을 끝까지 스크롤 할 때 마지막 cell들이 finishButton에 가려져서 이름 확인이 어렵다.
-            // 따라서 키보드가 내려갈 경우 finishSelectButton의 높이만큼 collectionView와 section사이에 inset을 준다.
-            artistSelectView.flowLayout.sectionInset = .init(
-                top: 0,
-                left: 0,
-                bottom: artistSelectView.finishSelectButtonHeight,
-                right: 0
-            )
+        UIView.animate(withDuration: 0.5) {
+            if !height.isZero {
+                self.artistCollectionView.contentInset.bottom = height
+            } else {
+                self.artistCollectionView.contentInset.bottom = self.view.safeAreaInsets.bottom
+            }
+            self.view.layoutIfNeeded()
         }
-        artistSelectView.rootFlexContainer.flex.paddingBottom(
-            height
-        )
-        artistSelectView.rootFlexContainer.flex.layout()
     }
     
     private func fetchInitialArtists() {
@@ -115,10 +103,9 @@ public final class ArtistSelectViewController: UIViewController {
     }
 }
 
-private extension ArtistSelectViewController {
-    
-    // MARK: - Bindings
-    
+// MARK: - Bindings
+
+private extension SearchMoreFavoriteArtistViewController {
     func bindUI() {
         viewModel.$error
             .compactMap { $0 }
@@ -137,16 +124,9 @@ private extension ArtistSelectViewController {
             }
             .store(in: &cancellables)
         
-        viewModel.$favoriteArtists
-            .map { $0.count >= 1 }
-            .assign(to: \.isEnabled, on: finishSelectButton)
-            .store(in: &cancellables)
-        
         CombineKeyboard.keyboardHeightPublisher
             .sink { [unowned self] height in
-                UIView.animate(withDuration: 0.5) {
-                    self.updateOnKeyboardHeightChange(height)
-                }
+                self.updateOnKeyboardHeightChange(height)
             }
             .store(in: &cancellables)
     }
@@ -164,7 +144,10 @@ private extension ArtistSelectViewController {
             .debounce(for: 1, scheduler: DispatchQueue.main)
             .compactMap { $0 }
             .sink(receiveValue: { [weak viewModel] searchText in
-                viewModel?.searchArtists(keyword: searchText)
+                viewModel?.searchArtists(
+                    isInitial: true,
+                    keyword: searchText
+                )
             })
             .store(in: &cancellables)
         
@@ -178,35 +161,14 @@ private extension ArtistSelectViewController {
             .store(in: &cancellables)
         
         self.artistSearchBar.clearButton.publisher(for: .touchUpInside)
-            .sink { [weak viewModel] _ in
+            .sink { [weak viewModel]  _ in
                 viewModel?.fetchArtists(isInitialFetch: true)
             }
             .store(in: &cancellables)
         
-        self.finishSelectButton.publisher(for: .touchUpInside)
-            .flatMap{ [weak viewModel] _ -> AnyPublisher<Void, Never> in
-                guard let viewModel = viewModel else {
-                    return Empty().eraseToAnyPublisher()
-                }
-                
-                return viewModel.confirmFavoriteArtistsPublisher()
-            }
-            .sink { _ in
-                // TODO: - 추후 Coordinator를 활용하여 화면전환
-            }
-            .store(in: &cancellables)
-        
         self.closeButton.publisher(for: .touchUpInside)
-            .sink { [unowned self] _ in
-                self.showAlert(
-                    title: "선택한 정보를 저장하지 않고\n 나가시겠어요?",
-                    message: nil,
-                    leftActionTitle: "취소",
-                    rightActionTitle: "나가기",
-                    rightActionCompletion: {
-                        // MARK: - 추후 coordinator를 활용하여 메인화면으로 전환
-                    }
-                )
+            .sink { _ in
+                // TODO: - dismiss viewController
             }
             .store(in: &cancellables)
     }
@@ -214,33 +176,24 @@ private extension ArtistSelectViewController {
 
 // MARK: - UICollectionViewDelegate
 
-extension ArtistSelectViewController: UICollectionViewDelegate {
+extension SearchMoreFavoriteArtistViewController: UICollectionViewDelegate {
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
-        let isSearching = self.artistSearchBar.searchTextField.text?.isNotEmpty ?? false
-        self.viewModel.markFavoriteArtist(
-            at: indexPath.item,
-            isSearching: isSearching
-        )
+        // 키보드가 올라와 있다면 일단 resign
+        self.artistSearchBar.searchTextField.resignFirstResponder()
+        // TODO: - Navigation to CommunityMainPageVC
     }
 }
 
-// MARK: - ArtistSelectView Subviews
-
-private extension ArtistSelectViewController {
+private extension SearchMoreFavoriteArtistViewController {
     var artistCollectionView: UICollectionView {
-        return self.artistSelectView.artistCollectionView
+        return self.searchMoreFavoriteArtistView.artistCollectionView
     }
     
     var closeButton: UIButton {
-        return self.artistSelectView.closeButton
+        return self.searchMoreFavoriteArtistView.closeButton
     }
     
     var artistSearchBar: FeelinSearchBar {
-        return self.artistSelectView.artistSearchBar
-    }
-    
-    var finishSelectButton: FeelinConfirmButton {
-        return self.artistSelectView.finishSelectButton
+        return self.searchMoreFavoriteArtistView.artistSearchBar
     }
 }

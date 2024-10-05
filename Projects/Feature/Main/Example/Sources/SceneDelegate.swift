@@ -30,8 +30,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         let navigationController = UINavigationController(rootViewController: pushPostNoteViewController(artistID: 12))
         navigationController.navigationBar.isHidden = true
-        window?.rootViewController = navigationController
-        window?.makeKeyAndVisible()
+//        window?.rootViewController = navigationController
+//        window?.makeKeyAndVisible()
+        artistDependencies()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) { }
@@ -63,7 +64,7 @@ extension SceneDelegate {
 //        DIContainer.registerDependenciesForArtistSelectView()
 //        
 //        @Injected(.artistAPIService) var artistAPIService: ArtistAPIServiceInterface
-//        @Injected(.artistPaginationService) var artistPaginationService: ArtistPaginationServiceInterface
+//        @Injected(.artistPaginationService) var artistPaginationService: KeywordPaginationServiceInterface
 //        
 //        let getArtistsUseCase = GetArtistsUseCase(
 //            artistAPIService: artistAPIService,
@@ -88,6 +89,44 @@ extension SceneDelegate {
 //        window?.rootViewController = artistSelectViewController
 //        window?.makeKeyAndVisible()
         // --------------------ArtistSelectViewController-------------------
+//        
+//        DIContainer.standard.register(.networkProvider) { resolver in
+//            return NetworkProvider(
+//                networkSession: .init(requestInterceptor: MockTokenInterceptor())
+//            )
+//        }
+//        DIContainer.standard.register(.artistPaginationService) { _ in
+//            return ArtistPaginationService()
+//        }
+//        
+//        DIContainer.standard.register(.artistAPIService) { resolver in
+//            let networkProvider = try resolver.resolve(.networkProvider)
+//            return ArtistAPIService(networkProvider: networkProvider)
+//        }
+//        
+//        @Injected(.artistAPIService) var artistAPIService: ArtistAPIServiceInterface
+//        @Injected(.artistPaginationService) var artistPaginationService: KeywordPaginationServiceInterface
+//        
+//        let getArtistsUseCase = GetArtistsUseCase(
+//            artistAPIService: artistAPIService,
+//            artistPaginationService: artistPaginationService
+//        )
+//        
+//        let searchArtistsUseCase = SearchArtistsUseCase(
+//            artistAPIService: artistAPIService,
+//            artistPaginationService: artistPaginationService
+//        )
+//        
+//        let viewModel = SearchMoreFavoriteArtistViewModel(
+//            getArtistsUseCase: getArtistsUseCase,
+//            searchArtistsUseCase: searchArtistsUseCase
+//        )
+//        
+//        let searchMoreFavoriteArtistViewController = SearchMoreFavoriteArtistViewController(viewModel: viewModel)
+//        
+//        window?.rootViewController = searchMoreFavoriteArtistViewController
+//        window?.makeKeyAndVisible()
+                // --------------------SearchMoreFavoriteArtistSelectViewController-------------------
         
 //        DIContainer.standard.register(.networkProvider) { _ in
 //            let networkSession = NetworkSession(
@@ -404,5 +443,22 @@ import SwiftUI
 //            .asPreview()
 //    }
 //}
+
+struct NoteCommentsViewController_Preview: PreviewProvider {
+    static var previews: some View {
+
+        let viewModelForPreview = SearchMoreFavoriteArtistViewModel(
+            getArtistsUseCase: MockGetArtistsUseCase(),
+            searchArtistsUseCase: MockSearchArtistsUseCase()
+        )
+
+        let searchMoreFavoriteArtistViewController = SearchMoreFavoriteArtistViewController(viewModel: 
+                                                                                                viewModelForPreview)
+
+
+        return SearchMoreFavoriteArtistViewController(viewModel: viewModelForPreview)
+            .asPreview()
+    }
+}
 
 #endif

@@ -57,7 +57,7 @@ final public class ArtistSelectViewModel {
     
     func searchArtists(
         keyword: String,
-        perPage: Int = 10
+        perPage: Int = 12
     ) {
         self.executeSearchAritsts(
             keyword: keyword,
@@ -77,7 +77,7 @@ final public class ArtistSelectViewModel {
     
     func fetchMoreArtists(
         keyword: String,
-        perPage: Int = 10
+        perPage: Int = 12
     ) {
         if keyword.isEmpty {
             self.executeGetArtists(
@@ -133,6 +133,7 @@ final public class ArtistSelectViewModel {
             }
         }
         .mapError(ArtistSelectionError.init)
+        .receive(on: DispatchQueue.main)
         .mapToResult()
     }
     
@@ -156,6 +157,7 @@ final public class ArtistSelectViewModel {
             }
         }
         .mapError(ArtistSelectionError.init)
+        .receive(on: DispatchQueue.main)
         .mapToResult()
     }
     
