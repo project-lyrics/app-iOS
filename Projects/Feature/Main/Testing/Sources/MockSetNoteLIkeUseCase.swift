@@ -17,13 +17,24 @@ public struct MockSetNoteLikeUseCase: SetNoteLikeUseCaseInterface {
         isLiked: Bool,
         noteID: Int
     ) -> AnyPublisher<NoteLike, NoteError> {
-        return Just(
-            NoteLike(
-                likesCount: 13,
-                noteID: noteID
+        return if isLiked {
+            Just(
+                NoteLike(
+                    likesCount: 13,
+                    noteID: noteID
+                )
             )
-        )
-        .setFailureType(to: NoteError.self)
-        .eraseToAnyPublisher()
+            .setFailureType(to: NoteError.self)
+            .eraseToAnyPublisher()
+        } else {
+            Just(
+                NoteLike(
+                    likesCount: 0,
+                    noteID: noteID
+                )
+            )
+            .setFailureType(to: NoteError.self)
+            .eraseToAnyPublisher()
+        }
     }
 }

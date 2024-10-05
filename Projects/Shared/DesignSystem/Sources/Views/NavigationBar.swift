@@ -103,3 +103,26 @@ private extension NavigationBar {
     }
 }
 
+// MARK: - Change Navigation Bar Display
+
+public extension NavigationBar {
+    func hideRightBarView(_ mustHide: Bool) {
+        rightBarView.isHidden = mustHide
+        rootFlexContainer.flex.layout()
+    }
+    
+    func hideTitleView(_ mustHide: Bool) {
+        titleView.isHidden = mustHide
+        rootFlexContainer.flex.layout()
+    }
+    
+    func hideLeftView(_ mustHide: Bool) {
+        leftBarView.isHidden = mustHide
+        rootFlexContainer.flex.layout()
+    }
+    
+    func changeBackgroundColor(_ color: UIColor) {
+        self.backgroundColor = color
+        rootFlexContainer.flex.layout()
+    }
+}

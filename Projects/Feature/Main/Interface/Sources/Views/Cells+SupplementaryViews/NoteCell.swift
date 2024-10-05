@@ -135,7 +135,6 @@ final class NoteCell: UICollectionViewCell, Reusable {
         return button
     }()
     
-    
     // MARK: - Init
     
     override init(frame: CGRect) {
@@ -240,6 +239,7 @@ final class NoteCell: UICollectionViewCell, Reusable {
     }
     
     // MARK: - Configure UI
+    
     func configure(with note: Note, showsFullNoteContents: Bool = false) {
         self.authorCharacterImageView.image = note.publisher.profileCharacterType.image
         self.authorNameLabel.text = note.publisher.nickname
@@ -275,6 +275,8 @@ final class NoteCell: UICollectionViewCell, Reusable {
         self.flexContainer.flex.layout()
     }
     
+    // MARK: - Prepare for Reuse
+    
     override func prepareForReuse() {
         super.prepareForReuse()
         
@@ -287,10 +289,60 @@ final class NoteCell: UICollectionViewCell, Reusable {
         self.artistNameLabel.text = nil
         self.likeAmountLabel.text = nil
         self.commentAmountLabel.text = nil
-        self.likeNoteButton.isSelected = false
-        self.bookmarkButton.isSelected = false
+        self.likeNoteButton = self.makeLikeNoteButton()
+        self.bookmarkButton = self.makeBookmarkButton()
+        self.commentButton = self.makeCommentButton()
+        self.playMusicButton = self.makePlayMusicButton()
+        self.moreAboutContentButton = self.makeMoreAboutContentButton()
         self.lyricsContentsView.configureView(with: nil)
         self.flexContainer.flex.layout()
+    }
+    
+    // MARK: - Button Make functions
+    
+    private func makeBookmarkButton() -> FeelinSelectableImageButton {
+        let button = FeelinSelectableImageButton(
+            selectedImage: FeelinImages.bookmarkActiveLight,
+            unSelectedImage: FeelinImages.bookmarkInactiveLight
+        )
+        
+        return button
+    }
+    
+    private func makeCommentButton() -> UIButton {
+        let button = UIButton()
+        button.setImage(FeelinImages.chatLight, for: .normal)
+        
+        return button
+    }
+    
+    private func makeLikeNoteButton() -> FeelinSelectableImageButton {
+        let button = FeelinSelectableImageButton(
+            selectedImage: FeelinImages.heartActiveLight,
+            unSelectedImage: FeelinImages.heartInactiveLight
+        )
+        
+        return button
+    }
+    
+    private func makePlayMusicButton() -> UIButton {
+        let button = UIButton()
+        let buttonImage = FeelinImages.play
+            .withRenderingMode(.alwaysTemplate)
+        button.setImage(buttonImage, for: .normal)
+        button.tintColor = Colors.gray03
+        
+        return button
+    }
+    
+    private func makeMoreAboutContentButton() -> UIButton {
+        let button = UIButton()
+        let buttonImage = FeelinImages.meetball
+            .withRenderingMode(.alwaysTemplate)
+        button.setImage(buttonImage, for: .normal)
+        button.tintColor = Colors.gray03
+        
+        return button
     }
     
     
