@@ -1,8 +1,8 @@
 //
-//  NoteDetailViewModel.swift
+//  CommunityMainViewModel.swift
 //  FeatureMainInterface
 //
-//  Created by 황인우 on 9/7/24.
+//  Created by 황인우 on 10/1/24.
 //
 
 import Domain
@@ -10,40 +10,41 @@ import Domain
 import Combine
 import Foundation
 
-final public class NoteDetailViewModel {
-    
+public final class CommunityMainViewModel {
     @Published private (set) var fetchedNotes: [Note] = []
+    @Published private (set) var artist: Artist
     @Published var mustHaveLyrics: Bool = false
-    @Published private (set) var error: NoteError?
+    @Published private (set) var error: CommunityError?
+    
+    
+    var isLoadingData: Bool = false
     
     private var cancellables: Set<AnyCancellable> = .init()
-    
-    let selectedNote: SearchedNote
-    
-    private let getSongNotesUseCase: GetSongNotesUseCaseInterface
+    private let getArtistNotesUseCase: GetArtistNotesUseCaseInterface
     private let setNoteLikeUseCase: SetNoteLikeUseCaseInterface
     private let setBookmarkUseCase: SetBookmarkUseCaseInterface
     private let deleteNoteUseCase: DeleteNoteUseCaseInterface
+    private let setFavoriteArtistUseCase: SetFavoriteArtistUseCaseInterface
     
     public init(
-        selectedNote: SearchedNote,
-        getSongNotesUseCase: GetSongNotesUseCaseInterface,
+        artist: Artist,
+        getArtistNotesUseCase: GetArtistNotesUseCaseInterface,
         setNoteLikeUseCase: SetNoteLikeUseCaseInterface,
         setBookmarkUseCase: SetBookmarkUseCaseInterface,
-        deleteNoteUseCase: DeleteNoteUseCaseInterface
+        deleteNoteUseCase: DeleteNoteUseCaseInterface,
+        setFavoriteArtistUseCase: SetFavoriteArtistUseCaseInterface
     ) {
-        self.selectedNote = selectedNote
-        self.getSongNotesUseCase = getSongNotesUseCase
+        self._artist = .init(initialValue: artist)
+        self.getArtistNotesUseCase = getArtistNotesUseCase
         self.setNoteLikeUseCase = setNoteLikeUseCase
         self.setBookmarkUseCase = setBookmarkUseCase
         self.deleteNoteUseCase = deleteNoteUseCase
-        
+        self.setFavoriteArtistUseCase = setFavoriteArtistUseCase
         
         // mustHaveLyrics가 변경될 때 데이터를 새로 가져오는 로직
         $mustHaveLyrics
-            .dropFirst()
             .sink { [weak self] mustHaveLyrics in
-                self?.getSongNotes(
+                self?.getArtistNotes(
                     isInitial: true,
                     mustHaveLyrics: mustHaveLyrics
                 )
@@ -51,40 +52,65 @@ final public class NoteDetailViewModel {
             .store(in: &cancellables)
     }
     
-    func getSongNotes(
+    func getArtistNotes(
         isInitial: Bool,
         mustHaveLyrics: Bool? = nil,
         perPage: Int = 10
     ) {
-        let songID = self.selectedNote.songID
+        self.isLoadingData = true
+        let artistID = self.artist.id
         
-        self.getSongNotesUseCase.execute(
+        self.getArtistNotesUseCase.execute(
             isInitial: isInitial,
+            artistID: artistID,
             perPage: perPage,
-            mustHaveLyrics: mustHaveLyrics ?? self.mustHaveLyrics,
-            songID: songID
+            mustHaveLyrics: mustHaveLyrics ?? self.mustHaveLyrics
         )
         .mapToResult()
-        .sink { result in
+        .sink { [weak self] result in
             switch result {
             case .success(let fetchedNotes):
                 if isInitial {
-                    self.fetchedNotes = fetchedNotes
+                    self?.fetchedNotes = fetchedNotes
                 } else {
-                    self.fetchedNotes.append(contentsOf: fetchedNotes)
+                    self?.fetchedNotes.append(contentsOf: fetchedNotes)
                 }
             case .failure(let error):
-                self.error = error
+                self?.error = .noteError(error)
             }
         }
         .store(in: &cancellables)
-        
+    }
+}
+
+// MARK: - add/delete favorite Artist
+
+extension CommunityMainViewModel {
+    func setFavoriteArtist(_ isFavorite: Bool) {
+        self.setFavoriteArtistUseCase.execute(
+            artistID: self.artist.id,
+            isFavorite: isFavorite
+        )
+        .mapToResult()
+        .receive(on: DispatchQueue.main)
+        .sink { result in
+            switch result {
+            case .success(let success):
+                print("delete or add success: \(success)")
+                self.artist.isFavorite = isFavorite
+                
+            case .failure(let error):
+                self.artist.isFavorite = !isFavorite
+                self.error = .artistError(error)
+            }
+        }
+        .store(in: &cancellables)
     }
 }
 
 // MARK: - Like/Dislike note
 
-extension NoteDetailViewModel {
+extension CommunityMainViewModel {
     func setNoteLikeState(
         noteID: Int,
         isLiked: Bool
@@ -98,6 +124,7 @@ extension NoteDetailViewModel {
         .sink { [weak self] result in
             switch result {
             case .success(let updatedNoteLike):
+                print("set note like")
                 let indexToUpdate = self?.fetchedNotes.firstIndex(
                     where: { $0.id == noteID }
                 )
@@ -115,7 +142,7 @@ extension NoteDetailViewModel {
                 if let indexToUpdate = indexToUpdate {
                     self?.fetchedNotes[indexToUpdate].isLiked = !isLiked
                 }
-                self?.error = error
+                self?.error = .noteError(error)
                 
             }
         }
@@ -125,7 +152,7 @@ extension NoteDetailViewModel {
 
 // MARK: - Bookmark
 
-extension NoteDetailViewModel {
+extension CommunityMainViewModel {
     func setNoteBookmarkState(
         noteID: Int,
         isBookmarked: Bool
@@ -156,7 +183,7 @@ extension NoteDetailViewModel {
                     self?.fetchedNotes[indexToUpdate].isBookmarked = !isBookmarked
                 }
                 
-                self?.error = error
+                self?.error = .noteError(error)
                 
             }
         }
@@ -166,18 +193,18 @@ extension NoteDetailViewModel {
 
 // MARK: - Edit, Delete, Report Note
 
-extension NoteDetailViewModel {
+extension CommunityMainViewModel {
     func deleteNote(id: Int) {
         self.deleteNoteUseCase.execute(noteID: id)
             .mapToResult()
             .receive(on: DispatchQueue.main)
-            .sink { result in
+            .sink { [weak self] result in
                 switch result {
                 case .success:
-                    self.fetchedNotes.removeAll(where: { $0.id == id })
+                    self?.fetchedNotes.removeAll(where: { $0.id == id })
                     
                 case .failure(let noteError):
-                    self.error = noteError
+                    self?.error = .noteError(noteError)
                 }
             }
             .store(in: &cancellables)

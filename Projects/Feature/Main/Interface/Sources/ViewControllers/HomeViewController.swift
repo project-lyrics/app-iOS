@@ -218,6 +218,7 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
     }
     
     private func updateNotes(_ notes: [Note]) {
+        // TODO: - 정상작동 X, 수정 필요 p1
         var snapshot = homeDataSource.snapshot()
         
         // notes 섹션이 있는 경우
