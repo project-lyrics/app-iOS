@@ -37,6 +37,8 @@ public enum FeelinAPI<R> {
     case postComment(body: PostCommentRequest)
     case deleteComment(commentID: Int)
     case reportNote(request: ReportRequest)
+    case getNotifications(cursor: Int?, size: Int)
+    case checkNotification(notificationID: Int)
 }
 
 extension FeelinAPI: HTTPNetworking {
@@ -63,7 +65,8 @@ extension FeelinAPI: HTTPNetworking {
     public var queryParameters: Encodable? {
         switch self {
         case .getArtists(let cursor, let size),
-                .getFavoriteArtists(let cursor, let size):
+             .getFavoriteArtists(let cursor, let size),
+             .getNotifications(let cursor, let size):
             if let cursor = cursor {
                 return [
                     "cursor": cursor,
@@ -275,6 +278,12 @@ extension FeelinAPI: HTTPNetworking {
 
         case .reportNote:
             return "/api/v1/reports"
+            
+        case .getNotifications:
+            return "/api/v1/notifications"
+            
+        case .checkNotification(let notificationID):
+            return "/api/v1/notifications/\(notificationID)"
         }
     }
 
@@ -301,6 +310,7 @@ extension FeelinAPI: HTTPNetworking {
              .getSearchedNotes,
              .getSongNotes,
              .getNoteWithComments,
+             .getNotifications,
              .getArtistNotes:
             return .get
             
@@ -310,6 +320,9 @@ extension FeelinAPI: HTTPNetworking {
              .deleteComment,
              .deleteFavoriteArtist:
             return .delete
+            
+        case .checkNotification:
+            return .patch
         }
     }
 }

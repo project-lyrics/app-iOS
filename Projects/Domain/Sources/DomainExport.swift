@@ -13,5 +13,7 @@
 @_exported import DomainNoteInterface
 @_exported import DomainReport
 @_exported import DomainReportInterface
+@_exported import DomainNotification
+@_exported import DomainNotificationInterface
 @_exported import DomainShared
 @_exported import DomainSharedInterface

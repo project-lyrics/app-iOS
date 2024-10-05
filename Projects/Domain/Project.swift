@@ -18,6 +18,7 @@ let targets: [Target] = [
                 .domain(implements: .Artist),
                 .domain(implements: .Note),
                 .domain(implements: .Report),
+                .domain(implements: .Notification),
                 .domain(implements: .Shared)
             ]
         )

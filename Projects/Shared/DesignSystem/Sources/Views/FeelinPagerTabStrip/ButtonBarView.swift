@@ -34,6 +34,18 @@ open class ButtonBarView: UICollectionView {
         bar.layer.zPosition = 9999
         return bar
     }()
+    
+    open lazy var defaultBar: UIView = { [unowned self] in
+        let bar  = UIView(
+            frame: CGRect(x: 0,
+            y: self.frame.size.height - CGFloat(self.selectedBarHeight),
+            width: self.frame.width,
+            height: CGFloat(self.selectedBarHeight))
+        )
+        bar.translatesAutoresizingMaskIntoConstraints = false
+        bar.layer.zPosition = 9999
+        return bar
+    }()
 
     internal var selectedBarHeight: CGFloat = 4 {
         didSet {
@@ -46,11 +58,13 @@ open class ButtonBarView: UICollectionView {
 
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
+        addSubview(defaultBar)
         addSubview(selectedBar)
     }
 
     public override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
         super.init(frame: frame, collectionViewLayout: layout)
+        addSubview(defaultBar)
         addSubview(selectedBar)
     }
 
@@ -169,6 +183,12 @@ open class ButtonBarView: UICollectionView {
 
         selectedBarFrame.size.height = selectedBarHeight
         selectedBar.frame = selectedBarFrame
+        defaultBar.frame = .init(
+            x: 0,
+            y: selectedBarFrame.minY,
+            width: self.frame.width,
+            height: selectedBarFrame.height
+        )
     }
 
     override open func layoutSubviews() {
