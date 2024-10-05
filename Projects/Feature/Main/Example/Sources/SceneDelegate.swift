@@ -444,21 +444,140 @@ import SwiftUI
 //    }
 //}
 
-struct NoteCommentsViewController_Preview: PreviewProvider {
-    static var previews: some View {
+//struct NoteCommentsViewController_Preview: PreviewProvider {
+//    static var previews: some View {
+//
+//        let viewModelForPreview = SearchMoreFavoriteArtistViewModel(
+//            getArtistsUseCase: MockGetArtistsUseCase(),
+//            searchArtistsUseCase: MockSearchArtistsUseCase()
+//        )
+//
+//        let searchMoreFavoriteArtistViewController = SearchMoreFavoriteArtistViewController(viewModel: 
+//                                                                                                viewModelForPreview)
+//
+//
+//        return SearchMoreFavoriteArtistViewController(viewModel: viewModelForPreview)
+//            .asPreview()
+//    }
+//}
 
-        let viewModelForPreview = SearchMoreFavoriteArtistViewModel(
-            getArtistsUseCase: MockGetArtistsUseCase(),
-            searchArtistsUseCase: MockSearchArtistsUseCase()
-        )
-
-        let searchMoreFavoriteArtistViewController = SearchMoreFavoriteArtistViewController(viewModel: 
-                                                                                                viewModelForPreview)
-
-
-        return SearchMoreFavoriteArtistViewController(viewModel: viewModelForPreview)
-            .asPreview()
-    }
-}
+//struct MyFavoriteArtistsViewController_Preview: PreviewProvider {
+//    static var previews: some View {
+//        
+//        let dummyArtists: [Artist] = [
+//            Artist(
+//                id: 1,
+//                name: "검정치마",
+//                imageSource: "https://i.scdn.co/image/ab6761610000e5eb8609536d21beed6769d09d7f",
+//                isFavorite: true
+//            ),
+//            Artist(
+//                id: 2,
+//                name: "인디2",
+//                imageSource: "https://i.scdn.co/image/ab6761610000e5eb8609536d21beed6769d09d7f",
+//                isFavorite: true
+//            ),
+//            Artist(
+//                id: 3,
+//                name: "인디3",
+//                imageSource: "https://i.scdn.co/image/ab6761610000e5eb8609536d21beed6769d09d7f",
+//                isFavorite: true
+//            ),
+//            Artist(
+//                id: 4,
+//                name: "인디4",
+//                imageSource: nil,
+//                isFavorite: true
+//            ),
+//            Artist(
+//                id: 5,
+//                name: "인디5",
+//                imageSource: nil,
+//                isFavorite: true
+//            ),
+//            Artist(
+//                id: 6,
+//                name: "인디6",
+//                imageSource: nil,
+//                isFavorite: true
+//            ),
+//            Artist(
+//                id: 7,
+//                name: "인디7",
+//                imageSource: nil,
+//                isFavorite: true
+//            ),
+//            Artist(
+//                id: 8,
+//                name: "인디8",
+//                imageSource: nil,
+//                isFavorite: true
+//            ),
+//            Artist(
+//                id: 9,
+//                name: "인디9",
+//                imageSource: nil,
+//                isFavorite: true
+//            ),
+//            Artist(
+//                id: 11,
+//                name: "검정치마",
+//                imageSource: "https://i.scdn.co/image/ab6761610000e5eb8609536d21beed6769d09d7f",
+//                isFavorite: true
+//            ),
+//            Artist(
+//                id: 12,
+//                name: "인디12",
+//                imageSource: nil,
+//                isFavorite: true
+//            ),
+//            Artist(
+//                id: 13,
+//                name: "인디13",
+//                imageSource: nil,
+//                isFavorite: true
+//            ),
+//            Artist(
+//                id: 14,
+//                name: "인디14",
+//                imageSource: nil,
+//                isFavorite: true
+//            ),
+//            Artist(
+//                id: 15,
+//                name: "인디15",
+//                imageSource: nil,
+//                isFavorite: true
+//            ),
+//            Artist(
+//                id: 16,
+//                name: "인디16",
+//                imageSource: nil,
+//                isFavorite: true
+//            ),
+//            Artist(
+//                id: 17,
+//                name: "인디17",
+//                imageSource: nil,
+//                isFavorite: true
+//            ),
+//            Artist(
+//                id: 18,
+//                name: "인디18",
+//                imageSource: nil,
+//                isFavorite: true
+//            ),
+//            Artist(
+//                id: 19,
+//                name: "인디19",
+//                imageSource: nil,
+//                isFavorite: true
+//            )
+//        ]
+//
+//        return MyFavoriteArtistsViewController.init(artists: dummyArtists)
+//            .asPreview()
+//    }
+//}
 
 #endif
