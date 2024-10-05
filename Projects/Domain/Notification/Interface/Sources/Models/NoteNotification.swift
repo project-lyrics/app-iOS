@@ -5,6 +5,8 @@
 //  Created by 황인우 on 9/29/24.
 //
 
+import Core
+
 import Foundation
 
 public struct NoteNotification: Hashable {
@@ -31,5 +33,18 @@ public struct NoteNotification: Hashable {
         self.hasRead = hasRead
         self.content = content
         self.time = time
+    }
+    
+    public init(dto: NotificationResponse) {
+        self.id = dto.id
+        self.type = NotificationType(dto: dto.type)
+        self.image = dto.artistImageUrl
+        self.hasRead = dto.checked
+        if dto.type == .public {
+            self.content = dto.content
+        } else {
+            self.content = dto.noteContent
+        }
+        self.time = dto.createdAt
     }
 }

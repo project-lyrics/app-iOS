@@ -109,9 +109,9 @@ class NoteNotificationCell: UICollectionViewCell, Reusable {
     
     func configure(notification: NoteNotification) {
         switch notification.type {
-        case .alert:
+        case .commentOnNote:
             self.notificationImageView.kf.setImage(with: try? notification.image?.asURL())
-        case .report:
+        case .public, .report:
             self.notificationImageView.image = FeelinImages.logo
         }
       

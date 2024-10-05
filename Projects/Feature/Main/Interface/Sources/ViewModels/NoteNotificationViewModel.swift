@@ -11,26 +11,84 @@ import Foundation
 import Domain
 
 public final class NoteNotificationViewModel {
-    @Published private (set) var fetchedNotifications: [NoteNotification] = [
-        .init(
-            id: 1,
-            type: .report,
-            image: nil,
-            hasRead: true,
-            content: "이 내용은 모두가 공감했으면 좋겠어요/n 정말로 그랬으면 좋겠어",
-            time: .distantPast
-        ),
-        .init(
-            id: 2,
-            type: .report,
-            image: nil,
-            hasRead: false,
-            content: "이 내용은 모두가 공감했으면 좋겠어요/n 정말로 그랬으면 좋겠어. 혼나요 진짜로. 그렇게 살면 안됩니다. 경고했습니다. 제발 말씀. 어 왜 그랬어. 잘 못했지",
-            time: .distantPast
-        )
-    ]
+    @Published private (set) var fetchedNotifications: [NoteNotification] = []
+    @Published private (set) var error: NotificationError?
+    @Published private (set) var refreshState: RefreshState<NotificationError> = .idle
     
-    public init() {
+    private var cancellables: Set<AnyCancellable> = .init()
+    
+    private let checkNotificationUseCase: CheckNotificationUseCaseInterface
+    private let getNotificationUseCase: GetNotificationUseCaseInterface
+    
+    public init(
+        checkNotificationUseCase: CheckNotificationUseCaseInterface,
+        getNotificationUseCase: GetNotificationUseCaseInterface
+    ) {
+        self.checkNotificationUseCase = checkNotificationUseCase
+        self.getNotificationUseCase = getNotificationUseCase
+    }
+    
+    func getNotifications(
+        isInitial: Bool,
+        perPage: Int = 10
+    ) {
+        self.getNotificationUseCase.execute(
+            isInitial: isInitial,
+            perPage: perPage
+        )
+        .receive(on: DispatchQueue.main)
+        .mapToResult()
+        .sink { [weak self] result in
+            switch result {
+            case .success(let notifications):
+                if isInitial {
+                    self?.fetchedNotifications = notifications
+                } else {
+                    self?.fetchedNotifications.append(contentsOf: notifications)
+                }
+            case .failure(let error):
+                self?.error = error
+            }
+        }
+        .store(in: &cancellables)
+    }
+    
+    func refreshNotifications(perPage: Int = 10) {
+        self.refreshState = .refreshing
         
+        self.getNotificationUseCase.execute(
+            isInitial: true,
+            perPage: perPage
+        )
+        .receive(on: DispatchQueue.main)
+        .mapToResult()
+        .sink { [weak self] result in
+            switch result {
+            case .success(let notifications):
+                self?.fetchedNotifications = notifications
+                self?.refreshState = .completed
+            case .failure(let error):
+                self?.refreshState = .failed(error)
+            }
+        }
+        .store(in: &cancellables)
+    }
+    
+    func checkNotification(at index: Int) {
+        let selectedNotification = self.fetchedNotifications[index]
+        
+        self.checkNotificationUseCase.execute(notificationID: selectedNotification.id)
+            .receive(on: DispatchQueue.main)
+            .mapToResult()
+            .sink { [weak self] result in
+                switch result {
+                case .success(let isSuccess):
+                    return
+                    
+                case .failure(let error):
+                    self?.error = error
+                }
+            }
+            .store(in: &cancellables)
     }
 }

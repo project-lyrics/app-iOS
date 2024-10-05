@@ -21,6 +21,7 @@ class NoteNotificationView: UIView {
             frame: .zero,
             collectionViewLayout: flowLayout
         )
+        collectionView.refreshControl = .init()
         collectionView.showsVerticalScrollIndicator = false
         collectionView.register(cellType: NoteNotificationCell.self)
         collectionView.register(cellType: EmptyNotificationCell.self)
