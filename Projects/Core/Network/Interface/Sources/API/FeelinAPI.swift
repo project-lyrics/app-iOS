@@ -19,6 +19,8 @@ public enum FeelinAPI<R> {
     case getArtists(cursor: Int?, size: Int)
     case searchArtists(query: String, cursor: Int?, size: Int)
     case postFavoriteArtists(ids: [Int])
+    case postFavoriteArtist(id: Int)
+    case deleteFavoriteArtist(id: Int)
     case getFavoriteArtists(cursor: Int?, size: Int)
     case getFavoriteArtistsRelatedNotes(cursor: Int?, size: Int, hasLyrics: Bool)
     case postLikes(noteID: Int)
@@ -30,6 +32,7 @@ public enum FeelinAPI<R> {
     case searchSongs(cursor: Int, size: Int, query: String, artistID: Int)
     case getSearchedNotes(pageNumber: Int, pageSize: Int, query: String)
     case getSongNotes(cursor: Int?, size: Int, hasLyrics: Bool, songID: Int)
+    case getArtistNotes(cursor: Int?, size: Int, hasLyrics: Bool, artistID: Int)
     case getNoteWithComments(noteID: Int)
     case postComment(body: PostCommentRequest)
     case deleteComment(commentID: Int)
@@ -139,6 +142,27 @@ extension FeelinAPI: HTTPNetworking {
                 "songId": "\(songID)"
             ]
             
+        case .getArtistNotes(let cursor, let size, let hasLyrics, let artistID):
+            if let cursor = cursor {
+                return [
+                    "cursor": "\(cursor)",
+                    "size": "\(size)",
+                    "hasLyrics": "\(hasLyrics)",
+                    "artistId": "\(artistID)"
+                ]
+            }
+            
+            return [
+                "size": "\(size)",
+                "hasLyrics": "\(hasLyrics)",
+                "artistId": "\(artistID)"
+            ]
+        case .postFavoriteArtist(let id),
+             .deleteFavoriteArtist(let id):
+            return [
+                "artistId": id
+            ]
+            
         default:
             return nil
         }
@@ -209,7 +233,9 @@ extension FeelinAPI: HTTPNetworking {
         case .postFavoriteArtists:
             return "/api/v1/favorite-artists/batch"
             
-        case .getFavoriteArtists:
+        case .getFavoriteArtists,
+             .postFavoriteArtist,
+             .deleteFavoriteArtist:
             return "/api/v1/favorite-artists"
             
         case .getFavoriteArtistsRelatedNotes:
@@ -238,6 +264,9 @@ extension FeelinAPI: HTTPNetworking {
         case .getSongNotes:
             return "/api/v1/notes/songs"
             
+        case .getArtistNotes:
+            return "/api/v1/notes/artists"
+            
         case .postComment:
             return "/api/v1/comments"
             
@@ -259,7 +288,8 @@ extension FeelinAPI: HTTPNetworking {
              .postBookmarks,
              .postNote,
              .postComment, 
-             .reportNote:
+             .reportNote,
+             .postFavoriteArtist:
             return .post
 
         case .checkUserValidity, 
@@ -270,13 +300,15 @@ extension FeelinAPI: HTTPNetworking {
              .searchSongs,
              .getSearchedNotes,
              .getSongNotes,
-             .getNoteWithComments:
+             .getNoteWithComments,
+             .getArtistNotes:
             return .get
             
         case .deleteLikes, 
              .deleteBookmarks,
              .deleteNote,
-             .deleteComment:
+             .deleteComment,
+             .deleteFavoriteArtist:
             return .delete
         }
     }
