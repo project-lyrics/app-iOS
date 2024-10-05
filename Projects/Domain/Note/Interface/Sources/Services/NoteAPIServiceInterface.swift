@@ -48,4 +48,11 @@ public protocol NoteAPIServiceInterface {
         hasLyrics: Bool,
         songID: Int
     ) -> AnyPublisher<GetNotesResponse, NoteError>
+    
+    func getArtistNotes(
+        currentPage: Int?,
+        numberOfNotes: Int,
+        hasLyrics: Bool,
+        artistID: Int
+    ) -> AnyPublisher<GetNotesResponse, NoteError>
 }

@@ -57,5 +57,14 @@ public struct MockArtistAPIService: ArtistAPIServiceInterface {
         }
     }
     
+    public func postFavoriteArtist(id: Int) -> AnyPublisher<FeelinSuccessResponse, ArtistError> {
+        return Empty()
+            .eraseToAnyPublisher()
+    }
+    
+    public func deleteFavoriteArtist(id: Int) -> AnyPublisher<FeelinSuccessResponse, DomainArtistInterface.ArtistError> {
+        return Empty()
+            .eraseToAnyPublisher()
+    }
     
 }
