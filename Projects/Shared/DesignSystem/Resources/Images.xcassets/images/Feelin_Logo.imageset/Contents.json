@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "Mode=Dark.png",
+      "filename" : "Feelin_Logo.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "Mode=Dark@2x.png",
+      "filename" : "Feelin_Logo@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "Mode=Dark@3x.png",
+      "filename" : "Feelin_Logo@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

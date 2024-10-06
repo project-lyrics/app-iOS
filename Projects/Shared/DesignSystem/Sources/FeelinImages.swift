@@ -9,6 +9,7 @@ import UIKit
 
 public struct FeelinImages {
     public static let logo = SharedDesignSystemAsset.Images.logo.image
+    public static let feelinLogo = SharedDesignSystemAsset.Images.feelinLogo.image
     public static let artistSearchIcon = SharedDesignSystemAsset.Images.artistSearchIcon.image
     public static let backDark = SharedDesignSystemAsset.Images.backDark.image
     public static let backLight = SharedDesignSystemAsset.Images.backLight.image
@@ -57,6 +58,9 @@ public struct FeelinImages {
     public static let trash = SharedDesignSystemAsset.Images.trash.image
     public static let writingDark = SharedDesignSystemAsset.Images.writingDark.image
     public static let writingLight = SharedDesignSystemAsset.Images.writingLight.image
+    public static let writingActive = SharedDesignSystemAsset.Images.writingActive.image
+    public static let writingInactiveLight = SharedDesignSystemAsset.Images.writingInactiveLight.image
+    public static let writingInactiveDark = SharedDesignSystemAsset.Images.writingInactiveDark.image
     public static let xCircleDark = SharedDesignSystemAsset.Images.xCircleDark.image
     public static let xCircleLight = SharedDesignSystemAsset.Images.xCircleLight.image
     public static let xDark = SharedDesignSystemAsset.Images.xDark.image

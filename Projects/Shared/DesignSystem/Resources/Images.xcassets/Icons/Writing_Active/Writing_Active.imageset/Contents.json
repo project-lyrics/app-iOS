@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "Mode=Light.png",
+      "filename" : "Writing.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "Mode=Light@2x.png",
+      "filename" : "Writing@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "Mode=Light@3x.png",
+      "filename" : "Writing@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
