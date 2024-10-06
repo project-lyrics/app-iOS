@@ -13,7 +13,7 @@ import Shared
 
 public protocol SearchSongViewControllerDelegate: AnyObject {
     func didFinish(selectedItem: Song)
-    func popViewController()
+    func popRootViewController()
 }
 
 public final class SearchSongViewController: UIViewController {
@@ -62,7 +62,7 @@ public final class SearchSongViewController: UIViewController {
         backButton.publisher(for: .touchUpInside)
             .receive(on: DispatchQueue.main)
             .sink { _ in
-                self.coordinator?.popViewController()
+                self.coordinator?.popRootViewController()
             }
             .store(in: &cancellables)
 

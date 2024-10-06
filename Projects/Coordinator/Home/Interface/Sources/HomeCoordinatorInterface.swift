@@ -150,12 +150,23 @@ extension HomeCoordinator: CoordinatorDelegate,
         navigationController.tabBarController?.tabBar.isHidden = isHiddenTabBar
     }
 
-    public func didFinish(selectedItem: Song) {
-        if let postNoteViewController = navigationController.viewControllers.first(where: { $0 is PostNoteViewController }) as? PostNoteViewController {
-
-            postNoteViewController.addSelectedSong(selectedItem)
-            popViewController()
+    public func popRootViewController() {
+        guard let topNavigationController = navigationController.presentedViewController as? UINavigationController 
+        else {
+            return
         }
+
+        topNavigationController.popViewController(animated: true)
+    }
+
+    public func didFinish(selectedItem: Song) {
+        guard let topNavigationController = navigationController.presentedViewController as? UINavigationController,
+              let postNoteViewController = topNavigationController.viewControllers.first(where: { $0 is PostNoteViewController }) as? PostNoteViewController else {
+            return
+        }
+        
+        postNoteViewController.addSelectedSong(selectedItem)
+        topNavigationController.popViewController(animated: true)
     }
 
     public func didFinish() {
@@ -167,16 +178,24 @@ extension HomeCoordinator: CoordinatorDelegate,
         let viewModel = postNoteDependencies(artistID: artistID)
         let postNoteViewController = PostNoteViewController(viewModel: viewModel)
         postNoteViewController.coordinator = self
-        postNoteViewController.modalPresentationStyle = .fullScreen
-        navigationController.present(postNoteViewController, animated: true)
+        
+        let navController = UINavigationController(rootViewController: postNoteViewController)
+        navController.isNavigationBarHidden = true
+        navController.modalPresentationStyle = .fullScreen
+        navigationController.present(navController, animated: true)
     }
 
     public func pushSearchSongViewController(artistID: Int) {
+        guard let topNavigationController = navigationController.presentedViewController as? UINavigationController else {
+            return
+        }
+
         let searchSongViewModel = searchSongDependencies(artistID: artistID)
         let searchSongViewController = SearchSongViewController(viewModel: searchSongViewModel)
         searchSongViewController.coordinator = self
-        navigationController.tabBarController?.tabBar.isHidden = true
-        navigationController.pushViewController(searchSongViewController, animated: true)
+
+        topNavigationController.tabBarController?.tabBar.isHidden = true
+        topNavigationController.pushViewController(searchSongViewController, animated: true)
     }
 
     public func didFinish(childCoordinator: Coordinator) {
