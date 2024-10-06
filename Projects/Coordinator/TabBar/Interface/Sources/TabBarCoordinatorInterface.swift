@@ -30,6 +30,7 @@ public final class TabBarCoordinator: Coordinator {
         }
         
         configureTabBarController(with: controllers)
+        addTopBorderToTabBar()
     }
 }
 
@@ -44,12 +45,24 @@ private extension TabBarCoordinator {
     func configureTabBarController(with viewControllers: [UIViewController]) {
         tabBarController.selectedIndex = TabBarPageType.home.index
         tabBarController.view.backgroundColor = .white
-        tabBarController.tabBar.backgroundColor = Colors.gray01
+        tabBarController.tabBar.backgroundColor = Colors.background
         tabBarController.tabBar.tintColor = Colors.gray08
 
         tabBarController.setViewControllers(viewControllers, animated: false)
         navigationController.setNavigationBarHidden(true, animated: false)
         navigationController.pushViewController(tabBarController, animated: true)
+    }
+
+    func addTopBorderToTabBar() {
+        let topBorder = CALayer()
+        topBorder.frame = CGRect(
+            x: 0,
+            y: 0,
+            width: tabBarController.tabBar.frame.width,
+            height: 1
+        )
+        topBorder.backgroundColor = Colors.gray01.cgColor
+        tabBarController.tabBar.layer.addSublayer(topBorder)
     }
 
     func createTabBarNavigationController(

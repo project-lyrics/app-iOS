@@ -80,6 +80,7 @@ final class HomeView: UIView {
 
     init() {
         super.init(frame: .zero)
+        setUpDefaults()
         setUpLayouts()
     }
 
@@ -93,6 +94,10 @@ final class HomeView: UIView {
 
         rootFlexContainer.pin.all(pin.safeArea)
         rootFlexContainer.flex.layout()
+    }
+
+    private func setUpDefaults() {
+        backgroundColor = Colors.background
     }
 
     private func setUpLayouts() {

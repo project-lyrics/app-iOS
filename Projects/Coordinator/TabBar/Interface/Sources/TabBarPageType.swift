@@ -7,7 +7,8 @@
 
 import UIKit
 
-// TODO: 추후 변경 예정
+import SharedDesignSystem
+
 enum TabBarPageType: CaseIterable {
     case home
     case noteSearch
@@ -18,20 +19,20 @@ enum TabBarPageType: CaseIterable {
         case .home:
             return UITabBarItem(
                 title: "",
-                image: UIImage(systemName: "person"),
-                selectedImage: UIImage(systemName: "house.fill")
+                image: FeelinImages.homeInactiveLight,
+                selectedImage: FeelinImages.homeActiveLight
             )
         case .noteSearch:
             return UITabBarItem(
                 title: "",
-                image: UIImage(systemName: "person"),
-                selectedImage: UIImage(systemName: "house.fill")
+                image: FeelinImages.noteSearchingInactiveLight,
+                selectedImage: FeelinImages.noteSearchingActiveLight
             )
         case .myPage:
             return UITabBarItem(
                 title: "",
-                image: UIImage(systemName: "person"),
-                selectedImage: UIImage(systemName: "house.fill")
+                image: FeelinImages.myPageInactiveLight,
+                selectedImage: FeelinImages.myPageActiveLight
             )
         }
     }
