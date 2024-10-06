@@ -9,5 +9,5 @@ import Foundation
 
 @_exported import FeatureOnboarding
 @_exported import FeatureOnboardingInterface
-@_exported import FeatureMain
-@_exported import FeatureMainInterface
+@_exported import FeatureHome
+@_exported import FeatureHomeInterface

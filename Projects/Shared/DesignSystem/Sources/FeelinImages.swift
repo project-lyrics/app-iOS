@@ -9,6 +9,7 @@ import UIKit
 
 public struct FeelinImages {
     public static let logo = SharedDesignSystemAsset.Images.logo.image
+    public static let feelinLogo = SharedDesignSystemAsset.Images.feelinLogo.image
     public static let artistSearchIcon = SharedDesignSystemAsset.Images.artistSearchIcon.image
     public static let backDark = SharedDesignSystemAsset.Images.backDark.image
     public static let backLight = SharedDesignSystemAsset.Images.backLight.image
@@ -55,8 +56,9 @@ public struct FeelinImages {
     public static let searchDark = SharedDesignSystemAsset.Images.searchDark.image
     public static let searchLight = SharedDesignSystemAsset.Images.searchLight.image
     public static let trash = SharedDesignSystemAsset.Images.trash.image
-    public static let writingDark = SharedDesignSystemAsset.Images.writingDark.image
-    public static let writingLight = SharedDesignSystemAsset.Images.writingLight.image
+    public static let writingActive = SharedDesignSystemAsset.Images.writingActive.image
+    public static let writingInactiveLight = SharedDesignSystemAsset.Images.writingInactiveLight.image
+    public static let writingInactiveDark = SharedDesignSystemAsset.Images.writingInactiveDark.image
     public static let xCircleDark = SharedDesignSystemAsset.Images.xCircleDark.image
     public static let xCircleLight = SharedDesignSystemAsset.Images.xCircleLight.image
     public static let xDark = SharedDesignSystemAsset.Images.xDark.image
@@ -77,4 +79,16 @@ public struct FeelinImages {
     public static let gallery = SharedDesignSystemAsset.Images.gallery.image
     public static let album = SharedDesignSystemAsset.Images.album.image
     public static let add = SharedDesignSystemAsset.Images.add.image
+    public static let homeActiveLight = SharedDesignSystemAsset.Images.homeActiveLight.image
+    public static let homeInactiveLight = SharedDesignSystemAsset.Images.homeInactiveLight.image
+    public static let homeActiveDark = SharedDesignSystemAsset.Images.homeActiveDark.image
+    public static let homeInactiveDark = SharedDesignSystemAsset.Images.homeInactiveDark.image
+    public static let noteSearchingActiveLight = SharedDesignSystemAsset.Images.noteSearchingActiveLight.image
+    public static let noteSearchingInactiveLight = SharedDesignSystemAsset.Images.noteSearchingInactiveLight.image
+    public static let noteSearchingActiveDark = SharedDesignSystemAsset.Images.noteSearchingActiveDark.image
+    public static let noteSearchingInactiveDark = SharedDesignSystemAsset.Images.noteSearchingInactiveDark.image
+    public static let myPageActiveLight = SharedDesignSystemAsset.Images.myPageActiveLight.image
+    public static let myPageInactiveLight = SharedDesignSystemAsset.Images.myPageInactiveLight.image
+    public static let myPageActiveDark = SharedDesignSystemAsset.Images.myPageActiveDark.image
+    public static let myPageInactiveDark = SharedDesignSystemAsset.Images.myPageInactiveDark.image
 }

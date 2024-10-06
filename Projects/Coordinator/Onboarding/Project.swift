@@ -10,7 +10,7 @@ let project = Project.makeModule(
             factory: .init(
                 dependencies: [
                     .feature,
-                    .coordinator(interface: .Main),
+                    .coordinator(interface: .Home),
                     .coordinator(interface: .App),
                     .coordinator(interface: .TabBar),
                 ]

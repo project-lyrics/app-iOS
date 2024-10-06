@@ -84,7 +84,7 @@ public final class UseAgreementViewController: UIViewController {
         self.view.backgroundColor = Colors.background
         self.view.addSubview(rootFlexContainer)
 
-        navigationBar.addLeftBarView(backButton)
+        navigationBar.addLeftBarView([backButton])
 
         rootFlexContainer.flex.define { flex in
             flex.addItem(navigationBar)

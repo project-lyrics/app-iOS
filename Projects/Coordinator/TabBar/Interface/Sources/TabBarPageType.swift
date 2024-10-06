@@ -7,30 +7,41 @@
 
 import UIKit
 
-// TODO: 추후 변경 예정
+import SharedDesignSystem
+
 enum TabBarPageType: CaseIterable {
-    case main
+    case home
+    case noteSearch
+    case myPage
 
     var tabBarItem: UITabBarItem {
         switch self {
-        case .main:
+        case .home:
             return UITabBarItem(
-                title: self.title,
-                image: UIImage(systemName: "person"),
-                selectedImage: UIImage(systemName: "house.fill")
+                title: "",
+                image: FeelinImages.homeInactiveLight,
+                selectedImage: FeelinImages.homeActiveLight
+            )
+        case .noteSearch:
+            return UITabBarItem(
+                title: "",
+                image: FeelinImages.noteSearchingInactiveLight,
+                selectedImage: FeelinImages.noteSearchingActiveLight
+            )
+        case .myPage:
+            return UITabBarItem(
+                title: "",
+                image: FeelinImages.myPageInactiveLight,
+                selectedImage: FeelinImages.myPageActiveLight
             )
         }
     }
 
     var index: Int {
         switch self {
-        case .main:        return 0
-        }
-    }
-
-    private var title: String {
-        switch self {
-        case .main:        return "홈"
+        case .home:              return 0
+        case .noteSearch:        return 1
+        case .myPage:            return 2
         }
     }
 }

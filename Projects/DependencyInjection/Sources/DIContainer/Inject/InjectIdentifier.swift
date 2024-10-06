@@ -97,6 +97,13 @@ public extension InjectIdentifier {
         .by(type: ReportAPIServiceInterface.self, key: "reportAPIService")
     }
 
+    static var notificationAPIService: InjectIdentifier<NotificationAPIServiceInterface> {
+        .by(type: NotificationAPIServiceInterface.self, key: "notificationAPIService")
+    }
+    
+    static var notificationPaginationService: InjectIdentifier<NotificationPaginationServiceInterface> {
+        .by(type: NotificationPaginationServiceInterface.self, key: "notificationPaginationService")
+    }
 }
 
 extension InjectIdentifier: Hashable {

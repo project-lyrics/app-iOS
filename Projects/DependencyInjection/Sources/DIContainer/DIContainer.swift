@@ -165,13 +165,26 @@ public extension DIContainer {
     }
 }
 
-// MARK: Report
+// MARK: Report && Notification
 
 public extension DIContainer {
     static func registerReportNoteService() {
         standard.register(.reportAPIService) { resolver in
             let networkProvider = try resolver.resolve(.networkProvider)
             return ReportAPIService(networkProvider: networkProvider)
+        }
+    }
+
+    static func registerNotificationService() {
+        standard.register(.notificationAPIService) { resolver in
+            let networkProvider = try resolver.resolve(.networkProvider)
+            return NotificationAPIService(networkProvider: networkProvider)
+        }
+    }  
+
+    static func registerNotificationPaginationService() {
+        standard.register(.notificationPaginationService) { _ in
+            return NotificationPaginationService()
         }
     }
 }

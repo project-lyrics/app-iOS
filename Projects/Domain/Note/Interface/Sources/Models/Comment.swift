@@ -37,3 +37,48 @@ public struct Comment: Hashable {
         self.writer = User(dto: dto.writer)
     }
 }
+
+extension Comment {
+    public static let mockData = [
+        Comment(
+            id: 1,
+            content: "여기가 어디냐면",
+            createdAt: Date(),
+            writer: User(
+                id: 1,
+                nickname: "f",
+                profileCharacterType: .braidedHair
+            )
+        ),
+        Comment(
+            id: 2,
+            content: "여기가 어디냐면",
+            createdAt: Date(),
+            writer: User(
+                id: 1,
+                nickname: "f",
+                profileCharacterType: .braidedHair
+            )
+        ),
+        Comment(
+            id: 3,
+            content: "여기가 어디냐면",
+            createdAt: Date(),
+            writer: User(
+                id: 1,
+                nickname: "f",
+                profileCharacterType: .braidedHair
+            )
+        ),
+        Comment(
+            id: 4,
+            content: "여기가 어디냐면",
+            createdAt: Date(),
+            writer: User(
+                id: 1,
+                nickname: "f",
+                profileCharacterType: .braidedHair
+            )
+        )
+    ]
+}
