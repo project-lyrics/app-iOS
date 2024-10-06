@@ -102,8 +102,8 @@ final class UserInformationView: UIView {
     private func setUpLayout() {
         addSubview(flexContainer)
 
-        navigationBar.addLeftBarView(backButton)
-        navigationBar.addRightBarView(skipButton)
+        navigationBar.addLeftBarView([backButton])
+        navigationBar.addRightBarView([skipButton])
 
         flexContainer.flex.paddingHorizontal(20).define { flex in
             flex.addItem(navigationBar)

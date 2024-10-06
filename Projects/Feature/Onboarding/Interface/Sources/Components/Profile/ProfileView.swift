@@ -103,7 +103,7 @@ final class ProfileView: UIView {
     private func setUpLayout() {
         addSubview(flexContainer)
 
-        navigationBar.addLeftBarView(backButton)
+        navigationBar.addLeftBarView([backButton])
 
         flexContainer.flex.paddingHorizontal(20).define { flex in
             flex.addItem(navigationBar)
