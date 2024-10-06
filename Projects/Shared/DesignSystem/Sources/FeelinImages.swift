@@ -79,4 +79,16 @@ public struct FeelinImages {
     public static let gallery = SharedDesignSystemAsset.Images.gallery.image
     public static let album = SharedDesignSystemAsset.Images.album.image
     public static let add = SharedDesignSystemAsset.Images.add.image
+    public static let homeActiveLight = SharedDesignSystemAsset.Images.homeActiveLight.image
+    public static let homeInactiveLight = SharedDesignSystemAsset.Images.homeInactiveLight.image
+    public static let homeActiveDark = SharedDesignSystemAsset.Images.homeActiveDark.image
+    public static let homeInactiveDark = SharedDesignSystemAsset.Images.homeInactiveDark.image
+    public static let noteSearchingActiveLight = SharedDesignSystemAsset.Images.noteSearchingActiveLight.image
+    public static let noteSearchingInactiveLight = SharedDesignSystemAsset.Images.noteSearchingInactiveLight.image
+    public static let noteSearchingActiveDark = SharedDesignSystemAsset.Images.noteSearchingActiveDark.image
+    public static let noteSearchingInactiveDark = SharedDesignSystemAsset.Images.noteSearchingInactiveDark.image
+    public static let myPageActiveLight = SharedDesignSystemAsset.Images.myPageActiveLight.image
+    public static let myPageInactiveLight = SharedDesignSystemAsset.Images.myPageInactiveLight.image
+    public static let myPageActiveDark = SharedDesignSystemAsset.Images.myPageActiveDark.image
+    public static let myPageInactiveDark = SharedDesignSystemAsset.Images.myPageInactiveDark.image
 }
