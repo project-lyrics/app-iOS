@@ -9,13 +9,27 @@ import UIKit
 
 // TODO: 추후 변경 예정
 enum TabBarPageType: CaseIterable {
-    case main
+    case home
+    case noteSearch
+    case myPage
 
     var tabBarItem: UITabBarItem {
         switch self {
-        case .main:
+        case .home:
             return UITabBarItem(
-                title: self.title,
+                title: "",
+                image: UIImage(systemName: "person"),
+                selectedImage: UIImage(systemName: "house.fill")
+            )
+        case .noteSearch:
+            return UITabBarItem(
+                title: "",
+                image: UIImage(systemName: "person"),
+                selectedImage: UIImage(systemName: "house.fill")
+            )
+        case .myPage:
+            return UITabBarItem(
+                title: "",
                 image: UIImage(systemName: "person"),
                 selectedImage: UIImage(systemName: "house.fill")
             )
@@ -24,13 +38,9 @@ enum TabBarPageType: CaseIterable {
 
     var index: Int {
         switch self {
-        case .main:        return 0
-        }
-    }
-
-    private var title: String {
-        switch self {
-        case .main:        return "홈"
+        case .home:              return 0
+        case .noteSearch:        return 1
+        case .myPage:            return 2
         }
     }
 }

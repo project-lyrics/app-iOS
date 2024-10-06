@@ -1,6 +1,14 @@
+//
+//  TabBarCoordinator.swift
+//  CoordinatorTabBarCoordinatorInterface
+//
+//  Created by Derrick kim on 10/6/24.
+//
+
 import UIKit
 import CoordinatorAppInterface
-import CoordinatorMainInterface
+import CoordinatorHomeInterface
+import CoordinatorSearchNoteInterface
 import SharedDesignSystem
 
 public final class TabBarCoordinator: Coordinator {
@@ -34,15 +42,14 @@ extension TabBarCoordinator: CoordinatorDelegate {
 
 private extension TabBarCoordinator {
     func configureTabBarController(with viewControllers: [UIViewController]) {
-        tabBarController.setViewControllers(viewControllers, animated: false)
-        tabBarController.selectedIndex = TabBarPageType.main.index
+        tabBarController.selectedIndex = TabBarPageType.home.index
         tabBarController.view.backgroundColor = .white
-        tabBarController.tabBar.backgroundColor = .gray
-        tabBarController.tabBar.tintColor = Colors.primary
-        tabBarController.tabBar.unselectedItemTintColor = .systemGray2
+        tabBarController.tabBar.backgroundColor = Colors.gray01
+        tabBarController.tabBar.tintColor = Colors.gray08
 
+        tabBarController.setViewControllers(viewControllers, animated: false)
         navigationController.setNavigationBarHidden(true, animated: false)
-        navigationController.pushViewController(tabBarController, animated: false)
+        navigationController.pushViewController(tabBarController, animated: true)
     }
 
     func createTabBarNavigationController(
@@ -52,7 +59,7 @@ private extension TabBarCoordinator {
         tabBarNavigationController.tabBarItem = page.tabBarItem
 
         tabBarNavigationController.setNavigationBarHidden(
-            false,
+            true,
             animated: false
         )
 
@@ -69,17 +76,29 @@ private extension TabBarCoordinator {
         to tabBarNavigationController: UINavigationController
     ) {
         switch page {
-        case .main: connectMainFlow(to: tabBarNavigationController)
+        case .home:         connectHomeFlow(to: tabBarNavigationController)
+        case .noteSearch:   connectSearchNoteFlow(to: tabBarNavigationController)
+        case .myPage: break
         }
     }
 
-    func connectMainFlow(to tabBarNavigationController: UINavigationController) {
-        let mainCoordinator = MainCoordinator(
-            navigationController: navigationController
+    func connectHomeFlow(to tabBarNavigationController: UINavigationController) {
+        let homeCoordinator = HomeCoordinator(
+            navigationController: tabBarNavigationController
         )
 
-        mainCoordinator.delegate = self
-        mainCoordinator.start()
-        childCoordinators.append(mainCoordinator)
+        homeCoordinator.delegate = self
+        homeCoordinator.start()
+        childCoordinators.append(homeCoordinator)
+    }    
+
+    func connectSearchNoteFlow(to tabBarNavigationController: UINavigationController) {
+        let searchNoteCoordinator = SearchNoteCoordinator(
+            navigationController: tabBarNavigationController
+        )
+
+        searchNoteCoordinator.delegate = self
+        searchNoteCoordinator.start()
+        childCoordinators.append(searchNoteCoordinator)
     }
 }
