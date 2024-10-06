@@ -56,8 +56,6 @@ public struct FeelinImages {
     public static let searchDark = SharedDesignSystemAsset.Images.searchDark.image
     public static let searchLight = SharedDesignSystemAsset.Images.searchLight.image
     public static let trash = SharedDesignSystemAsset.Images.trash.image
-    public static let writingDark = SharedDesignSystemAsset.Images.writingDark.image
-    public static let writingLight = SharedDesignSystemAsset.Images.writingLight.image
     public static let writingActive = SharedDesignSystemAsset.Images.writingActive.image
     public static let writingInactiveLight = SharedDesignSystemAsset.Images.writingInactiveLight.image
     public static let writingInactiveDark = SharedDesignSystemAsset.Images.writingInactiveDark.image
