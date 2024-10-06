@@ -1,6 +1,5 @@
 import UIKit
 
-import CoordinatorMainInterface
 import CoordinatorAppInterface
 import CoordinatorTabBarInterface
 import Core

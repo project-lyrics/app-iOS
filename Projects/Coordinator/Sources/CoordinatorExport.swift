@@ -11,5 +11,5 @@
 @_exported import CoordinatorOnboardingInterface
 @_exported import CoordinatorTabBar
 @_exported import CoordinatorTabBarInterface
-@_exported import CoordinatorMainInterface
-@_exported import CoordinatorMain
+@_exported import CoordinatorHomeInterface
+@_exported import CoordinatorHome

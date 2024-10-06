@@ -3,39 +3,38 @@ import ProjectDescriptionHelpers
 import DependencyPlugin
 
 let project = Project.makeModule(
-    name: ModulePath.Coordinator.name + ModulePath.Coordinator.TabBar.rawValue,
+    name: ModulePath.Coordinator.name + ModulePath.Coordinator.Home.rawValue,
     targets: [
         .coordinator(
-            interface: .TabBar,
+            interface: .Home,
             factory: .init(
                 dependencies: [
-                    .coordinator(interface: .App),
-                    .coordinator(interface: .Home),
-                    .coordinator(interface: .SearchNote)
+                    .feature,
+                    .coordinator(interface: .App)
                 ]
             )
         ),
         .coordinator(
-            implements: .TabBar,
+            implements: .Home,
             factory: .init(
                 dependencies: [
-                    .coordinator(interface: .TabBar)
+                    .coordinator(interface: .Home)
                 ]
             )
         ),
         .coordinator(
-            testing: .TabBar,
+            testing: .Home,
             factory: .init(
                 dependencies: [
-                    .coordinator(interface: .TabBar)
+                    .coordinator(interface: .Home)
                 ]
             )
         ),
         .coordinator(
-            tests: .TabBar,
+            tests: .Home,
             factory: .init(
                 dependencies: [
-                    .coordinator(testing: .TabBar)
+                    .coordinator(testing: .Home)
                 ]
             )
         )

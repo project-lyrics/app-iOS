@@ -27,7 +27,7 @@ public extension ModulePath {
 
 public extension ModulePath {
     enum Feature: String, CaseIterable {
-        case Main
+        case Home
         case Onboarding
 
         public static let name: String = "Feature"
@@ -37,7 +37,7 @@ public extension ModulePath {
 public extension ModulePath {
     enum Coordinator: String, CaseIterable {
         case SearchNote
-        case Main
+        case Home
         case TabBar
         case Onboarding
         case App

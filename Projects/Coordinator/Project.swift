@@ -16,7 +16,7 @@ let targets: [Target] = [
                 .coordinator(implements: .App),
                 .coordinator(implements: .TabBar),
                 .coordinator(implements: .Onboarding),
-                .coordinator(implements: .Main),
+                .coordinator(implements: .Home),
                 .coordinator(implements: .SearchNote)
             ]
         )
