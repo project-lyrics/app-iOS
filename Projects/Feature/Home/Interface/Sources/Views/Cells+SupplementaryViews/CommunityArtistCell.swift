@@ -36,6 +36,7 @@ class CommunityArtistCell: UICollectionViewCell, Reusable {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        self.setUpDefaults()
         self.setUpLayout()
     }
     
@@ -51,7 +52,11 @@ class CommunityArtistCell: UICollectionViewCell, Reusable {
     }
     
     // MARK: - Layout
-    
+
+    private func setUpDefaults() {
+        backgroundColor = Colors.background
+    }
+
     private func setUpLayout() {
         self.addSubview(artistImageView)
         

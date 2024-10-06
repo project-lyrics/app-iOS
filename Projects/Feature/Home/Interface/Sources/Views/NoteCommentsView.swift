@@ -61,7 +61,8 @@ final class NoteCommentsView: UIView {
         )
         
         collectionView.refreshControl = UIRefreshControl()
-        
+        collectionView.backgroundColor = Colors.background
+
         collectionView.register(cellType: NoteCell.self)
         collectionView.register(cellType: EmptyNoteCell.self)
         collectionView.register(cellType: CommentCell.self)
@@ -111,6 +112,7 @@ final class NoteCommentsView: UIView {
     
     private func setUpLayout() {
         self.addSubview(rootFlexContainer)
+        self.backgroundColor = Colors.background
 
         navigationBar.addLeftBarView([backButton])
         navigationBar.addTitleView(naviTitleLabel)

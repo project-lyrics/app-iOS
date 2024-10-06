@@ -77,8 +77,9 @@ final class CommentCell: UICollectionViewCell, Reusable {
     }
     
     private func setUpLayout() {
-        self.addSubview(flexContainer)
-        
+        addSubview(flexContainer)
+        contentView.backgroundColor = Colors.background
+
         flexContainer.flex.define { flex in
             // 작성자 정보 row
             flex.addItem().direction(.row).define { flex in

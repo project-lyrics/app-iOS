@@ -33,6 +33,8 @@ class CommunityMainView: UIView {
         )
         let refreshControl = UIRefreshControl()
         collectionView.refreshControl = refreshControl
+        collectionView.backgroundColor = Colors.background
+
         collectionView.showsVerticalScrollIndicator = false
         collectionView.register(cellType: CommunityArtistCell.self)
         collectionView.register(cellType: NoteCell.self)
@@ -49,7 +51,7 @@ class CommunityMainView: UIView {
     
     init() {
         super.init(frame: .zero)
-        addSubview(communityMainCollectionView)
+        setUpDefaults()
     }
     
     @available(*, unavailable)
@@ -67,6 +69,12 @@ class CommunityMainView: UIView {
             height: communityMainCollectionView.refreshControl?.bounds.height ?? 0
         )
         communityMainCollectionView.pin.all()
+    }
+
+    private func setUpDefaults() {
+        backgroundColor = Colors.background
+
+        addSubview(communityMainCollectionView)
     }
 }
 

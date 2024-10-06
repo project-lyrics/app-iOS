@@ -49,7 +49,8 @@ class EmptyCommentCell: UICollectionViewCell, Reusable {
     
     private func setUpLayout() {
         contentView.addSubview(flexContainer)
-        
+        contentView.backgroundColor = Colors.background
+
         flexContainer.flex
             .justifyContent(.center)
             .alignItems(.center)

@@ -43,7 +43,7 @@ final class BannerCell: UICollectionViewCell, Reusable {
     
     private func setUpLayout() {
         self.addSubview(flexContainer)
-        
+
         flexContainer.flex.addItem(bannerImageView)
     }
 }

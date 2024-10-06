@@ -49,7 +49,8 @@ class CommunityNoteHeaderView: UICollectionReusableView, Reusable {
     
     private func setUpLayout() {
         self.addSubview(flexContainer)
-        
+        backgroundColor = Colors.background
+
         flexContainer.flex
             .paddingVertical(20)
             .define { flex in

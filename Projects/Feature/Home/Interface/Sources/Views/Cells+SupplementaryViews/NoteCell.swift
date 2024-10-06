@@ -157,8 +157,9 @@ final class NoteCell: UICollectionViewCell, Reusable {
     // MARK: - Layout
     
     private func setUpLayout() {
-        self.addSubview(flexContainer)
-        
+        addSubview(flexContainer)
+        backgroundColor = Colors.background
+
         flexContainer.flex.define { flex in
             // 작성자 정보 row
             flex.addItem().direction(.row).define { flex in
@@ -280,6 +281,7 @@ final class NoteCell: UICollectionViewCell, Reusable {
     override func prepareForReuse() {
         super.prepareForReuse()
         
+        self.backgroundColor = Colors.background
         self.authorCharacterImageView.image = nil
         self.authorNameLabel.text = nil
         self.noteWrittenTimeLabel.text = nil
