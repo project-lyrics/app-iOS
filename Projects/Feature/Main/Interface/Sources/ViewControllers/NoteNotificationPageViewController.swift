@@ -24,15 +24,15 @@ public final class NoteNotificationPageViewController: ButtonBarPagerTabStripVie
     override public func viewControllers(for pagerTabStripController: FeelinPagerTabViewController) -> [UIViewController] {
         
         return [
-            NoteNotificationViewController(
-                indicatorType: .myNotification,
-                viewModel: .init()
-            ),
-            
-            NoteNotificationViewController(
-                indicatorType: .allNotification,
-                viewModel: .init()
-            )
+//            NoteNotificationViewController(
+//                indicatorType: .myNotification,
+//                viewModel: .init()
+//            ),
+//            
+//            NoteNotificationViewController(
+//                indicatorType: .allNotification,
+//                viewModel: .init()
+//            )
         ]
     }
 }
