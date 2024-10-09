@@ -80,10 +80,10 @@ final class CommentCell: UICollectionViewCell, Reusable {
     }
     
     private func setUpLayout() {
+        self.contentView.backgroundColor = Colors.background
         addSubview(flexContainer)
 
         flexContainer.flex
-            .backgroundColor(Colors.background)
             .define { flex in
             // 작성자 정보 row
             flex.addItem().direction(.row).define { flex in
@@ -123,7 +123,7 @@ final class CommentCell: UICollectionViewCell, Reusable {
     }
     
     func configureBackgroundColor(_ backgroundColor: UIColor) {
-        self.flexContainer.backgroundColor = backgroundColor
+        self.contentView.backgroundColor = backgroundColor
     }
     
     override func prepareForReuse() {
