@@ -45,148 +45,136 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
 
     // MARK: - DiffableDataSource
 
-    private typealias HomeDataSource = UICollectionViewDiffableDataSource<Section, Row>
-
-    private enum Section: Hashable {
-        case banner
-        case favoriteArtists
-        case notes
-    }
-
-    private enum Row: Hashable {
-        case banner
-        case favoriteArtist(Artist)
-        case searchArtist
-        case note(Note)
-        case emptyNote
-    }
-
+    private typealias HomeDataSource = UICollectionViewDiffableDataSource<CollectionContent.Section, CollectionContent.Item>
+    
     private lazy var homeDataSource: HomeDataSource = {
-        let dataSource = HomeDataSource(collectionView: self.homeCollectionView) { collectionView, indexPath, item in
-            switch item {
-            case .banner:
-                let cell = collectionView.dequeueReusableCell(for: indexPath, cellType: BannerCell.self)
-                return cell
-
-            case .searchArtist:
-                let cell = collectionView.dequeueReusableCell(for: indexPath, cellType: SearchArtistCell.self)
-                return cell
-
-            case .favoriteArtist(let artist):
-                let cell = collectionView.dequeueReusableCell(for: indexPath, cellType: FeelinArtistCell.self)
-                cell.configure(artistName: artist.name, artistImageURL: try? artist.imageSource?.asURL())
-                return cell
-
-            case .emptyNote:
-                let cell = collectionView.dequeueReusableCell(for: indexPath, cellType: EmptyNoteCell.self)
-
-                return cell
-
-            case .note(let note):
-                let cell = collectionView.dequeueReusableCell(for: indexPath, cellType: NoteCell.self)
-                cell.configure(with: note)
-
-                cell.likeNoteButton.publisher(for: .touchUpInside)
-                    .debounce(for: .milliseconds(600), scheduler: DispatchQueue.main)
-                    .sink { [weak self] control in
-                        self?.viewModel.setNoteLikeState(noteID: note.id, isLiked: control.isSelected)
-                    }
-                    .store(in: &self.cancellables)
-
-                cell.bookmarkButton.publisher(for: .touchUpInside)
-                    .debounce(
-                        for: .milliseconds(600),
-                        scheduler: DispatchQueue.main
-                    )
-                    .sink { [unowned self] control in
-                        self.viewModel.setNoteBookmarkState(
-                            noteID: note.id,
-                            isBookmarked: control.isSelected
-                        )
-                    }
-                    .store(in: &self.cancellables)
-
-                cell.moreAboutContentButton.publisher(for: .touchUpInside)
-                    .sink { [unowned self] _ in
-                        if let noteMenuViewController = self.makeNoteMenuViewController(checking: note) {
-                            self.present(noteMenuViewController, animated: false)
-                        } else {
-                            // TODO: - 비회원 알림을 추후 보여줘야 한다.
-                        }
-                    }
-                    .store(in: &self.cancellables)
-
-                cell.playMusicButton.publisher(for: .touchUpInside)
-                    .throttle(
-                        for: .milliseconds(600),
-                        scheduler: DispatchQueue.main,
-                        latest: false
-                    )
-                    .sink { [unowned self] _ in
-                        self.openYouTube(query: "\(note.song.artist.name) \(note.song.name)")
-                    }
-                    .store(in: &self.cancellables)
-
-                return cell
-            }
+        let bannerCellRegistration = UICollectionView.CellRegistration<BannerCell, Void> { cell, indexPath, item in }
+        let searchArtistCellRegistration = UICollectionView.CellRegistration<SearchArtistCell, Void> { cell, indexPath, item in }
+        let favoriteArtistCellRegistration = UICollectionView.CellRegistration<FeelinArtistCell, Artist> { cell, indexPath, artist in
+            cell.configure(artistName: artist.name, artistImageURL: try? artist.imageSource?.asURL())
         }
-
+        let emptyNoteCellRegistration = UICollectionView.CellRegistration<EmptyNoteCell, Void> { cell, indexPath, _ in }
+        
+        let noteCellRegistration = UICollectionView.CellRegistration<NoteCell, Note> { [weak self] cell, indexPath, note in
+            guard let self = self else { return }
+            cell.configure(with: note)
+            
+            cell.likeNoteButton.publisher(for: .touchUpInside)
+                .debounce(for: .milliseconds(600), scheduler: DispatchQueue.main)
+                .sink { [weak self] control in
+                    self?.viewModel.setNoteLikeState(noteID: note.id, isLiked: control.isSelected)
+                }
+                .store(in: &cell.cancellables)
+            
+            cell.bookmarkButton.publisher(for: .touchUpInside)
+                .debounce(
+                    for: .milliseconds(600),
+                    scheduler: DispatchQueue.main
+                )
+                .sink { control in
+                    self.viewModel.setNoteBookmarkState(
+                        noteID: note.id,
+                        isBookmarked: control.isSelected
+                    )
+                }
+                .store(in: &cell.cancellables)
+            
+            cell.moreAboutContentButton.publisher(for: .touchUpInside)
+                .sink { _ in
+                    if let noteMenuViewController = self.makeNoteMenuViewController(checking: note) {
+                        self.present(noteMenuViewController, animated: false)
+                    } else {
+                        // TODO: - 비회원 알림을 추후 보여줘야 한다.
+                    }
+                }
+                .store(in: &cell.cancellables)
+            
+            cell.playMusicButton.publisher(for: .touchUpInside)
+                .throttle(
+                    for: .milliseconds(600),
+                    scheduler: DispatchQueue.main,
+                    latest: false
+                )
+                .sink { _ in
+                    self.openYouTube(query: "\(note.song.artist.name) \(note.song.name)")
+                }
+                .store(in: &cell.cancellables)
+        }
+        
+        let favoriteArtistHeaderRegistraion = UICollectionView.SupplementaryRegistration<FavoriteArtistsHeaderView>(elementKind: FavoriteArtistsHeaderView.reuseIdentifier) { [weak self] favoriteArtistsHeaderView, elementKind, indexPath in
+            guard let self = self else { return }
+            
+            viewModel.$fetchedFavoriteArtists
+                .map { !$0.isEmpty }
+                .assign(to: \.isEnabled, on: favoriteArtistsHeaderView.viewAllButton)
+                .store(in: &cancellables)
+            
+            favoriteArtistsHeaderView.viewAllButton.publisher(for: .touchUpInside)
+                .sink { _ in
+                    self.coordinator?.pushMyFavoriteArtistsViewController(artists: self.viewModel.fetchedFavoriteArtists)
+                }
+                .store(in: &favoriteArtistsHeaderView.cancellables)
+        }
+        let sectionDividerRegistration = UICollectionView.SupplementaryRegistration<SectionDividerView>(elementKind: SectionDividerView.reuseIdentifier) { sectionDividerView, elementKind, indexPath in
+            
+        }
+        let noteHeaderRegistration = UICollectionView.SupplementaryRegistration<NotesHeaderView>(elementKind: NotesHeaderView.reuseIdentifier) { noteHeaderView, elementKind, indexPath in }
+        
+        let dataSource = HomeDataSource(collectionView: self.homeCollectionView) { [weak self] collectionView, indexPath, item in
+            guard let self = self else { return nil }
+            
+            return item.dequeueConfiguredReusableCell(
+                collectionView: collectionView,
+                bannerCellRegistration: bannerCellRegistration,
+                searchArtistCellRegistration: searchArtistCellRegistration,
+                favoriteArtistCellRegistration: favoriteArtistCellRegistration,
+                emptyNoteCellRegistration: emptyNoteCellRegistration,
+                noteCellRegistration: noteCellRegistration,
+                indexPath: indexPath
+            )
+        }
+        
         dataSource.supplementaryViewProvider = { [unowned self] (collectionView, kind, indexPath) in
             switch indexPath.section {
             case HomeView.favoriteArtistSectionIndex:
                 switch kind {
                 case FavoriteArtistsHeaderView.reuseIdentifier:
-                    let favoriteArtistsHeaderView = collectionView.dequeueReusableSupplementaryView(
-                        ofKind: kind,
-                        for: indexPath,
-                        viewType: FavoriteArtistsHeaderView.self
+                    let favoriteArtistsHeaderView = collectionView.dequeueConfiguredReusableSupplementary(
+                        using: favoriteArtistHeaderRegistraion,
+                        for: indexPath
                     )
-
-                    viewModel.$fetchedFavoriteArtists
-                        .map { !$0.isEmpty }
-                        .assign(to: \.isEnabled, on: favoriteArtistsHeaderView.viewAllButton)
-                        .store(in: &cancellables)
-
-                    favoriteArtistsHeaderView.viewAllButton.publisher(for: .touchUpInside)
-                        .sink { [weak self] _ in
-                            guard let self = self else { return }
-                            coordinator?.pushMyFavoriteArtistsViewController(artists: viewModel.fetchedFavoriteArtists)
-                        }
-                        .store(in: &cancellables)
-
+                    
                     return favoriteArtistsHeaderView
-
+                    
                 case SectionDividerView.reuseIdentifier:
-                    let sectionDividerView = collectionView.dequeueReusableSupplementaryView(
-                        ofKind: kind,
-                        for: indexPath,
-                        viewType: SectionDividerView.self
+                    let sectionDividerView = collectionView.dequeueConfiguredReusableSupplementary(
+                        using: sectionDividerRegistration,
+                        for: indexPath
                     )
-
+                    
                     return sectionDividerView
-
+                    
                 default:
                     return UICollectionReusableView()
                 }
-
+                
             case HomeView.notesSectionIndex:
                 if kind == NotesHeaderView.reuseIdentifier {
-                    let notesHeaderView = collectionView.dequeueReusableSupplementaryView(
-                        ofKind: kind,
-                        for: indexPath,
-                        viewType: NotesHeaderView.self
+                    let notesHeaderView = collectionView.dequeueConfiguredReusableSupplementary(
+                        using: noteHeaderRegistration,
+                        for: indexPath
                     )
-
+                    
                     return notesHeaderView
                 } else {
                     return UICollectionReusableView()
                 }
-
+                
             default:
                 return UICollectionReusableView()
             }
         }
-
+        
         return dataSource
     }()
 
@@ -210,87 +198,120 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
     private func updateBanner() {
         var snapshot = homeDataSource.snapshot()
 
-        // banner 섹션을 추가 (초기 로드만)
+        // 배너 섹션이 없는 경우 추가
         if !snapshot.sectionIdentifiers.contains(.banner) {
             snapshot.appendSections([.banner])
             snapshot.appendItems([.banner], toSection: .banner)
         }
-        homeDataSource.apply(snapshot, animatingDifferences: true)
+        homeDataSource.apply(snapshot, animatingDifferences: false)
     }
 
     private func updateFavoriteArtists(_ favoriteArtists: [Artist]) {
         var snapshot = homeDataSource.snapshot()
-
-        // favoriteArtists 섹션을 업데이트
+        
+        let newItems = favoriteArtists.map { CollectionContent.Item.favoriteArtist($0) }
+        
+        // favoriteArtists 섹션이 이미 있는지 확인 후 업데이트
         if snapshot.sectionIdentifiers.contains(.favoriteArtists) {
             let currentItems = snapshot.itemIdentifiers(inSection: .favoriteArtists)
-            let newArtistItems = favoriteArtists.map { Row.favoriteArtist($0) }
-            if currentItems != newArtistItems {
+
+            // 기존 아이템과 새 아이템 비교 후 변경 사항 있을 때만 업데이트
+            if currentItems != newItems {
                 snapshot.deleteItems(currentItems)
-                snapshot.appendItems(newArtistItems, toSection: .favoriteArtists)
+                snapshot.appendItems([.searchArtist], toSection: .favoriteArtists)
+                snapshot.appendItems(newItems, toSection: .favoriteArtists)
             }
+            
+            let isCountDifferent = currentItems.count != newItems.count
+            
+            guard let refreshControl = self.homeCollectionView.refreshControl else {
+                // pull-to-refresh가 없는 경우 apply snapshot만 적용. 갯수가 달라질때만 animation
+                homeDataSource.apply(
+                    snapshot,
+                    animatingDifferences: isCountDifferent
+                )
+                return
+            }
+            // pull-to-refresh 중일 경우 reloadData를 활용하여 apply snapshot에 의해서 생기는 bounce 방지
+            if refreshControl.isRefreshing {
+                homeDataSource.applySnapshotUsingReloadData(snapshot)
+            } else {
+                // 그 외의 경우 apply snapshot 활용. 기존 데이터와 신규 데이터의 갯수가 달라질 때만 animation
+                homeDataSource.apply(
+                    snapshot,
+                    animatingDifferences: isCountDifferent
+                )
+            }
+            
         } else {
+            // 섹션이 없다면 새로 추가
             snapshot.appendSections([.favoriteArtists])
-            snapshot.appendItems(favoriteArtists.map { Row.favoriteArtist($0) }, toSection: .favoriteArtists)
+            snapshot.appendItems([.searchArtist], toSection: .favoriteArtists)
+            snapshot.appendItems(newItems, toSection: .favoriteArtists)
+            homeDataSource.applySnapshotUsingReloadData(snapshot)
         }
-        homeDataSource.apply(snapshot, animatingDifferences: true)
+
     }
 
     private func updateNotes(_ notes: [Note]) {
-        // TODO: - 정상작동 X, 수정 필요 p1
         var snapshot = homeDataSource.snapshot()
 
-        // notes 섹션이 있는 경우
+        // 노트 섹션 업데이트
         if snapshot.sectionIdentifiers.contains(.notes) {
             let currentItems = snapshot.itemIdentifiers(inSection: .notes)
-
-            if notes.isEmpty {
-                // notes가 비어있으면 Row.emptyNote를 추가
-                if !currentItems.contains(.emptyNote) {
-                    snapshot.deleteItems(currentItems)
-                    snapshot.appendItems([.emptyNote], toSection: .notes)
-                }
-            } else {
-                // notes가 1개 이상이면 Row.emptyNote를 삭제하고 notes를 추가
-                let newNoteItems = notes.map { Row.note($0) }
-
-                if currentItems.contains(.emptyNote) {
-                    snapshot.deleteItems([.emptyNote])
-                }
-
-                // 기존 노트 항목과 새로운 항목이 다를 경우 업데이트
-                if currentItems != newNoteItems {
-                    snapshot.deleteItems(currentItems)
-                    snapshot.appendItems(newNoteItems, toSection: .notes)
-                }
-            }
-
-            // 애니메이션 적용 여부: 항목 개수가 바뀌었을 때만 애니메이션 적용
-            let itemCountChanged = notes.count != currentItems.count
-            homeDataSource.apply(snapshot, animatingDifferences: itemCountChanged)
-
-        } else {
-            // notes 섹션이 처음 추가될 때
-            snapshot.appendSections([.notes])
-
-            if notes.isEmpty {
-                // notes가 비어있으면 Row.emptyNote 추가
+            let newItems = notes.map { CollectionContent.Item.note($0) }
+            
+            if newItems.isEmpty {
+                snapshot.deleteItems(currentItems)
                 snapshot.appendItems([.emptyNote], toSection: .notes)
             } else {
-                // notes가 있으면 Row.note 추가
-                snapshot.appendItems(notes.map { Row.note($0) }, toSection: .notes)
+                snapshot.deleteItems(currentItems)
+                snapshot.appendItems(newItems, toSection: .notes)
             }
-
-            homeDataSource.apply(snapshot, animatingDifferences: false)
+            
+            let isCountDifferent = currentItems.count != newItems.count
+            
+            guard let refreshControl = self.homeCollectionView.refreshControl else {
+                // pull-to-refresh가 없는 경우 apply snapshot만 적용. 갯수가 달라질때만 animation
+                homeDataSource.apply(
+                    snapshot,
+                    animatingDifferences: isCountDifferent
+                )
+                return
+            }
+            // pull-to-refresh 중일 경우 reloadData를 활용하여 apply snapshot에 의해서 생기는 bounce 방지
+            if refreshControl.isRefreshing {
+                homeDataSource.applySnapshotUsingReloadData(snapshot)
+            } else {
+                // 그 외의 경우 apply snapshot 활용. 기존 데이터와 신규 데이터의 갯수가 달라질 때만 animation
+                homeDataSource.apply(
+                    snapshot,
+                    animatingDifferences: isCountDifferent
+                )
+            }
+            
+        } else {
+            // 노트 섹션이 처음 추가될 때
+            snapshot.appendSections([.notes])
+            snapshot.appendItems([.emptyNote], toSection: .notes)
+            
+            homeDataSource.applySnapshotUsingReloadData(snapshot)
         }
     }
+    
+    // MARK: - View LifeCycle
 
     override public func viewDidLoad() {
         super.viewDidLoad()
-        self.viewModel.fetchNotes(isInitialFetch: true)
-        self.viewModel.fetchFavoriteArtists(isInitialFetch: true)
         self.bindUI()
         self.bindAction()
+    }
+    
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.viewModel.fetchNotes(isInitialFetch: true)
+        self.viewModel.fetchFavoriteArtists(isInitialFetch: true)
+        
     }
 }
 
@@ -355,7 +376,6 @@ private extension HomeViewController {
         homeCollectionView.publisher(for: [.didSelectItem])
             .sink { [weak self] indexPath in
                 guard let self = self else { return }
-
                 // 해당 indexPath에 맞는 item을 dataSource에서 가져옴
                 guard let item = self.homeDataSource.itemIdentifier(for: indexPath) else { return }
 
@@ -365,6 +385,7 @@ private extension HomeViewController {
                     UIApplication.shared.open(URL(string: "url")!)
 
                 case .searchArtist:
+                    // TODO: - 좋아하는 아티스트 추가 선택 화면으로 네비게이션 필요
                     break
 
                 case .favoriteArtist(let artist):
@@ -425,5 +446,68 @@ private extension HomeViewController {
 
     var notificationButton: UIButton {
         return self.homeView.notificationButton
+    }
+}
+
+// MARK: - CollectionContent
+
+struct CollectionContent {
+    enum Section: Hashable {
+        case banner
+        case favoriteArtists
+        case notes
+    }
+    
+    enum Item: Hashable {
+        case banner
+        case favoriteArtist(Artist)
+        case searchArtist
+        case note(Note)
+        case emptyNote
+    }
+}
+
+extension CollectionContent.Item {
+    func dequeueConfiguredReusableCell(
+        collectionView: UICollectionView,
+        bannerCellRegistration: UICollectionView.CellRegistration<BannerCell, Void>,
+        searchArtistCellRegistration: UICollectionView.CellRegistration<SearchArtistCell, Void>,
+        favoriteArtistCellRegistration: UICollectionView.CellRegistration<FeelinArtistCell, Artist>,
+        emptyNoteCellRegistration: UICollectionView.CellRegistration<EmptyNoteCell, Void>,
+        noteCellRegistration: UICollectionView.CellRegistration<NoteCell, Note>,
+        indexPath: IndexPath
+    ) -> UICollectionViewCell {
+        switch self {
+        case .banner:
+            return collectionView.dequeueConfiguredReusableCell(
+                using: bannerCellRegistration,
+                for: indexPath,
+                item: ()
+            )
+        case .favoriteArtist(let artist):
+            return collectionView.dequeueConfiguredReusableCell(
+                using: favoriteArtistCellRegistration,
+                for: indexPath,
+                item: artist
+            )
+        case .searchArtist:
+            return collectionView.dequeueConfiguredReusableCell(
+                using: searchArtistCellRegistration,
+                for: indexPath,
+                item: ()
+            )
+        case .note(let note):
+            return collectionView.dequeueConfiguredReusableCell(
+                using: noteCellRegistration,
+                for: indexPath,
+                item: note
+            )
+        case .emptyNote:
+            return collectionView.dequeueConfiguredReusableCell(
+                using: emptyNoteCellRegistration,
+                for: indexPath,
+                item: ()
+            )
+        }
     }
 }

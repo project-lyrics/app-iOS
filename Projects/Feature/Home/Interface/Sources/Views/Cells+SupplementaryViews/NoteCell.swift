@@ -5,6 +5,7 @@
 //  Created by 황인우 on 8/3/24.
 //
 
+import Combine
 import UIKit
 
 import Domain
@@ -136,6 +137,8 @@ final class NoteCell: UICollectionViewCell, Reusable {
     }()
     
     // MARK: - Init
+    
+    var cancellables: Set<AnyCancellable> = .init()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -280,6 +283,7 @@ final class NoteCell: UICollectionViewCell, Reusable {
     
     override func prepareForReuse() {
         super.prepareForReuse()
+        self.cancellables = .init()
         
         self.backgroundColor = Colors.background
         self.authorCharacterImageView.image = nil
@@ -291,62 +295,9 @@ final class NoteCell: UICollectionViewCell, Reusable {
         self.artistNameLabel.text = nil
         self.likeAmountLabel.text = nil
         self.commentAmountLabel.text = nil
-        self.likeNoteButton = self.makeLikeNoteButton()
-        self.bookmarkButton = self.makeBookmarkButton()
-        self.commentButton = self.makeCommentButton()
-        self.playMusicButton = self.makePlayMusicButton()
-        self.moreAboutContentButton = self.makeMoreAboutContentButton()
         self.lyricsContentsView.configureView(with: nil)
         self.flexContainer.flex.layout()
     }
-    
-    // MARK: - Button Make functions
-    
-    private func makeBookmarkButton() -> FeelinSelectableImageButton {
-        let button = FeelinSelectableImageButton(
-            selectedImage: FeelinImages.bookmarkActiveLight,
-            unSelectedImage: FeelinImages.bookmarkInactiveLight
-        )
-        
-        return button
-    }
-    
-    private func makeCommentButton() -> UIButton {
-        let button = UIButton()
-        button.setImage(FeelinImages.chatLight, for: .normal)
-        
-        return button
-    }
-    
-    private func makeLikeNoteButton() -> FeelinSelectableImageButton {
-        let button = FeelinSelectableImageButton(
-            selectedImage: FeelinImages.heartActiveLight,
-            unSelectedImage: FeelinImages.heartInactiveLight
-        )
-        
-        return button
-    }
-    
-    private func makePlayMusicButton() -> UIButton {
-        let button = UIButton()
-        let buttonImage = FeelinImages.play
-            .withRenderingMode(.alwaysTemplate)
-        button.setImage(buttonImage, for: .normal)
-        button.tintColor = Colors.gray03
-        
-        return button
-    }
-    
-    private func makeMoreAboutContentButton() -> UIButton {
-        let button = UIButton()
-        let buttonImage = FeelinImages.meetball
-            .withRenderingMode(.alwaysTemplate)
-        button.setImage(buttonImage, for: .normal)
-        button.tintColor = Colors.gray03
-        
-        return button
-    }
-    
     
     override func sizeThatFits(_ size: CGSize) -> CGSize {
         self.flexContainer.pin.width(size.width)

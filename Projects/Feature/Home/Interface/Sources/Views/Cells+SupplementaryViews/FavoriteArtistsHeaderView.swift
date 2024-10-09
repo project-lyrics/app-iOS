@@ -9,9 +9,12 @@ import FlexLayout
 import PinLayout
 import Shared
 
+import Combine
 import UIKit
 
 class FavoriteArtistsHeaderView: UICollectionReusableView, Reusable {
+    var cancellables: Set<AnyCancellable> = .init()
+    
     private var flexContainer = UIView()
     
     private let titleLabel: UILabel = {
@@ -64,6 +67,11 @@ class FavoriteArtistsHeaderView: UICollectionReusableView, Reusable {
             flex.addItem(viewAllButton)
         }
         .paddingRight(20)
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        self.cancellables = .init()
     }
 }
 
