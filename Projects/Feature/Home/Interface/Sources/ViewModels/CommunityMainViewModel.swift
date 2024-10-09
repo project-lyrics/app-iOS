@@ -15,9 +15,7 @@ public final class CommunityMainViewModel {
     @Published private (set) var artist: Artist
     @Published var mustHaveLyrics: Bool = false
     @Published private (set) var error: CommunityError?
-    
-    
-    var isLoadingData: Bool = false
+    @Published private (set) var refreshState: RefreshState<CommunityError> = .idle
     
     private var cancellables: Set<AnyCancellable> = .init()
     private let getArtistNotesUseCase: GetArtistNotesUseCaseInterface
@@ -57,7 +55,7 @@ public final class CommunityMainViewModel {
         mustHaveLyrics: Bool? = nil,
         perPage: Int = 10
     ) {
-        self.isLoadingData = true
+        self.refreshState = .refreshing
         let artistID = self.artist.id
         
         self.getArtistNotesUseCase.execute(
@@ -66,6 +64,7 @@ public final class CommunityMainViewModel {
             perPage: perPage,
             mustHaveLyrics: mustHaveLyrics ?? self.mustHaveLyrics
         )
+        .receive(on: DispatchQueue.main)
         .mapToResult()
         .sink { [weak self] result in
             switch result {
@@ -75,7 +74,10 @@ public final class CommunityMainViewModel {
                 } else {
                     self?.fetchedNotes.append(contentsOf: fetchedNotes)
                 }
+                self?.refreshState = .completed
+                
             case .failure(let error):
+                self?.refreshState = .failed(.noteError(error))
                 self?.error = .noteError(error)
             }
         }
@@ -96,7 +98,6 @@ extension CommunityMainViewModel {
         .sink { result in
             switch result {
             case .success(let success):
-                print("delete or add success: \(success)")
                 self.artist.isFavorite = isFavorite
                 
             case .failure(let error):
@@ -124,7 +125,6 @@ extension CommunityMainViewModel {
         .sink { [weak self] result in
             switch result {
             case .success(let updatedNoteLike):
-                print("set note like")
                 let indexToUpdate = self?.fetchedNotes.firstIndex(
                     where: { $0.id == noteID }
                 )

@@ -36,13 +36,6 @@ class CommunityMainView: UIView {
         collectionView.backgroundColor = Colors.background
 
         collectionView.showsVerticalScrollIndicator = false
-        collectionView.register(cellType: CommunityArtistCell.self)
-        collectionView.register(cellType: NoteCell.self)
-        collectionView.register(cellType: EmptyNoteCell.self)
-        collectionView.register(
-            supplementaryViewType: CommunityNoteHeaderView.self,
-            ofKind: CommunityNoteHeaderView.reuseIdentifier
-        )
         
         return collectionView
     }()
