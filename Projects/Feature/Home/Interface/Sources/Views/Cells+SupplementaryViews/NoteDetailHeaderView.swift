@@ -8,9 +8,11 @@
 import FlexLayout
 import Shared
 
+import Combine
 import UIKit
 
 final class NoteDetailHeaderView: UICollectionReusableView, Reusable {
+    var cancellables: Set<AnyCancellable> = .init()
     
     // MARK: - UI components
     
@@ -85,6 +87,11 @@ final class NoteDetailHeaderView: UICollectionReusableView, Reusable {
         self.noteCountLabel.flex.markDirty()
         
         self.flexContainer.flex.layout()
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        self.cancellables = .init()
     }
 }
 

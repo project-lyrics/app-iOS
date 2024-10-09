@@ -53,13 +53,6 @@ final class NoteDetailView: UIView {
 
         collectionView.showsVerticalScrollIndicator = false
 
-        collectionView.register(cellType: SongCell.self)
-        collectionView.register(cellType: NoteCell.self)
-        collectionView.register(
-            supplementaryViewType: NoteDetailHeaderView.self,
-            ofKind: NoteDetailHeaderView.reuseIdentifier
-        )
-
         return collectionView
     }()
 
