@@ -45,12 +45,12 @@ public final class NoteCommentsViewController: UIViewController, CommentMenuHand
     
     private typealias NoteCommentsDataSource = UICollectionViewDiffableDataSource<Section, Row>
     
-    private enum Section: Int, Hashable {
+    enum Section: Int, Hashable {
         case note = 0
         case comments = 1
     }
     
-    private enum Row: Hashable {
+    enum Row: Hashable {
         case note(Note)
         case emptyNote
         case comment(Comment)
@@ -58,117 +58,111 @@ public final class NoteCommentsViewController: UIViewController, CommentMenuHand
     }
     
     private lazy var noteCommentsDataSource: NoteCommentsDataSource = {
-        let dataSource = NoteCommentsDataSource(collectionView: self.noteCommentsCollectionView) { collectionView, indexPath, item in
-            switch item {
-            case .emptyNote:
-                let cell = collectionView.dequeueReusableCell(
-                    for: indexPath,
-                    cellType: EmptyNoteCell.self
-                )
-                
-                return cell
-                
-            case .note(let note):
-                let cell = collectionView.dequeueReusableCell(
-                    for: indexPath,
-                    cellType: NoteCell.self
-                )
-                cell.configure(with: note)
-                
-                cell.likeNoteButton.publisher(for: .touchUpInside)
-                    .debounce(for: .milliseconds(600), scheduler: DispatchQueue.main)
-                    .sink { [weak self] control in
-                        self?.viewModel.setNoteLikeState(noteID: note.id, isLiked: control.isSelected)
-                    }
-                    .store(in: &self.cancellables)
-                
-                cell.bookmarkButton.publisher(for: .touchUpInside)
-                    .debounce(
-                        for: .milliseconds(600),
-                        scheduler: DispatchQueue.main
+        let emptyNoteCellRegistration = UICollectionView.CellRegistration<EmptyNoteCell, Void> { cell, indexPath, item in }
+        let noteCellRegistration = UICollectionView.CellRegistration<NoteCell, Note> { [weak self] cell, index, note in
+            guard let self = self else { return }
+            
+            cell.configure(with: note)
+            
+            cell.likeNoteButton.publisher(for: .touchUpInside)
+                .debounce(for: .milliseconds(600), scheduler: DispatchQueue.main)
+                .sink { control in
+                    self.viewModel.setNoteLikeState(
+                        noteID: note.id,
+                        isLiked: control.isSelected
                     )
-                    .sink { [unowned self] control in
-                        self.viewModel.setNoteBookmarkState(
-                            noteID: note.id,
-                            isBookmarked: control.isSelected
-                        )
-                    }
-                    .store(in: &self.cancellables)
-                
-                cell.moreAboutContentButton.publisher(for: .touchUpInside)
-                    .sink { [unowned self] _ in
-                        if let noteMenuViewController = self.makeNoteMenuViewController(checking: note) {
-                            self.present(noteMenuViewController, animated: false)
-                        } else {
-                            // TODO: - 비회원 알림을 추후 보여줘야 한다.
-                        }
-                    }
-                    .store(in: &self.cancellables)
-                
-                cell.playMusicButton.publisher(for: .touchUpInside)
-                    .throttle(
-                        for: .milliseconds(600),
-                        scheduler: DispatchQueue.main,
-                        latest: false
-                    )
-                    .sink { [unowned self] _ in
-                        self.openYouTube(query: "\(note.song.artist.name) \(note.song.name)")
-                    }
-                    .store(in: &self.cancellables)
-                
-                return cell
-                
-            case .comment(let comment):
-                let cell = collectionView.dequeueReusableCell(for: indexPath, cellType: CommentCell.self)
-                
-                // 내부에 저장되어있는 유저id값과 댓글 저자의 id 값을 비교하여 신고 or 삭제 bottomSheet을 보여주는 로직
-                if let userInfo = self.userInfo {
-                    let commentBackgroundColor = userInfo.userID == comment.writer.id
-                    ? Colors.backgroundTertiary
-                    : Colors.background
-                    cell.configureBackgroundColor(commentBackgroundColor)
                 }
-                
-                cell.configure(with: comment)
-                
-                cell.moreAboutContentButton.publisher(for: .touchUpInside)
-                    .sink { [unowned self] _ in
-                        if let commentMenuViewController = self.makeCommentMenuViewController(checking: comment) {
-                            self.present(commentMenuViewController, animated: false)
-                        } else {
-                            // TODO: - 비회원 알림을 추후 보여줘야 한다.
-                        }
+                .store(in: &cell.cancellables)
+            
+            cell.bookmarkButton.publisher(for: .touchUpInside)
+                .debounce(
+                    for: .milliseconds(600),
+                    scheduler: DispatchQueue.main
+                )
+                .sink { control in
+                    self.viewModel.setNoteBookmarkState(
+                        noteID: note.id,
+                        isBookmarked: control.isSelected
+                    )
+                }
+                .store(in: &cell.cancellables)
+            
+            cell.moreAboutContentButton.publisher(for: .touchUpInside)
+                .sink { _ in
+                    if let noteMenuViewController = self.makeNoteMenuViewController(checking: note) {
+                        self.present(noteMenuViewController, animated: false)
+                    } else {
+                        // TODO: - 비회원 알림을 추후 보여줘야 한다.
                     }
-                    .store(in: &self.cancellables)
-                
-                return cell
-                
-            case .emptyComment:
-                let cell = collectionView.dequeueReusableCell(for: indexPath, cellType: EmptyCommentCell.self)
-                
-                return cell
+                }
+                .store(in: &cell.cancellables)
+            
+            cell.playMusicButton.publisher(for: .touchUpInside)
+                .throttle(
+                    for: .milliseconds(600),
+                    scheduler: DispatchQueue.main,
+                    latest: false
+                )
+                .sink { _ in
+                    self.openYouTube(query: "\(note.song.artist.name) \(note.song.name)")
+                }
+                .store(in: &cell.cancellables)
+        }
+        let emptyCommentCellRegistration = UICollectionView.CellRegistration<EmptyCommentCell, Void> { cell, indexPath, item in }
+        let commentCellRegistration = UICollectionView.CellRegistration<CommentCell, Comment> { [weak self] cell, indexPath, comment in
+            guard let self = self else { return }
+            
+            // 내부에 저장되어있는 유저id값과 댓글 저자의 id 값을 비교하여 신고 or 삭제 bottomSheet을 보여주는 로직
+            if let userInfo = self.userInfo {
+                let commentBackgroundColor = userInfo.userID == comment.writer.id
+                ? Colors.backgroundTertiary
+                : Colors.background
+                cell.configureBackgroundColor(commentBackgroundColor)
             }
+            
+            cell.configure(with: comment)
+            
+            cell.moreAboutContentButton.publisher(for: .touchUpInside)
+                .sink { [unowned self] _ in
+                    if let commentMenuViewController = self.makeCommentMenuViewController(checking: comment) {
+                        self.present(commentMenuViewController, animated: false)
+                    } else {
+                        // TODO: - 비회원 알림을 추후 보여줘야 한다.
+                    }
+                }
+                .store(in: &cell.cancellables)
+        }
+        
+        let dataSource = NoteCommentsDataSource(collectionView: self.noteCommentsCollectionView) { collectionView, indexPath, item in
+            return item.dequeueConfiguredReusableCell(
+                collectionView: collectionView,
+                emptyNoteCellRegistration: emptyNoteCellRegistration,
+                noteCellRegistration: noteCellRegistration,
+                commentCellRegistration: commentCellRegistration,
+                emptyCommentCellRegistration: emptyCommentCellRegistration,
+                indexPath: indexPath
+            )
+        }
+        
+        let commentHeaderRegistration = UICollectionView.SupplementaryRegistration<CommentHeaderView>(elementKind: CommentHeaderView.reuseIdentifier) { [weak self] commentHeaderView, elementKind, indexPath in
+            guard let self = self else { return }
+            
+            self.viewModel.$commentsCount
+                .sink { updatedCommentCount in
+                    commentHeaderView.configureCommentCount(updatedCommentCount)
+                }
+                .store(in: &self.cancellables)
+            
         }
         
         dataSource.supplementaryViewProvider = { [weak self] (collectionView, kind, indexPath) in
             switch indexPath.section {
             case NoteCommentsView.commentsSectionIndex:
                 if kind == CommentHeaderView.reuseIdentifier {
-                    let commentHeaderView = collectionView.dequeueReusableSupplementaryView(
-                        ofKind: kind,
-                        for: indexPath,
-                        viewType: CommentHeaderView.self
+                    let commentHeaderView = collectionView.dequeueConfiguredReusableSupplementary(
+                        using: commentHeaderRegistration,
+                        for: indexPath
                     )
-                    
-                    guard let self = self else {
-                        return UICollectionReusableView()
-                    }
-                    
-                    self.viewModel.$commentsCount
-                        .sink { updatedCommentCount in
-                            commentHeaderView.configureCommentCount(updatedCommentCount)
-                        }
-                        .store(in: &self.cancellables)
                     
                     return commentHeaderView
                 } else {
@@ -233,48 +227,56 @@ private extension NoteCommentsViewController {
             snapshot.appendItems(noteItems, toSection: .note)
         }
         
-        noteCommentsDataSource.apply(snapshot, animatingDifferences: false)
+        noteCommentsDataSource.applySnapshotUsingReloadData(snapshot)
     }
 
     func updateComments(_ comments: [Comment]) {
         var snapshot = noteCommentsDataSource.snapshot()
         
+        let newItems = comments.map { Row.comment($0) }
+        
+        // 노트 섹션 업데이트
         if snapshot.sectionIdentifiers.contains(.comments) {
             let currentItems = snapshot.itemIdentifiers(inSection: .comments)
             
-            if comments.isEmpty {
-                if !currentItems.contains(.emptyComment) {
-                    snapshot.deleteItems(currentItems)
-                    snapshot.appendItems([.emptyComment], toSection: .comments)
-                }
-            } else {
-                let newCommentItems = comments.map { Row.comment($0) }
-                
-                if currentItems.contains(.emptyComment) {
-                    snapshot.deleteItems([.emptyComment])
-                }
-                
-                if currentItems != newCommentItems {
-                    snapshot.deleteItems(currentItems)
-                    snapshot.appendItems(newCommentItems, toSection: .comments)
-                }
-            }
-            
-            // 애니메이션 적용 여부: 항목 개수가 바뀌었을 때만 애니메이션 적용
-            let itemCountChanged = comments.count != currentItems.count
-            noteCommentsDataSource.apply(snapshot, animatingDifferences: itemCountChanged)
-            
-        } else {
-            // comment 섹션이 처음 추가될 때
-            snapshot.appendSections([.comments])
-            
-            if comments.isEmpty {
+            if newItems.isEmpty {
+                snapshot.deleteItems(currentItems)
                 snapshot.appendItems([.emptyComment], toSection: .comments)
             } else {
-                snapshot.appendItems(comments.map { Row.comment($0)}, toSection: .comments)
+                snapshot.deleteItems(currentItems)
+                snapshot.appendItems(newItems, toSection: .comments)
+            }
+            let isCountDifferent = currentItems.count != newItems.count
+            
+            guard let refreshControl = self.noteCommentsCollectionView.refreshControl else {
+                // pull-to-refresh가 없는 경우 apply snapshot만 적용. 갯수가 달라질때만 animation
+                noteCommentsDataSource.apply(
+                    snapshot,
+                    animatingDifferences: isCountDifferent
+                )
+                return
+            }
+            // pull-to-refresh 중일 경우 reloadData를 활용하여 apply snapshot에 의해서 생기는 bounce 방지
+            if refreshControl.isRefreshing {
+                noteCommentsDataSource.applySnapshotUsingReloadData(snapshot)
+            } else {
+                // 그 외의 경우 apply snapshot 활용. 기존 데이터와 신규 데이터의 갯수가 달라질 때만 animation
+                noteCommentsDataSource.apply(snapshot, animatingDifferences: isCountDifferent)
             }
             
-            noteCommentsDataSource.apply(snapshot, animatingDifferences: false)
+        } else {
+            // 노트 섹션이 처음 추가될 때
+            snapshot.appendSections([.comments])
+            let currentItems = snapshot.itemIdentifiers(inSection: .comments)
+            if newItems.isEmpty {
+                snapshot.deleteItems(currentItems)
+                snapshot.appendItems([.emptyComment], toSection: .comments)
+            } else {
+                snapshot.deleteItems(currentItems)
+                snapshot.appendItems(newItems, toSection: .comments)
+            }
+            
+            noteCommentsDataSource.applySnapshotUsingReloadData(snapshot)
         }
     }
 }
@@ -394,6 +396,8 @@ private extension NoteCommentsViewController {
     }
 }
 
+// MARK: - NoteCommentView
+
 private extension NoteCommentsViewController {
     var writeCommentView: WriteCommentView {
         return self.noteCommentsView.writeCommentView
@@ -405,5 +409,45 @@ private extension NoteCommentsViewController {
 
     var backButton: UIButton {
         return self.noteCommentsView.backButton
+    }
+}
+
+private extension NoteCommentsViewController.Row {
+    func dequeueConfiguredReusableCell(
+        collectionView: UICollectionView,
+        emptyNoteCellRegistration: UICollectionView.CellRegistration<EmptyNoteCell, Void>,
+        noteCellRegistration: UICollectionView.CellRegistration<NoteCell, Note>,
+        commentCellRegistration: UICollectionView.CellRegistration<CommentCell, Comment>,
+        emptyCommentCellRegistration: UICollectionView.CellRegistration<EmptyCommentCell, Void>,
+        indexPath: IndexPath
+    ) -> UICollectionViewCell {
+        switch self {
+        case .note(let note):
+            return collectionView.dequeueConfiguredReusableCell(
+                using: noteCellRegistration,
+                for: indexPath,
+                item: note
+            )
+        case .emptyNote:
+            return collectionView.dequeueConfiguredReusableCell(
+                using: emptyNoteCellRegistration,
+                for: indexPath,
+                item: ()
+            )
+            
+        case .comment(let comment):
+            return collectionView.dequeueConfiguredReusableCell(
+                using: commentCellRegistration,
+                for: indexPath,
+                item: comment
+            )
+            
+        case .emptyComment:
+            return collectionView.dequeueConfiguredReusableCell(
+                using: emptyCommentCellRegistration,
+                for: indexPath,
+                item: ()
+            )
+        }
     }
 }

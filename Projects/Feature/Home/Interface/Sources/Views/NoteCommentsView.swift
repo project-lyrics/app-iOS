@@ -15,9 +15,8 @@ final class NoteCommentsView: UIView {
     private var cancellables: Set<AnyCancellable> = .init()
 
     // MARK: - UI Components
-    private let rootFlexContainer = UIView()
 
-    private (set) var flexContainer = UIView()
+    private var flexContainer = UIView()
     
     private let navigationBar = NavigationBar()
 
@@ -62,15 +61,6 @@ final class NoteCommentsView: UIView {
         
         collectionView.refreshControl = UIRefreshControl()
         collectionView.backgroundColor = Colors.background
-
-        collectionView.register(cellType: NoteCell.self)
-        collectionView.register(cellType: EmptyNoteCell.self)
-        collectionView.register(cellType: CommentCell.self)
-        collectionView.register(cellType: EmptyCommentCell.self)
-        collectionView.register(
-            supplementaryViewType: CommentHeaderView.self,
-            ofKind: CommentHeaderView.reuseIdentifier
-        )
         
         collectionView.showsVerticalScrollIndicator = false
         
@@ -98,48 +88,39 @@ final class NoteCommentsView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        rootFlexContainer.pin.all(pin.safeArea)
-        rootFlexContainer.flex.layout()
-
         flexContainer.pin
-            .below(of: navigationBar)
+            .top(pin.safeArea)
             .left()
             .right()
-            .bottom()
+            .bottom(pin.safeArea)
         
-        flexContainer.flex.layout(mode: .adjustHeight)
+        flexContainer.flex.layout()
     }
     
     private func setUpLayout() {
-        self.addSubview(rootFlexContainer)
+        self.addSubview(flexContainer)
         self.backgroundColor = Colors.background
 
         navigationBar.addLeftBarView([backButton])
         navigationBar.addTitleView(naviTitleLabel)
 
-        rootFlexContainer
-            .flex
-            .direction(.column)
-            .define { rootFlex in
-                rootFlex.addItem(navigationBar)
+        flexContainer.flex
+            .define { flex in
+                flex.addItem(navigationBar)
                     .marginHorizontal(10)
                     .height(44)
 
-                rootFlex.addItem(flexContainer)
+                flex.addItem(noteCommentsCollectionView)
                     .grow(1)
-                    .define { flex in
-                        flex.addItem(noteCommentsCollectionView)
-                            .grow(1)
 
-                        flex.addItem()
-                            .height(1)
-                            .width(100%)
-                            .backgroundColor(Colors.backgroundTertiary)
+                flex.addItem()
+                    .height(1)
+                    .width(100%)
+                    .backgroundColor(Colors.backgroundTertiary)
 
-                        flex.addItem(writeCommentView)
-                            .width(100%)
-                            .minHeight(80)
-                    }
+                flex.addItem(writeCommentView)
+                    .width(100%)
+                    .minHeight(80)
             }
     }
     
@@ -161,14 +142,15 @@ final class NoteCommentsView: UIView {
             .sink { [unowned self] keyboardHeight in
                 UIView.animate(withDuration: 0.3) {
                     // 키보드 높이만큼 collectionview에 inset 부여
+                    // safeAreaInset대응하여 위치 조정하는 로직 추가
                     self.noteCommentsCollectionView.contentInset = .init(
                         top: 0,
                         left: 0,
-                        bottom: keyboardHeight,
+                        bottom: max(0, keyboardHeight - self.safeAreaInsets.bottom),
                         right: 0
                     )
                     // 키보드 높이 변경시 writeComment의 위치 조정
-                    self.writeCommentView.flex.position(.relative).bottom(keyboardHeight)
+                    self.writeCommentView.flex.position(.relative).bottom(max(0, keyboardHeight - self.safeAreaInsets.bottom))
                     
                     
                     self.flexContainer.flex.layout(mode: .adjustHeight)

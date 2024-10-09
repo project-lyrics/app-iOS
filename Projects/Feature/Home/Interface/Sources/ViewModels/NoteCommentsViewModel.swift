@@ -105,22 +105,6 @@ public final class NoteCommentsViewModel {
         }
         .store(in: &cancellables)
     }
-    
-    func deleteComment(commentID: Int) {
-        self.deleteCommentUseCase.execute(commentID: commentID)
-            .receive(on: DispatchQueue.main)
-            .mapToResult()
-            .sink { [weak self] result in
-                switch result {
-                case .success:
-                    self?.fetchNoteWithComments()
-                    
-                case .failure(let noteError):
-                    self?.error = noteError
-                }
-            }
-            .store(in: &cancellables)
-    }
 }
 
 // MARK: - Bookmark
@@ -213,6 +197,7 @@ extension NoteCommentsViewModel {
             .sink { [weak self] result in
                 switch result {
                 case .success:
+                    // TODO: - pop 해야 하나??
                     self?.fetchedNotes.removeAll(where: { $0.id == id })
                     
                 case .failure(let noteError):
@@ -233,7 +218,7 @@ extension NoteCommentsViewModel {
             .sink { [weak self] result in
                 switch result {
                 case .success:
-                    self?.fetchNoteWithComments()
+                    self?.fetchedComments.removeAll(where: { $0.id == id })
                     
                 case .failure(let noteError):
                     self?.error = noteError
