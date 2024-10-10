@@ -16,6 +16,8 @@ public struct FeelinImages {
     public static let bookmarkInactive = SharedDesignSystemAsset.Images.bookmarkInactive.image
     public static let caretDown = SharedDesignSystemAsset.Images.caretDown.image
     public static let chat = SharedDesignSystemAsset.Images.chat.image
+    public static let caretRightLight = SharedDesignSystemAsset.Images.caretRightLight.image
+    public static let caretRightDark = SharedDesignSystemAsset.Images.caretRightDark.image
     public static let checkBoxInactive = SharedDesignSystemAsset.Images.checkBoxInactive.image
     public static let checkBoxActive = SharedDesignSystemAsset.Images.checkBoxActive.image
     public static let checkmarkActive = SharedDesignSystemAsset.Images.checkmarkActive.image
@@ -71,4 +73,8 @@ public struct FeelinImages {
     public static let noteSearchingInactive = SharedDesignSystemAsset.Images.noteSearchingInactive.image
     public static let myPageActive = SharedDesignSystemAsset.Images.myPageActive.image
     public static let myPageInactive = SharedDesignSystemAsset.Images.myPageInactive.image
+    public static let filterAllLight = SharedDesignSystemAsset.Images.filterAllLight.image
+    public static let filterAllDark = SharedDesignSystemAsset.Images.filterAllDark.image
+    public static let settingLight = SharedDesignSystemAsset.Images.settingLight.image
+    public static let settingDark = SharedDesignSystemAsset.Images.settingDark.image
 }
