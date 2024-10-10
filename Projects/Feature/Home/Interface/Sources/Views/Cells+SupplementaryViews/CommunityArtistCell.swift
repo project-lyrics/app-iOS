@@ -8,9 +8,11 @@
 import Domain
 import Shared
 
+import Combine
 import UIKit
 
 class CommunityArtistCell: UICollectionViewCell, Reusable {
+    var cancellables: Set<AnyCancellable> = .init()
     
     // MARK: - UI
     
@@ -94,10 +96,10 @@ class CommunityArtistCell: UICollectionViewCell, Reusable {
         super.prepareForReuse()
         self.artistImageView.image = nil
         self.recordLabel.text = nil
-        self.favoriteArtistSelectButton = FavoriteArtistSelectButton()
         self.recordLabel.text = nil
         self.recordLabel.text = nil
         self.artistImageView.image = nil
+        self.cancellables = .init()
     }
 }
 

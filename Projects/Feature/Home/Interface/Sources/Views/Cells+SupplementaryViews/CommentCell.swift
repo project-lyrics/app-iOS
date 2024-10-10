@@ -5,15 +5,18 @@
 //  Created by 황인우 on 9/10/24.
 //
 
+import Combine
 import UIKit
 
 import Domain
 import Shared
 
 final class CommentCell: UICollectionViewCell, Reusable {
-    private let flexContainer = UIView()
+    var cancellables: Set<AnyCancellable> = .init()
     
     // MARK: - UI Components
+    
+    private let flexContainer = UIView()
     
     private let authorCharacterImageView: UIImageView = {
         let imageView = UIImageView()
@@ -77,10 +80,11 @@ final class CommentCell: UICollectionViewCell, Reusable {
     }
     
     private func setUpLayout() {
+        self.contentView.backgroundColor = Colors.background
         addSubview(flexContainer)
-        contentView.backgroundColor = Colors.background
 
-        flexContainer.flex.define { flex in
+        flexContainer.flex
+            .define { flex in
             // 작성자 정보 row
             flex.addItem().direction(.row).define { flex in
                 flex.addItem(authorCharacterImageView)
@@ -111,11 +115,15 @@ final class CommentCell: UICollectionViewCell, Reusable {
         self.authorNameLabel.text = comment.writer.nickname
         self.commentWrittenTimeLabel.text = comment.createdAt.formattedTimeInterval()
         self.commentContentLabel.text = comment.content
+        self.authorNameLabel.flex.markDirty()
+        self.commentWrittenTimeLabel.flex.markDirty()
+        self.commentContentLabel.flex.markDirty()
+        
+        self.flexContainer.flex.layout()
     }
     
     func configureBackgroundColor(_ backgroundColor: UIColor) {
-        
-        self.flexContainer.backgroundColor = backgroundColor
+        self.contentView.backgroundColor = backgroundColor
     }
     
     override func prepareForReuse() {
@@ -124,6 +132,7 @@ final class CommentCell: UICollectionViewCell, Reusable {
         self.authorCharacterImageView.image = nil
         self.authorNameLabel.text = nil
         self.commentContentLabel.text = nil
+        self.cancellables = .init()
         self.flexContainer.flex.layout()
     }
     

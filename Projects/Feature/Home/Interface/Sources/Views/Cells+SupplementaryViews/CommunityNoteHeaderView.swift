@@ -8,9 +8,11 @@
 import FlexLayout
 import Shared
 
+import Combine
 import UIKit
 
 class CommunityNoteHeaderView: UICollectionReusableView, Reusable {
+    var cancellables: Set<AnyCancellable> = .init()
     
     // MARK: - UI components
     
@@ -71,5 +73,11 @@ class CommunityNoteHeaderView: UICollectionReusableView, Reusable {
                     .backgroundColor(Colors.backgroundTertiary)
                     .marginTop(20)
             }
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        self.cancellables = .init()
     }
 }

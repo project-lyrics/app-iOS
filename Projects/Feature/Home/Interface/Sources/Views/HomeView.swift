@@ -54,25 +54,6 @@ final class HomeView: UIView {
         collectionView.refreshControl = UIRefreshControl()
 
         collectionView.showsVerticalScrollIndicator = false
-
-        collectionView.register(cellType: BannerCell.self)
-        collectionView.register(cellType: FeelinArtistCell.self)
-        collectionView.register(cellType: NoteCell.self)
-        collectionView.register(cellType: EmptyNoteCell.self)
-        collectionView.register(cellType: SearchArtistCell.self)
-        collectionView.register(
-            supplementaryViewType: FavoriteArtistsHeaderView.self,
-            ofKind: FavoriteArtistsHeaderView.reuseIdentifier
-        )
-        collectionView.register(
-            supplementaryViewType: SectionDividerView.self,
-            ofKind: SectionDividerView.reuseIdentifier
-        )
-        collectionView.register(
-            supplementaryViewType: NotesHeaderView.self,
-            ofKind: NotesHeaderView.reuseIdentifier
-        )
-
         return collectionView
     }()
 
@@ -125,6 +106,7 @@ final class HomeView: UIView {
 
                 flex.addItem(homeCollectionView)
                     .grow(1)
+                    .shrink(1)
             }
     }
 }

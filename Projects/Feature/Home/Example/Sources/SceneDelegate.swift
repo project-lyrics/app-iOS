@@ -189,7 +189,7 @@ extension SceneDelegate {
 //        
 //        window?.rootViewController = HomeViewController(viewModel: homeViewModel)
 //        window?.makeKeyAndVisible()
-//         --------------------MainViewController-------------------
+//         --------------------HomeViewController-------------------
         
 //        DIContainer.standard.register(.networkProvider) { _ in
 //            return NetworkProvider(
@@ -252,13 +252,21 @@ extension SceneDelegate {
 //            imageUrl: "https://i.scdn.co/image/ab67616d0000b2739c3a4e471c5e82a457dce2c0",
 //            noteCount: 1
 //        )
+////        
+////        let noteDetailViewModel = NoteDetailViewModel(
+////            selectedNote: selectedNote,
+////            getSongNotesUseCase: getSongNotesUseCase,
+////            setNoteLikeUseCase: setNoteLikeUseCase,
+////            setBookmarkUseCase: setBookmarkUseCase,
+////            deleteNoteUseCase: deleteNoteUseCase
+////        )
 //        
 //        let noteDetailViewModel = NoteDetailViewModel(
 //            selectedNote: selectedNote,
-//            getSongNotesUseCase: getSongNotesUseCase,
-//            setNoteLikeUseCase: setNoteLikeUseCase,
-//            setBookmarkUseCase: setBookmarkUseCase,
-//            deleteNoteUseCase: deleteNoteUseCase
+//            getSongNotesUseCase: MockGetSongNotesUseCase(),
+//            setNoteLikeUseCase: MockSetNoteLikeUseCase(),
+//            setBookmarkUseCase: MockSetBookmarkUseCase(),
+//            deleteNoteUseCase: MockDeleteNoteUseCase()
 //        )
 //        
 //        window?.rootViewController = NoteDetailViewController(viewModel: noteDetailViewModel)
@@ -269,17 +277,17 @@ extension SceneDelegate {
 //        @KeychainWrapper<UserInformation>(.userInfo)
 //        var userInfo
 //        
-//        userInfo = .init(userID: 4)
+//        userInfo = .init(userID: 2)
 //        
-////        let noteCommentsViewModel = NoteCommentsViewModel(
-////            noteID: 1,
-////            setNoteLikeUseCase: MockSetNoteLikeUseCase(),
-////            setBookmarkUseCase: MockSetBookmarkUseCase(),
-////            deleteNoteUseCase: MockDeleteNoteUseCase(),
-////            getNoteWithCommentsUseCase: MockGetNoteWithCommentsUseCase(),
-////            writeCommentUseCase: MockWriteCommentUseCase(),
-////            deleteCommentUseCase: MockDeleteCommentUseCase()
-////        )
+//        let noteCommentsViewModel = NoteCommentsViewModel(
+//            noteID: 1,
+//            setNoteLikeUseCase: MockSetNoteLikeUseCase(),
+//            setBookmarkUseCase: MockSetBookmarkUseCase(),
+//            deleteNoteUseCase: MockDeleteNoteUseCase(),
+//            getNoteWithCommentsUseCase: MockGetNoteWithCommentsUseCase(),
+//            writeCommentUseCase: MockWriteCommentUseCase(),
+//            deleteCommentUseCase: MockDeleteCommentUseCase()
+//        )
 //        DIContainer.standard.register(.networkProvider) { _ in
 //            return NetworkProvider(networkSession: .init(requestInterceptor: MockTokenInterceptor()))
 //        }
@@ -298,24 +306,45 @@ extension SceneDelegate {
 //        @Injected(.noteAPIService) var noteAPIService: NoteAPIServiceInterface
 //        @Injected(.commentAPIService) var commentAPIService: CommentAPIServiceInterface
 //        
-//        let noteCommentsViewModel = NoteCommentsViewModel(
-//            noteID: 3,
-//            setNoteLikeUseCase: SetNoteLikeUseCase(noteAPIService: noteAPIService),
-//            setBookmarkUseCase: SetBookmarkUseCase(noteAPIService: noteAPIService),
-//            deleteNoteUseCase: DeleteNoteUseCase(noteAPIService: noteAPIService),
-//            getNoteWithCommentsUseCase: GetNoteWithCommentsUseCase(commentAPIService: commentAPIService),
-//            writeCommentUseCase: WriteCommentUseCase(commentAPIService: commentAPIService),
-//            deleteCommentUseCase: DeleteCommentUseCase(commentAPIService: commentAPIService)
-//        )
+////        let noteCommentsViewModel = NoteCommentsViewModel(
+////            noteID: 3,
+////            setNoteLikeUseCase: SetNoteLikeUseCase(noteAPIService: noteAPIService),
+////            setBookmarkUseCase: SetBookmarkUseCase(noteAPIService: noteAPIService),
+////            deleteNoteUseCase: DeleteNoteUseCase(noteAPIService: noteAPIService),
+////            getNoteWithCommentsUseCase: GetNoteWithCommentsUseCase(commentAPIService: commentAPIService),
+////            writeCommentUseCase: WriteCommentUseCase(commentAPIService: commentAPIService),
+////            deleteCommentUseCase: DeleteCommentUseCase(commentAPIService: commentAPIService)
+////        )
 //        
 //        window?.rootViewController = NoteCommentsViewController(viewModel: noteCommentsViewModel)
 //        window?.makeKeyAndVisible()
         
         // --------------------NoteCommentsViewController-------------------
+//        @KeychainWrapper<UserInformation>(.userInfo)
+//        var userInfo
+//        
+//        userInfo = .init(userID: 2)
+//        
+//        let communityMainViewModel = CommunityMainViewModel(
+//            artist: dummyArtist,
+//            getArtistNotesUseCase: MockGetArtistNotesUseCase(),
+//            setNoteLikeUseCase: MockSetNoteLikeUseCase(),
+//            setBookmarkUseCase: MockSetBookmarkUseCase(),
+//            deleteNoteUseCase: MockDeleteNoteUseCase(),
+//            setFavoriteArtistUseCase: MockSetFavoriteArtistUseCase()
+//        )
+//        
+//        window?.rootViewController = CommunityMainViewController(viewModel: communityMainViewModel)
+//        window?.makeKeyAndVisible()
+        // --------------------CommunityMainViewController-------------------
     }
 }
 
 extension SceneDelegate: PostNoteViewControllerDelegate, SearchSongViewControllerDelegate {
+    func popRootViewController() {
+        
+    }
+    
     func dismissViewController() {
         
     }

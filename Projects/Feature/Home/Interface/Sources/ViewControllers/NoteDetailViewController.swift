@@ -36,13 +36,14 @@ public final class NoteDetailViewController: UIViewController, NoteMenuHandling,
     
     // MARK: - Diffable DataSource
     
-    private enum Section: String, CaseIterable {
+    enum Section: String, CaseIterable {
         case song
-        case note
+        case notes
     }
     
-    private enum Row: Hashable {
+    enum Row: Hashable {
         case song(SearchedNote)
+        case emptyNote
         case note(Note)
     }
     
@@ -50,72 +51,91 @@ public final class NoteDetailViewController: UIViewController, NoteMenuHandling,
     private typealias NoteDetailSnapshot = NSDiffableDataSourceSnapshot<Section, Row>
     
     private lazy var noteDetailDataSource: NoteDetailDataSource = {
-        let dataSource = NoteDetailDataSource(collectionView: self.noteDetailCollectionView) { collectionView, indexPath, item in
-            switch item {
-            case .song(let selectedNote):
-                let cell: SongCell = collectionView.dequeueReusableCell(for: indexPath)
-                cell.configure(
-                    albumImageURL: try? selectedNote.albumImageUrl.asURL(),
-                    songName: selectedNote.songName,
-                    artistName: selectedNote.artistName
+        let songCellRegistration = UICollectionView.CellRegistration<SongCell, SearchedNote> { [weak self] cell, index, searchedNote in
+            cell.configure(
+                albumImageURL: try? searchedNote.albumImageUrl.asURL(),
+                songName: searchedNote.songName,
+                artistName: searchedNote.artistName
+            )
+        }
+        
+        let emptyNoteCellRegistration = UICollectionView.CellRegistration<EmptyNoteCell, Void> { cell, indexPath, item in }
+        
+        let noteCellRegistration = UICollectionView.CellRegistration<NoteCell, Note> { [weak self] cell, indexPath, note in
+            
+            cell.configure(with: note)
+            
+            cell.likeNoteButton.publisher(for: .touchUpInside)
+                // 0.6초 사이에 발생한 가장 최신 좋아요 상태만 방출
+                .debounce(
+                    for: .milliseconds(600),
+                    scheduler: DispatchQueue.main
                 )
-                
-                return cell
-                
-            case .note(let note):
-                let cell: NoteCell = collectionView.dequeueReusableCell(for: indexPath)
-                cell.configure(with: note)
-                
-                cell.likeNoteButton.publisher(for: .touchUpInside)
-                    // 0.6초 사이에 발생한 가장 최신 좋아요 상태만 방출
-                    .debounce(
-                        for: .milliseconds(600),
-                        scheduler: DispatchQueue.main
+                .sink { control in
+                    self?.viewModel.setNoteLikeState(
+                        noteID: note.id,
+                        isLiked: control.isSelected
                     )
-                    .sink { [unowned self] control in
-                        self.viewModel.setNoteLikeState(
-                            noteID: note.id,
-                            isLiked: control.isSelected
-                        )
-                    }
-                    .store(in: &self.cancellables)
-                
-                cell.bookmarkButton.publisher(for: .touchUpInside)
-                    .debounce(
-                        for: .milliseconds(600),
-                        scheduler: DispatchQueue.main
+                }
+                .store(in: &cell.cancellables)
+            
+            cell.bookmarkButton.publisher(for: .touchUpInside)
+                .debounce(
+                    for: .milliseconds(600),
+                    scheduler: DispatchQueue.main
+                )
+                .sink { control in
+                    self?.viewModel.setNoteBookmarkState(
+                        noteID: note.id,
+                        isBookmarked: control.isSelected
                     )
-                    .sink { [unowned self] control in
-                        self.viewModel.setNoteBookmarkState(
-                            noteID: note.id,
-                            isBookmarked: control.isSelected
-                        )
+                }
+                .store(in: &cell.cancellables)
+            
+            cell.moreAboutContentButton.publisher(for: .touchUpInside)
+                .sink { [unowned self] _ in
+                    if let noteMenuViewController = self?.makeNoteMenuViewController(checking: note) {
+                        self?.present(noteMenuViewController, animated: false)
+                    } else {
+                        // TODO: - 비회원 알림을 추후 보여줘야 한다.
                     }
-                    .store(in: &self.cancellables)
-                
-                cell.moreAboutContentButton.publisher(for: .touchUpInside)
-                    .sink { [unowned self] _ in
-                        if let noteMenuViewController = self.makeNoteMenuViewController(checking: note) {
-                            self.present(noteMenuViewController, animated: false)
-                        } else {
-                            // TODO: - 비회원 알림을 추후 보여줘야 한다.
-                        }
-                    }
-                    .store(in: &self.cancellables)
-                
-                cell.playMusicButton.publisher(for: .touchUpInside)
-                    .throttle(
-                        for: .milliseconds(600),
-                        scheduler: DispatchQueue.main,
-                        latest: false
-                    )
-                    .sink { [unowned self] _ in
-                        self.openYouTube(query: "\(note.song.artist.name) \(note.song.name)")
-                    }
-                    .store(in: &self.cancellables)
-                
-                return cell
-            }
+                }
+                .store(in: &cell.cancellables)
+            
+            cell.playMusicButton.publisher(for: .touchUpInside)
+                .throttle(
+                    for: .milliseconds(600),
+                    scheduler: DispatchQueue.main,
+                    latest: false
+                )
+                .sink { _ in
+                    self?.openYouTube(query: "\(note.song.artist.name) \(note.song.name)")
+                }
+                .store(in: &cell.cancellables)
+        }
+        
+        let dataSource = NoteDetailDataSource(collectionView: self.noteDetailCollectionView) { collectionView, indexPath, item in
+            return item.dequeueConfiguredReusableCell(
+                collectionView: collectionView,
+                songCellRegistration: songCellRegistration,
+                emptyNoteCellRegistration: emptyNoteCellRegistration,
+                noteCellRegistration: noteCellRegistration,
+                indexPath: indexPath
+            )
+        }
+        
+        let relatedNoteHeaderRegistration = UICollectionView.SupplementaryRegistration<NoteDetailHeaderView>(elementKind: NoteDetailHeaderView.reuseIdentifier) { [weak viewModel] noteDetailHeaderView, elementKind, indexPath in
+            
+            guard let viewModel = viewModel else { return }
+            
+            noteDetailHeaderView.configureNoteCount(viewModel.selectedNote.noteCount)
+            
+            noteDetailHeaderView.includeNoteButton.publisher(for: .touchUpInside)
+                .map(\.isSelected)
+                .sink { isSelected in
+                    self.viewModel.mustHaveLyrics = isSelected
+                }
+                .store(in: &noteDetailHeaderView.cancellables)
         }
         
         dataSource.supplementaryViewProvider = { [weak viewModel] (collectionView, kind, indexPath) in
@@ -127,17 +147,10 @@ public final class NoteDetailViewController: UIViewController, NoteMenuHandling,
             case NoteDetailView.relatedNoteSectionIndex:
                 switch kind {
                 case NoteDetailHeaderView.reuseIdentifier:
-                    let noteDetailHeaderView = collectionView.dequeueReusableSupplementaryView(
-                        ofKind: kind,
-                        for: indexPath,
-                        viewType: NoteDetailHeaderView.self
+                    let noteDetailHeaderView = collectionView.dequeueConfiguredReusableSupplementary(
+                        using: relatedNoteHeaderRegistration,
+                        for: indexPath
                     )
-                    
-                    noteDetailHeaderView.configureNoteCount(viewModel.selectedNote.noteCount)
-                    
-                    noteDetailHeaderView.includeNoteButton.publisher(for: .touchUpInside)
-                        .map(\.isSelected)
-                        .assign(to: &viewModel.$mustHaveLyrics)
                     
                     return noteDetailHeaderView
                     
@@ -204,35 +217,61 @@ public final class NoteDetailViewController: UIViewController, NoteMenuHandling,
         
         snapshot.appendItems([.song(viewModel.selectedNote)], toSection: .song)
         
-        noteDetailDataSource.apply(snapshot)
+        noteDetailDataSource.applySnapshotUsingReloadData(snapshot)
     }
     
     private func updateSnapshot(notes: [Note]) {
         var snapshot = noteDetailDataSource.snapshot()
         
-        // 섹션이 없을 경우 추가
-        if !snapshot.sectionIdentifiers.contains(.note) {
-            snapshot.appendSections([.note])
-        }
+        let newItems = notes.map { Row.note($0) }
         
-        // 기존 섹션의 아이템을 가져오기
-        let currentItems = snapshot.itemIdentifiers(inSection: .note)
-        let noteRows = notes.map { Row.note($0) }
-        
-        // 새로운 데이터와 기존 데이터를 비교하여 다른 경우에만 업데이트
-        if currentItems != noteRows {
-            // 기존 아이템 삭제
-            snapshot.deleteItems(currentItems)
+        // 노트 섹션 업데이트
+        if snapshot.sectionIdentifiers.contains(.notes) {
+            let currentItems = snapshot.itemIdentifiers(inSection: .notes)
             
-            // 새로운 데이터 추가
-            snapshot.appendItems(noteRows, toSection: .note)
+            if newItems.isEmpty {
+                snapshot.deleteItems(currentItems)
+                snapshot.appendItems([.emptyNote], toSection: .notes)
+            } else {
+                snapshot.deleteItems(currentItems)
+                snapshot.appendItems(newItems, toSection: .notes)
+            }
             
-            // 스냅샷을 적용
-            noteDetailDataSource.apply(snapshot, animatingDifferences: true)
+            guard let refreshControl = self.noteDetailCollectionView.refreshControl else {
+                let isCountDifferent = currentItems.count != newItems.count
+                noteDetailDataSource.apply(
+                    snapshot,
+                    animatingDifferences: isCountDifferent
+                )
+                return
+            }
+            // pull-to-refresh 중일 경우 reloadData를 활용하여 apply snapshot에 의해서 생기는 bounce 방지
+            if refreshControl.isRefreshing {
+                noteDetailDataSource.applySnapshotUsingReloadData(snapshot)
+            } else {
+                // 그 외의 경우 apply snapshot 활용. 기존 데이터와 신규 데이터의 갯수가 달라질 때만 animation
+                let isCountDifferent = currentItems.count != newItems.count
+                noteDetailDataSource.apply(
+                    snapshot,
+                    animatingDifferences: isCountDifferent
+                )
+            }
+            
         } else {
-            // 그 외에는 cell 갯수는 변화가 없으나 컨텐츠에 변화가 있다고 판단. reloadData 수행
+            // 노트 섹션이 처음 추가될 때
+            snapshot.appendSections([.notes])
+            let currentItems = snapshot.itemIdentifiers(inSection: .notes)
+            if newItems.isEmpty {
+                snapshot.deleteItems(currentItems)
+                snapshot.appendItems([.emptyNote], toSection: .notes)
+            } else {
+                snapshot.deleteItems(currentItems)
+                snapshot.appendItems(newItems, toSection: .notes)
+            }
+            
             noteDetailDataSource.applySnapshotUsingReloadData(snapshot)
         }
+        
     }
 }
 
@@ -267,10 +306,11 @@ private extension NoteDetailViewController {
                 guard let item = self.noteDetailDataSource.itemIdentifier(for: indexPath) else { return }
 
                 switch item {
-                case .song(let searchedNote):
-                    break
                 case .note(let note):
                     coordinator?.pushNoteCommentsViewController(noteID: note.id)
+                    
+                default:
+                    return
                 }
             }
             .store(in: &cancellables)
@@ -321,5 +361,36 @@ private extension NoteDetailViewController {
 
     var backButton: UIButton {
         return self.noteDetailView.backButton
+    }
+}
+
+private extension NoteDetailViewController.Row {
+    func dequeueConfiguredReusableCell(
+        collectionView: UICollectionView,
+        songCellRegistration: UICollectionView.CellRegistration<SongCell, SearchedNote>,
+        emptyNoteCellRegistration: UICollectionView.CellRegistration<EmptyNoteCell, Void>,
+        noteCellRegistration: UICollectionView.CellRegistration<NoteCell, Note>,
+        indexPath: IndexPath
+    ) -> UICollectionViewCell {
+        switch self {
+        case .song(let searchedNote):
+            return collectionView.dequeueConfiguredReusableCell(
+                using: songCellRegistration,
+                for: indexPath,
+                item: searchedNote
+            )
+        case .note(let note):
+            return collectionView.dequeueConfiguredReusableCell(
+                using: noteCellRegistration,
+                for: indexPath,
+                item: note
+            )
+        case .emptyNote:
+            return collectionView.dequeueConfiguredReusableCell(
+                using: emptyNoteCellRegistration,
+                for: indexPath,
+                item: ()
+            )
+        }
     }
 }
