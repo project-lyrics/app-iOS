@@ -18,6 +18,7 @@ public protocol HomeViewControllerDelegate: AnyObject {
     func pushMyFavoriteArtistsViewController(artists: [Artist])
     func pushCommunityMainViewController(artist: Artist)
     func pushNoteCommentsViewController(noteID: Int)
+    func presentInitialArtistSelectViewController()
 }
 
 public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHandling {
@@ -303,15 +304,28 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
 
     override public func viewDidLoad() {
         super.viewDidLoad()
+        self.showSelectArtistListIfNeeded()
         self.bindUI()
         self.bindAction()
     }
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.viewModel.fetchNotes(isInitialFetch: true)
-        self.viewModel.fetchFavoriteArtists(isInitialFetch: true)
+        self.updateInitialHomeData()
         
+    }
+    
+    // MARK: - Favorite Artists
+    
+    public func updateInitialHomeData() {
+        self.viewModel.fetchArtistsThenNotes()
+    }
+    
+    private func showSelectArtistListIfNeeded() {
+        if let userInfo = userInfo,
+           !userInfo.didEnterFirstFavoriteArtistsListPage {
+            self.coordinator?.presentInitialArtistSelectViewController()
+        }
     }
 }
 
@@ -325,11 +339,14 @@ private extension HomeViewController {
         viewModel.$error
             .compactMap { $0 }
             .sink { [weak self] error in
-                self?.showAlert(
-                    title: error.errorDescription,
-                    message: nil,
-                    singleActionTitle: "확인"
-                )
+                //
+                if let userID = self?.userInfo?.userID {
+                    self?.showAlert(
+                        title: error.errorDescription,
+                        message: nil,
+                        singleActionTitle: "확인"
+                    )
+                }
             }
             .store(in: &cancellables)
 

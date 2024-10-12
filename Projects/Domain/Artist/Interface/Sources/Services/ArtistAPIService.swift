@@ -20,7 +20,7 @@ public protocol ArtistAPIServiceInterface {
         currentPage: Int?,
         numberOfArtists: Int
     ) -> AnyPublisher<GetArtistsResponse, ArtistError>
-    func postFavoriteArtists(ids: [Int]) -> AnyPublisher<FeelinDefaultResponse, ArtistError>
+    func postFavoriteArtists(ids: [Int]) -> AnyPublisher<FeelinSuccessResponse, ArtistError>
     func getFavoriteArtists(currentPage: Int?, numberOfArtists: Int) -> AnyPublisher<GetFavoriteArtistsResponse, ArtistError>
     func postFavoriteArtist(id: Int) -> AnyPublisher<FeelinSuccessResponse, ArtistError>
     func deleteFavoriteArtist(id: Int) -> AnyPublisher<FeelinSuccessResponse, ArtistError>
@@ -61,8 +61,8 @@ public struct ArtistAPIService: ArtistAPIServiceInterface {
             .eraseToAnyPublisher()
     }
     
-    public func postFavoriteArtists(ids: [Int]) -> AnyPublisher<FeelinDefaultResponse, ArtistError> {
-        let endpoint = FeelinAPI<FeelinDefaultResponse>.postFavoriteArtists(ids: ids)
+    public func postFavoriteArtists(ids: [Int]) -> AnyPublisher<FeelinSuccessResponse, ArtistError> {
+        let endpoint = FeelinAPI<FeelinSuccessResponse>.postFavoriteArtists(ids: ids)
         
         return networkProvider.request(endpoint)
             .mapError(ArtistError.init)

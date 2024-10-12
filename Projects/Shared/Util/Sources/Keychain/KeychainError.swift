@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum KeychainError: LocalizedError {
+public enum KeychainError: LocalizedError, Equatable {
     case functionNotImplemented
     case invalidParameters
     case memoryAllocationError

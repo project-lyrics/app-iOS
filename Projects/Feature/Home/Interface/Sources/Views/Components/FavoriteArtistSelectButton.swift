@@ -52,7 +52,6 @@ class FavoriteArtistSelectButton: UIButton {
     }
     
     override var intrinsicContentSize: CGSize {
-        print(heartImageView.frame.width)
         let contentWidth = heartRateImageWidth + titleLabelView.intrinsicContentSize.width + 28
         let contentHeight = max(
             heartRateImageWidth,

@@ -22,6 +22,7 @@ public enum FeelinAPIError: LocalizedError, Equatable {
     case artistDataNotFound(errorCode: String, errorMessage: String)
     case dataFailedValidation(errorCode: String, errorMessage: String)
     case recordDataNotFound(errorCode: String, errorMessage: String)
+    case tokenNotFound(errorCode: String, errorMessage: String)
     case unknown(errorCode: String, errorMessage: String)
 
     public var errorCode: String {
@@ -40,6 +41,7 @@ public enum FeelinAPIError: LocalizedError, Equatable {
                 .artistDataNotFound(let errorCode, _),
                 .dataFailedValidation(let errorCode, _),
                 .recordDataNotFound(let errorCode, _),
+                .tokenNotFound(let errorCode, _),
                 .unknown(let errorCode, _):
             return errorCode
         }
@@ -61,6 +63,7 @@ public enum FeelinAPIError: LocalizedError, Equatable {
                 .artistDataNotFound(_, let errorMessage),
                 .dataFailedValidation(_, let errorMessage),
                 .recordDataNotFound(_, let errorMessage),
+                .tokenNotFound(_, let errorMessage),
                 .unknown(_, let errorMessage):
             return errorMessage
         }
@@ -118,6 +121,12 @@ public enum FeelinAPIError: LocalizedError, Equatable {
                 errorCode: apiFailResponse.errorCode,
                 errorMessage: apiFailResponse.errorMessage
             )
+        case "01008":
+            self = .tokenNotFound(
+                errorCode: apiFailResponse.errorCode,
+                errorMessage: apiFailResponse.errorMessage
+            )
+            
         case "02000":
             self = .userDataNotFound(
                 errorCode: apiFailResponse.errorCode,

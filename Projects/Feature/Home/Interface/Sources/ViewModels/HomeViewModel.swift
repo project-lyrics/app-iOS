@@ -41,6 +41,41 @@ final public class HomeViewModel {
         self.deleteNoteUseCase = deleteNoteUseCase
     }
     
+    func fetchArtistsThenNotes(
+        notesPerPage: Int = 10,
+        artistsPerPage: Int = 30
+    ) {
+        self.getFavoriteArtistsUseCase.execute(
+            isInitial: true,
+            perPage: artistsPerPage
+        )
+        .mapError(HomeError.init)
+        .receive(on: DispatchQueue.main)
+        .flatMap { [weak self] fetchedFavoriteArtists -> AnyPublisher<[Note], HomeError> in
+            self?.fetchedFavoriteArtists = fetchedFavoriteArtists
+            
+            return self?.getNotesUseCase.execute(
+                isInitial: true,
+                perPage: notesPerPage,
+                mustHaveLyrics: false
+            )
+            .mapError(HomeError.init)
+            .eraseToAnyPublisher() ?? Empty().eraseToAnyPublisher()
+        }
+        .mapToResult()
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] result in
+            switch result {
+            case .success(let fetchedNotes):
+                self?.fetchedNotes = fetchedNotes
+                
+            case .failure(let error):
+                self?.error = error
+            }
+        }
+        .store(in: &cancellables)
+    }
+    
     func fetchNotes(
         isInitialFetch: Bool,
         perPage: Int = 10

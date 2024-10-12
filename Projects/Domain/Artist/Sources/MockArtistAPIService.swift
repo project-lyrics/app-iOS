@@ -34,7 +34,7 @@ public struct MockArtistAPIService: ArtistAPIServiceInterface {
     }
     
     // TODO: - 추후 테스트 시 구현 예정
-    public func postFavoriteArtists(ids: [Int]) -> AnyPublisher<FeelinDefaultResponse, ArtistError> {
+    public func postFavoriteArtists(ids: [Int]) -> AnyPublisher<FeelinSuccessResponse, ArtistError> {
         return Empty()
             .setFailureType(to: ArtistError.self)
             .eraseToAnyPublisher()

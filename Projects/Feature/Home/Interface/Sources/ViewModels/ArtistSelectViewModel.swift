@@ -13,6 +13,7 @@ import Foundation
 
 final public class ArtistSelectViewModel {
     typealias ArtistFetchResult = Result<[Artist], ArtistSelectionError>
+    typealias InformFavoriteArtistsResult = Result<Void, ArtistSelectionError>
     
     @Published private (set) var fetchedArtists: [Artist] = []
     @Published private (set) var error: ArtistSelectionError?
@@ -224,18 +225,14 @@ final public class ArtistSelectViewModel {
 // MARK: - Publisher
 
 extension ArtistSelectViewModel {
-    func confirmFavoriteArtistsPublisher() -> AnyPublisher<Void, Never> {
+    
+    func confirmFavoriteArtistsPublisher() -> AnyPublisher<InformFavoriteArtistsResult, Never> {
         let favoriteArtistIds = self.favoriteArtists.map { $0.id }
         return self.postFavoriteArtistsUseCase
             .execute(artistIds: favoriteArtistIds)
             .mapError(ArtistSelectionError.init)
             .receive(on: DispatchQueue.main)
-            .catch { [weak self] error in
-                self?.error = error
-                
-                return Empty<Void, Never>()
-                    .eraseToAnyPublisher()
-            }
+            .mapToResult()
             .eraseToAnyPublisher()
     }
 }

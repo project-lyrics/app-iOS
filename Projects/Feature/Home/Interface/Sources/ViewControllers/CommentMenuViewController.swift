@@ -35,10 +35,6 @@ public class CommentMenuViewConroller: BottomSheetViewController<CommentMenuView
         )
     }
     
-    deinit {
-        print("CommentMenuViewConroller deinit")
-    }
-    
     override public func viewDidLoad() {
         super.viewDidLoad()
         
