@@ -17,3 +17,5 @@
 @_exported import DomainNotificationInterface
 @_exported import DomainShared
 @_exported import DomainSharedInterface
+@_exported import DomainUserProfile
+@_exported import DomainUserProfileInterface

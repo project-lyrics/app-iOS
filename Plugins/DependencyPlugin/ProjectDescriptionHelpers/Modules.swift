@@ -56,6 +56,7 @@ public extension ModulePath {
 
 public extension ModulePath {
     enum Domain: String, CaseIterable {
+        case UserProfile
         case Report
         case Shared
         case Note

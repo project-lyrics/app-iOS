@@ -103,6 +103,10 @@ public extension InjectIdentifier {
     
     static var notificationPaginationService: InjectIdentifier<NotificationPaginationServiceInterface> {
         .by(type: NotificationPaginationServiceInterface.self, key: "notificationPaginationService")
+    }  
+
+    static var userProfileAPIService: InjectIdentifier<UserProfileAPIServiceInterface> {
+        .by(type: UserProfileAPIServiceInterface.self, key: "userProfileAPIService")
     }
 }
 

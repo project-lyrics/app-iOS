@@ -163,6 +163,13 @@ public extension DIContainer {
             )
         }
     }
+
+    static func registerUserProfileService() {
+        standard.register(.userProfileAPIService) { resolver in
+            let networkProvider = try resolver.resolve(.networkProvider)
+            return UserProfileAPIService(networkProvider: networkProvider)
+        }
+    }
 }
 
 // MARK: Report && Notification
