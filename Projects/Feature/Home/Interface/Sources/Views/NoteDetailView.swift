@@ -18,7 +18,7 @@ final class NoteDetailView: UIView {
 
     let backButton: UIButton = {
         let button = UIButton()
-        button.setImage(FeelinImages.backLight, for: .normal)
+        button.setImage(FeelinImages.back, for: .normal)
 
         return button
     }()

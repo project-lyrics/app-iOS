@@ -40,7 +40,8 @@ public final class ProfileViewController: UIViewController {
 
     public override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        overrideUserInterfaceStyle = .light
         bind()
     }
 
@@ -97,7 +98,11 @@ public final class ProfileViewController: UIViewController {
                 case .success:
                     self?.coordinator?.pushWelcomeViewController()
                 case .failure(let error):
-                    self?.showAlert(title: "알림", message: error.localizedDescription)
+                    self?.showAlert(
+                        shouldIgnoreDarkMode: true,
+                        title: "알림",
+                        message: error.localizedDescription
+                    )
                 }
             }
             .store(in: &cancellables)

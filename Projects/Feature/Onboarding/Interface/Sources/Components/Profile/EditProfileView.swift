@@ -27,7 +27,7 @@ public final class EditProfileView: UIView {
     
     let xButton = {
         let button = UIButton()
-        button.setImage(FeelinImages.xLight, for: .normal)
+        button.setImage(FeelinImages.x, for: .normal)
         return button
     }()
     

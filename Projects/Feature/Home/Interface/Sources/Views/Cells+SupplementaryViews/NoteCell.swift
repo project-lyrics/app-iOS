@@ -97,8 +97,8 @@ final class NoteCell: UICollectionViewCell, Reusable {
     
     private (set) var likeNoteButton: FeelinSelectableImageButton = {
         let button = FeelinSelectableImageButton(
-            selectedImage: FeelinImages.heartActiveLight,
-            unSelectedImage: FeelinImages.heartInactiveLight
+            selectedImage: FeelinImages.heartActive,
+            unSelectedImage: FeelinImages.heartInactive
         )
         
         return button
@@ -114,7 +114,7 @@ final class NoteCell: UICollectionViewCell, Reusable {
     
     private (set) var commentButton: UIButton = {
         let button = UIButton()
-        button.setImage(FeelinImages.chatLight, for: .normal)
+        button.setImage(FeelinImages.chat, for: .normal)
         
         return button
     }()
@@ -129,8 +129,8 @@ final class NoteCell: UICollectionViewCell, Reusable {
     
     private (set) var bookmarkButton: FeelinSelectableImageButton = {
         let button = FeelinSelectableImageButton(
-            selectedImage: FeelinImages.bookmarkActiveLight,
-            unSelectedImage: FeelinImages.bookmarkInactiveLight
+            selectedImage: FeelinImages.bookmarkActive,
+            unSelectedImage: FeelinImages.bookmarkInactive
         )
         
         return button

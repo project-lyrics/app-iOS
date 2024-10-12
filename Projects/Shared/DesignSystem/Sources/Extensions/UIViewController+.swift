@@ -9,6 +9,7 @@ import UIKit
 
 extension UIViewController {
     public func showAlert(
+        shouldIgnoreDarkMode: Bool = false,
         title: String,
         message: String?,
         attributedMessage: NSAttributedString? = nil,
@@ -19,7 +20,8 @@ extension UIViewController {
             let alertViewController = FeelinAlertViewController(
                 titleText: title,
                 messageText: message,
-                attributedMessageText: attributedMessage
+                attributedMessageText: attributedMessage,
+                shouldIgnoreDarkMode: shouldIgnoreDarkMode
             )
             
             showAlert(
@@ -32,6 +34,7 @@ extension UIViewController {
         }
     
     public func showAlert(
+        shouldIgnoreDarkMode: Bool = false,
         title: String,
         message: String?,
         attributedMessage: NSAttributedString? = nil,
@@ -41,7 +44,8 @@ extension UIViewController {
         let alertViewController = FeelinAlertViewController(
             titleText: title,
             messageText: message,
-            attributedMessageText: attributedMessage
+            attributedMessageText: attributedMessage,
+            shouldIgnoreDarkMode: shouldIgnoreDarkMode
         )
         
         showAlert(

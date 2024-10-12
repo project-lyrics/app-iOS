@@ -53,6 +53,7 @@ public final class LoginViewController: UIViewController {
     }
 
     private func setUpDefault() {
+        overrideUserInterfaceStyle = .light
         loginView.configureLayouts()
         bindUI()
         bind()

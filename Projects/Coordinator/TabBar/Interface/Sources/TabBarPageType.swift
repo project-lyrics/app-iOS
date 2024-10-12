@@ -19,20 +19,20 @@ enum TabBarPageType: CaseIterable {
         case .home:
             return UITabBarItem(
                 title: "",
-                image: FeelinImages.homeInactiveLight,
-                selectedImage: FeelinImages.homeActiveLight
+                image: FeelinImages.homeInactive,
+                selectedImage: FeelinImages.homeActive
             )
         case .noteSearch:
             return UITabBarItem(
                 title: "",
-                image: FeelinImages.noteSearchingInactiveLight,
-                selectedImage: FeelinImages.noteSearchingActiveLight
+                image: FeelinImages.noteSearchingInactive,
+                selectedImage: FeelinImages.noteSearchingActive
             )
         case .myPage:
             return UITabBarItem(
                 title: "",
-                image: FeelinImages.myPageInactiveLight,
-                selectedImage: FeelinImages.myPageActiveLight
+                image: FeelinImages.myPageInactive,
+                selectedImage: FeelinImages.myPageActive
             )
         }
     }

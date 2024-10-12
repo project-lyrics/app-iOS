@@ -30,7 +30,7 @@ public final class LyricsBackgroundView: UIView {
 
     let cancelButton: UIButton = {
         let button = UIButton()
-        button.setImage(FeelinImages.xLight, for: .normal)
+        button.setImage(FeelinImages.x, for: .normal)
         return button
     }()
 

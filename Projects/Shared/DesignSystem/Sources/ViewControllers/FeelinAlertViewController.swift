@@ -105,23 +105,38 @@ public final class FeelinAlertViewController: UIViewController {
         return rightButton
     }()
     
+    private var shouldIgnoreDarkMode: Bool = false
+    
     public convenience init(
         titleText: String? = nil,
         messageText: String? = nil,
-        attributedMessageText: NSAttributedString? = nil) {
-            self.init()
-            
-            self.titleText = titleText
-            self.messageText = messageText
-            self.attributedMessageText = attributedMessageText
-            modalPresentationStyle = .overFullScreen
-        }
-    
-    public convenience init(contentView: UIView) {
+        attributedMessageText: NSAttributedString? = nil,
+        shouldIgnoreDarkMode: Bool = false
+    ) {
         self.init()
+        self.shouldIgnoreDarkMode = shouldIgnoreDarkMode
+        self.titleText = titleText
+        self.messageText = messageText
+        self.attributedMessageText = attributedMessageText
+        modalPresentationStyle = .overFullScreen
         
+        if shouldIgnoreDarkMode {
+            self.overrideUserInterfaceStyle = .light
+        }
+    }
+    
+    public convenience init(
+        contentView: UIView,
+        shouldIgnoreDarkMode: Bool = false
+    ) {
+        self.init()
+        self.shouldIgnoreDarkMode = shouldIgnoreDarkMode
         self.contentView = contentView
         modalPresentationStyle = .overFullScreen
+        
+        if shouldIgnoreDarkMode {
+            self.overrideUserInterfaceStyle = .light
+        }
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -159,15 +174,30 @@ public final class FeelinAlertViewController: UIViewController {
     }
     
     private func setInitialColor() {
-        switch self.traitCollection.userInterfaceStyle {
-        case .light:
-            self.leftButton.setTitleColor(Colors.gray02, for: .normal)
+        if shouldIgnoreDarkMode {
+            leftButton.setTitleColor(Colors.fixedGray02, for: .normal)
+            leftButton.setBackgroundImage(Colors.fixedModal.image(), for: .normal)
+            leftButton.setBackgroundImage(Colors.fixedGray01.image(), for: .highlighted)
             
-        case .dark:
-            self.leftButton.setTitleColor(Colors.gray06, for: .normal)
+            rightButton.setTitleColor(Colors.fixedPrimary, for: .normal)
+            rightButton.setBackgroundImage(Colors.fixedModal.image(), for: .normal)
+            rightButton.setBackgroundImage(Colors.fixedGray01.image(), for: .highlighted)
             
-        default:
-            return
+            singleButton.setTitleColor(Colors.fixedPrimary, for: .normal)
+            singleButton.setBackgroundImage(Colors.fixedModal.image(), for: .normal)
+            singleButton.setBackgroundImage(Colors.fixedGray01.image(), for: .highlighted)
+            
+        } else {
+            switch self.traitCollection.userInterfaceStyle {
+            case .light:
+                self.leftButton.setTitleColor(Colors.gray02, for: .normal)
+                
+            case .dark:
+                self.leftButton.setTitleColor(Colors.gray06, for: .normal)
+                
+            default:
+                return
+            }
         }
     }
     
@@ -176,24 +206,26 @@ public final class FeelinAlertViewController: UIViewController {
         
         // MARK: - 버튼에 배경색에 다크모드를 실시간 적용하기 위해 setBackgroundImage를 해당 메서드에서 호출
         
-        self.leftButton.setBackgroundImage(Colors.modal.image(), for: .normal)
-        self.rightButton.setBackgroundImage(Colors.modal.image(), for: .normal)
-        self.singleButton.setBackgroundImage(Colors.modal.image(), for: .normal)
-        self.singleButton.setBackgroundImage(Colors.gray01.image(), for: .highlighted)
-        self.leftButton.setBackgroundImage(Colors.gray01.image(), for: .highlighted)
-        self.rightButton.setBackgroundImage(Colors.gray01.image(), for: .highlighted)
-        
-        
-        // MARK: - 디자이너 요청에 따라 cancelButton만 다크모드시 gray06색상 적용
-        
-        switch newCollection.userInterfaceStyle {
-        case .light:
-            self.leftButton.setTitleColor(Colors.gray02, for: .normal)
+        if !shouldIgnoreDarkMode {
+            self.leftButton.setBackgroundImage(Colors.modal.image(), for: .normal)
+            self.rightButton.setBackgroundImage(Colors.modal.image(), for: .normal)
+            self.singleButton.setBackgroundImage(Colors.modal.image(), for: .normal)
+            self.singleButton.setBackgroundImage(Colors.gray01.image(), for: .highlighted)
+            self.leftButton.setBackgroundImage(Colors.gray01.image(), for: .highlighted)
+            self.rightButton.setBackgroundImage(Colors.gray01.image(), for: .highlighted)
             
-        case .dark:
-            self.leftButton.setTitleColor(Colors.gray06, for: .normal)
-        default:
-            return
+            
+            // MARK: - 디자이너 요청에 따라 cancelButton만 다크모드시 gray06색상 적용
+            
+            switch newCollection.userInterfaceStyle {
+            case .light:
+                self.leftButton.setTitleColor(Colors.gray02, for: .normal)
+                
+            case .dark:
+                self.leftButton.setTitleColor(Colors.gray06, for: .normal)
+            default:
+                return
+            }
         }
     }
     

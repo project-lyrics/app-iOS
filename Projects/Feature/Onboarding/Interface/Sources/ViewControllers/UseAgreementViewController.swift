@@ -24,13 +24,10 @@ public final class UseAgreementViewController: UIViewController {
 
     private let navigationBar = NavigationBar()
 
-    private lazy var backButton: UIButton = {
+    private let backButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-
-        let userInterfaceStyle = traitCollection.userInterfaceStyle
-        let image = userInterfaceStyle == .light ? FeelinImages.backLight : FeelinImages.backDark
-        button.setImage(image, for: .normal)
+        button.setImage(FeelinImages.back, for: .normal)
 
         return button
     }()
@@ -71,6 +68,12 @@ public final class UseAgreementViewController: UIViewController {
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError()
+    }
+    
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        overrideUserInterfaceStyle = .light
     }
 
     public override func viewDidLayoutSubviews() {

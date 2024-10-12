@@ -28,6 +28,12 @@ public final class SelectBirthYearViewController: BottomSheetViewController<Sele
         setUpPickerView(baseYear: baseYear)
         bind()
     }
+    
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        overrideUserInterfaceStyle = .light
+    }
 
     private func setUpPickerView(baseYear: Int) {
         pickerView.delegate = self

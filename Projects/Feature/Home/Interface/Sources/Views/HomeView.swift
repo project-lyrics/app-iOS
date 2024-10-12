@@ -25,7 +25,7 @@ final class HomeView: UIView {
 
     let notificationButton: UIButton = {
         let button = UIButton()
-        button.setImage(FeelinImages.notificationLightOff, for: .normal)
+        button.setImage(FeelinImages.notificationOff, for: .normal)
 
         return button
     }()

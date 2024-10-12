@@ -72,11 +72,12 @@ public final class FeelinArtistCell: UICollectionViewCell, Reusable {
                 .height(self.frame.width)
                 .width(self.frame.width)
                 .cornerRadius(self.frame.width / 2)
+                .alignItems(.center)
+                .justifyContent(.center)
                 .define { flex in
                     flex.addItem(artistImageView)
-                        .height(self.frame.width)
-                        .width(self.frame.width)
-                        .margin(inset, inset)
+                        .height(self.frame.width - (inset + inset))
+                        .width(self.frame.width - (inset + inset))
                         .cornerRadius((self.frame.width - (inset + inset)) / 2)
                 }
             
@@ -97,6 +98,8 @@ public final class FeelinArtistCell: UICollectionViewCell, Reusable {
         self.artistImageView.kf.setImage(with: artistImageURL)
         self.borderWidth = imageBorderWidth
         self.inset = imageBorderInset
+        self.artistNameLabel.flex.markDirty()
+        self.artistImageView.flex.markDirty()
         self.setUpLayout()
     }
     

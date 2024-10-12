@@ -44,14 +44,14 @@ public final class CommunityMainViewController: UIViewController, NoteMenuHandli
 
     private let backButton: UIButton = {
         let button = UIButton()
-        button.setImage(FeelinImages.backLight, for: .normal)
+        button.setImage(FeelinImages.back, for: .normal)
 
         return button
     }()
 
     private let notificationButton: UIButton = {
         let button = UIButton()
-        button.setImage(FeelinImages.notificationLightOff, for: .normal)
+        button.setImage(FeelinImages.notificationOff, for: .normal)
 
         return button
     }()
@@ -67,7 +67,7 @@ public final class CommunityMainViewController: UIViewController, NoteMenuHandli
 
     private let postNoteButton: UIButton = {
         let button = UIButton()
-        let image = button.isEnabled ? FeelinImages.writingActive : FeelinImages.writingInactiveLight
+        let image = button.isEnabled ? FeelinImages.writingActive : FeelinImages.writingInactive
         button.setImage(image, for: .normal)
 
         return button

@@ -16,7 +16,7 @@ final class LoginView: UIView {
 
     private let titleLabel = {
         let label = UILabel()
-        label.textColor = Colors.gray09
+        label.textColor = Colors.fixedGray09
         label.textAlignment = .center
         label.font = SharedDesignSystemFontFamily.Pretendard.extraBold.font(size: 72)
         label.text = "Feelin"
@@ -82,7 +82,7 @@ final class LoginView: UIView {
         let button = UIButton()
         button.setTitle("카카오로 시작하기", for: .normal)
         button.titleLabel?.font = SharedDesignSystemFontFamily.Pretendard.semiBold.font(size: 16)
-        button.setTitleColor(Colors.gray09, for: .normal)
+        button.setTitleColor(Colors.fixedGray09, for: .normal)
         button.setImage(FeelinImages.kakao, for: .normal)
         button.backgroundColor = Colors.kakaoYellow
         button.imageEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 8)

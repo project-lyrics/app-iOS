@@ -16,7 +16,8 @@ public final class EditProfileViewController: BottomSheetViewController<EditProf
 
     public override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        overrideUserInterfaceStyle = .light
         bind()
         profileCharacterCollectionView.dataSource = self
     }

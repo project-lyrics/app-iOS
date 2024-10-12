@@ -19,13 +19,10 @@ final class SearchSongView: UIView {
 
     private let navigationBar = NavigationBar()
 
-    lazy var backButton: UIButton = {
+    let backButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-
-        let userInterfaceStyle = traitCollection.userInterfaceStyle
-        let image = userInterfaceStyle == .light ? FeelinImages.backLight : FeelinImages.backDark
-        button.setImage(image, for: .normal)
+        button.setImage(FeelinImages.back, for: .normal)
 
         return button
     }()
