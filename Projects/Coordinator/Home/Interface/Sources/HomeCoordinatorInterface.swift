@@ -218,7 +218,8 @@ extension HomeCoordinator: ArtistSelectViewControllerDelegate {
         guard let homeViewController = navigationController.viewControllers.first(where: { $0 is HomeViewController }) as? HomeViewController else {
             return
         }
-        homeViewController.updateFavoriteArtists()
+        // TODO: - 추후 HomeViewController의 ViewWillAppear 시점에서 아래 메서드가 호출되도록 수정해야 한다. 현재는 ArtistSelectViewController가 fullScreen present상태에서 dismiss가 되어도 homeViewController의 viewWillAppear가 호출되지 않아서 직접 updateInitialHomeData()를 여기서 호출하는 방향으로 진행하였다.
+        homeViewController.updateInitialHomeData()
     }
 }
 
@@ -235,7 +236,7 @@ extension HomeCoordinator {
 
         // TODO: 제거필요
         // 테스트용 유저 아이디
-        userInfo = .init(userID: 1)
+        // userInfo = .init(userID: 1)
 
         let getNoteUseCase = GetFavoriteArtistsRelatedNotesUseCase(
             noteAPIService: noteAPIService,
