@@ -25,6 +25,7 @@ public final class NetworkProvider: NetworkProviderInterface {
 
             return networkSession
                 .dataTaskPublisher(for: urlRequest)
+                .debug(prefix: "networkProvider")
                 .validateResponse()
                 .retryOnUnauthorized(
                     session: networkSession,
