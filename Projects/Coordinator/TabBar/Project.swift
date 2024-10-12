@@ -11,7 +11,8 @@ let project = Project.makeModule(
                 dependencies: [
                     .coordinator(interface: .App),
                     .coordinator(interface: .Home),
-                    .coordinator(interface: .SearchNote)
+                    .coordinator(interface: .SearchNote),
+                    .coordinator(interface: .MyPage)
                 ]
             )
         ),

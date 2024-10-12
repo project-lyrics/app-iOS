@@ -7,7 +7,12 @@ let project = Project.makeModule(
     targets: [
         .coordinator(
             interface: .MyPage,
-            factory: .init()
+            factory: .init(
+                dependencies: [
+                    .feature,
+                    .coordinator(interface: .App)
+                ]
+            )
         ),
         .coordinator(
             implements: .MyPage,
