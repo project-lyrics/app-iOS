@@ -70,6 +70,7 @@ extension MyPageCoordinator: MyPageViewControllerDelegate,
                              SearchSongViewControllerDelegate,
                              ProfileEditViewControllerDelegate,
                              InternalWebViewControllerDelegate,
+                             DeleteUserViewControllerDelegate,
                              UserInfoViewControllerDelegate {
     public func didFinish() {
         didFinish(childCoordinator: self)
@@ -182,6 +183,14 @@ extension MyPageCoordinator: MyPageViewControllerDelegate,
         internalWebViewController.modalPresentationStyle = .fullScreen
         navigationController.present(internalWebViewController, animated: true)
     }    
+
+    public func pushDeleteUserViewController() {
+        let viewModel = deleteUserDependencies()
+        let viewController = DeleteUserViewController(viewModel: viewModel)
+        viewController.coordinator = self
+        navigationController.tabBarController?.tabBar.isHidden = true
+        navigationController.pushViewController(viewController, animated: true)
+    }
 }
 
 private extension MyPageCoordinator {

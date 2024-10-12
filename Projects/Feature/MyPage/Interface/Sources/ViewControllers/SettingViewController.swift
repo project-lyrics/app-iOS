@@ -25,6 +25,9 @@ public final class SettingViewController: UIViewController {
     public weak var coordinator: SettingViewControllerDelegate?
     private var cancellables = Set<AnyCancellable>()
 
+    @KeychainWrapper<UserInformation>(.userInfo)
+    var userInfo
+
     // MARK: - Diffable DataSource
 
     private typealias SettingListDataSource = UITableViewDiffableDataSource<SettingSection, ServiceInfoRow>
@@ -33,6 +36,15 @@ public final class SettingViewController: UIViewController {
     private enum SettingSection {
         case userInfo
         case serviceInfo
+
+        var index: Int {
+            switch self {
+            case .userInfo:
+                return 0
+            case .serviceInfo:
+                return 1
+            }
+        }
     }
 
     private lazy var settingListDataSource: SettingListDataSource = makeDataSource()
@@ -65,6 +77,9 @@ public final class SettingViewController: UIViewController {
         view.backgroundColor = Colors.background
 
         settingInfoTableView.delegate = self
+
+        logoutButton.isHidden = userInfo == nil
+        deleteUserButton.isHidden = userInfo == nil
     }
 
     private func bindData() {
@@ -81,8 +96,15 @@ public final class SettingViewController: UIViewController {
 
         logoutButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in
-                self?.viewModel.removeUser()
-                self?.coordinator?.didFinish()
+                self?.showAlert(
+                    title: "로그아웃 하시겠어요?",
+                    message: nil,
+                    leftActionTitle: "취소",
+                    rightActionTitle: "로그아웃",
+                    rightActionCompletion: {
+                        self?.viewModel.removeUser()
+                        self?.coordinator?.didFinish()
+                    }
                 )
             }
             .store(in: &cancellables)
@@ -115,10 +137,24 @@ public final class SettingViewController: UIViewController {
     private func makeDataSource() -> SettingListDataSource {
         return SettingListDataSource(
             tableView: self.settingInfoTableView,
-            cellProvider: { tableView, indexPath, item -> SettingsTableViewCell in
+            cellProvider: { [weak self] tableView, indexPath, item -> SettingsTableViewCell in
                 let cell: SettingsTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-                cell.configure(info: item.title)
                 cell.selectionStyle = .none
+
+                switch indexPath.section {
+                case SettingSection.userInfo.index:
+                    if self?.userInfo == nil {
+                        cell.configure(info: "로그인해주세요")
+                    } else {
+                        cell.configure(info: item.title)
+                    }
+
+                case SettingSection.serviceInfo.index:
+                    cell.configure(info: item.title)
+
+                default:
+                    break
+                }
 
                 return cell
             })
@@ -172,7 +208,11 @@ extension SettingViewController: UITableViewDelegate {
 
         switch item {
         case .userInfo:
-            coordinator?.pushUserInfoViewController()
+            if userInfo != nil {
+                coordinator?.pushUserInfoViewController()
+            } else {
+                coordinator?.didFinish()
+            }
 
         case .serviceUsage,
                 .personalInfo,
