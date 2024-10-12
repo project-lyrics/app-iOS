@@ -20,7 +20,9 @@ extension TokenInterceptor: URLRequestInterceptor {
             let accessTokenKey = try tokenKeyHolder.fetchAccessTokenKey()
             
             guard let accessToken: AccessToken = try tokenStorage.read(key: accessTokenKey) else {
-                return Fail(error: NetworkError.urlRequestError(.headerError(reason: "키체인에 저장되어있는 액세스 토큰이 없습니다.")))
+                // itemNotFound일 경우에는 해당 구문으로 빠진다. 토큰이 없는 경우 별도의 토큰 header를 추가하지 않고 request를 만들도록 수정
+                return Just(request)
+                    .setFailureType(to: Error.self)
                     .eraseToAnyPublisher()
             }
             request.setValue(
