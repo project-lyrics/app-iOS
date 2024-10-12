@@ -14,9 +14,9 @@ import PinLayout
 
 final class UserInformationView: UIView {
     // MARK: - components
-    
+
     private let flexContainer = UIView()
-    
+
     private let navigationBar = NavigationBar()
     
     let backButton: UIButton = {
@@ -44,7 +44,7 @@ final class UserInformationView: UIView {
         label.textColor = Colors.gray08
         return label
     }()
-    
+
     private let subTitleLabel = {
         let label = UILabel()
         label.setTextWithLineHeight(
@@ -55,39 +55,39 @@ final class UserInformationView: UIView {
         label.textColor = Colors.gray04
         return label
     }()
-    
+
     private lazy var genderTitleLabel = {
         let label = createInformationTitleLabel()
         label.text = "성별"
         return label
     }()
-    
+
     let genderCollectionView = GenderCollectionView()
-    
+
     private lazy var birthYearTitleLabel = {
         let label = createInformationTitleLabel()
         label.text = "출생 연도"
         return label
     }()
-    
+
     let birthYearDropDownButton = FeelinDropDownButton(description: "출생 연도를 입력해주세요")
-    
+
     let nextButton = FeelinConfirmButton(title: "다음")
 
     // MARK: - init
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+
         backgroundColor = Colors.background
         setUpLayout()
     }
-    
+
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     // MARK: - layout
 
     override func layoutSubviews() {
@@ -96,44 +96,55 @@ final class UserInformationView: UIView {
         flexContainer.pin.all(pin.safeArea)
         flexContainer.flex.layout()
     }
-    
+
     private func setUpLayout() {
         addSubview(flexContainer)
 
         navigationBar.addLeftBarView([backButton])
-        navigationBar.addRightBarView([skipButton])
+        navigationBar.addRightBarView([skipButton], width: 56)
 
-        flexContainer.flex.paddingHorizontal(20).define { flex in
-            flex.addItem(navigationBar)
-                .height(44)
-                .marginTop(pin.safeArea.top)
+        flexContainer
+            .flex
+            .direction(.column)
+            .define { flex in
+                flex.addItem(navigationBar)
+                    .height(44)
+                    .marginLeft(10)
+                    .marginRight(20)
 
-            flex.addItem(titleLabel)
-                .marginTop(28)
-            flex.addItem(subTitleLabel)
-                .marginTop(8)
-            
-            flex.addItem(genderTitleLabel)
-                .marginTop(24)
-             flex.addItem(genderCollectionView)
-                .height(204)
-                .marginTop(12)
-            
-            flex.addItem(birthYearTitleLabel)
-                .marginTop(24)
-            flex.addItem(birthYearDropDownButton)
-                .minHeight(52)
-                .marginTop(12)
-                .cornerRadius(8)
-            
-            flex.addItem()
-                .grow(1)
-            
-            flex.addItem(nextButton)
-                .minHeight(56)
-                .cornerRadius(8)
-                .marginBottom(23)
-        }
+                flex.addItem()
+                    .direction(.column)
+                    .marginHorizontal(20)
+                    .marginTop(28)
+                    .grow(1)
+                    .define { flex in
+                        flex.addItem(titleLabel)
+
+                        flex.addItem(subTitleLabel)
+                            .marginTop(8)
+
+                        flex.addItem(genderTitleLabel)
+                            .marginTop(24)
+                        flex.addItem(genderCollectionView)
+                            .height(204)
+                            .marginTop(12)
+
+                        flex.addItem(birthYearTitleLabel)
+                            .marginTop(24)
+                        flex.addItem(birthYearDropDownButton)
+                            .minHeight(52)
+                            .marginTop(12)
+                            .cornerRadius(8)
+
+                        flex.addItem()
+                            .grow(1)
+
+                        flex.addItem(nextButton)
+                            .minHeight(56)
+                            .cornerRadius(8)
+                            .marginBottom(23)
+                    }
+            }
     }
 }
 
