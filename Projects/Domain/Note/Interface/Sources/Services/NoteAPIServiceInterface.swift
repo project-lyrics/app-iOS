@@ -17,6 +17,9 @@ public protocol NoteAPIServiceInterface {
         hasLyrics: Bool
     ) -> AnyPublisher<GetNotesResponse, NoteError>
     
+    func getFavoriteArtistHavingNotes() -> AnyPublisher<[GetFavoriteArtistHavingNoteResponse], NoteError>
+    func getMyNotes(cursor: Int?, size: Int, hasLyrics: Bool, artistID: Int?) -> AnyPublisher<GetMyNotesResponse, NoteError>
+    func getMyNotesByBookmark(cursor: Int?, size: Int, hasLyrics: Bool, artistID: Int?) -> AnyPublisher<GetMyNotesResponse, NoteError>
     func postLike(noteID: Int) -> AnyPublisher<NoteLikeResponse, NoteError>
     func deleteLike(noteID: Int) -> AnyPublisher<NoteLikeResponse, NoteError>
     
@@ -29,6 +32,11 @@ public protocol NoteAPIServiceInterface {
         value: PostNoteValue
     ) -> AnyPublisher<FeelinSuccessResponse, NoteError>
     
+    func patchNote(
+        noteID: Int,
+        value: PatchNoteValue
+    ) -> AnyPublisher<FeelinSuccessResponse, NoteError>
+
     func searchSong(
         keyword: String,
         currentPage: Int,
