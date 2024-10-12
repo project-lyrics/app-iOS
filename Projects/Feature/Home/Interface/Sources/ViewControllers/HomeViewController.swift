@@ -311,16 +311,14 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.viewModel.fetchNotes(isInitialFetch: true)
-        self.viewModel.fetchFavoriteArtists(isInitialFetch: true)
+        self.updateInitialHomeData()
         
     }
     
     // MARK: - Favorite Artists
     
-    public func updateFavoriteArtists() {
-        self.viewModel.fetchFavoriteArtists(isInitialFetch: true)
-        self.viewModel.fetchNotes(isInitialFetch: true)
+    public func updateInitialHomeData() {
+        self.viewModel.fetchArtistsThenNotes()
     }
     
     private func showSelectArtistListIfNeeded() {

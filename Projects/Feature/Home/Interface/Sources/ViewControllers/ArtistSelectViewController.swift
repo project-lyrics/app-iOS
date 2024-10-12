@@ -196,13 +196,14 @@ private extension ArtistSelectViewController {
             .store(in: &cancellables)
         
         self.finishSelectButton.publisher(for: .touchUpInside)
-            .flatMap{ [weak viewModel] _ -> AnyPublisher<ArtistSelectViewModel.InformFavoriteArtistsResult, Never> in
+            .flatMap { [weak viewModel] _ -> AnyPublisher<ArtistSelectViewModel.InformFavoriteArtistsResult, Never> in
                 guard let viewModel = viewModel else {
                     return Empty().eraseToAnyPublisher()
                 }
                 
                 return viewModel.confirmFavoriteArtistsPublisher()
             }
+            .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] result in
                 switch result {
                 case .success:
