@@ -77,4 +77,6 @@ public struct FeelinImages {
     public static let filterAllDark = SharedDesignSystemAsset.Images.filterAllDark.image
     public static let settingLight = SharedDesignSystemAsset.Images.settingLight.image
     public static let settingDark = SharedDesignSystemAsset.Images.settingDark.image
+    public static let kakaoBadge = SharedDesignSystemAsset.Images.kakaoBadge.image
+    public static let appleBadge = SharedDesignSystemAsset.Images.appleBadge.image
 }
