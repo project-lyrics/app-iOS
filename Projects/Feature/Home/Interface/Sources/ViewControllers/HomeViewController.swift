@@ -339,11 +339,15 @@ private extension HomeViewController {
         viewModel.$error
             .compactMap { $0 }
             .sink { [weak self] error in
-                self?.showAlert(
-                    title: error.errorDescription,
-                    message: nil,
-                    singleActionTitle: "확인"
-                )
+                //
+                if let userID = self?.userInfo?.userID {
+                    print(userID)
+                    self?.showAlert(
+                        title: error.errorDescription,
+                        message: nil,
+                        singleActionTitle: "확인"
+                    )
+                }
             }
             .store(in: &cancellables)
 
