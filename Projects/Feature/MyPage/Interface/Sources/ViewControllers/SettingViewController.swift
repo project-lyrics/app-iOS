@@ -49,10 +49,7 @@ public final class SettingViewController: UIViewController {
 
     private lazy var settingListDataSource: SettingListDataSource = makeDataSource()
 
-    private let viewModel: SettingViewModel
-
-    public init(viewModel: SettingViewModel) {
-        self.viewModel = viewModel
+    public init() {
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -102,7 +99,7 @@ public final class SettingViewController: UIViewController {
                     leftActionTitle: "취소",
                     rightActionTitle: "로그아웃",
                     rightActionCompletion: {
-                        self?.viewModel.removeUser()
+                        self?.userInfo = nil
                         self?.coordinator?.didFinish()
                     }
                 )
@@ -119,17 +116,6 @@ public final class SettingViewController: UIViewController {
             .sink { [weak self] _ in
                 // TODO: 구글폼으로 이동
                 self?.openWebBrowser(urlStr: "")
-            }
-            .store(in: &cancellables)
-
-        viewModel.$error
-            .compactMap { $0 }
-            .sink { [weak self] error in
-                self?.showAlert(
-                    title: error.localizedDescription,
-                    message: nil,
-                    singleActionTitle: "확인"
-                )
             }
             .store(in: &cancellables)
     }
