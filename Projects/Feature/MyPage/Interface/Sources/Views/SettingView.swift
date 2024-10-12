@@ -25,9 +25,7 @@ final class SettingView: UIView {
     private (set) lazy var backButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-
-        let userInterfaceStyle = traitCollection.userInterfaceStyle
-        let image = userInterfaceStyle == .light ? FeelinImages.backLight : FeelinImages.backDark
+        let image = FeelinImages.back
         button.setImage(image, for: .normal)
 
         return button

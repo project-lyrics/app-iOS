@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Combine
 
 import FlexLayout
 import PinLayout
@@ -34,6 +35,8 @@ public final class RequiredLoginNoteCell: UICollectionViewCell, Reusable {
         return button
     }()
 
+    var cancellables: Set<AnyCancellable> = .init()
+
     public override init(frame: CGRect) {
         super.init(frame: frame)
         self.setUpLayout()
@@ -49,6 +52,12 @@ public final class RequiredLoginNoteCell: UICollectionViewCell, Reusable {
 
         flexContainer.pin.all()
         flexContainer.flex.layout()
+    }
+
+    public override func prepareForReuse() {
+        super.prepareForReuse()
+
+        cancellables = .init()
     }
 
     private func setUpLayout() {

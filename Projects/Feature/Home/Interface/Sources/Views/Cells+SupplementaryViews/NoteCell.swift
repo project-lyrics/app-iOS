@@ -138,7 +138,7 @@ public final class NoteCell: UICollectionViewCell, Reusable {
 
     // MARK: - Init
     
-    var cancellables: Set<AnyCancellable> = .init()
+    public var cancellables: Set<AnyCancellable> = .init()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -299,7 +299,7 @@ public final class NoteCell: UICollectionViewCell, Reusable {
         self.flexContainer.flex.layout()
     }
     
-    override func sizeThatFits(_ size: CGSize) -> CGSize {
+    public override func sizeThatFits(_ size: CGSize) -> CGSize {
         self.flexContainer.pin.width(size.width)
         self.flexContainer.flex.layout(mode: .adjustHeight)
 

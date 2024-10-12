@@ -30,7 +30,7 @@ final class MyPageView: UIView {
 
     let notificationBarButton: UIButton = {
         let button = UIButton()
-        button.setImage(FeelinImages.notificationLightOff, for: .normal)
+        button.setImage(FeelinImages.notificationOff, for: .normal)
         return button
     }()
 
