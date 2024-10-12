@@ -24,7 +24,7 @@ final class MyPageView: UIView {
 
     let settingBarButton: UIButton = {
         let button = UIButton()
-        button.setImage(FeelinImages.settingLight, for: .normal)
+        button.setImage(FeelinImages.setting, for: .normal)
         return button
     }()
 
@@ -56,7 +56,7 @@ final class MyPageView: UIView {
     private let caretRightImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
-        imageView.image = FeelinImages.caretRightLight
+        imageView.image = FeelinImages.caretRight
 
         return imageView
     }()

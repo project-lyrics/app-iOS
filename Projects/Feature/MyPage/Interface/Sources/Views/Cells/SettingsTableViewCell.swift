@@ -24,7 +24,7 @@ final class SettingsTableViewCell: UITableViewCell, Reusable {
     private let caretRightImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
-        imageView.image = FeelinImages.caretRightLight.withRenderingMode(.alwaysTemplate)
+        imageView.image = FeelinImages.caretRight.withRenderingMode(.alwaysTemplate)
         imageView.tintColor = Colors.gray05
 
         return imageView

@@ -24,7 +24,7 @@ final class ArtistNameCollectionViewCell: UICollectionViewCell, Reusable {
     private var artistIconImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
-        imageView.image = FeelinImages.filterAllLight.withRenderingMode(.alwaysTemplate)
+        imageView.image = FeelinImages.filterAll.withRenderingMode(.alwaysTemplate)
         imageView.clipsToBounds = true // 이미지가 경계를 넘지 않도록 설정
 
         return imageView
@@ -70,7 +70,7 @@ final class ArtistNameCollectionViewCell: UICollectionViewCell, Reusable {
         if model?.imageSource != nil {
             artistIconImageView.image = nil
         } else {
-            artistIconImageView.image = FeelinImages.filterAllLight.withRenderingMode(.alwaysTemplate)
+            artistIconImageView.image = FeelinImages.filterAll.withRenderingMode(.alwaysTemplate)
         }
 
         artistNameLabel.text = nil
