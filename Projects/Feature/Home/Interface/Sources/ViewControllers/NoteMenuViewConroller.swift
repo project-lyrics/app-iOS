@@ -5,29 +5,30 @@
 //  Created by 황인우 on 9/1/24.
 //
 
+import Domain
 import Shared
 
 import Combine
 import UIKit
 
 public class NoteMenuViewConroller: BottomSheetViewController<NoteMenuView> {
-    private let noteID: Int
-    
+    private let note: Note
+
     private var cancellable: Set<AnyCancellable> = .init()
     
     private var onReport: PassthroughSubject<Int, Never>
-    private var onEdit: PassthroughSubject<Int, Never>
+    private var onEdit: PassthroughSubject<Note, Never>
     private var onDelete: PassthroughSubject<Int, Never>
     
     public init(
-        noteID: Int,
+        note: Note,
         bottomSheetHeight: CGFloat,
         bottomSheetView: NoteMenuView,
         onReport: PassthroughSubject<Int, Never>,
-        onEdit: PassthroughSubject<Int, Never>,
+        onEdit: PassthroughSubject<Note, Never>,
         onDelete: PassthroughSubject<Int, Never>
     ) {
-        self.noteID = noteID
+        self.note = note
         self.onReport = onReport
         self.onEdit = onEdit
         self.onDelete = onDelete
@@ -49,8 +50,8 @@ public class NoteMenuViewConroller: BottomSheetViewController<NoteMenuView> {
             .flatMap({ [unowned self] _ -> AnyPublisher<Void, Never> in
                 return self.dismissPublisher(animated: true)
             })
-            .sink { [noteID, unowned self] _ in
-                self.onReport.send(noteID)
+            .sink { [note, unowned self] _ in
+                self.onReport.send(note.id)
             }
             .store(in: &cancellable)
         
@@ -58,8 +59,8 @@ public class NoteMenuViewConroller: BottomSheetViewController<NoteMenuView> {
             .flatMap({ [unowned self] _ -> AnyPublisher<Void, Never> in
                 return self.dismissPublisher(animated: true)
             })
-            .sink { [noteID, unowned self] _ in
-                self.onEdit.send(noteID)
+            .sink { [note, unowned self] _ in
+                self.onEdit.send(note)
             }
             .store(in: &cancellable)
         
@@ -67,8 +68,8 @@ public class NoteMenuViewConroller: BottomSheetViewController<NoteMenuView> {
             .flatMap({ [unowned self] _ -> AnyPublisher<Void, Never> in
                 return self.dismissPublisher(animated: true)
             })
-            .sink { [noteID, unowned self] _ in
-                self.onDelete.send(noteID)
+            .sink { [note, unowned self] _ in
+                self.onDelete.send(note.id)
             }
             .store(in: &cancellable)
     }
@@ -80,7 +81,7 @@ import SwiftUI
 struct NoteMenuViewConroller_Preview: PreviewProvider {
     static var previews: some View {
         return NoteMenuViewConroller(
-            noteID: 180,
+            note: Note.mockData.first!,
             bottomSheetHeight: 180,
                 bottomSheetView: NoteMenuView(menuType: .me,
             frame: .zero),

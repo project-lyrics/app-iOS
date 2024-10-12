@@ -13,7 +13,7 @@ import Shared
 
 public protocol NoteDetailViewControllerDelegate: AnyObject {
     func pushReportViewController(noteID: Int?, commentID: Int?)
-    func pushEditNoteViewController(noteID: Int)
+    func presentEditNoteViewController(note: Note)
     func popViewController(isHiddenTabBar: Bool)
     func pushNoteCommentsViewController(noteID: Int)
 }
@@ -31,7 +31,7 @@ public final class NoteDetailViewController: UIViewController, NoteMenuHandling,
     // MARK: - NoteMenu Subjects
     
     public let onReportNote: PassthroughSubject<Int, Never> = .init()
-    public let onEditNote: PassthroughSubject<Int, Never> = .init()
+    public let onEditNote: PassthroughSubject<Note, Never> = .init()
     public let onDeleteNote: PassthroughSubject<Int, Never> = .init()
     
     // MARK: - Diffable DataSource
@@ -328,8 +328,8 @@ private extension NoteDetailViewController {
             .store(in: &cancellables)
         
         onEditNote.eraseToAnyPublisher()
-            .sink { [weak self] noteID in
-                self?.coordinator?.pushEditNoteViewController(noteID: noteID)
+            .sink { [weak self] note in
+                self?.coordinator?.presentEditNoteViewController(note: note)
             }
             .store(in: &cancellables)
         

@@ -15,10 +15,10 @@ import UIKit
 public protocol CommunityMainViewControllerDelegate: AnyObject {
     func popViewController(isHiddenTabBar: Bool)
     func pushReportViewController(noteID: Int?, commentID: Int?)
-    func pushEditNoteViewController(noteID: Int)
+    func presentEditNoteViewController(note: Note)
     func pushNoteNotificationViewController()
     func pushNoteCommentsViewController(noteID: Int)
-    func pushPostNoteViewController(artistID: Int)
+    func presentPostNoteViewController(artistID: Int)
 }
 
 public final class CommunityMainViewController: UIViewController, NoteMenuHandling, NoteMusicHandling {
@@ -76,7 +76,7 @@ public final class CommunityMainViewController: UIViewController, NoteMenuHandli
     // MARK: - NoteMenu Subjects
 
     public let onReportNote: PassthroughSubject<Int, Never> = .init()
-    public let onEditNote: PassthroughSubject<Int, Never> = .init()
+    public let onEditNote: PassthroughSubject<Note, Never> = .init()
     public let onDeleteNote: PassthroughSubject<Int, Never> = .init()
 
     // MARK: - DiffableDataSource
@@ -459,7 +459,7 @@ private extension CommunityMainViewController {
         postNoteButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in
                 guard let self = self else { return }
-                coordinator?.pushPostNoteViewController(artistID: viewModel.artist.id)
+                coordinator?.presentPostNoteViewController(artistID: viewModel.artist.id)
             }
             .store(in: &cancellables)
 
@@ -470,8 +470,8 @@ private extension CommunityMainViewController {
             .store(in: &cancellables)
 
         onEditNote.eraseToAnyPublisher()
-            .sink { [weak self] noteID in
-                self?.coordinator?.pushEditNoteViewController(noteID: noteID)
+            .sink { [weak self] note in
+                self?.coordinator?.presentEditNoteViewController(note: note)
             }
             .store(in: &cancellables)
 
