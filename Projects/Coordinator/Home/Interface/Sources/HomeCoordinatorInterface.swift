@@ -203,6 +203,26 @@ extension HomeCoordinator: CoordinatorDelegate,
     }
 }
 
+// MARK: - 최초 좋아하는 아티스트 선택
+
+extension HomeCoordinator: ArtistSelectViewControllerDelegate {
+    public func presentInitialArtistSelectViewController() {
+        let artistSelectViewModel = self.InitialArtistSelectDependencies()
+        let artistSelectViewController = ArtistSelectViewController(viewModel: artistSelectViewModel)
+        artistSelectViewController.coordinator = self
+        artistSelectViewController.modalPresentationStyle = .fullScreen
+        navigationController.present(artistSelectViewController, animated: true)
+    }
+    
+    public func didFinishSelectingInitialFavoriteArtists() {
+        guard let homeViewController = navigationController.viewControllers.first(where: { $0 is HomeViewController }) as? HomeViewController else {
+            return
+        }
+        homeViewController.updateFavoriteArtists()
+    }
+}
+
+
 extension HomeCoordinator {
     private func homeDependencies() -> HomeViewModel {
         @Injected(.artistAPIService) var artistAPIService: ArtistAPIServiceInterface
@@ -329,6 +349,35 @@ extension HomeCoordinator {
             deleteNoteUseCase: deleteNoteUseCase,
             setFavoriteArtistUseCase: setFavoriteArtistUseCase
         )
+        return viewModel
+    }
+    
+    private func InitialArtistSelectDependencies() -> ArtistSelectViewModel {
+        self.registerNetwork()
+        
+        @Injected(.artistAPIService) var artistAPIService: ArtistAPIServiceInterface
+        let artistPaginationService = ArtistPaginationService()
+        
+        let getArtistsUseCase = GetArtistsUseCase(
+            artistAPIService: artistAPIService,
+            artistPaginationService: artistPaginationService
+        )
+        
+        let searchArtistsUseCase = SearchArtistsUseCase(
+            artistAPIService: artistAPIService,
+            artistPaginationService: artistPaginationService
+        )
+        
+        let postFavoriteArtistsUseCase = PostFavoriteArtistsUseCase(
+            artistAPIService: artistAPIService
+        )
+        
+        let viewModel = ArtistSelectViewModel(
+            getArtistsUseCase: getArtistsUseCase,
+            searchArtistsUseCase: searchArtistsUseCase,
+            postFavoriteArtistsUseCase: postFavoriteArtistsUseCase
+        )
+        
         return viewModel
     }
 }
