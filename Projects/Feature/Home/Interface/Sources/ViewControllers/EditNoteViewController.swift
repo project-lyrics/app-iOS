@@ -12,7 +12,6 @@ import Domain
 
 public protocol EditNoteViewControllerDelegate: AnyObject {
     func dismissViewController()
-    func pushSearchSongViewController(artistID: Int)
 }
 
 public final class EditNoteViewController: UIViewController {
@@ -77,15 +76,6 @@ public final class EditNoteViewController: UIViewController {
     }
 
     private func bind() {
-        addToPlayButton.publisher(for: .touchUpInside)
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                guard let self = self else { return }
-                let artistID = viewModel.note.song.artist.id
-                coordinator?.pushSearchSongViewController(artistID: artistID)
-            }
-            .store(in: &cancellables)
-
         closeButton.publisher(for: .touchUpInside)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
