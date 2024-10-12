@@ -256,12 +256,21 @@ private extension MyPageCoordinator {
         let getUserProfileUseCase: GetUserProfileUseCaseInterface = GetUserProfileUseCase(
             userProfileAPIService: userProfileAPIService
         )
+       
+        let viewModel = SettingViewModel(
+            getUserProfileUseCase: getUserProfileUseCase
+        )
+
+        return viewModel
+    }
+
+    func deleteUserDependencies() -> DeleteUserViewModel {
+        @Injected(.userProfileAPIService) var userProfileAPIService: UserProfileAPIServiceInterface
+
         let deleteUserUseCase: DeleteUserUseCaseInterface = DeleteUserUseCase(
             userProfileAPIService: userProfileAPIService
         )
-
-        let viewModel = SettingViewModel(
-            getUserProfileUseCase: getUserProfileUseCase,
+        let viewModel = DeleteUserViewModel(
             deleteUserUseCase: deleteUserUseCase
         )
 

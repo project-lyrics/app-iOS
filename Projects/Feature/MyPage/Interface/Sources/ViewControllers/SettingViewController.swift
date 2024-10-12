@@ -14,6 +14,7 @@ public protocol SettingViewControllerDelegate: AnyObject {
     func popViewController()
     func pushUserInfoViewController()
     func presentInternalWebViewController(url: String)
+    func pushDeleteUserViewController()
     func didFinish()
 }
 
@@ -82,13 +83,13 @@ public final class SettingViewController: UIViewController {
             .sink { [weak self] _ in
                 self?.viewModel.removeUser()
                 self?.coordinator?.didFinish()
+                )
             }
             .store(in: &cancellables)
 
         deleteUserButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in
-                self?.viewModel.deleteUserInfo()
-                self?.coordinator?.didFinish()
+                self?.coordinator?.pushDeleteUserViewController()
             }
             .store(in: &cancellables)
 
