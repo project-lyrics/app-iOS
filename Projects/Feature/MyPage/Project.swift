@@ -7,7 +7,15 @@ let project = Project.makeModule(
     targets: [
         .feature(
             interface: .MyPage,
-            factory: .init()
+            factory: .init(
+                dependencies: [
+                    .dependencyInjection,
+                    .shared,
+                    .domain,
+                    .feature(interface: .Home),
+                    .feature(interface: .Onboarding),
+                ]
+            )
         ),
         .feature(
             implements: .MyPage,
