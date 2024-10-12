@@ -15,7 +15,7 @@ class EmptyNoteCell: UICollectionViewCell, Reusable {
     private let flexContainer = UIView()
     
     private var emptyNoteImageView: UIImageView = {
-        let imageView = UIImageView(image: FeelinImages.emptyNoteLight.image)
+        let imageView = UIImageView(image: FeelinImages.emptyNote)
         imageView.contentMode = .scaleAspectFit
         
         return imageView

@@ -23,7 +23,7 @@ public final class FeelinSearchBar: UIView {
     private var searchImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
-        imageView.image = FeelinImages.searchLight.withRenderingMode(.alwaysTemplate)
+        imageView.image = FeelinImages.search.withRenderingMode(.alwaysTemplate)
         imageView.tintColor = Colors.gray05
         return imageView
     }()
@@ -54,7 +54,7 @@ public final class FeelinSearchBar: UIView {
     }
     
     private func setUpButton() {
-        self.clearButton.setImage(FeelinImages.xCircleLight, for: .normal)
+        self.clearButton.setImage(FeelinImages.xCircle, for: .normal)
         self.clearButton.isHidden = true
         self.clearButton.addTarget(
             self,

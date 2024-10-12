@@ -32,8 +32,8 @@ class FavoriteArtistSelectButton: UIButton {
     private let heartImageView = UIImageView()
     private let heartRateImageWidth: CGFloat = 24
 
-    private var selectedImage: UIImage = FeelinImages.heartActiveLight
-    private var unSelectedImage: UIImage = FeelinImages.heartInactiveLight
+    private var selectedImage: UIImage = FeelinImages.heartActive
+    private var unSelectedImage: UIImage = FeelinImages.heartInactive
     
     override init(frame: CGRect = .zero) {
         super.init(frame: frame)
@@ -93,7 +93,6 @@ class FavoriteArtistSelectButton: UIButton {
     }
     
     @objc private func buttonTapped() {
-        print("button tapped")
         isSelected.toggle()
         updateButtonImage()
     }

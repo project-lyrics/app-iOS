@@ -21,7 +21,7 @@ final class PostNoteView: UIView {
     lazy var closeButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setImage(FeelinImages.xLight, for: .normal)
+        button.setImage(FeelinImages.x, for: .normal)
 
         return button
     }()
@@ -197,7 +197,7 @@ final class PostNoteView: UIView {
         backgroundColor = Colors.background
 
         selectLyricsBackgroundButton.configure(title: "가사 배경", image: FeelinImages.gallery)
-        searchLyricsButton.configure(title: "가사 검색", image: FeelinImages.searchDark)
+        searchLyricsButton.configure(title: "가사 검색", image: FeelinImages.search)
 
         setUpKeyboardEvent()
     }

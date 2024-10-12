@@ -30,7 +30,7 @@ public final class FeelinDropDownButton: UIButton {
     
     private let dropDownImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = FeelinImages.caretDownLight
+        imageView.image = FeelinImages.caretDown
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
