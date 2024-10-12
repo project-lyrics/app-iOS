@@ -1,22 +1,23 @@
 //
-//  UserInformationView.swift
-//  FeatureOnboardingInterface
+//  EditUserInfoView.swift
+//  FeatureMyPageInterface
 //
-//  Created by jiyeon on 6/12/24.
+//  Created by Derrick kim on 10/13/24.
 //
 
 import UIKit
 
 import Shared
 import Combine
+import FeatureOnboardingInterface
 
-final class UserInformationView: UIView {
+final class EditUserInfoView: UIView {
     // MARK: - components
 
     private let flexContainer = UIView()
 
     private let navigationBar = NavigationBar()
-    
+
     let backButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -26,31 +27,12 @@ final class UserInformationView: UIView {
         return button
     }()
 
-    let skipButton: UIButton = {
-        let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("건너뛰기", for: .normal)
-        button.titleLabel?.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 16)
-        button.setTitleColor(Colors.gray05, for: .normal)
-        return button
-    }()
-
-    private let titleLabel = {
+    private let naviTitleLabel: UILabel = {
         let label = UILabel()
-        label.text = "추가 정보를 입력해주세요"
-        label.font = SharedDesignSystemFontFamily.Pretendard.bold.font(size: 24)
-        label.textColor = Colors.gray08
-        return label
-    }()
+        label.text = "회원 정보 수정"
+        label.font = SharedDesignSystemFontFamily.Pretendard.bold.font(size: 18)
+        label.textColor = Colors.gray09
 
-    private let subTitleLabel = {
-        let label = UILabel()
-        label.setTextWithLineHeight(
-            "서비스 이용 현황 분석을 위해서만 활용되며\n다른 곳엔 사용되지 않아요",
-            lineHeight: 20
-        )
-        label.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 14)
-        label.textColor = Colors.gray04
         return label
     }()
 
@@ -68,9 +50,9 @@ final class UserInformationView: UIView {
         return label
     }()
 
-    let birthYearDropDownButton = FeelinDropDownButton(description: "출생 연도를 입력해주세요")
+    let birthYearDropDownButton = FeelinDropDownButton(description: "")
 
-    let nextButton = FeelinConfirmButton(title: "다음")
+    let saveProfileButton = FeelinConfirmButton(title: "회원 정보 저장")
 
     // MARK: - init
 
@@ -99,7 +81,7 @@ final class UserInformationView: UIView {
         addSubview(flexContainer)
 
         navigationBar.addLeftBarView([backButton])
-        navigationBar.addRightBarView([skipButton], width: 56)
+        navigationBar.addTitleView(naviTitleLabel)
 
         flexContainer
             .flex
@@ -113,16 +95,11 @@ final class UserInformationView: UIView {
                 flex.addItem()
                     .direction(.column)
                     .marginHorizontal(20)
-                    .marginTop(28)
+                    .marginTop(36)
                     .grow(1)
                     .define { flex in
-                        flex.addItem(titleLabel)
-
-                        flex.addItem(subTitleLabel)
-                            .marginTop(8)
-
                         flex.addItem(genderTitleLabel)
-                            .marginTop(24)
+
                         flex.addItem(genderCollectionView)
                             .height(204)
                             .marginTop(12)
@@ -137,7 +114,7 @@ final class UserInformationView: UIView {
                         flex.addItem()
                             .grow(1)
 
-                        flex.addItem(nextButton)
+                        flex.addItem(saveProfileButton)
                             .minHeight(56)
                             .cornerRadius(8)
                             .marginBottom(23)
@@ -146,7 +123,7 @@ final class UserInformationView: UIView {
     }
 }
 
-private extension UserInformationView {
+private extension EditUserInfoView {
     func createInformationTitleLabel() -> UILabel {
         let label = UILabel()
         label.font = SharedDesignSystemFontFamily.Pretendard.semiBold.font(size: 16)

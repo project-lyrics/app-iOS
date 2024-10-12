@@ -1,39 +1,40 @@
 //
-//  UserInformationViewController.swift
-//  FeatureOnboardingInterface
+//  EditUserInfoViewController.swift
+//  FeatureMyPageInterface
 //
-//  Created by jiyeon on 6/12/24.
+//  Created by Derrick kim on 10/13/24.
 //
 
-import Combine
 import UIKit
-import Domain
-import Shared
+import Combine
 
-public protocol UserInformationViewControllerDelegate: AnyObject {
-    func pushProfileViewController(model: UserSignUpEntity)
-    func popViewController()
+import Shared
+import Domain
+import FeatureOnboardingInterface
+
+public protocol EditUserInfoViewControllerDelegate: AnyObject {
+    func popViewController(isHiddenTabBar: Bool)
 }
 
-public final class UserInformationViewController: UIViewController {
-    private let userInformationView = UserInformationView()
+public final class EditUserInfoViewController: UIViewController {
+    private let userInformationView = EditUserInfoView()
     private let selectBirthYearViewController = SelectBirthYearViewController(
         bottomSheetHeight: 284,
         baseYear: 2000
     )
-
+    private let genderPublisher = PassthroughSubject<String, Never>()
     private let genderSelectionPublisher = PassthroughSubject<Bool, Never>()
     private var cancellables = Set<AnyCancellable>()
 
-    public weak var coordinator: UserInformationViewControllerDelegate?
-    private var model: UserSignUpEntity
+    public weak var coordinator: EditUserInfoViewControllerDelegate?
+    private var viewModel: EditUserInfoViewModel
 
     public override func loadView() {
         view = userInformationView
     }
 
-    public init(model: UserSignUpEntity) {
-        self.model = model
+    public init(viewModel: EditUserInfoViewModel) {
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -48,19 +49,21 @@ public final class UserInformationViewController: UIViewController {
         overrideUserInterfaceStyle = .light
         bind()
         genderCollectionView.dataSource = self
+        configure(model: viewModel.model)
     }
 
     private func bind() {
         backButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in
-                self?.coordinator?.popViewController()
-            }
-            .store(in: &cancellables)
-
-        skipButton.publisher(for: .touchUpInside)
-            .sink { [weak self] _ in
-                guard let self = self else { return }
-                coordinator?.pushProfileViewController(model: model)
+                self?.showAlert(
+                    title: "저장하지 않고 나가시겠어요?",
+                    message: nil,
+                    leftActionTitle: "취소",
+                    rightActionTitle: "나가기",
+                    rightActionCompletion: {
+                        self?.coordinator?.popViewController(isHiddenTabBar: false)
+                    }
+                )
             }
             .store(in: &cancellables)
 
@@ -71,8 +74,8 @@ public final class UserInformationViewController: UIViewController {
                 if let cell = genderCollectionView.cellForItem(at: indexPath) as? GenderCell {
                     let isSelected = genderCollectionView.indexPathsForSelectedItems?.contains(indexPath) ?? false
                     cell.setSelected(isSelected)
-                    model.gender = indexPath.row == 0 ? .male : .female
                     genderSelectionPublisher.send(true)
+                    genderPublisher.send(GenderEntity.allCases[indexPath.row].rawValue)
                 }
             }
             .store(in: &cancellables)
@@ -88,7 +91,6 @@ public final class UserInformationViewController: UIViewController {
 
         birthYearDropDownButtonPublisher
             .sink { [weak self] year in
-                self?.model.birthYear = year
                 self?.birthYearDropDownButton.setDescription("\(year)년")
             }
             .store(in: &cancellables)
@@ -98,20 +100,49 @@ public final class UserInformationViewController: UIViewController {
                 return isGenderSelected && !"\(birthYear)".isEmpty
             }
             .sink { [weak self] isEnabled in
-                self?.nextButton.isEnabled = isEnabled
+                self?.saveProfileButton.isEnabled = isEnabled
             }
             .store(in: &cancellables)
+        let saveButtonTapPublisher = saveProfileButton.publisher(for: .touchUpInside)
+            .eraseToAnyPublisher()
+      
+        let input = EditUserInfoViewModel.Input(
+            birthYearPublisher: birthYearDropDownButtonPublisher.eraseToAnyPublisher(),
+            genderPublisher: genderPublisher.eraseToAnyPublisher(),
+            saveButtonTapPublisher: saveButtonTapPublisher
+        )
 
-        nextButton.publisher(for: .touchUpInside)
-            .sink { [weak self] _ in
-                guard let self = self else { return }
-                coordinator?.pushProfileViewController(model: model)
+        let output = viewModel.transform(input)
+
+        output.isSaveButtonEnabled
+            .assign(to: \.isEnabled, on: saveProfileButton)
+            .store(in: &cancellables)
+
+        output.patchUserProfileResult
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] result in
+                switch result {
+                case .success:
+                    self?.coordinator?.popViewController(isHiddenTabBar: false)
+                case .failure(let error):
+                    self?.showAlert(
+                        title: error.localizedDescription,
+                        message: nil,
+                        singleActionTitle: "확인"
+                    )
+                }
             }
             .store(in: &cancellables)
     }
+
+    private func configure(model: UserProfile) {
+        if let birthYear = model.birthYear {
+            birthYearDropDownButtonPublisher.send(birthYear)
+        }
+    }
 }
 
-extension UserInformationViewController: UICollectionViewDataSource {
+extension EditUserInfoViewController: UICollectionViewDataSource {
     public func collectionView(
         _ collectionView: UICollectionView,
         numberOfItemsInSection section: Int
@@ -125,11 +156,18 @@ extension UserInformationViewController: UICollectionViewDataSource {
     ) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(for: indexPath, cellType: GenderCell.self)
         cell.configure(with: GenderEntity.allCases[indexPath.row])
+
+        if let gender = viewModel.model.gender,
+           indexPath.row == gender.index {
+            cell.setSelected(true)
+            collectionView.selectItem(at: indexPath, animated: false, scrollPosition: [])
+        }
+        
         return cell
     }
 }
 
-private extension UserInformationViewController {
+private extension EditUserInfoViewController {
     var genderCollectionView: UICollectionView {
         return userInformationView.genderCollectionView
     }
@@ -138,16 +176,12 @@ private extension UserInformationViewController {
         return userInformationView.birthYearDropDownButton
     }
 
-    var nextButton: FeelinConfirmButton {
-        return userInformationView.nextButton
+    var saveProfileButton: FeelinConfirmButton {
+        return userInformationView.saveProfileButton
     }
 
     var backButton: UIButton {
         return userInformationView.backButton
-    }
-    
-    var skipButton: UIButton {
-        return userInformationView.skipButton
     }
 
     var birthYearDropDownButtonPublisher: PassthroughSubject<Int, Never> {

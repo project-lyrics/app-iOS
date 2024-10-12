@@ -69,6 +69,7 @@ extension MyPageCoordinator: MyPageViewControllerDelegate,
                              EditNoteViewControllerDelegate,
                              SearchSongViewControllerDelegate,
                              ProfileEditViewControllerDelegate,
+                             EditUserInfoViewControllerDelegate,
                              InternalWebViewControllerDelegate,
                              DeleteUserViewControllerDelegate,
                              UserProfileViewControllerDelegate {
@@ -190,6 +191,14 @@ extension MyPageCoordinator: MyPageViewControllerDelegate,
         navigationController.tabBarController?.tabBar.isHidden = true
         navigationController.pushViewController(viewController, animated: true)
     }
+
+    public func pushEditUserInfoViewController(model: UserProfile) {
+        let viewModel = editUserDependencies(model: model)
+        let viewController = EditUserInfoViewController(viewModel: viewModel)
+        viewController.coordinator = self
+        navigationController.tabBarController?.tabBar.isHidden = true
+        navigationController.pushViewController(viewController, animated: true)
+    }
 }
 
 private extension MyPageCoordinator {
@@ -280,6 +289,20 @@ private extension MyPageCoordinator {
         )
         let viewModel = DeleteUserViewModel(
             deleteUserUseCase: deleteUserUseCase
+        )
+
+        return viewModel
+    }
+
+    func editUserDependencies(model: UserProfile) -> EditUserInfoViewModel {
+        @Injected(.userProfileAPIService) var userProfileAPIService: UserProfileAPIServiceInterface
+        let patchUserProfileUseCase: PatchUserProfileUseCaseInterface = patchUserProfileUseCase(
+            userProfileAPIService: userProfileAPIService
+        )
+
+        let viewModel = EditUserInfoViewModel(
+            patchUserProfileUseCase: patchUserProfileUseCase,
+            model: model
         )
 
         return viewModel

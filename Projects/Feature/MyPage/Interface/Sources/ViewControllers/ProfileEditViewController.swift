@@ -80,7 +80,7 @@ public final class ProfileEditViewController: UIViewController {
 
         let output = viewModel.transform(input)
 
-        output.isNextButtonEnabled
+        output.isSaveButtonEnabled
             .assign(to: \.isEnabled, on: saveProfileButton)
             .store(in: &cancellables)
 

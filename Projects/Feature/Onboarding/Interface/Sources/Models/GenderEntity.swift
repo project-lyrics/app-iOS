@@ -10,24 +10,33 @@ import SharedDesignSystem
 import Domain
 
 extension GenderEntity {
-    var description: String {
+    public var description: String {
         switch self {
         case .male:     "남성"
         case .female:   "여성"
         }
     }
 
-    var activeImage: UIImage {
+    public var activeImage: UIImage {
         switch self {
         case .male:     FeelinImages.maleActive
         case .female:   FeelinImages.femaleActive
         }
     }
 
-    var inactiveImage: UIImage {
+    public var inactiveImage: UIImage {
         switch self {
         case .male:     FeelinImages.maleInactive
         case .female:   FeelinImages.femaleInactive
+        }
+    }
+
+    public var index: Int {
+        switch self {
+        case .male:
+            return 0
+        case .female:
+            return 1
         }
     }
 }

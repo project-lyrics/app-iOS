@@ -13,7 +13,7 @@ import Domain
 
 public protocol UserProfileViewControllerDelegate: AnyObject {
     func popViewController()
-    func pushEditUserInfoViewController(data: UserProfile)
+    func pushEditUserInfoViewController(model: UserProfile)
 }
 
 public final class UserProfileViewController: UIViewController {
@@ -68,12 +68,12 @@ public final class UserProfileViewController: UIViewController {
             }
             .store(in: &cancellables)
 
-        userProfileView.tapPublisher
+        otherInfoContainerView.tapPublisher
             .sink { [weak self] _ in
                 guard let self = self,
-                      let data = viewModel.fetchedUserProfile 
+                      let model = viewModel.fetchedUserProfile
                 else { return }
-                coordinator?.pushEditUserInfoViewController(data: data)
+                coordinator?.pushEditUserInfoViewController(model: model)
             }
             .store(in: &cancellables)
 

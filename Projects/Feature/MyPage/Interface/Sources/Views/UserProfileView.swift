@@ -89,7 +89,7 @@ final class UserProfileView: UIView {
 
     let otherInfoContainerView = UIView()
 
-    private let otherInfoTitleLabel: UILabel = {
+    let otherInfoTitleLabel: UILabel = {
         let label = UILabel()
         label.text = "성별 및 출생연도"
         label.font = SharedDesignSystemFontFamily.Pretendard.medium.font(size: 14)
@@ -227,7 +227,7 @@ final class UserProfileView: UIView {
 
         let loginType = OAuthType(rawValue: model.authProvider)
         let loginIcon = loginType == .apple ? FeelinImages.appleBadge : FeelinImages.kakaoBadge
-        let otherInfo = model.gender == nil ? "정보를 입력해주세요" : "\(model.gender?.korean ?? "")ㆍ\(model.birthYear ?? 0)년"
+        let otherInfo = model.gender == nil ? "정보를 입력해주세요" : "\(model.gender?.description ?? "")ㆍ\(model.birthYear ?? 0)년"
         loginIconImageView.image = loginIcon
         loginInfoLabel.text = loginType?.info
         userIDInfoLabel.text = model.feedbackID

@@ -15,7 +15,7 @@ public struct UserSignUpRequest: Encodable {
     let nickname: String
     let profileCharacter: String
     let gender: String
-    let birthYear: String
+    let birthYear: Int
     let terms: [Term]
 
     public init(
@@ -24,7 +24,7 @@ public struct UserSignUpRequest: Encodable {
         nickname: String,
         profileCharacter: String,
         gender: String,
-        birthYear: String,
+        birthYear: Int,
         terms: [Term]
     ) {
         self.socialAccessToken = socialAccessToken
@@ -49,15 +49,6 @@ public enum OAuthProvider: String, Encodable {
 public enum Gender: String, Encodable {
     case male = "MALE"
     case female = "FEMALE"
-    
-    public var korean: String {
-        switch self {
-        case .male:
-            return "남성"
-        case .female:
-            return "여성"
-        }
-    }
 }
 
 // MARK: - Term

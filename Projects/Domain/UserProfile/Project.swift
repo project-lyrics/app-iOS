@@ -9,7 +9,8 @@ let project = Project.makeModule(
             interface: .UserProfile,
             factory: .init(
                 dependencies: [
-                    .core
+                    .core,
+                    .domain(interface: .OAuth)
                 ]
             )
         ),

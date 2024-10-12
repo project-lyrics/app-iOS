@@ -22,7 +22,7 @@ public final class ProfileEditViewModel {
     }
 
     public struct Output {
-        let isNextButtonEnabled: AnyPublisher<Bool, Never>
+        let isSaveButtonEnabled: AnyPublisher<Bool, Never>
         let profileImage: AnyPublisher<UIImage?, Never>
         let patchUserProfileResult: AnyPublisher<PatchUserProfileResult, Never>
     }
@@ -40,12 +40,12 @@ public final class ProfileEditViewModel {
     }
 
     func transform(_ input: Input) -> Output {
-        let isNextButtonEnabled = checkNextButtonIsEnabled(input: input)
+        let isSaveButtonEnabled = checkSaveButtonIsEnabled(input: input)
         let profileImage = convertProfileImage(input: input)
         let patchUserInfoResult = patchUserInfo(input: input)
 
         return Output(
-            isNextButtonEnabled: isNextButtonEnabled,
+            isSaveButtonEnabled: isSaveButtonEnabled,
             profileImage: profileImage,
             patchUserProfileResult: patchUserInfoResult
         )
@@ -53,15 +53,15 @@ public final class ProfileEditViewModel {
 }
 
 private extension ProfileEditViewModel {
-    func isEnabledNextButton(_ nickname: String?) -> Bool {
+    func isEnabledSaveButton(_ nickname: String?) -> Bool {
         let count = nickname?.count ?? 0
         return nickname?.isEmpty == false && count < 10
     }
 
-    func checkNextButtonIsEnabled(input: Input) -> AnyPublisher<Bool, Never> {
+    func checkSaveButtonIsEnabled(input: Input) -> AnyPublisher<Bool, Never> {
         return input.nicknameTextPublisher
             .map { nickname in
-                return self.isEnabledNextButton(nickname)
+                return self.isEnabledSaveButton(nickname)
             }
             .eraseToAnyPublisher()
     }
@@ -77,23 +77,28 @@ private extension ProfileEditViewModel {
 
     func patchUserInfo(input: Input) -> AnyPublisher<PatchUserProfileResult, Never> {
         let validNicknamePublisher = input.nicknameTextPublisher
-            .filter { nickname in return self.isEnabledNextButton(nickname) }
+            .filter { nickname in return self.isEnabledSaveButton(nickname) }
             .compactMap { $0 }
             .eraseToAnyPublisher()
 
-        let combinedSignUpModelPublisher = Publishers
+        let combinedUserProfileModelPublisher = Publishers
             .CombineLatest(
                 validNicknamePublisher,
                 input.profileImagePublisher
             )
             .map { (nickname, profileCharacter) -> UserProfileRequestValue in
                 let type = ProfileCharacterType(rawValue: profileCharacter) ?? .braidedHair
-                return UserProfileRequestValue(nickname: nickname, profileCharacter: type)
+                return UserProfileRequestValue(
+                    nickname: nickname,
+                    profileCharacter: type,
+                    gender: self.userProfile.gender,
+                    birthYear: self.userProfile.birthYear
+                )
             }
             .eraseToAnyPublisher()
 
         return input.saveButtonTapPublisher
-            .combineLatest(combinedSignUpModelPublisher)
+            .combineLatest(combinedUserProfileModelPublisher)
             .flatMap { [weak self]  (_, value) -> AnyPublisher<PatchUserProfileResult, Never> in
                 guard let self = self else {
                     return Empty().eraseToAnyPublisher()
