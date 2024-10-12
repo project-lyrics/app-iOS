@@ -12,7 +12,7 @@ import Shared
 import FlexLayout
 import PinLayout
 
-final class ProfileView: UIView {
+public final class ProfileView: UIView {
     private let maxNicknameLength = 10
 
     // MARK: - components
@@ -37,7 +37,7 @@ final class ProfileView: UIView {
         return label
     }()
 
-    let profileEditButton = ProfileEditButton()
+    public let profileEditButton = ProfileEditButton()
 
     private lazy var guideLabel = {
         let label = UILabel()
@@ -51,7 +51,7 @@ final class ProfileView: UIView {
         return label
     }()
 
-    lazy var nicknameTextField = FeelinLineInputField(placeholder: "닉네임")
+    public private (set) lazy var nicknameTextField = FeelinLineInputField(placeholder: "닉네임")
 
     private let alertLabel = {
         let label = UILabel()
@@ -71,11 +71,11 @@ final class ProfileView: UIView {
         return label
     }()
 
-    let nextButton = FeelinConfirmButton(title: "다음")
+    public let nextButton = FeelinConfirmButton(title: "다음")
 
     // MARK: - init
 
-    override init(frame: CGRect) {
+    public override init(frame: CGRect) {
         super.init(frame: frame)
 
         backgroundColor = Colors.background
@@ -84,13 +84,13 @@ final class ProfileView: UIView {
     }
 
     @available(*, unavailable)
-    required init?(coder: NSCoder) {
+    public required init?(coder: NSCoder) {
         fatalError()
     }
 
     // MARK: - layout
 
-    override func layoutSubviews() {
+    public override func layoutSubviews() {
         super.layoutSubviews()
 
         flexContainer.pin.all(pin.safeArea)
@@ -102,42 +102,49 @@ final class ProfileView: UIView {
 
         navigationBar.addLeftBarView([backButton])
 
-        flexContainer.flex.paddingHorizontal(20).define { flex in
-            flex.addItem(navigationBar)
-                .height(44)
-                .marginTop(pin.safeArea.top)
+        flexContainer.flex
+            .define { flex in
+                flex.addItem(navigationBar)
+                    .height(44)
+                    .marginHorizontal(10)
+                    .marginTop(pin.safeArea.top)
 
-            flex.addItem(titleLabel)
-                .marginTop(28)
+                flex.addItem()
+                    .marginHorizontal(20)
+                    .marginTop(28)
+                    .grow(1)
+                    .define { flex in
+                        flex.addItem(titleLabel)
 
-            flex.addItem(profileEditButton)
-                .marginTop(40)
+                        flex.addItem(profileEditButton)
+                            .marginTop(40)
 
-            flex.addItem(guideLabel)
-                .marginTop(40)
+                        flex.addItem(guideLabel)
+                            .marginTop(40)
 
-            flex.addItem(nicknameTextField)
-                .marginTop(20)
+                        flex.addItem(nicknameTextField)
+                            .marginTop(20)
 
-            flex.addItem()
-                .direction(.row)
-                .justifyContent(.spaceBetween)
-                .marginTop(4)
-                .define { flex in
-                    flex.addItem(alertLabel)
-                        .grow(1)
-                    flex.addItem(lengthIndicatorLabel)
-                        .width(50)
-                }
+                        flex.addItem()
+                            .direction(.row)
+                            .justifyContent(.spaceBetween)
+                            .marginTop(4)
+                            .define { flex in
+                                flex.addItem(alertLabel)
+                                    .grow(1)
+                                flex.addItem(lengthIndicatorLabel)
+                                    .width(50)
+                            }
 
-            flex.addItem()
-                .grow(1)
+                        flex.addItem()
+                            .grow(1)
 
-            flex.addItem(nextButton)
-                .minHeight(56)
-                .cornerRadius(8)
-                .marginBottom(23)
-        }
+                        flex.addItem(nextButton)
+                            .minHeight(56)
+                            .cornerRadius(8)
+                            .marginBottom(23)
+                    }
+            }
     }
 
     private func setUpNicknameTextField() {
@@ -175,12 +182,5 @@ private extension ProfileView {
     func setNicknameValid(_ isValid: Bool) {
         nicknameTextField.setValid(isValid)
         alertLabel.isHidden = isValid
-    }
-}
-
-private extension String {
-    var containsOnlyAllowedCharacters: Bool {
-        let regex = "^[ㄱ-ㅎ가-힣ㅏ-ㅣa-zA-Z0-9]*$"
-        return NSPredicate(format: "SELF MATCHES %@", regex).evaluate(with: self)
     }
 }
