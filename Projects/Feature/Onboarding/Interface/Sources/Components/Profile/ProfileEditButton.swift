@@ -32,7 +32,7 @@ final class ProfileEditButton: UIButton {
         let view = UIView()
         view.backgroundColor = Colors.primary
         view.clipsToBounds = true
-        view.layer.borderColor = Colors.background.cgColor
+        view.layer.borderColor = Colors.fixedBackground.cgColor
         view.layer.borderWidth = 5
         return view
     }()

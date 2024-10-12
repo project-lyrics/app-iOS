@@ -20,34 +20,7 @@ final class UseAgreementListView: UIView {
         super.init(coder: coder)
     }
 
-    private lazy var allAgreeLabel: UILabel = {
-        let label = UILabel()
-        label.text = description
-        label.font = SharedDesignSystemFontFamily.Pretendard.semiBold.font(size: 16)
-        label.textColor = Colors.gray04
-        label.text = "전체동의"
-        return label
-    }()
-
-    lazy var allAgreeButton: UIButton = {
-        let subFlexContainer = UIView()
-
-        subFlexContainer.flex.direction(.row).define { flex in
-            flex.addItem(self.allAgreeLabel)
-                .marginLeft(12)
-        }
-
-        let button = CheckBoxButton(additionalView: subFlexContainer)
-        button.configuration = UIButton.Configuration.bordered()
-
-        button.configurationUpdateHandler = { [weak self] button in
-            button.configuration?.baseForegroundColor = button.state == .selected ? nil : Colors.gray04
-            button.configuration?.baseBackgroundColor = button.state == .selected ? Colors.alertSuccess : Colors.background
-            self?.allAgreeLabel.textColor = button.state == .selected ? Colors.alertSuccess : Colors.gray04
-        }
-
-        return button
-    }()
+    lazy var allAgreeButton: CheckAllAgreeButton = .init()
 
     lazy var ageAgreeButton: UIButton = {
         let contentView = SelectableAgreementView()

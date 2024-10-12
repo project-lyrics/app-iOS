@@ -13,6 +13,8 @@ public final class SelectableAgreementView: UIView {
     // MARK: - UI Components
 
     private let flexContainer = UIView()
+    
+    private let subFlexContainer = UIView()
 
     private let descriptionLabel: UILabel = {
         let label = UILabel()
@@ -71,17 +73,15 @@ public final class SelectableAgreementView: UIView {
             flex.addItem(agreeDescriptionLabel)
         }
     }
-
+    
     private func createMandatoryBorderedView() -> UIView {
-        let subFlexContainer = UIView()
-
         subFlexContainer.flex
             .justifyContent(.center)
             .alignItems(.center)
             .addItem()
             .size(.init(width: 49, height: 28))
             .cornerRadius(14)
-            .border(2, Colors.gray01)
+            .border(2, Colors.fixedGray01)
             .define { flex in
                 flex.addItem(requiredOptionLabel)
                     .marginVertical(4)

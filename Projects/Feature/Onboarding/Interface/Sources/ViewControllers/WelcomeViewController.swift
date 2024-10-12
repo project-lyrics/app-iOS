@@ -35,6 +35,8 @@ public final class WelcomeViewController: UIViewController {
 
     public override func viewDidLoad() {
         super.viewDidLoad()
+        
+        overrideUserInterfaceStyle = .light
 
         Just<Void>(())
             .delay(for: .seconds(1), scheduler: DispatchQueue.main)

@@ -69,6 +69,12 @@ public final class UseAgreementViewController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError()
     }
+    
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        overrideUserInterfaceStyle = .light
+    }
 
     public override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()

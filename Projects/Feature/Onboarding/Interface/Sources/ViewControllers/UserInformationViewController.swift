@@ -45,6 +45,7 @@ public final class UserInformationViewController: UIViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
+        overrideUserInterfaceStyle = .light
         bind()
         genderCollectionView.dataSource = self
     }

@@ -76,7 +76,7 @@ public final class FeelinDropDownButton: UIButton {
         descriptionLabel.text = description
         descriptionLabel.textColor = Colors.gray03
         layer.borderWidth = 1
-        layer.borderColor = Colors.gray01.cgColor
+        layer.borderColor = Colors.fixedGray01.cgColor
     }
     
     private func updateAppearanceAfterFirstSet() {
