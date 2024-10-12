@@ -49,6 +49,15 @@ public enum OAuthProvider: String, Encodable {
 public enum Gender: String, Encodable {
     case male = "MALE"
     case female = "FEMALE"
+    
+    public var korean: String {
+        switch self {
+        case .male:
+            return "남성"
+        case .female:
+            return "여성"
+        }
+    }
 }
 
 // MARK: - Term

@@ -37,6 +37,7 @@ public final class DeleteUserViewModel {
             }
             .store(in: &cancellables)
     }
+    
     public func removeUser() {
         userInfo = nil
     }

@@ -11,8 +11,8 @@ public struct UserProfileResponse: Decodable {
     public let id: Int
     public let nickname: String
     public let profileCharacterType: String
-    public let gender: String
-    public let birthYear: Int
+    public let gender: String?
+    public let birthYear: Int?
     public let feedbackID: String?
     public let authProvider: String
 
@@ -20,8 +20,8 @@ public struct UserProfileResponse: Decodable {
         id: Int,
         nickname: String,
         profileCharacterType: String,
-        gender: String,
-        birthYear: Int,
+        gender: String?,
+        birthYear: Int?,
         feedbackID: String?,
         authProvider: String
     ) {

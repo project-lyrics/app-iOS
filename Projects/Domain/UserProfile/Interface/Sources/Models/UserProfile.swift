@@ -14,8 +14,8 @@ public struct UserProfile {
     public let id: Int
     public let nickname: String
     public let profileCharacterType: ProfileCharacterType
-    public let gender: Gender
-    public let birthYear: Int
+    public let gender: Gender?
+    public let birthYear: Int?
     public let feedbackID: String?
     public let authProvider: String
 
@@ -23,8 +23,8 @@ public struct UserProfile {
         id: Int,
         nickname: String,
         profileCharacterType: ProfileCharacterType,
-        gender: Gender,
-        birthYear: Int,
+        gender: Gender?,
+        birthYear: Int?,
         feedbackID: String?,
         authProvider: String
     ) {
@@ -41,7 +41,7 @@ public struct UserProfile {
         self.id = dto.id
         self.nickname = dto.nickname
         self.profileCharacterType = ProfileCharacterType(rawValue: dto.profileCharacterType) ?? .braidedHair
-        self.gender = Gender(rawValue: dto.gender) ?? .male
+        self.gender = Gender(rawValue: dto.gender ?? "") ?? .male
         self.birthYear = dto.birthYear
         self.feedbackID = dto.feedbackID
         self.authProvider = dto.authProvider

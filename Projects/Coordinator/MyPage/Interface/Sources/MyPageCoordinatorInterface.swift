@@ -71,7 +71,7 @@ extension MyPageCoordinator: MyPageViewControllerDelegate,
                              ProfileEditViewControllerDelegate,
                              InternalWebViewControllerDelegate,
                              DeleteUserViewControllerDelegate,
-                             UserInfoViewControllerDelegate {
+                             UserProfileViewControllerDelegate {
     public func didFinish() {
         didFinish(childCoordinator: self)
     }
@@ -170,8 +170,8 @@ extension MyPageCoordinator: MyPageViewControllerDelegate,
     }
 
     public func pushUserInfoViewController() {
-        let viewModel = settingDependencies()
-        let userInfoViewController = UserInfoViewController(viewModel: viewModel)
+        let viewModel = userInfoDependencies()
+        let userInfoViewController = UserProfileViewController(viewModel: viewModel)
         userInfoViewController.coordinator = self
         navigationController.pushViewController(userInfoViewController, animated: true)
     }
@@ -258,14 +258,14 @@ private extension MyPageCoordinator {
         return viewModel
     }
 
-    func settingDependencies() -> SettingViewModel {
+    func userInfoDependencies() -> UserProfileViewModel {
         @Injected(.userProfileAPIService) var userProfileAPIService: UserProfileAPIServiceInterface
 
         let getUserProfileUseCase: GetUserProfileUseCaseInterface = GetUserProfileUseCase(
             userProfileAPIService: userProfileAPIService
         )
        
-        let viewModel = SettingViewModel(
+        let viewModel = UserProfileViewModel(
             getUserProfileUseCase: getUserProfileUseCase
         )
 
