@@ -146,10 +146,10 @@ public final class SettingViewController: UIViewController {
 extension SettingViewController: UITableViewDelegate {
     public func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         let footerView = UIView()
-        footerView.backgroundColor = .clear // 푸터는 투명하게
+        footerView.backgroundColor = .clear
 
         let dividerView = UIView()
-        dividerView.backgroundColor = Colors.gray01 // 구분선 색상
+        dividerView.backgroundColor = Colors.gray01
         dividerView.translatesAutoresizingMaskIntoConstraints = false
 
         footerView.addSubview(dividerView)

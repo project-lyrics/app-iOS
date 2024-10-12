@@ -19,16 +19,11 @@ public final class SettingViewModel {
     public var userInfo
 
     private let getUserProfileUseCase: GetUserProfileUseCaseInterface
-    private let deleteUserUseCase: DeleteUserUseCaseInterface
 
     private var cancellables: Set<AnyCancellable> = .init()
 
-    public init(
-        getUserProfileUseCase: GetUserProfileUseCaseInterface,
-        deleteUserUseCase: DeleteUserUseCaseInterface
-    ) {
+    public init(getUserProfileUseCase: GetUserProfileUseCaseInterface) {
         self.getUserProfileUseCase = getUserProfileUseCase
-        self.deleteUserUseCase = deleteUserUseCase
     }
 
     public func fetchUserInfo() {
@@ -40,20 +35,6 @@ public final class SettingViewModel {
                     self.fetchedUserInfo = data
                 case .failure(let error):
                     self.error = error
-                }
-            }
-            .store(in: &cancellables)
-    }
-
-    public func deleteUserInfo() {
-        deleteUserUseCase.execute()
-            .mapToResult()
-            .sink { [weak self] result in
-                switch result {
-                case .success:
-                    self?.removeUser()
-                case .failure(let error):
-                    self?.error = error
                 }
             }
             .store(in: &cancellables)

@@ -43,8 +43,6 @@ public final class SearchNoteCoordinator: Coordinator {
     private func configureSearchNoteViewController() {
         @KeychainWrapper<UserInformation>(.userInfo)
         var userInfo
-        // 테스트용 유저 아이디
-        userInfo = .init(userID: 1)
 
         let searchNoteViewModel = searchNoteDependencies()
         let viewController = SearchNoteViewController(viewModel: searchNoteViewModel)
