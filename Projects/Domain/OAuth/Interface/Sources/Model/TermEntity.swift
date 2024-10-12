@@ -24,15 +24,14 @@ public enum TermEntity: CaseIterable {
         }
     }
 
-    // TODO: notionLink 필요
     public var notionLink: String {
         switch self {
         case .ageAgree:
             return ""
         case .serviceUsage:
-            return ""
+            return "https://www.notion.so/Feelin-424aa52fb951444fa95f3966672ec670?pvs=4"
         case .personalInfo:
-            return ""
+            return "https://www.notion.so/Feelin-2f586ef1b7c947d89ad8cac8a83b61d1?pvs=4"
         }
     }
 
