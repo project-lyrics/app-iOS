@@ -14,7 +14,7 @@ import Shared
 public protocol NoteMenuHandling where Self: UIViewController {
     var userInfo: UserInformation? { get }
     var onReportNote: PassthroughSubject<Int, Never> { get }
-    var onEditNote: PassthroughSubject<Int, Never> { get }
+    var onEditNote: PassthroughSubject<Note, Never> { get }
     var onDeleteNote: PassthroughSubject<Int, Never> { get }
     
     func makeNoteMenuViewController(checking note: Note) -> NoteMenuViewConroller?
@@ -28,7 +28,7 @@ public extension NoteMenuHandling {
             let menuType = userId == note.publisher.id ? NoteMenuType.me : NoteMenuType.other
             
             let noteMenuViewController = NoteMenuViewConroller(
-                noteID: note.id,
+                note: note,
                 bottomSheetHeight: bottomSheetHeight,
                 bottomSheetView: NoteMenuView(menuType: menuType),
                 onReport: self.onReportNote,

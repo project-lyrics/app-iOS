@@ -12,7 +12,7 @@ import PinLayout
 import Shared
 import Domain
 
-final class LyricsBackgroundCollectionViewCell: UICollectionViewCell, Reusable {
+public final class LyricsBackgroundCollectionViewCell: UICollectionViewCell, Reusable {
 
     private let flexContainer = UIView()
 
@@ -42,7 +42,7 @@ final class LyricsBackgroundCollectionViewCell: UICollectionViewCell, Reusable {
 
     // MARK: - Init
 
-    override init(frame: CGRect) {
+    public override init(frame: CGRect) {
         super.init(frame: frame)
         self.setUpLayout()
     }
@@ -52,7 +52,7 @@ final class LyricsBackgroundCollectionViewCell: UICollectionViewCell, Reusable {
         fatalError()
     }
 
-    override func layoutSubviews() {
+    public override func layoutSubviews() {
         super.layoutSubviews()
 
         flexContainer.pin.all()
@@ -83,11 +83,11 @@ final class LyricsBackgroundCollectionViewCell: UICollectionViewCell, Reusable {
         flexContainer.addSubview(checkButton)
     }
 
-    func configure(image: UIImage) {
+    public func configure(image: UIImage) {
         lyricsBackgroundImageView.image = image
     }
 
-    func setSelected(_ selected: Bool) {
+    public func setSelected(_ selected: Bool) {
         checkButton.isSelected = selected
     }
 }

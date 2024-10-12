@@ -31,7 +31,7 @@ public final class PostNoteViewController: UIViewController {
         bottomSheetHeight: UIScreen.main.bounds.height * 0.88
     )
 
-    private let postNoteView = PostNoteView()
+    private let postNoteView = WritingNoteView()
     private var cancellables = Set<AnyCancellable>()
     private let viewModel: PostNoteViewModel
 
