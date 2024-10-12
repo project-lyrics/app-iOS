@@ -11,10 +11,22 @@ import UIKit
 import Domain
 import Shared
 
+public protocol ArtistSelectViewControllerDelegate: AnyObject {
+    func didFinishSelectingInitialFavoriteArtists()
+    func dismissViewController()
+}
+
 public final class ArtistSelectViewController: UIViewController {
+    public weak var coordinator: ArtistSelectViewControllerDelegate?
+    
     private let viewModel: ArtistSelectViewModel
     
     private var cancellables: Set<AnyCancellable> = .init()
+    
+    // MARK: - Keychain
+    
+    @KeychainWrapper<UserInformation>(.userInfo)
+    public var userInfo
     
     // MARK: - Diffable DataSource
     
@@ -184,16 +196,28 @@ private extension ArtistSelectViewController {
             .store(in: &cancellables)
         
         self.finishSelectButton.publisher(for: .touchUpInside)
-            .flatMap{ [weak viewModel] _ -> AnyPublisher<Void, Never> in
+            .flatMap{ [weak viewModel] _ -> AnyPublisher<ArtistSelectViewModel.InformFavoriteArtistsResult, Never> in
                 guard let viewModel = viewModel else {
                     return Empty().eraseToAnyPublisher()
                 }
                 
                 return viewModel.confirmFavoriteArtistsPublisher()
             }
-            .sink { _ in
-                // TODO: - 추후 Coordinator를 활용하여 화면전환
-            }
+            .sink(receiveValue: { [weak self] result in
+                switch result {
+                case .success:
+                    self?.userInfo?.didEnterFirstFavoriteArtistsListPage = true
+                    self?.coordinator?.didFinishSelectingInitialFavoriteArtists()
+                    self?.coordinator?.dismissViewController()
+                    
+                case .failure(let error):
+                    self?.showAlert(
+                        title: error.localizedDescription,
+                        message: nil,
+                        singleActionTitle: "확인"
+                    )
+                }
+            })
             .store(in: &cancellables)
         
         self.closeButton.publisher(for: .touchUpInside)
@@ -204,7 +228,8 @@ private extension ArtistSelectViewController {
                     leftActionTitle: "취소",
                     rightActionTitle: "나가기",
                     rightActionCompletion: {
-                        // MARK: - 추후 coordinator를 활용하여 메인화면으로 전환
+                        self.userInfo?.didEnterFirstFavoriteArtistsListPage = true
+                        self.coordinator?.dismissViewController()
                     }
                 )
             }

@@ -9,6 +9,7 @@ import Foundation
 
 public struct UserInformation: Codable {
     public var userID: Int
+    public var didEnterFirstFavoriteArtistsListPage: Bool = false
     
     public init(userID: Int) {
         self.userID = userID

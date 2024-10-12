@@ -18,6 +18,7 @@ public protocol HomeViewControllerDelegate: AnyObject {
     func pushMyFavoriteArtistsViewController(artists: [Artist])
     func pushCommunityMainViewController(artist: Artist)
     func pushNoteCommentsViewController(noteID: Int)
+    func presentInitialArtistSelectViewController()
 }
 
 public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHandling {
@@ -303,6 +304,7 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
 
     override public func viewDidLoad() {
         super.viewDidLoad()
+        self.showSelectArtistListIfNeeded()
         self.bindUI()
         self.bindAction()
     }
@@ -312,6 +314,20 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
         self.viewModel.fetchNotes(isInitialFetch: true)
         self.viewModel.fetchFavoriteArtists(isInitialFetch: true)
         
+    }
+    
+    // MARK: - Favorite Artists
+    
+    public func updateFavoriteArtists() {
+        self.viewModel.fetchFavoriteArtists(isInitialFetch: true)
+        self.viewModel.fetchNotes(isInitialFetch: true)
+    }
+    
+    private func showSelectArtistListIfNeeded() {
+        if let userInfo = userInfo,
+           !userInfo.didEnterFirstFavoriteArtistsListPage {
+            self.coordinator?.presentInitialArtistSelectViewController()
+        }
     }
 }
 
