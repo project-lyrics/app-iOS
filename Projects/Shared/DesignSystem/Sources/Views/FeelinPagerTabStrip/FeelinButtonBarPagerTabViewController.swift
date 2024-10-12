@@ -30,6 +30,7 @@ public struct ButtonBarPagerTabStripSettings {
         public var selectedBarBackgroundColor = UIColor.black
         public var selectedBarHeight: CGFloat = 5
         public var selectedBarVerticalAlignment: SelectedBarVerticalAlignment = .bottom
+        public var selectedBarItemTitleColor: UIColor?
 
         public var buttonBarItemBackgroundColor: UIColor?
         public var buttonBarItemFont = UIFont.systemFont(ofSize: 18)
@@ -242,7 +243,13 @@ open class ButtonBarPagerTabStripViewController: FeelinPagerTabViewController, P
         // 셀의 label 설정
         cell.label.text = indicatorInfo.title
         cell.label.font = settings.style.buttonBarItemFont
-        cell.label.textColor = settings.style.buttonBarItemTitleColor ?? cell.label.textColor
+
+        if indexPath.item == currentIndex {
+             cell.label.textColor = settings.style.selectedBarItemTitleColor  ?? cell.label.textColor
+         } else {
+             cell.label.textColor = settings.style.buttonBarItemTitleColor
+         }
+
         cell.contentView.backgroundColor = settings.style.buttonBarItemBackgroundColor ?? cell.contentView.backgroundColor
         
         return cell
@@ -269,6 +276,12 @@ open class ButtonBarPagerTabStripViewController: FeelinPagerTabViewController, P
 
         let oldIndexPath = IndexPath(item: currentIndex, section: 0)
         let newIndexPath = IndexPath(item: indexPath.item, section: 0)
+
+        let oldCell = collectionView.cellForItem(at: oldIndexPath) as? ButtonBarViewCell
+        let newCell = collectionView.cellForItem(at: newIndexPath) as? ButtonBarViewCell
+
+        oldCell?.label.textColor = settings.style.buttonBarItemTitleColor
+        newCell?.label.textColor = settings.style.selectedBarItemTitleColor ?? settings.style.buttonBarItemTitleColor
 
         let cells = cellForItems(at: [oldIndexPath, newIndexPath], reloadIfNotVisible: collectionViewDidLoad)
 
