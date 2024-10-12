@@ -87,7 +87,7 @@ class CommunityArtistCell: UICollectionViewCell, Reusable {
                     self.artistImageView.flex.markDirty()
                     self.artistImageView.flex.layout()
                 case .failure(let error):
-                    print("Error loading image: \(error)")
+                    return
                 }
             }
     }

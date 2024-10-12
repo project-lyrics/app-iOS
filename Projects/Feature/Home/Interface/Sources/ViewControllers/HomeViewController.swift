@@ -341,7 +341,6 @@ private extension HomeViewController {
             .sink { [weak self] error in
                 //
                 if let userID = self?.userInfo?.userID {
-                    print(userID)
                     self?.showAlert(
                         title: error.errorDescription,
                         message: nil,

@@ -52,7 +52,6 @@ final public class HomeViewModel {
         .mapError(HomeError.init)
         .receive(on: DispatchQueue.main)
         .flatMap { [weak self] fetchedFavoriteArtists -> AnyPublisher<[Note], HomeError> in
-            print("fetched initial fav artists on thread: \(Thread.current) artistsCount: \(fetchedFavoriteArtists.count)")
             self?.fetchedFavoriteArtists = fetchedFavoriteArtists
             
             return self?.getNotesUseCase.execute(
@@ -68,7 +67,6 @@ final public class HomeViewModel {
         .sink { [weak self] result in
             switch result {
             case .success(let fetchedNotes):
-                print("fetched initial notes after favorite artists on thread: \(Thread.current) notes count: \(fetchedNotes.count)")
                 self?.fetchedNotes = fetchedNotes
                 
             case .failure(let error):
