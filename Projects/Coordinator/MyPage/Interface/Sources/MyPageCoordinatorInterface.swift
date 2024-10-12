@@ -69,6 +69,7 @@ extension MyPageCoordinator: MyPageViewControllerDelegate,
                              EditNoteViewControllerDelegate,
                              SearchSongViewControllerDelegate,
                              ProfileEditViewControllerDelegate,
+                             InternalWebViewControllerDelegate,
                              UserInfoViewControllerDelegate {
     public func didFinish() {
         didFinish(childCoordinator: self)
@@ -174,6 +175,13 @@ extension MyPageCoordinator: MyPageViewControllerDelegate,
         userInfoViewController.coordinator = self
         navigationController.pushViewController(userInfoViewController, animated: true)
     }
+
+    public func presentInternalWebViewController(url: String) {
+        let internalWebViewController = InternalWebViewController(url: url)
+        internalWebViewController.coordinator = self
+        internalWebViewController.modalPresentationStyle = .fullScreen
+        navigationController.present(internalWebViewController, animated: true)
+    }    
 }
 
 private extension MyPageCoordinator {

@@ -13,6 +13,7 @@ import Shared
 public protocol SettingViewControllerDelegate: AnyObject {
     func popViewController()
     func pushUserInfoViewController()
+    func presentInternalWebViewController(url: String)
     func didFinish()
 }
 
@@ -175,7 +176,7 @@ extension SettingViewController: UITableViewDelegate {
         case .serviceUsage,
                 .personalInfo,
                 .serviceInquiry:
-            openWebBrowser(urlStr: item.url)
+            coordinator?.presentInternalWebViewController(url: item.url)
         }
     }
 }
