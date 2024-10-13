@@ -13,11 +13,15 @@ import Shared
 public enum UserProfileError: LocalizedError {
     case networkError(NetworkError)
     case keychainError(KeychainError)
+    case bundleError(BundleError)
     case unknown(errorDescription: String)
 
     public var errorDescription: String {
         switch self {
         case .networkError(let error):
+            return error.errorMessage
+            
+        case .bundleError(let error):
             return error.errorMessage
 
         case .keychainError(let error):
@@ -42,6 +46,8 @@ public enum UserProfileError: LocalizedError {
             self = .networkError(networkError)
         } else if let keychainError = error as? KeychainError {
             self = .keychainError(keychainError)
+        } else if let bundleError = error as? BundleError {
+            self = .bundleError(bundleError)
         } else {
             self = .unknown(errorDescription: error.localizedDescription)
         }
