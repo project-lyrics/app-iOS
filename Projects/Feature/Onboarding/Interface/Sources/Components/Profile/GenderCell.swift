@@ -12,7 +12,7 @@ import Shared
 import FlexLayout
 import PinLayout
 
-final class GenderCell: UICollectionViewCell, Reusable {
+public final class GenderCell: UICollectionViewCell, Reusable {
     private var gender: GenderEntity?
 
     // MARK: - components
@@ -28,7 +28,7 @@ final class GenderCell: UICollectionViewCell, Reusable {
     
     // MARK: - init
     
-    override init(frame: CGRect) {
+    public override init(frame: CGRect) {
         super.init(frame: frame)
         
         setUpCell()
@@ -48,7 +48,7 @@ final class GenderCell: UICollectionViewCell, Reusable {
     
     // MARK: - layout
     
-    override func layoutSubviews() {
+    public override func layoutSubviews() {
         super.layoutSubviews()
         
         contentView.pin.all()
@@ -69,13 +69,13 @@ final class GenderCell: UICollectionViewCell, Reusable {
     
     // MARK: - configure
     
-    func configure(with gender: GenderEntity) {
+    public func configure(with gender: GenderEntity) {
         self.gender = gender
         descriptionLabel.text = gender.description
         setSelected(false)
     }
     
-    func setSelected(_ isSelected: Bool) {
+    public func setSelected(_ isSelected: Bool) {
         imageView.image = isSelected ? gender?.activeImage : gender?.inactiveImage
         descriptionLabel.textColor = isSelected ? Colors.alertSuccess : Colors.gray03
         layer.borderWidth = isSelected ? 0 : 1

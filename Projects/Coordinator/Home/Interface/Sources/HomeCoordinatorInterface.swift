@@ -36,6 +36,9 @@ public final class HomeCoordinator: Coordinator {
 
     private func registerPostNoteDI() {
         DIContainer.registerDependenciesForPostNote()
+        DIContainer.standard.register(.songPaginationService) { _ in
+            return SongPaginationService()
+        }
     }
 
     private func registerReportNoteService() {
@@ -70,6 +73,13 @@ public final class HomeCoordinator: Coordinator {
             return CommentAPIService(networkProvider: networkProvider)
         }
     }
+
+    private func configureHomeController() {
+        let homeViewModel = homeDependencies()
+        let homeViewController = HomeViewController(viewModel: homeViewModel)
+        homeViewController.coordinator = self
+        navigationController.pushViewController(homeViewController, animated: true)
+    }
 }
 
 // MARK: Home
@@ -80,17 +90,6 @@ extension HomeCoordinator: HomeViewControllerDelegate,
                            NoteCommentsViewControllerDelegate,
                            MyFavoriteArtistsViewControllerDelegate,
                            CommunityMainViewControllerDelegate {
-    private func configureHomeController() {
-        let homeViewModel = homeDependencies()
-        let homeViewController = HomeViewController(viewModel: homeViewModel)
-        homeViewController.coordinator = self
-        navigationController.pushViewController(homeViewController, animated: true)
-    }
-
-    public func pushEditNoteViewController(noteID: Int) {
-
-    }
-
     public func pushNoteNotificationViewController() {
         let noteNotificationContainerViewController = NoteNotificationContainerViewController()
         noteNotificationContainerViewController.coordinator = self
@@ -135,6 +134,7 @@ extension HomeCoordinator: HomeViewControllerDelegate,
 
 extension HomeCoordinator: CoordinatorDelegate,
                            PostNoteViewControllerDelegate,
+                           EditNoteViewControllerDelegate,
                            SearchSongViewControllerDelegate {
     /// 1. HomeVC > 커뮤니티 > 알림 > 노트 상세
     /// 노트 상세의 뒤로가기 액션에서, isHiddenTabBar default는 false이다.
@@ -160,26 +160,37 @@ extension HomeCoordinator: CoordinatorDelegate,
     }
 
     public func didFinish(selectedItem: Song) {
-        guard let topNavigationController = navigationController.presentedViewController as? UINavigationController,
-              let postNoteViewController = topNavigationController.viewControllers.first(where: { $0 is PostNoteViewController }) as? PostNoteViewController else {
+        guard let topNavigationController = navigationController.presentedViewController as? UINavigationController else {
             return
         }
-        
-        postNoteViewController.addSelectedSong(selectedItem)
+
+        if let postNoteViewController = topNavigationController.viewControllers.first(where: { $0 is PostNoteViewController }) as? PostNoteViewController {
+            postNoteViewController.addSelectedSong(selectedItem)
+        } else if let editNoteViewController = topNavigationController.viewControllers.first(where: { $0 is EditNoteViewController }) as? EditNoteViewController {
+            editNoteViewController.addSelectedSong(selectedItem)
+        }
+
         topNavigationController.popViewController(animated: true)
     }
-
-    public func didFinish() {
-
-    }
-
-    public func pushPostNoteViewController(artistID: Int) {
+    
+    public func presentPostNoteViewController(artistID: Int) {
         registerPostNoteDI()
         let viewModel = postNoteDependencies(artistID: artistID)
         let postNoteViewController = PostNoteViewController(viewModel: viewModel)
         postNoteViewController.coordinator = self
         
         let navController = UINavigationController(rootViewController: postNoteViewController)
+        navController.isNavigationBarHidden = true
+        navController.modalPresentationStyle = .fullScreen
+        navigationController.present(navController, animated: true)
+    }
+
+    public func presentEditNoteViewController(note: Note) {
+        let viewModel = editNoteDependencies(note: note)
+        let viewController = EditNoteViewController(viewModel: viewModel)
+        viewController.coordinator = self
+
+        let navController = UINavigationController(rootViewController: viewController)
         navController.isNavigationBarHidden = true
         navController.modalPresentationStyle = .fullScreen
         navigationController.present(navController, animated: true)
@@ -263,7 +274,7 @@ extension HomeCoordinator {
         return viewModel
     }
 
-    private func reportNoteDependencies(noteID: Int?, commentID: Int?) -> ReportViewModel {
+    func reportNoteDependencies(noteID: Int?, commentID: Int?) -> ReportViewModel {
         @Injected(.reportAPIService) var reportNoteService: ReportAPIServiceInterface
         let reportNoteUseCase: ReportNoteUseCaseInterface = ReportNoteUseCase(reportAPIService: reportNoteService)
 
@@ -271,6 +282,17 @@ extension HomeCoordinator {
             noteID: noteID,
             commentID: commentID,
             reportNoteUseCase: reportNoteUseCase
+        )
+
+        return viewModel
+    }
+
+    func editNoteDependencies(note: Note) -> EditNoteViewModel {
+        @Injected(.noteAPIService) var noteAPIService: NoteAPIServiceInterface
+        let editNoteUseCase: PatchNoteUseCaseInterface = PatchNoteUseCase(noteAPIService: noteAPIService)
+        let viewModel = EditNoteViewModel(
+            editNoteUseCase: editNoteUseCase,
+            note: note
         )
 
         return viewModel

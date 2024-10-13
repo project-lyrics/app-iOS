@@ -13,7 +13,7 @@ public struct UserSignUpEntity {
     public var nickname: String?
     public var profileCharacter: String?
     public var gender: GenderEntity?
-    public var birthYear: String?
+    public var birthYear: Int?
     public var terms: [Term]
 
     public init(
@@ -22,7 +22,7 @@ public struct UserSignUpEntity {
         nickname: String? = nil,
         profileCharacter: String? = nil,
         gender: GenderEntity? = nil,
-        birthYear: String? = nil,
+        birthYear: Int? = nil,
         terms: [Term] = []
     ) {
         self.socialAccessToken = socialAccessToken

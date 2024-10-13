@@ -26,7 +26,11 @@ public final class NavigationBar: UIView {
 }
 
 public extension NavigationBar {
-    func addLeftBarView(_ contentViews: [UIView]) {
+    func addLeftBarView(
+        _ contentViews: [UIView],
+        width: Int = 44,
+        maxWidth: Int = 68
+    ) {
         let count = contentViews.count > rightBarView.subviews.count ? contentViews.count : rightBarView.subviews.count
 
         leftBarView.flex
@@ -38,7 +42,7 @@ public extension NavigationBar {
                         .marginRight(index < contentViews.count - 1 ? 20 : 0) // 마지막 아이템 오른쪽에는 마진 없음
                 }
             }
-        leftBarView.flex.width(CGFloat(count == 1 ? 44 : 68)) // 한 개일 때 44, 두 개일 때 96
+        leftBarView.flex.width(CGFloat(count == 1 ? width : maxWidth)) // 한 개일 때 44, 두 개일 때 96
         rootFlexContainer.flex.layout()
     }
 
@@ -53,7 +57,11 @@ public extension NavigationBar {
         rootFlexContainer.flex.layout()
     }
     
-    func addRightBarView(_ contentViews: [UIView]) {
+    func addRightBarView(
+        _ contentViews: [UIView],
+        width: Int = 44,
+        maxWidth: Int = 68
+    ) {
         let count = contentViews.count > leftBarView.subviews.count ? contentViews.count : leftBarView.subviews.count
 
         rightBarView.flex
@@ -65,7 +73,7 @@ public extension NavigationBar {
                         .marginRight(index < contentViews.count - 1 ? 20 : 0) // 마지막 아이템 오른쪽에는 마진 없음
                 }
             }
-        rightBarView.flex.width(CGFloat(count == 1 ? 44 : 68))
+        rightBarView.flex.width(CGFloat(count == 1 ? width : maxWidth))
         rootFlexContainer.flex.layout()
     }
 }

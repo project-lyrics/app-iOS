@@ -88,14 +88,14 @@ public final class UserInformationViewController: UIViewController {
 
         birthYearDropDownButtonPublisher
             .sink { [weak self] year in
-                self?.model.birthYear = "\(year)년"
+                self?.model.birthYear = year
                 self?.birthYearDropDownButton.setDescription("\(year)년")
             }
             .store(in: &cancellables)
 
         Publishers.CombineLatest(genderSelectionPublisher, birthYearDropDownButtonPublisher)
             .map { isGenderSelected, birthYear in
-                return isGenderSelected && !birthYear.isEmpty
+                return isGenderSelected && !"\(birthYear)".isEmpty
             }
             .sink { [weak self] isEnabled in
                 self?.nextButton.isEnabled = isEnabled
@@ -150,7 +150,7 @@ private extension UserInformationViewController {
         return userInformationView.skipButton
     }
 
-    var birthYearDropDownButtonPublisher: PassthroughSubject<String, Never> {
+    var birthYearDropDownButtonPublisher: PassthroughSubject<Int, Never> {
         return selectBirthYearViewController.selectedYearSubject
     }
 }

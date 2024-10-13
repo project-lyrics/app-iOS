@@ -260,7 +260,7 @@ final class NetworkProviderTests: XCTestCase {
             nickname: "derrick",
             profileCharacter: "poopHair",
             gender: Gender.male.rawValue,
-            birthYear: "1992년",
+            birthYear: 1992,
             terms: [Term(
                 agree: true,
                 title: "만 14세 이상 가입 동의",

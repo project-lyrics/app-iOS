@@ -9,6 +9,7 @@ import UIKit
 import CoordinatorAppInterface
 import CoordinatorHomeInterface
 import CoordinatorSearchNoteInterface
+import CoordinatorMyPageInterface
 import SharedDesignSystem
 
 public final class TabBarCoordinator: Coordinator {
@@ -28,7 +29,7 @@ public final class TabBarCoordinator: Coordinator {
         let controllers: [UINavigationController] = pages.map {
             createTabBarNavigationController(of: $0)
         }
-        
+
         configureTabBarController(with: controllers)
         addTopBorderToTabBar()
     }
@@ -91,7 +92,7 @@ private extension TabBarCoordinator {
         switch page {
         case .home:         connectHomeFlow(to: tabBarNavigationController)
         case .noteSearch:   connectSearchNoteFlow(to: tabBarNavigationController)
-        case .myPage: break
+        case .myPage:       connectMyPageFlow(to: tabBarNavigationController)
         }
     }
 
@@ -103,10 +104,20 @@ private extension TabBarCoordinator {
         homeCoordinator.delegate = self
         homeCoordinator.start()
         childCoordinators.append(homeCoordinator)
-    }    
+    }
 
     func connectSearchNoteFlow(to tabBarNavigationController: UINavigationController) {
         let searchNoteCoordinator = SearchNoteCoordinator(
+            navigationController: tabBarNavigationController
+        )
+
+        searchNoteCoordinator.delegate = self
+        searchNoteCoordinator.start()
+        childCoordinators.append(searchNoteCoordinator)
+    }
+
+    func connectMyPageFlow(to tabBarNavigationController: UINavigationController) {
+        let searchNoteCoordinator = MyPageCoordinator(
             navigationController: tabBarNavigationController
         )
 

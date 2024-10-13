@@ -16,7 +16,7 @@ public final class SelectBirthYearViewController: BottomSheetViewController<Sele
     private var selectedYear: Int
     private var cancellables = Set<AnyCancellable>()
 
-    public let selectedYearSubject = PassthroughSubject<String, Never>()
+    public let selectedYearSubject = PassthroughSubject<Int, Never>()
 
     // MARK: - init
 
@@ -48,7 +48,7 @@ public final class SelectBirthYearViewController: BottomSheetViewController<Sele
             .sink { [weak self] _ in
                 guard let self = self else { return }
 
-                selectedYearSubject.send("\(selectedYear)")
+                selectedYearSubject.send(selectedYear)
                 dismiss(animated: false)
             }
             .store(in: &cancellables)

@@ -11,7 +11,7 @@ import FlexLayout
 import PinLayout
 import Shared
 
-class EmptyNoteCell: UICollectionViewCell, Reusable {
+public final class EmptyNoteCell: UICollectionViewCell, Reusable {
     private let flexContainer = UIView()
     
     private var emptyNoteImageView: UIImageView = {
@@ -30,7 +30,7 @@ class EmptyNoteCell: UICollectionViewCell, Reusable {
         return label
     }()
     
-    override init(frame: CGRect) {
+    public override init(frame: CGRect) {
         super.init(frame: frame)
         self.setUpLayout()
     }
@@ -40,7 +40,7 @@ class EmptyNoteCell: UICollectionViewCell, Reusable {
         super.init(coder: coder)
     }
     
-    override func layoutSubviews() {
+    public override func layoutSubviews() {
         super.layoutSubviews()
         
         flexContainer.pin.all()

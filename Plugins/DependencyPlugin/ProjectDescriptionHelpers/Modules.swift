@@ -28,6 +28,7 @@ public extension ModulePath {
 public extension ModulePath {
     enum Feature: String, CaseIterable {
         case Home
+        case MyPage
         case Onboarding
 
         public static let name: String = "Feature"
@@ -36,8 +37,9 @@ public extension ModulePath {
 
 public extension ModulePath {
     enum Coordinator: String, CaseIterable {
-        case SearchNote
         case Home
+        case SearchNote
+        case MyPage
         case TabBar
         case Onboarding
         case App
@@ -54,6 +56,7 @@ public extension ModulePath {
 
 public extension ModulePath {
     enum Domain: String, CaseIterable {
+        case UserProfile
         case Report
         case Shared
         case Note

@@ -15,7 +15,7 @@ public struct UserSignUpRequest: Encodable {
     let nickname: String
     let profileCharacter: String
     let gender: String
-    let birthYear: String
+    let birthYear: Int
     let terms: [Term]
 
     public init(
@@ -24,7 +24,7 @@ public struct UserSignUpRequest: Encodable {
         nickname: String,
         profileCharacter: String,
         gender: String,
-        birthYear: String,
+        birthYear: Int,
         terms: [Term]
     ) {
         self.socialAccessToken = socialAccessToken

@@ -12,7 +12,7 @@ import Shared
 import FlexLayout
 import PinLayout
 
-final class ProfileEditButton: UIButton {
+public final class ProfileEditButton: UIButton {
     // MARK: - components
     
     private let flexContainer: UIView = {
@@ -46,7 +46,7 @@ final class ProfileEditButton: UIButton {
     
     // MARK: - init
     
-    override init(frame: CGRect) {
+    public override init(frame: CGRect) {
         super.init(frame: frame)
         
         setUpLayout()
@@ -59,7 +59,7 @@ final class ProfileEditButton: UIButton {
     
     // MARK: - layout
     
-    override func layoutSubviews() {
+    public override func layoutSubviews() {
         super.layoutSubviews()
         
         flexContainer.pin.all()
@@ -93,7 +93,7 @@ final class ProfileEditButton: UIButton {
         }
     }
     
-    func setProfileImage(with image: UIImage?) {
+    public func setProfileImage(with image: UIImage?) {
         profileImageView.image = image
     }
 }

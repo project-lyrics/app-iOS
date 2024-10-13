@@ -9,7 +9,7 @@ import UIKit
 
 import Shared
 
-final class GenderCollectionView: UICollectionView {
+public final class GenderCollectionView: UICollectionView {
     private let flowLayout = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -19,7 +19,7 @@ final class GenderCollectionView: UICollectionView {
     
     // MARK: - init
     
-    init() {
+    public init() {
         super.init(frame: .zero, collectionViewLayout: flowLayout)
         
         register(cellType: GenderCell.self)
@@ -30,7 +30,7 @@ final class GenderCollectionView: UICollectionView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func layoutSubviews() {
+    public override func layoutSubviews() {
         super.layoutSubviews()
         
         let genderCellWidth = (frame.width - flowLayout.minimumInteritemSpacing) / 2

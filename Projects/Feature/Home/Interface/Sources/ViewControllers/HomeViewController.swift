@@ -13,7 +13,7 @@ import UIKit
 
 public protocol HomeViewControllerDelegate: AnyObject {
     func pushReportViewController(noteID: Int?, commentID: Int?)
-    func pushEditNoteViewController(noteID: Int)
+    func presentEditNoteViewController(note: Note)
     func pushNoteNotificationViewController()
     func pushMyFavoriteArtistsViewController(artists: [Artist])
     func pushCommunityMainViewController(artist: Artist)
@@ -41,7 +41,7 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
     // MARK: - NoteMenu Subjects
 
     public let onReportNote: PassthroughSubject<Int, Never> = .init()
-    public let onEditNote: PassthroughSubject<Int, Never> = .init()
+    public let onEditNote: PassthroughSubject<Note, Never> = .init()
     public let onDeleteNote: PassthroughSubject<Int, Never> = .init()
 
     // MARK: - DiffableDataSource
@@ -431,8 +431,8 @@ private extension HomeViewController {
             .store(in: &cancellables)
 
         onEditNote.eraseToAnyPublisher()
-            .sink { [weak self] noteID in
-                self?.coordinator?.pushEditNoteViewController(noteID: noteID)
+            .sink { [weak self] note in
+                self?.coordinator?.presentEditNoteViewController(note: note)
             }
             .store(in: &cancellables)
 

@@ -13,3 +13,5 @@
 @_exported import CoordinatorTabBarInterface
 @_exported import CoordinatorHomeInterface
 @_exported import CoordinatorHome
+@_exported import CoordinatorSearchNote
+@_exported import CoordinatorSearchNoteInterface

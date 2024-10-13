@@ -8,9 +8,9 @@
 import Foundation
 import Core
 
-public enum GenderEntity: CaseIterable {
-    case male
-    case female
+public enum GenderEntity: String, CaseIterable {
+    case male = "MALE"
+    case female = "FEMALE"
 
     public var toDTO: Gender {
         switch self {

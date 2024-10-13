@@ -19,6 +19,40 @@ public struct NoteAPIService: NoteAPIServiceInterface {
         self.networkProvider = networkProvider
     }
 
+    public func getFavoriteArtistHavingNotes() -> AnyPublisher<[GetFavoriteArtistHavingNoteResponse], DomainNoteInterface.NoteError> {
+        let endpoint = FeelinAPI<[GetFavoriteArtistHavingNoteResponse]>.getFavoriteArtistsHavingNotes
+
+        return networkProvider.request(endpoint)
+            .mapError(NoteError.init)
+            .eraseToAnyPublisher()
+    }
+
+    public func getMyNotes(cursor: Int?, size: Int, hasLyrics: Bool, artistID: Int?) -> AnyPublisher<GetMyNotesResponse, NoteError> {
+        let endpoint = FeelinAPI<GetMyNotesResponse>.getMyNotes(
+            cursor: cursor,
+            size: size,
+            hasLyrics: hasLyrics,
+            artistID: artistID
+        )
+
+        return networkProvider.request(endpoint)
+            .mapError(NoteError.init)
+            .eraseToAnyPublisher()
+    }
+
+    public func getMyNotesByBookmark(cursor: Int?, size: Int, hasLyrics: Bool, artistID: Int?) -> AnyPublisher<GetMyNotesResponse, NoteError> {
+        let endpoint = FeelinAPI<GetMyNotesResponse>.getMyNotesByBookmark(
+            cursor: cursor,
+            size: size,
+            hasLyrics: hasLyrics,
+            artistID: artistID
+        )
+
+        return networkProvider.request(endpoint)
+            .mapError(NoteError.init)
+            .eraseToAnyPublisher()
+    }
+
     public func getFavoriteArtistsRelatedNotes(
         currentPage: Int?,
         numberOfNotes: Int,
@@ -77,6 +111,21 @@ public struct NoteAPIService: NoteAPIServiceInterface {
     public func postNote(value: PostNoteValue) -> AnyPublisher<FeelinSuccessResponse, NoteError> {
         let request = value.toDTO()
         let endpoint = FeelinAPI<FeelinSuccessResponse>.postNote(
+            request: request
+        )
+
+        return networkProvider.request(endpoint)
+            .mapError(NoteError.init)
+            .eraseToAnyPublisher()
+    }
+
+    public func patchNote(
+        noteID: Int,
+        value: PatchNoteValue
+    ) -> AnyPublisher<FeelinSuccessResponse, NoteError> {
+        let request = value.toDTO()
+        let endpoint = FeelinAPI<FeelinSuccessResponse>.patchNote(
+            noteID: noteID,
             request: request
         )
 

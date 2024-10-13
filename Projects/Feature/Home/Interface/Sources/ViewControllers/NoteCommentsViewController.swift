@@ -15,7 +15,7 @@ import Shared
 public protocol NoteCommentsViewControllerDelegate: AnyObject {
     func popViewController(isHiddenTabBar: Bool)
     func pushReportViewController(noteID: Int?, commentID: Int?)
-    func pushEditNoteViewController(noteID: Int)
+    func presentEditNoteViewController(note: Note)
 }
 
 public final class NoteCommentsViewController: UIViewController, CommentMenuHandling, NoteMenuHandling, NoteMusicHandling {
@@ -31,7 +31,7 @@ public final class NoteCommentsViewController: UIViewController, CommentMenuHand
     // MARK: - Menu Subjects
     
     public var onReportNote: PassthroughSubject<Int, Never> = .init()
-    public var onEditNote: PassthroughSubject<Int, Never> = .init()
+    public var onEditNote: PassthroughSubject<Note, Never> = .init()
     public var onDeleteNote: PassthroughSubject<Int, Never> = .init()
     
     public var onReportComment: PassthroughSubject<Int, Never> = .init()
@@ -353,8 +353,8 @@ private extension NoteCommentsViewController {
             .store(in: &cancellables)
         
         onEditNote.eraseToAnyPublisher()
-            .sink { [weak self] noteID in
-                self?.coordinator?.pushEditNoteViewController(noteID: noteID)
+            .sink { [weak self] note in
+                self?.coordinator?.presentEditNoteViewController(note: note)
             }
             .store(in: &cancellables)
         

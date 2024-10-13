@@ -28,7 +28,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         window = UIWindow(windowScene: windowScene)
 
-        let navigationController = UINavigationController(rootViewController: pushPostNoteViewController(artistID: 12))
+        let navigationController = UINavigationController(rootViewController: presentPostNoteViewController(artistID: 12))
         navigationController.navigationBar.isHidden = true
 //        window?.rootViewController = navigationController
 //        window?.makeKeyAndVisible()
@@ -373,7 +373,7 @@ extension SceneDelegate: PostNoteViewControllerDelegate, SearchSongViewControlle
         return viewModel
     }
 
-    func pushPostNoteViewController(artistID: Int) -> PostNoteViewController {
+    func presentPostNoteViewController(artistID: Int) -> PostNoteViewController {
         registerNetwork()
         registerPostNoteDI()
         let viewModel = postNoteDependencies(artistID: artistID)

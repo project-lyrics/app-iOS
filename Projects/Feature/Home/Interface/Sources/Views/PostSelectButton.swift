@@ -10,7 +10,7 @@ import Shared
 import FlexLayout
 import PinLayout
 
-final class PostSelectButton: UIView {
+public final class PostSelectButton: UIView {
 
     private let rootFlexContainer = UIView()
 
@@ -27,13 +27,13 @@ final class PostSelectButton: UIView {
         return label
     }()
 
-    var isEnabled: Bool = false {
+    public var isEnabled: Bool = false {
         didSet {
             updateUI(isEnabled)
         }
     }
 
-    override init(frame: CGRect) {
+    public override init(frame: CGRect) {
         super.init(frame: frame)
 
         self.backgroundColor = Colors.background
@@ -46,7 +46,7 @@ final class PostSelectButton: UIView {
         fatalError()
     }
 
-    override func layoutSubviews() {
+    public override func layoutSubviews() {
         super.layoutSubviews()
 
         rootFlexContainer.pin
@@ -85,7 +85,7 @@ final class PostSelectButton: UIView {
         iconImageView.tintColor = isEnabled ? Colors.gray05 : Colors.disabled
     }
 
-    func configure(title: String, image: UIImage) {
+    public func configure(title: String, image: UIImage) {
         titleLabel.text = title
         iconImageView.image = image.withRenderingMode(.alwaysTemplate)
     }

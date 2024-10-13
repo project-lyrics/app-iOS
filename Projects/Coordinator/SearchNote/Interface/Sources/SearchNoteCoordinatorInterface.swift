@@ -39,6 +39,16 @@ public final class SearchNoteCoordinator: Coordinator {
 
         DIContainer.registerReportNoteService()
     }
+
+    private func configureSearchNoteViewController() {
+        @KeychainWrapper<UserInformation>(.userInfo)
+        var userInfo
+
+        let searchNoteViewModel = searchNoteDependencies()
+        let viewController = SearchNoteViewController(viewModel: searchNoteViewModel)
+        viewController.coordinator = self
+        navigationController.pushViewController(viewController, animated: true)
+    }
 }
 
 // MARK: Search Note
@@ -50,18 +60,6 @@ extension SearchNoteCoordinator: SearchNoteViewControllerDelegate,
     public func popViewController(isHiddenTabBar: Bool) {
         navigationController.tabBarController?.tabBar.isHidden = isHiddenTabBar
         popViewController()
-    }
-    
-    private func configureSearchNoteViewController() {
-        @KeychainWrapper<UserInformation>(.userInfo)
-        var userInfo
-        // 테스트용 유저 아이디
-//        userInfo = .init(userID: 1)
-
-        let searchNoteViewModel = searchNoteDependencies()
-        let viewController = SearchNoteViewController(viewModel: searchNoteViewModel)
-        viewController.coordinator = self
-        navigationController.pushViewController(viewController, animated: true)
     }
 
     public func pushNoteDetailViewController(selectedNote: SearchedNote) {
@@ -83,7 +81,7 @@ extension SearchNoteCoordinator: SearchNoteViewControllerDelegate,
         navigationController.pushViewController(reportViewController, animated: true)
     }
 
-    public func pushEditNoteViewController(noteID: Int) {
+    public func presentEditNoteViewController(note: Note) {
 
     }
 

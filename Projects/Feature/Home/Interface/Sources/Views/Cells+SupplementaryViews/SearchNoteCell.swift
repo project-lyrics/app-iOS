@@ -128,5 +128,4 @@ final class SearchNoteCell: UITableViewCell, Reusable {
         
         self.noteCountLabel.flex.markDirty()
     }
-    
 }

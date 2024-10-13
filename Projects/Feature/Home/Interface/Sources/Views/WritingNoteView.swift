@@ -1,5 +1,5 @@
 //
-//  PostNoteView.swift
+//  WritingNoteView.swift
 //  FeatureHomeInterface
 //
 //  Created by Derrick kim on 8/4/24.
@@ -13,12 +13,12 @@ import Kingfisher
 import FlexLayout
 import PinLayout
 
-final class PostNoteView: UIView {
+public final class WritingNoteView: UIView {
 
     private let rootFlexContainer = UIView()
     private let navigationBar = NavigationBar()
 
-    lazy var closeButton: UIButton = {
+    public lazy var closeButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setImage(FeelinImages.x, for: .normal)
@@ -36,14 +36,14 @@ final class PostNoteView: UIView {
         return label
     }()
 
-    lazy var completeButton = FeelinConfirmButton(
+    public lazy var completeButton = FeelinConfirmButton(
         initialEnabled: false,
         title: "완료",
         setting: .text
     )
 
-    let rootScrollView = UIScrollView()
-    let contentView = UIView()
+    public let rootScrollView = UIScrollView()
+    public let contentView = UIView()
 
     private let topDivider: UIView = {
         let view = UIView()
@@ -85,7 +85,7 @@ final class PostNoteView: UIView {
         return label
     }()
 
-    let addToPlayButton: UIButton = {
+    public let addToPlayButton: UIButton = {
         let button = UIButton()
         button.setImage(FeelinImages.add, for: .normal)
 
@@ -99,7 +99,7 @@ final class PostNoteView: UIView {
         return view
     }()
 
-    let lyricsTextView: UITextView = {
+    public let lyricsTextView: UITextView = {
         let textView = UITextView()
         textView.text = "좋아하는 가사를 적어주세요 (선택)"
         textView.layer.cornerRadius = 4.0
@@ -115,7 +115,7 @@ final class PostNoteView: UIView {
         return textView
     }()
 
-    let lyricsCharCountLabel: UILabel = {
+    public let lyricsCharCountLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .right
         label.textColor = Colors.gray04
@@ -126,10 +126,10 @@ final class PostNoteView: UIView {
         return label
     }()
 
-    let selectLyricsBackgroundButton = PostSelectButton()
-    let searchLyricsButton = PostSelectButton()
+    public let selectLyricsBackgroundButton = PostSelectButton()
+    public let searchLyricsButton = PostSelectButton()
 
-    let noteTextView: UITextView = {
+    public let noteTextView: UITextView = {
         let textView = UITextView()
         textView.text = "생각을 남겨보세요."
         textView.textAlignment = .left
@@ -141,7 +141,7 @@ final class PostNoteView: UIView {
         return textView
     }()
 
-    let noteCharCountLabel: UILabel = {
+    public let noteCharCountLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .right
@@ -155,14 +155,14 @@ final class PostNoteView: UIView {
 
     private var keyboardHeightConstraint: NSLayoutConstraint?
 
-    override init(frame: CGRect) {
+    public override init(frame: CGRect) {
         super.init(frame: frame)
 
         setUpDefaults()
         setUpLayout()
     }
 
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+    public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
         endEditing(true)
     }
@@ -176,7 +176,7 @@ final class PostNoteView: UIView {
         fatalError()
     }
 
-    override func layoutSubviews() {
+    public override func layoutSubviews() {
         super.layoutSubviews()
 
         rootFlexContainer.pin.all(pin.safeArea)
@@ -211,14 +211,15 @@ final class PostNoteView: UIView {
 
         rootFlexContainer
             .flex
-            .paddingHorizontal(20)
             .direction(.column)
             .define { rootFlex in
                 rootFlex.addItem(navigationBar)
                     .height(44)
                     .marginTop(pin.safeArea.top)
+                    .marginHorizontal(10)
 
                 rootFlex.addItem(rootScrollView)
+                    .paddingHorizontal(20)
                     .direction(.column)
                     .marginTop(16)
                     .define { rootScrollFlex in
@@ -378,7 +379,7 @@ final class PostNoteView: UIView {
         }
     }
 
-    func configure(_ item: Song) {
+    public func configure(_ item: Song) {
         let imageUrl = URL(string: item.imageUrl)
         iconImageView.kf.setImage(with: imageUrl)
 
