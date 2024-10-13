@@ -32,17 +32,18 @@ final public class SearchNoteViewModel {
             keyword: searchText
         )
         .mapToResult()
-        .sink { result in
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] result in
             switch result {
             case .success(let searchedNotes):
                 if isInitialFetch {
-                    self.searchedNotes = searchedNotes
+                    self?.searchedNotes = searchedNotes
                 } else {
-                    self.searchedNotes.append(contentsOf: searchedNotes)
+                    self?.searchedNotes.append(contentsOf: searchedNotes)
                 }
                 
             case .failure(let error):
-                self.error = error
+                self?.error = error
             }
         }
         .store(in: &cancellables)

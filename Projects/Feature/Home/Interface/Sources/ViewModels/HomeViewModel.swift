@@ -110,16 +110,16 @@ final public class HomeViewModel {
         )
         .mapToResult()
         .receive(on: DispatchQueue.main)
-        .sink { result in
+        .sink { [weak self] result in
             switch result {
             case .success(let artists):
                 if isInitialFetch {
-                    self.fetchedFavoriteArtists = artists
+                    self?.fetchedFavoriteArtists = artists
                 } else {
-                    self.fetchedFavoriteArtists.append(contentsOf: artists)
+                    self?.fetchedFavoriteArtists.append(contentsOf: artists)
                 }
             case .failure(let error):
-                self.error = .artistError(error)
+                self?.error = .artistError(error)
             }
         }
         .store(in: &cancellables)

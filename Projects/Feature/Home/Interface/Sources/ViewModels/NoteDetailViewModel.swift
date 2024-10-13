@@ -65,16 +65,17 @@ final public class NoteDetailViewModel {
             songID: songID
         )
         .mapToResult()
-        .sink { result in
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] result in
             switch result {
             case .success(let fetchedNotes):
                 if isInitial {
-                    self.fetchedNotes = fetchedNotes
+                    self?.fetchedNotes = fetchedNotes
                 } else {
-                    self.fetchedNotes.append(contentsOf: fetchedNotes)
+                    self?.fetchedNotes.append(contentsOf: fetchedNotes)
                 }
             case .failure(let error):
-                self.error = error
+                self?.error = error
             }
         }
         .store(in: &cancellables)
@@ -171,13 +172,13 @@ extension NoteDetailViewModel {
         self.deleteNoteUseCase.execute(noteID: id)
             .mapToResult()
             .receive(on: DispatchQueue.main)
-            .sink { result in
+            .sink { [weak self] result in
                 switch result {
                 case .success:
-                    self.fetchedNotes.removeAll(where: { $0.id == id })
+                    self?.fetchedNotes.removeAll(where: { $0.id == id })
                     
                 case .failure(let noteError):
-                    self.error = noteError
+                    self?.error = noteError
                 }
             }
             .store(in: &cancellables)

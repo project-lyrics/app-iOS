@@ -95,14 +95,14 @@ extension CommunityMainViewModel {
         )
         .mapToResult()
         .receive(on: DispatchQueue.main)
-        .sink { result in
+        .sink { [weak self] result in
             switch result {
             case .success(let success):
-                self.artist.isFavorite = isFavorite
+                self?.artist.isFavorite = isFavorite
                 
             case .failure(let error):
-                self.artist.isFavorite = !isFavorite
-                self.error = .artistError(error)
+                self?.artist.isFavorite = !isFavorite
+                self?.error = .artistError(error)
             }
         }
         .store(in: &cancellables)

@@ -313,14 +313,12 @@ private extension NoteCommentsViewController {
             .store(in: &cancellables)
         
         viewModel.$fetchedNotes
-            .receive(on: DispatchQueue.main)
             .sink { [weak self] fetchedNotes in
                 self?.updateNote(fetchedNotes)
             }
             .store(in: &cancellables)
         
         viewModel.$fetchedComments
-            .receive(on: DispatchQueue.main)
             .sink { [weak self] fetchedComments in
                 self?.updateComments(fetchedComments)
             }

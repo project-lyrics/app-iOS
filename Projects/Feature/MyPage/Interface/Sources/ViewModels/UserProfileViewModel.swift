@@ -28,13 +28,14 @@ public final class UserProfileViewModel {
 
     public func fetchUserProfile() {
         getUserProfileUseCase.execute()
+            .receive(on: DispatchQueue.main)
             .mapToResult()
-            .sink { result in
+            .sink { [weak self] result in
                 switch result {
                 case .success(let data):
-                    self.fetchedUserProfile = data
+                    self?.fetchedUserProfile = data
                 case .failure(let error):
-                    self.error = error
+                    self?.error = error
                 }
             }
             .store(in: &cancellables)
