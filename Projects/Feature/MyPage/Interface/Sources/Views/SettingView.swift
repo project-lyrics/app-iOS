@@ -34,6 +34,7 @@ final class SettingView: UIView {
     lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.showsVerticalScrollIndicator = false
+        tableView.isScrollEnabled = false
         tableView.separatorStyle = .none
         tableView.estimatedRowHeight = 45
         tableView.register(cellType: SettingsTableViewCell.self)
