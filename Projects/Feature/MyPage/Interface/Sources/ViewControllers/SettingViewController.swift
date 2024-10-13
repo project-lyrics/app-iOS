@@ -80,7 +80,6 @@ public final class SettingViewController: UIViewController {
 
         logoutButton.isHidden = userInfo == nil
         deleteUserButton.isHidden = userInfo == nil
-        print("userinfo: \(userInfo)")
     }
     
     private func bindUI() {
@@ -138,8 +137,8 @@ public final class SettingViewController: UIViewController {
 
         bannerImageView.tapPublisher
             .sink { [weak self] _ in
-                // TODO: 구글폼으로 이동
-                self?.openWebBrowser(urlStr: "")
+                // MARK: - 피드백 배너에 대한 url을 일단 원시값으로 사용하되 추후 관리 측면에서 리팩토링 필요
+                self?.openWebBrowser(urlStr: "https://docs.google.com/forms/d/1eoPqnYLfwlgmOeCSKrPWUb7qCPnX6QrLJx8r34WAUwk/edit")
             }
             .store(in: &cancellables)
     }
@@ -185,7 +184,9 @@ public final class SettingViewController: UIViewController {
         guard let url = URL(string: urlStr) else {
             return
         }
-        UIApplication.shared.open(url)
+        if UIApplication.shared.canOpenURL(url) {
+            UIApplication.shared.open(url)
+        }
     }
 }
 

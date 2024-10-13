@@ -399,8 +399,7 @@ private extension HomeViewController {
 
                 switch item {
                 case .banner:
-                    // TODO: 구글폼 URL로직 추가 필요
-                    UIApplication.shared.open(URL(string: "url")!)
+                    self.openWebBrowser(urlStr: "https://docs.google.com/forms/d/1ottTpPuoiDfQnZaMYwwi75WXdEInq6KHN8jY4L9Qc00/edit")
 
                 case .searchArtist:
                     coordinator?.presentSearchMoreFavoriteArtistViewController()
@@ -453,6 +452,15 @@ private extension HomeViewController {
                 self?.coordinator?.pushNoteNotificationViewController()
             }
             .store(in: &cancellables)
+    }
+    
+    private func openWebBrowser(urlStr: String) {
+        guard let url = URL(string: urlStr) else {
+            return
+        }
+        if UIApplication.shared.canOpenURL(url) {
+            UIApplication.shared.open(url)
+        }
     }
 }
 
