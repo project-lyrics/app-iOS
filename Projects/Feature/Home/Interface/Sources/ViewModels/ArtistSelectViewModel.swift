@@ -38,7 +38,7 @@ final public class ArtistSelectViewModel {
     
     func fetchArtists(
         isInitialFetch: Bool,
-        perPage: Int = 10
+        perPage: Int = 12
     ) {
         self.executeGetArtists(
             isInitialFetch: isInitialFetch,
