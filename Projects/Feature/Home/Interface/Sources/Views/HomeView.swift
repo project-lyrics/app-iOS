@@ -52,6 +52,7 @@ final class HomeView: UIView {
             collectionViewLayout: compositionalLayout
         )
         collectionView.refreshControl = UIRefreshControl()
+        collectionView.backgroundColor = Colors.background
 
         collectionView.showsVerticalScrollIndicator = false
         return collectionView

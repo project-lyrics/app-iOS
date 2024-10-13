@@ -37,7 +37,8 @@ final class MyNoteContentView: UIView {
             frame: .zero,
             collectionViewLayout: compositionalLayout
         )
-
+        
+        collectionView.backgroundColor = Colors.background
         collectionView.showsVerticalScrollIndicator = false
         collectionView.register(cellType: RequiredLoginNoteCell.self)
         collectionView.register(cellType: EmptyMyNoteCell.self)

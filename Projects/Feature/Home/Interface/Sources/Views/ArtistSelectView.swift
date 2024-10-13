@@ -24,6 +24,7 @@ final class ArtistSelectView: UIView {
     
     lazy var artistCollectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: self.flowLayout)
+        collectionView.backgroundColor = Colors.background
         collectionView.showsVerticalScrollIndicator = false
         return collectionView
     }()
