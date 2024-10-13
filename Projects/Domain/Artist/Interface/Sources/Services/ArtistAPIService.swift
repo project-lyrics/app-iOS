@@ -38,8 +38,8 @@ public struct ArtistAPIService: ArtistAPIServiceInterface {
         numberOfArtists: Int
     ) -> AnyPublisher<GetArtistsResponse, ArtistError> {
         let endpoint = FeelinAPI<GetArtistsResponse>.getArtists(
-            cursor: currentPage,
-            size: numberOfArtists
+            pageNumber: currentPage ?? 0,
+            pageSize: numberOfArtists
         )
         return networkProvider.request(endpoint)
             .mapError(ArtistError.init)

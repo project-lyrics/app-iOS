@@ -45,7 +45,7 @@ public struct GetArtistsUseCase: GetArtistsUseCaseInterface {
         // 초기 get작업인 경우 페이지 정보를 초기화 합니다.
         if isInitial {
             self.artistPaginationService.update(
-                currentPage: nil,
+                currentPage: 0,
                 hasNextPage: true
             )
         }
@@ -62,12 +62,17 @@ public struct GetArtistsUseCase: GetArtistsUseCaseInterface {
             numberOfArtists: perPage
         )
         .receive(on: DispatchQueue.main)
-        .map { artistsResponse in
-            artistPaginationService.update(
-                currentPage: artistsResponse.nextCursor,
+        .map { [weak artistPaginationService] artistsResponse in
+            // 별도로 다음 페이지를 서버에서 주지 않기 때문에 아래와 같이 임의로 페이지 하나를 더 해 준다.
+            var nextPage = artistsResponse.hasNext
+            ? artistsResponse.pageNumber + 1
+            : artistsResponse.pageNumber
+            
+            artistPaginationService?.update(
+                currentPage: nextPage,
                 hasNextPage: artistsResponse.hasNext
             )
-            artistPaginationService.setLoading(false)
+            artistPaginationService?.setLoading(false)
             return artistsResponse.data.map { artistResponse in
                 return Artist(
                     dto: artistResponse,

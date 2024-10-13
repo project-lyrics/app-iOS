@@ -16,7 +16,7 @@ public enum FeelinAPI<R> {
     case signUp(request: UserSignUpRequest?)
     case checkUserValidity(accessToken: String)
     case reissueAccessToken(refreshToken: String)
-    case getArtists(cursor: Int?, size: Int)
+    case getArtists(pageNumber: Int, pageSize: Int)
     case searchArtists(query: String, cursor: Int?, size: Int)
     case postFavoriteArtists(ids: [Int])
     case postFavoriteArtist(id: Int)
@@ -71,8 +71,7 @@ extension FeelinAPI: HTTPNetworking {
 
     public var queryParameters: Encodable? {
         switch self {
-        case .getArtists(let cursor, let size),
-             .getFavoriteArtists(let cursor, let size),
+        case .getFavoriteArtists(let cursor, let size),
              .getNotifications(let cursor, let size):
             if let cursor = cursor {
                 return [
@@ -134,6 +133,12 @@ extension FeelinAPI: HTTPNetworking {
                 "query": "\(query)",
                 "pageNumber": "\(pageNumber)",
                 "pageSize": "\(pageSize)"
+            ]
+            
+        case .getArtists(let pageNumber, let pageSize):
+            return [
+                "pageNumber": pageNumber,
+                "pageSize": pageSize
             ]
             
         case .getSongNotes(let cursor, let size, let hasLyrics, let songID):
