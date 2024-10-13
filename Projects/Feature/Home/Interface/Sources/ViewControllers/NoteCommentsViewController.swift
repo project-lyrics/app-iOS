@@ -15,7 +15,7 @@ import Shared
 public protocol NoteCommentsViewControllerDelegate: AnyObject {
     func popViewController(isHiddenTabBar: Bool)
     func pushReportViewController(noteID: Int?, commentID: Int?)
-    func pushEditNoteViewController(noteID: Int)
+    func presentEditNoteViewController(note: Note)
     func presentUserLinkedWebViewController(url: URL)
 }
 

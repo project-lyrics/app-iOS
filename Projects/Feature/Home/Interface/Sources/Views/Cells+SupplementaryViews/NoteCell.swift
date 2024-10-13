@@ -256,7 +256,7 @@ public final class NoteCell: UICollectionViewCell, Reusable {
 
     // MARK: - Configure UI
     
-    func configure(
+    public func configure(
         with note: Note,
         showsFullNoteContents: Bool = false,
         isHyperLinkTouchable: Bool = false
@@ -336,7 +336,7 @@ public final class NoteCell: UICollectionViewCell, Reusable {
 }
 
 extension NoteCell: UITextViewDelegate {
-    func textView(
+    public func textView(
         _ textView: UITextView,
         shouldInteractWith URL: URL,
         in characterRange: NSRange,

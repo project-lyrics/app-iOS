@@ -57,6 +57,7 @@ extension SearchNoteCoordinator: SearchNoteViewControllerDelegate,
                                  NoteDetailViewControllerDelegate,
                                  ReportViewControllerDelegate,
                                  NoteCommentsViewControllerDelegate,
+                                 EditNoteViewControllerDelegate,
                                  UserLinkedWebViewControllerDelegate {
     public func popViewController(isHiddenTabBar: Bool) {
         navigationController.tabBarController?.tabBar.isHidden = isHiddenTabBar
@@ -83,7 +84,14 @@ extension SearchNoteCoordinator: SearchNoteViewControllerDelegate,
     }
 
     public func presentEditNoteViewController(note: Note) {
+        let viewModel = editNoteDependencies(note: note)
+        let viewController = EditNoteViewController(viewModel: viewModel)
+        viewController.coordinator = self
 
+        let navController = UINavigationController(rootViewController: viewController)
+        navController.isNavigationBarHidden = true
+        navController.modalPresentationStyle = .fullScreen
+        navigationController.present(navController, animated: true)
     }
 
     public func pushNoteCommentsViewController(noteID: Int) {
@@ -177,6 +185,17 @@ private extension SearchNoteCoordinator {
             getNoteWithCommentsUseCase: getNoteWithCommentsUseCase,
             writeCommentUseCase: writeCommentUseCase,
             deleteCommentUseCase: deleteCommentUseCase
+        )
+
+        return viewModel
+    }
+    
+    func editNoteDependencies(note: Note) -> EditNoteViewModel {
+        @Injected(.noteAPIService) var noteAPIService: NoteAPIServiceInterface
+        let editNoteUseCase: PatchNoteUseCaseInterface = PatchNoteUseCase(noteAPIService: noteAPIService)
+        let viewModel = EditNoteViewModel(
+            editNoteUseCase: editNoteUseCase,
+            note: note
         )
 
         return viewModel
