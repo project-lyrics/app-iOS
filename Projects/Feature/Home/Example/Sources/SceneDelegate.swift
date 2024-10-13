@@ -337,6 +337,10 @@ extension SceneDelegate {
 //        window?.rootViewController = CommunityMainViewController(viewModel: communityMainViewModel)
 //        window?.makeKeyAndVisible()
         // --------------------CommunityMainViewController-------------------
+//        
+//        let url = URL(string: "https://blog.naver.com/lxrkspxr/223101825312")!
+//        window?.rootViewController = UserLinkedWebViewController(url: url)
+//        window?.makeKeyAndVisible()
     }
 }
 

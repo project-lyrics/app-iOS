@@ -15,7 +15,8 @@ import Shared
 public protocol NoteCommentsViewControllerDelegate: AnyObject {
     func popViewController(isHiddenTabBar: Bool)
     func pushReportViewController(noteID: Int?, commentID: Int?)
-    func presentEditNoteViewController(note: Note)
+    func pushEditNoteViewController(noteID: Int)
+    func presentUserLinkedWebViewController(url: URL)
 }
 
 public final class NoteCommentsViewController: UIViewController, CommentMenuHandling, NoteMenuHandling, NoteMusicHandling {
@@ -62,7 +63,10 @@ public final class NoteCommentsViewController: UIViewController, CommentMenuHand
         let noteCellRegistration = UICollectionView.CellRegistration<NoteCell, Note> { [weak self] cell, index, note in
             guard let self = self else { return }
             
-            cell.configure(with: note)
+            cell.configure(
+                with: note,
+                isHyperLinkTouchable: true
+            )
             
             cell.likeNoteButton.publisher(for: .touchUpInside)
                 .debounce(for: .milliseconds(600), scheduler: DispatchQueue.main)
@@ -105,6 +109,17 @@ public final class NoteCommentsViewController: UIViewController, CommentMenuHand
                 )
                 .sink { _ in
                     self.openYouTube(query: "\(note.song.artist.name) \(note.song.name)")
+                }
+                .store(in: &cell.cancellables)
+            
+            cell.onTapHyperLinkPublisher
+                .throttle(
+                    for: .milliseconds(600),
+                    scheduler: DispatchQueue.main,
+                    latest: false
+                )
+                .sink { [weak self] url in
+                    self?.coordinator?.presentUserLinkedWebViewController(url: url)
                 }
                 .store(in: &cell.cancellables)
         }
@@ -450,4 +465,10 @@ private extension NoteCommentsViewController.Row {
             )
         }
     }
+}
+
+// MARK: - HyperLink
+
+private extension NoteCommentsViewController {
+    
 }

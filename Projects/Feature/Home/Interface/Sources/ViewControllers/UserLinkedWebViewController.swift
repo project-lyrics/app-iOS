@@ -12,7 +12,12 @@ import WebKit
 import Domain
 import Shared
 
+public protocol UserLinkedWebViewControllerDelegate: AnyObject {
+    func dismissViewController()
+}
+
 public final class UserLinkedWebViewController: UIViewController {
+    public weak var coordinator: UserLinkedWebViewControllerDelegate?
     
     // MARK: - Properties
     
@@ -75,7 +80,7 @@ public final class UserLinkedWebViewController: UIViewController {
         
         self.closeButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in
-                
+                self?.coordinator?.dismissViewController()
             }
             .store(in: &cancellables)
         

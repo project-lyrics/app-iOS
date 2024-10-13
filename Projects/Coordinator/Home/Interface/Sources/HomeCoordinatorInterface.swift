@@ -89,7 +89,8 @@ extension HomeCoordinator: HomeViewControllerDelegate,
                            NoteNotificationContainerViewControllerDelegate,
                            NoteCommentsViewControllerDelegate,
                            MyFavoriteArtistsViewControllerDelegate,
-                           CommunityMainViewControllerDelegate {
+                           CommunityMainViewControllerDelegate,
+                           UserLinkedWebViewControllerDelegate {
     public func pushNoteNotificationViewController() {
         let noteNotificationContainerViewController = NoteNotificationContainerViewController()
         noteNotificationContainerViewController.coordinator = self
@@ -127,6 +128,13 @@ extension HomeCoordinator: HomeViewControllerDelegate,
         let viewController = CommunityMainViewController(viewModel: viewModel)
         viewController.coordinator = self
         navigationController.pushViewController(viewController, animated: true)
+    }
+    
+    public func presentUserLinkedWebViewController(url: URL) {
+        let viewController = UserLinkedWebViewController(url: url)
+        viewController.coordinator = self
+        viewController.modalPresentationStyle = .fullScreen
+        navigationController.present(viewController, animated: true)
     }
 }
 

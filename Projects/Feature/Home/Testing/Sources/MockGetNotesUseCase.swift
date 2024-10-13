@@ -55,7 +55,7 @@ public class MockGetNotesUseCase: GetNotesUseCaseInterface {
                     ),
                     Note(
                         id: 2,
-                        content: "테스트 내용입니다2.",
+                        content: "테스트 내용입니다2. https://blog.naver.com/lxrkspxr/223101825312",
                         status: .published,
                         createdAt: .distantPast,
                         lyrics: .init(

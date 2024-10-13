@@ -56,7 +56,8 @@ public final class SearchNoteCoordinator: Coordinator {
 extension SearchNoteCoordinator: SearchNoteViewControllerDelegate,
                                  NoteDetailViewControllerDelegate,
                                  ReportViewControllerDelegate,
-                                 NoteCommentsViewControllerDelegate {
+                                 NoteCommentsViewControllerDelegate,
+                                 UserLinkedWebViewControllerDelegate {
     public func popViewController(isHiddenTabBar: Bool) {
         navigationController.tabBarController?.tabBar.isHidden = isHiddenTabBar
         popViewController()
@@ -91,6 +92,13 @@ extension SearchNoteCoordinator: SearchNoteViewControllerDelegate,
         noteCommentsViewController.coordinator = self
         navigationController.tabBarController?.tabBar.isHidden = true
         navigationController.pushViewController(noteCommentsViewController, animated: true)
+    }
+    
+    public func presentUserLinkedWebViewController(url: URL) {
+        let viewController = UserLinkedWebViewController(url: url)
+        viewController.coordinator = self
+        viewController.modalPresentationStyle = .fullScreen
+        navigationController.present(viewController, animated: true)
     }
 }
 

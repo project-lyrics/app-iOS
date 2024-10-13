@@ -336,7 +336,12 @@ public final class NoteCell: UICollectionViewCell, Reusable {
 }
 
 extension NoteCell: UITextViewDelegate {
-    func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
+    func textView(
+        _ textView: UITextView,
+        shouldInteractWith URL: URL,
+        in characterRange: NSRange,
+        interaction: UITextItemInteraction
+    ) -> Bool {
         self.onTapHyperLinkSubject.send(URL)
         return false
     }
