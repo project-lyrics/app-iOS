@@ -28,7 +28,7 @@ public enum UserProfileError: LocalizedError {
         }
     }
 
-    var errorCode: String? {
+    public var errorCode: String? {
         guard case .networkError(let networkError) = self,
               case .feelinAPIError(let feelinAPIError) = networkError else {
             return nil
