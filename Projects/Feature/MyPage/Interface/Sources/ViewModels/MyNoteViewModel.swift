@@ -128,13 +128,13 @@ extension MyNoteViewModel {
         self.deleteNoteUseCase.execute(noteID: id)
             .mapToResult()
             .receive(on: DispatchQueue.main)
-            .sink { result in
+            .sink { [weak self] result in
                 switch result {
                 case .success:
-                    self.fetchedNotes.removeAll(where: { $0.id == id })
+                    self?.fetchedNotes.removeAll(where: { $0.id == id })
 
                 case .failure(let noteError):
-                    self.error = noteError
+                    self?.error = noteError
                 }
             }
             .store(in: &cancellables)
@@ -148,13 +148,13 @@ extension MyNoteViewModel {
         self.getFavoriteArtistsHavingNotesUseCase.execute()
             .mapToResult()
             .receive(on: DispatchQueue.main)
-            .sink { result in
+            .sink { [weak self] result in
                 switch result {
                 case .success(let data):
-                    self.fetchedFavoriteArtistNotes = data
+                    self?.fetchedFavoriteArtistNotes = data
 
                 case .failure(let noteError):
-                    self.error = noteError
+                    self?.error = noteError
                 }
             }
             .store(in: &cancellables)
@@ -183,6 +183,12 @@ extension MyNoteViewModel {
                     print(data)
                 }
             case .failure(let noteError):
+                if let errorCode = noteError.errorCode,
+                   // 토큰이 없는 경우 발생하는 에러코드. 일단 해당 뷰모델에서는 무시해야 한다.
+                   // 일단 임시로 아래와 같이 처리 추후 수정 필요.
+                   errorCode == "01008" {
+                    return
+                }
                 self?.error = noteError
             }
         }

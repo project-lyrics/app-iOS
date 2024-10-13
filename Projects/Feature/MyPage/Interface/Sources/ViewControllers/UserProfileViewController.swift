@@ -63,8 +63,11 @@ public final class UserProfileViewController: UIViewController {
 
         copyButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in
-                //TODO: 복사하기 토스트 필요.
                 UIPasteboard.general.string = self?.viewModel.fetchedUserProfile?.feedbackID
+                self?.showToast(
+                    iconImage: FeelinImages.checkBoxActive,
+                    message: "복사되었습니다"
+                )
             }
             .store(in: &cancellables)
 

@@ -34,4 +34,15 @@ public enum HomeError: LocalizedError {
             return description
         }
     }
+    
+    public var errorCode: String? {
+        switch self {
+        case .noteError(let noteError):
+            return noteError.errorCode
+        case .artistError(let artistError):
+            return artistError.errorCode
+        case .unknownError(let description):
+            return nil
+        }
+    }
 }

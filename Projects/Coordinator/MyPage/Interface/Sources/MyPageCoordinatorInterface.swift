@@ -72,7 +72,8 @@ extension MyPageCoordinator: MyPageViewControllerDelegate,
                              EditUserInfoViewControllerDelegate,
                              InternalWebViewControllerDelegate,
                              DeleteUserViewControllerDelegate,
-                             UserProfileViewControllerDelegate {
+                             UserProfileViewControllerDelegate,
+                             UserLinkedWebViewControllerDelegate {
     public func didFinish() {
         didFinish(childCoordinator: self)
     }
@@ -198,6 +199,13 @@ extension MyPageCoordinator: MyPageViewControllerDelegate,
         viewController.coordinator = self
         navigationController.tabBarController?.tabBar.isHidden = true
         navigationController.pushViewController(viewController, animated: true)
+    }
+    
+    public func presentUserLinkedWebViewController(url: URL) {
+        let viewController = UserLinkedWebViewController(url: url)
+        viewController.coordinator = self
+        viewController.modalPresentationStyle = .fullScreen
+        navigationController.present(viewController, animated: true)
     }
 }
 

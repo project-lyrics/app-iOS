@@ -56,7 +56,9 @@ public final class SearchNoteCoordinator: Coordinator {
 extension SearchNoteCoordinator: SearchNoteViewControllerDelegate,
                                  NoteDetailViewControllerDelegate,
                                  ReportViewControllerDelegate,
-                                 NoteCommentsViewControllerDelegate {
+                                 NoteCommentsViewControllerDelegate,
+                                 EditNoteViewControllerDelegate,
+                                 UserLinkedWebViewControllerDelegate {
     public func popViewController(isHiddenTabBar: Bool) {
         navigationController.tabBarController?.tabBar.isHidden = isHiddenTabBar
         popViewController()
@@ -82,7 +84,14 @@ extension SearchNoteCoordinator: SearchNoteViewControllerDelegate,
     }
 
     public func presentEditNoteViewController(note: Note) {
+        let viewModel = editNoteDependencies(note: note)
+        let viewController = EditNoteViewController(viewModel: viewModel)
+        viewController.coordinator = self
 
+        let navController = UINavigationController(rootViewController: viewController)
+        navController.isNavigationBarHidden = true
+        navController.modalPresentationStyle = .fullScreen
+        navigationController.present(navController, animated: true)
     }
 
     public func pushNoteCommentsViewController(noteID: Int) {
@@ -91,6 +100,13 @@ extension SearchNoteCoordinator: SearchNoteViewControllerDelegate,
         noteCommentsViewController.coordinator = self
         navigationController.tabBarController?.tabBar.isHidden = true
         navigationController.pushViewController(noteCommentsViewController, animated: true)
+    }
+    
+    public func presentUserLinkedWebViewController(url: URL) {
+        let viewController = UserLinkedWebViewController(url: url)
+        viewController.coordinator = self
+        viewController.modalPresentationStyle = .fullScreen
+        navigationController.present(viewController, animated: true)
     }
 }
 
@@ -169,6 +185,17 @@ private extension SearchNoteCoordinator {
             getNoteWithCommentsUseCase: getNoteWithCommentsUseCase,
             writeCommentUseCase: writeCommentUseCase,
             deleteCommentUseCase: deleteCommentUseCase
+        )
+
+        return viewModel
+    }
+    
+    func editNoteDependencies(note: Note) -> EditNoteViewModel {
+        @Injected(.noteAPIService) var noteAPIService: NoteAPIServiceInterface
+        let editNoteUseCase: PatchNoteUseCaseInterface = PatchNoteUseCase(noteAPIService: noteAPIService)
+        let viewModel = EditNoteViewModel(
+            editNoteUseCase: editNoteUseCase,
+            note: note
         )
 
         return viewModel

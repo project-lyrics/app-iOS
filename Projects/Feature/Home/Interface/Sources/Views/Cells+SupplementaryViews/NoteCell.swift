@@ -51,14 +51,18 @@ public final class NoteCell: UICollectionViewCell, Reusable {
 
         return button
     }()
-
-    private let noteContentLabel: UILabel = {
-        let label = UILabel()
-        label.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 14)
-        label.textColor = Colors.gray09
-        label.numberOfLines = 3
-
-        return label
+    
+    private lazy var noteContentTextView: UnSelectableTextView = {
+        let textView = UnSelectableTextView()
+        textView.delegate = self
+        textView.isEditable = false
+        textView.isSelectable = true
+        textView.isUserInteractionEnabled = false
+        textView.textContainerInset = .zero
+        textView.textContainer.lineBreakMode = .byTruncatingTail
+        
+        textView.dataDetectorTypes = .link
+        return textView
     }()
 
     private var lyricsContentsView: LyricsContentsView = .init()
@@ -135,7 +139,15 @@ public final class NoteCell: UICollectionViewCell, Reusable {
 
         return button
     }()
-
+    
+    // MARK: - Subjects & Publishers
+    
+    var onTapHyperLinkPublisher: AnyPublisher<URL, Never> {
+        return self.onTapHyperLinkSubject.eraseToAnyPublisher()
+    }
+    
+    private var onTapHyperLinkSubject: PassthroughSubject<URL, Never> = .init()
+    
     // MARK: - Init
     
     public var cancellables: Set<AnyCancellable> = .init()
@@ -183,8 +195,8 @@ public final class NoteCell: UICollectionViewCell, Reusable {
 
 
             flex.addItem().define { flex in
-                flex.addItem(noteContentLabel)
-
+                flex.addItem(noteContentTextView)
+                
                 flex.addItem(lyricsContentsView)
                     .marginTop(16)
 
@@ -243,12 +255,15 @@ public final class NoteCell: UICollectionViewCell, Reusable {
     }
 
     // MARK: - Configure UI
-
-    public func configure(with note: Note, showsFullNoteContents: Bool = false) {
+    
+    public func configure(
+        with note: Note,
+        showsFullNoteContents: Bool = false,
+        isHyperLinkTouchable: Bool = false
+    ) {
         self.authorCharacterImageView.image = note.publisher.profileCharacterType.image
         self.authorNameLabel.text = note.publisher.nickname
         self.noteWrittenTimeLabel.text = note.createdAt.formattedTimeInterval()
-        self.noteContentLabel.text = note.content
         self.albumImageView.kf.setImage(
             with: try?note.song.imageUrl.asURL()
         )
@@ -260,12 +275,25 @@ public final class NoteCell: UICollectionViewCell, Reusable {
         self.bookmarkButton.isSelected = note.isBookmarked
 
         if showsFullNoteContents {
-            self.noteContentLabel.numberOfLines = 0
+            self.noteContentTextView.textContainer.maximumNumberOfLines = 0
         } else {
-            self.noteContentLabel.numberOfLines = 3
+            self.noteContentTextView.textContainer.maximumNumberOfLines = 3
         }
-
-        self.noteContentLabel.flex.markDirty()
+        
+        let textViewParagraphStyle = NSMutableParagraphStyle()
+        textViewParagraphStyle.lineSpacing = 3
+        
+        let attributes: [NSAttributedString.Key: Any] = [
+            .paragraphStyle: textViewParagraphStyle,
+            .font: SharedDesignSystemFontFamily.Pretendard.regular.font(size: 14),
+            .foregroundColor: Colors.gray09
+        ]
+        let attributedText = NSAttributedString(string: note.content, attributes: attributes)
+        
+        self.noteContentTextView.isUserInteractionEnabled = isHyperLinkTouchable
+        self.noteContentTextView.attributedText = attributedText
+        
+        self.noteContentTextView.flex.markDirty()
         self.likeAmountLabel.flex.markDirty()
         self.commentAmountLabel.flex.markDirty()
 
@@ -289,7 +317,7 @@ public final class NoteCell: UICollectionViewCell, Reusable {
         self.authorCharacterImageView.image = nil
         self.authorNameLabel.text = nil
         self.noteWrittenTimeLabel.text = nil
-        self.noteContentLabel.text = nil
+        self.noteContentTextView.text = nil
         self.albumImageView.image = nil
         self.musicTitleLabel.text = nil
         self.artistNameLabel.text = nil
@@ -304,6 +332,18 @@ public final class NoteCell: UICollectionViewCell, Reusable {
         self.flexContainer.flex.layout(mode: .adjustHeight)
 
         return self.flexContainer.frame.size
+    }
+}
+
+extension NoteCell: UITextViewDelegate {
+    public func textView(
+        _ textView: UITextView,
+        shouldInteractWith URL: URL,
+        in characterRange: NSRange,
+        interaction: UITextItemInteraction
+    ) -> Bool {
+        self.onTapHyperLinkSubject.send(URL)
+        return false
     }
 }
 

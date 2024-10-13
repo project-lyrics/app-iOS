@@ -24,12 +24,12 @@ public final class MyPageViewModel {
     public func fetchUserProfile() {
         getUserProfileUseCase.execute()
             .mapToResult()
-            .sink { result in
+            .sink { [weak self] result in
                 switch result {
                 case .success(let data):
-                    self.fetchedUserProfile = data
+                    self?.fetchedUserProfile = data
                 case .failure(let error):
-                    self.error = error
+                    self?.error = error
                 }
             }
             .store(in: &cancellables)
