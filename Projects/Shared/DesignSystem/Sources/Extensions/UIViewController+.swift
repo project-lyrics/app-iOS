@@ -7,6 +7,8 @@
 
 import UIKit
 
+// MARK: - Alert
+
 extension UIViewController {
     public func showAlert(
         shouldIgnoreDarkMode: Bool = false,
@@ -103,4 +105,46 @@ extension UIViewController {
             
             present(alertViewController, animated: false, completion: nil)
         }
+}
+
+// MARK: - Toast
+
+extension UIViewController {
+    public func showToast(
+        iconImage: UIImage,
+        message: String,
+        duration: TimeInterval = 3,
+        bottomMargin: CGFloat? = nil
+    ) {
+        let feelinToastView = FeelinToastView(
+            iconImage: iconImage,
+            message: message,
+            frame: .zero
+        )
+        feelinToastView.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(feelinToastView)
+        
+        // Safe Area와 Tab Bar를 고려한 Auto Layout Constraints 설정
+        let safeArea = self.view.safeAreaLayoutGuide
+        let tabBarHeight = self.tabBarController?.tabBar.frame.height ?? 0
+        
+        let bottomMargin = -(bottomMargin ?? (tabBarHeight + 5))
+        
+        NSLayoutConstraint.activate([
+            feelinToastView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 20),
+            feelinToastView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -20),
+            feelinToastView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: bottomMargin),
+            feelinToastView.heightAnchor.constraint(equalToConstant: 56)
+            ])
+        
+        UIView.animate(
+            withDuration: duration,
+            delay: 0,
+            options: [.curveEaseInOut, .beginFromCurrentState],
+            animations: {
+                feelinToastView.alpha = 0.0
+            }) { _ in
+                feelinToastView.removeFromSuperview()
+            }
+    }
 }
