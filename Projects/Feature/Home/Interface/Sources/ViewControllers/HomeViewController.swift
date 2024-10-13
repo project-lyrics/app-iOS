@@ -19,6 +19,7 @@ public protocol HomeViewControllerDelegate: AnyObject {
     func pushCommunityMainViewController(artist: Artist)
     func pushNoteCommentsViewController(noteID: Int)
     func presentInitialArtistSelectViewController()
+    func presentSearchMoreFavoriteArtistViewController()
 }
 
 public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHandling {
@@ -402,8 +403,7 @@ private extension HomeViewController {
                     UIApplication.shared.open(URL(string: "url")!)
 
                 case .searchArtist:
-                    // TODO: - 좋아하는 아티스트 추가 선택 화면으로 네비게이션 필요
-                    break
+                    coordinator?.presentSearchMoreFavoriteArtistViewController()
 
                 case .favoriteArtist(let artist):
                     coordinator?.pushCommunityMainViewController(artist: artist)

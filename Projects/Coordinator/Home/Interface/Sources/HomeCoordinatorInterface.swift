@@ -90,7 +90,8 @@ extension HomeCoordinator: HomeViewControllerDelegate,
                            NoteCommentsViewControllerDelegate,
                            MyFavoriteArtistsViewControllerDelegate,
                            CommunityMainViewControllerDelegate,
-                           UserLinkedWebViewControllerDelegate {
+                           UserLinkedWebViewControllerDelegate,
+                           SearchMoreFavoriteArtistDelegate {
     public func pushNoteNotificationViewController() {
         let noteNotificationContainerViewController = NoteNotificationContainerViewController()
         noteNotificationContainerViewController.coordinator = self
@@ -132,6 +133,14 @@ extension HomeCoordinator: HomeViewControllerDelegate,
     
     public func presentUserLinkedWebViewController(url: URL) {
         let viewController = UserLinkedWebViewController(url: url)
+        viewController.coordinator = self
+        viewController.modalPresentationStyle = .fullScreen
+        navigationController.present(viewController, animated: true)
+    }
+    
+    public func presentSearchMoreFavoriteArtistViewController() {
+        let viewModel = searchMoreFavoriteArtistsDependencies()
+        let viewController = SearchMoreFavoriteArtistViewController(viewModel: viewModel)
         viewController.coordinator = self
         viewController.modalPresentationStyle = .fullScreen
         navigationController.present(viewController, animated: true)
@@ -408,6 +417,16 @@ extension HomeCoordinator {
             searchArtistsUseCase: searchArtistsUseCase,
             postFavoriteArtistsUseCase: postFavoriteArtistsUseCase
         )
+        
+        return viewModel
+    }
+    
+    private func searchMoreFavoriteArtistsDependencies() -> SearchMoreFavoriteArtistViewModel {
+        @Injected(.artistAPIService) var artistAPIService: ArtistAPIServiceInterface
+        let artistPaginationService = ArtistPaginationService()
+        let getArtistsUseCase = GetArtistsUseCase(artistAPIService: artistAPIService, artistPaginationService: artistPaginationService)
+        let searchArtistsUseCase = SearchArtistsUseCase(artistAPIService: artistAPIService, artistPaginationService: artistPaginationService)
+        let viewModel = SearchMoreFavoriteArtistViewModel(getArtistsUseCase: getArtistsUseCase, searchArtistsUseCase: searchArtistsUseCase)
         
         return viewModel
     }
