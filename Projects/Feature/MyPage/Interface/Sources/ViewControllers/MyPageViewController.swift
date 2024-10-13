@@ -110,9 +110,11 @@ public final class MyPageViewController: UIViewController {
         viewModel.$fetchedUserProfile
             .receive(on: DispatchQueue.main)
             .sink { [weak self] fetchedUserProfile in
-                self?.userNicknameLabel.flex.markDirty()
-                self?.userNicknameLabel.text = fetchedUserProfile?.nickname
-                self?.rootFlexContainer.flex.layout()
+                if let nickname = fetchedUserProfile?.nickname {
+                    self?.userNicknameLabel.flex.markDirty()
+                    self?.userNicknameLabel.text = nickname
+                    self?.rootFlexContainer.flex.layout()
+                }
             }
             .store(in: &cancellables)
 
