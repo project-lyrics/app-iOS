@@ -69,6 +69,7 @@ public final class CommunityMainViewController: UIViewController, NoteMenuHandli
         let button = UIButton()
         let image = button.isEnabled ? FeelinImages.writingActive : FeelinImages.writingInactive
         button.setImage(image, for: .normal)
+        button.isEnabled = false
 
         return button
     }()
@@ -106,7 +107,6 @@ public final class CommunityMainViewController: UIViewController, NoteMenuHandli
                     scheduler: DispatchQueue.main
                 )
                 .sink { control in
-                    self.postNoteButton.isEnabled = control.isSelected
                     self.viewModel.setFavoriteArtist(control.isSelected)
                 }
                 .store(in: &cell.cancellables)
@@ -403,6 +403,11 @@ private extension CommunityMainViewController {
                     return
                 }
             })
+            .store(in: &cancellables)
+        
+        viewModel.$artist
+            .map(\.isFavorite)
+            .assign(to: \.isEnabled, on: self.postNoteButton)
             .store(in: &cancellables)
     }
 

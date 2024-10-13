@@ -86,7 +86,7 @@ class CommunityArtistCell: UICollectionViewCell, Reusable {
                 case .success:
                     self.artistImageView.flex.markDirty()
                     self.artistImageView.flex.layout()
-                case .failure(let error):
+                case .failure:
                     return
                 }
             }
