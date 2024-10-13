@@ -88,7 +88,9 @@ extension MyPageCoordinator: MyPageViewControllerDelegate,
     }
 
     public func pushSettingViewController() {
-        let viewController = SettingViewController()
+        let logoutUseCase = LogoutUseCase(tokenStorage: TokenStorage())
+        let viewModel = SettingViewModel(logoutUseCase: logoutUseCase)
+        let viewController = SettingViewController(viewModel: viewModel)
         viewController.coordinator = self
         navigationController.pushViewController(viewController, animated: true)
     }

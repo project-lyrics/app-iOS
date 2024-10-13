@@ -19,7 +19,7 @@ public protocol SettingViewControllerDelegate: AnyObject {
 }
 
 public final class SettingViewController: UIViewController {
-
+    private let viewModel: SettingViewModel
     private let settingView = SettingView()
 
     public weak var coordinator: SettingViewControllerDelegate?
@@ -49,8 +49,10 @@ public final class SettingViewController: UIViewController {
 
     private lazy var settingListDataSource: SettingListDataSource = makeDataSource()
 
-    public init() {
-        super.init(nibName: nil, bundle: nil)
+    public init(viewModel: SettingViewModel) {
+        self.viewModel = viewModel
+        
+        super.init(nibName: nil, bundle: .main)
     }
 
     @available(*, unavailable)
@@ -66,6 +68,7 @@ public final class SettingViewController: UIViewController {
         super.viewDidLoad()
 
         setUpDefault()
+        bindUI()
         bindData()
         bindAction()
     }
@@ -77,6 +80,28 @@ public final class SettingViewController: UIViewController {
 
         logoutButton.isHidden = userInfo == nil
         deleteUserButton.isHidden = userInfo == nil
+        print("userinfo: \(userInfo)")
+    }
+    
+    private func bindUI() {
+        self.viewModel.$logoutResult
+            .sink { [weak self] logoutResult in
+                switch logoutResult {
+                case .success:
+                    self?.coordinator?.didFinish()
+                    
+                case .failure(let error):
+                    self?.showAlert(
+                        title: error.errorDescription,
+                        message: nil,
+                        singleActionTitle: "확인"
+                    )
+                    
+                default:
+                    break
+                }
+            }
+            .store(in: &cancellables)
     }
 
     private func bindData() {
@@ -99,8 +124,7 @@ public final class SettingViewController: UIViewController {
                     leftActionTitle: "취소",
                     rightActionTitle: "로그아웃",
                     rightActionCompletion: {
-                        self?.userInfo = nil
-                        self?.coordinator?.didFinish()
+                        self?.viewModel.logout()
                     }
                 )
             }

@@ -11,8 +11,9 @@ import CoreNetworkInterface
 import Foundation
 
 public class AppleLoginService: NSObject {
-    public var networkProvider: NetworkProviderInterface
-    public var tokenStorage: TokenStorageInterface
+    public let networkProvider: NetworkProviderInterface
+    public let tokenStorage: TokenStorageInterface
+    public let userInfoStorage: UserInfoStorageInterface
     public let jwtDecoder: JWTDecoder = .init()
     public let tokenKeyHolder: TokenKeyHolderInterface
     public var appleTokenSubject: PassthroughSubject<String, AppleOAuthError> = .init()
@@ -21,11 +22,13 @@ public class AppleLoginService: NSObject {
     public init(
         networkProvider: NetworkProviderInterface,
         tokenStorage: TokenStorageInterface,
+        userInfoStorage: UserInfoStorageInterface,
         recentLoginRecordService: RecentLoginRecordServiceInterface,
         tokenKeyHolder: TokenKeyHolderInterface = TokenKeyHolder()
     ) {
         self.networkProvider = networkProvider
         self.tokenStorage = tokenStorage
+        self.userInfoStorage = userInfoStorage
         self.recentLoginRecordService = recentLoginRecordService
         self.tokenKeyHolder = tokenKeyHolder      
     }
