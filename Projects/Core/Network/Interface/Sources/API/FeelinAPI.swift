@@ -16,8 +16,8 @@ public enum FeelinAPI<R> {
     case signUp(request: UserSignUpRequest?)
     case checkUserValidity(accessToken: String)
     case reissueAccessToken(refreshToken: String)
-    case getArtists(cursor: Int?, size: Int)
-    case searchArtists(query: String, cursor: Int?, size: Int)
+    case getArtists(pageNumber: Int, pageSize: Int)
+    case searchArtists(pageNumber: Int, pageSize: Int, query: String)
     case postFavoriteArtists(ids: [Int])
     case postFavoriteArtist(id: Int)
     case deleteFavoriteArtist(id: Int)
@@ -71,8 +71,7 @@ extension FeelinAPI: HTTPNetworking {
 
     public var queryParameters: Encodable? {
         switch self {
-        case .getArtists(let cursor, let size),
-             .getFavoriteArtists(let cursor, let size),
+        case .getFavoriteArtists(let cursor, let size),
              .getNotifications(let cursor, let size):
             if let cursor = cursor {
                 return [
@@ -99,20 +98,6 @@ extension FeelinAPI: HTTPNetworking {
                 "hasLyrics": "\(hasLyrics)"
             ]
             
-        case .searchArtists(let query, let cursor, let size):
-            if let cursor = cursor {
-                return [
-                    "query": "\(query)",
-                    "cursor": "\(cursor)",
-                    "size": "\(size)"
-                ]
-            }
-
-            return [
-                "query": "\(query)",
-                "size": "\(size)"
-            ]
-            
         case .postLikes(let noteID),
              .deleteLikes(let noteID),
              .postBookmarks(let noteID),
@@ -129,11 +114,18 @@ extension FeelinAPI: HTTPNetworking {
                 "artistId": "\(artistID)"
             ]
 
-        case .getSearchedNotes(let pageNumber, let pageSize, let query):
+        case .searchArtists(let pageNumber, let pageSize, let query),
+             .getSearchedNotes(let pageNumber, let pageSize, let query):
             return [
                 "query": "\(query)",
                 "pageNumber": "\(pageNumber)",
                 "pageSize": "\(pageSize)"
+            ]
+            
+        case .getArtists(let pageNumber, let pageSize):
+            return [
+                "pageNumber": pageNumber,
+                "pageSize": pageSize
             ]
             
         case .getSongNotes(let cursor, let size, let hasLyrics, let songID):

@@ -44,7 +44,7 @@ public struct SearchArtistsUseCase: SearchArtistsUseCaseInterface {
         if artistPaginationService.currentSearchWord != keyword {
             artistPaginationService.setCurrentSearchWord(keyword)
             artistPaginationService.update(
-                currentPage: nil,
+                currentPage: 0,
                 hasNextPage: true
             )
         }
@@ -64,11 +64,15 @@ public struct SearchArtistsUseCase: SearchArtistsUseCaseInterface {
         )
         .receive(on: DispatchQueue.main)
         .map { [weak artistPaginationService] artistsResponse in
+            // 별도로 다음 페이지를 서버에서 주지 않기 때문에 아래와 같이 임의로 페이지 하나를 더 해 준다.
+            var nextPage = artistsResponse.hasNext
+            ? artistsResponse.pageNumber + 1
+            : artistsResponse.pageNumber
             
             // 데이터로딩 완료 & 페이지 상태 업데이트
             artistPaginationService?.setLoading(false)
             artistPaginationService?.update(
-                currentPage: artistsResponse.nextCursor,
+                currentPage: nextPage,
                 hasNextPage: artistsResponse.hasNext
             )
             

@@ -7,6 +7,12 @@
 
 import ProjectDescription
 
+// 첫 번째 자리1은 메이저 업데이트
+// 두 번째 자리1은 기능 리뉴얼과 기능 중규모 업데이트
+// 세 번째 자리는 자잘한 디버깅 및 소소한 수정 업데이트
+
+private let currentAppVersion: String = "0.0.1"
+
 public extension Project {
     enum Environment {
         public static let appName = "Feelin"
@@ -98,7 +104,7 @@ public extension Project {
             }
             
             return .extendingDefault(with: [
-                "CFBundleShortVersionString": "1.0",
+                "CFBundleShortVersionString": "\(currentAppVersion)",
                 "CFBundleVersion": "1",
                 "UILaunchStoryboardName": "LaunchScreen",
                 "NSAppTransportSecurity": ["NSAllowsArbitraryLoads": true],
@@ -129,7 +135,8 @@ public extension Project {
                 "ACCESS_TOKEN_KEY": "${ACCESS_TOKEN_KEY}",
                 "REFRESH_TOKEN_KEY": "${REFRESH_TOKEN_KEY}",
                 "USER_INFO_KEY": "${USER_INFO_KEY}",
-                "DEVELOPMENT_TEAM_ID": "${DEVELOPMENT_TEAM_ID}"
+                "DEVELOPMENT_TEAM_ID": "${DEVELOPMENT_TEAM_ID}",
+                "ITSAppUsesNonExemptEncryption": false
             ])
         }
     }

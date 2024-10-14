@@ -50,7 +50,8 @@ final class NoteDetailView: UIView {
             frame: .zero,
             collectionViewLayout: compositionalLayout
         )
-
+        
+        collectionView.backgroundColor = Colors.background
         collectionView.showsVerticalScrollIndicator = false
 
         return collectionView

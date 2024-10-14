@@ -97,7 +97,7 @@ extension CommunityMainViewModel {
         .receive(on: DispatchQueue.main)
         .sink { [weak self] result in
             switch result {
-            case .success(let success):
+            case .success:
                 self?.artist.isFavorite = isFavorite
                 
             case .failure(let error):

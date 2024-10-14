@@ -55,15 +55,16 @@ private extension TabBarCoordinator {
     }
 
     func addTopBorderToTabBar() {
-        let topBorder = CALayer()
-        topBorder.frame = CGRect(
-            x: 0,
-            y: 0,
-            width: tabBarController.tabBar.frame.width,
-            height: 1
+        let topBorderView = UIView(
+            frame: .init(
+                x: 0,
+                y: 0,
+                width: tabBarController.tabBar.frame.width,
+                height: 1
+            )
         )
-        topBorder.backgroundColor = Colors.gray01.cgColor
-        tabBarController.tabBar.layer.addSublayer(topBorder)
+        topBorderView.backgroundColor = Colors.gray01
+        tabBarController.tabBar.addSubview(topBorderView)
     }
 
     func createTabBarNavigationController(

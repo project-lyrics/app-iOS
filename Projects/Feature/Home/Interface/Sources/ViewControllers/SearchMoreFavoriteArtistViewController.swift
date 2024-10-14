@@ -11,7 +11,15 @@ import UIKit
 import Domain
 import Shared
 
+public protocol SearchMoreFavoriteArtistDelegate: AnyObject {
+    func dismissViewController()
+    func pushCommunityMainViewController(artist: Artist)
+}
+
 public class SearchMoreFavoriteArtistViewController: UIViewController {
+    
+    public weak var coordinator: SearchMoreFavoriteArtistDelegate?
+    
     private let viewModel: SearchMoreFavoriteArtistViewModel
     private var cancellables: Set<AnyCancellable> = .init()
     
@@ -167,8 +175,8 @@ private extension SearchMoreFavoriteArtistViewController {
             .store(in: &cancellables)
         
         self.closeButton.publisher(for: .touchUpInside)
-            .sink { _ in
-                // TODO: - dismiss viewController
+            .sink { [weak self] _ in
+                self?.coordinator?.dismissViewController()
             }
             .store(in: &cancellables)
     }
@@ -180,7 +188,11 @@ extension SearchMoreFavoriteArtistViewController: UICollectionViewDelegate {
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         // 키보드가 올라와 있다면 일단 resign
         self.artistSearchBar.searchTextField.resignFirstResponder()
-        // TODO: - Navigation to CommunityMainPageVC
+        
+        let selectedArtist = self.viewModel.fetchedArtists[indexPath.item]
+        
+        self.coordinator?.dismissViewController()
+        self.coordinator?.pushCommunityMainViewController(artist: selectedArtist)
     }
 }
 

@@ -19,6 +19,7 @@ public protocol HomeViewControllerDelegate: AnyObject {
     func pushCommunityMainViewController(artist: Artist)
     func pushNoteCommentsViewController(noteID: Int)
     func presentInitialArtistSelectViewController()
+    func presentSearchMoreFavoriteArtistViewController()
 }
 
 public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHandling {
@@ -398,12 +399,10 @@ private extension HomeViewController {
 
                 switch item {
                 case .banner:
-                    // TODO: 구글폼 URL로직 추가 필요
-                    UIApplication.shared.open(URL(string: "url")!)
+                    self.openWebBrowser(urlStr: "https://docs.google.com/forms/d/1ottTpPuoiDfQnZaMYwwi75WXdEInq6KHN8jY4L9Qc00/edit")
 
                 case .searchArtist:
-                    // TODO: - 좋아하는 아티스트 추가 선택 화면으로 네비게이션 필요
-                    break
+                    coordinator?.presentSearchMoreFavoriteArtistViewController()
 
                 case .favoriteArtist(let artist):
                     coordinator?.pushCommunityMainViewController(artist: artist)
@@ -453,6 +452,15 @@ private extension HomeViewController {
                 self?.coordinator?.pushNoteNotificationViewController()
             }
             .store(in: &cancellables)
+    }
+    
+    private func openWebBrowser(urlStr: String) {
+        guard let url = URL(string: urlStr) else {
+            return
+        }
+        if UIApplication.shared.canOpenURL(url) {
+            UIApplication.shared.open(url)
+        }
     }
 }
 

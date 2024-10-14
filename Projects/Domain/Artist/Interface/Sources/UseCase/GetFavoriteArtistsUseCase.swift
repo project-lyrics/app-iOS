@@ -71,7 +71,7 @@ public struct GetFavoriteArtistsUseCase: GetFavoriteArtistsUseCaseInterface {
             return artistsResponse.data.map { artistResponse in
                 return Artist(
                     dto: artistResponse.artist,
-                    isFavorite: false
+                    isFavorite: true
                 )
             }
         }

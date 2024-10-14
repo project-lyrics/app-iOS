@@ -19,7 +19,7 @@ public protocol SettingViewControllerDelegate: AnyObject {
 }
 
 public final class SettingViewController: UIViewController {
-
+    private let viewModel: SettingViewModel
     private let settingView = SettingView()
 
     public weak var coordinator: SettingViewControllerDelegate?
@@ -49,8 +49,10 @@ public final class SettingViewController: UIViewController {
 
     private lazy var settingListDataSource: SettingListDataSource = makeDataSource()
 
-    public init() {
-        super.init(nibName: nil, bundle: nil)
+    public init(viewModel: SettingViewModel) {
+        self.viewModel = viewModel
+        
+        super.init(nibName: nil, bundle: .main)
     }
 
     @available(*, unavailable)
@@ -66,6 +68,7 @@ public final class SettingViewController: UIViewController {
         super.viewDidLoad()
 
         setUpDefault()
+        bindUI()
         bindData()
         bindAction()
     }
@@ -77,6 +80,27 @@ public final class SettingViewController: UIViewController {
 
         logoutButton.isHidden = userInfo == nil
         deleteUserButton.isHidden = userInfo == nil
+    }
+    
+    private func bindUI() {
+        self.viewModel.$logoutResult
+            .sink { [weak self] logoutResult in
+                switch logoutResult {
+                case .success:
+                    self?.coordinator?.didFinish()
+                    
+                case .failure(let error):
+                    self?.showAlert(
+                        title: error.errorDescription,
+                        message: nil,
+                        singleActionTitle: "확인"
+                    )
+                    
+                default:
+                    break
+                }
+            }
+            .store(in: &cancellables)
     }
 
     private func bindData() {
@@ -99,8 +123,7 @@ public final class SettingViewController: UIViewController {
                     leftActionTitle: "취소",
                     rightActionTitle: "로그아웃",
                     rightActionCompletion: {
-                        self?.userInfo = nil
-                        self?.coordinator?.didFinish()
+                        self?.viewModel.logout()
                     }
                 )
             }
@@ -114,8 +137,8 @@ public final class SettingViewController: UIViewController {
 
         bannerImageView.tapPublisher
             .sink { [weak self] _ in
-                // TODO: 구글폼으로 이동
-                self?.openWebBrowser(urlStr: "")
+                // MARK: - 피드백 배너에 대한 url을 일단 원시값으로 사용하되 추후 관리 측면에서 리팩토링 필요
+                self?.openWebBrowser(urlStr: "https://docs.google.com/forms/d/1eoPqnYLfwlgmOeCSKrPWUb7qCPnX6QrLJx8r34WAUwk/edit")
             }
             .store(in: &cancellables)
     }
@@ -161,7 +184,9 @@ public final class SettingViewController: UIViewController {
         guard let url = URL(string: urlStr) else {
             return
         }
-        UIApplication.shared.open(url)
+        if UIApplication.shared.canOpenURL(url) {
+            UIApplication.shared.open(url)
+        }
     }
 }
 

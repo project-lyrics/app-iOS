@@ -16,4 +16,8 @@ public enum BundleError: LocalizedError, Equatable {
             return "\(itemName) is missing from the bundle"
         }
     }
+    
+    public var errorMessage: String {
+        return errorDescription ?? "unknown bundle error"
+    }
 }
