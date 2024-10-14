@@ -296,7 +296,8 @@ private extension MyPageCoordinator {
         @Injected(.userProfileAPIService) var userProfileAPIService: UserProfileAPIServiceInterface
 
         let deleteUserUseCase: DeleteUserUseCaseInterface = DeleteUserUseCase(
-            userProfileAPIService: userProfileAPIService
+            userProfileAPIService: userProfileAPIService,
+            tokenStorage: TokenStorage()
         )
         let viewModel = DeleteUserViewModel(
             deleteUserUseCase: deleteUserUseCase
