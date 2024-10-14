@@ -13,7 +13,7 @@ public enum FeelinAPI<R> {
         oAuthProvider: OAuthProvider,
         oAuthAccessToken: String
     )
-    case signUp(request: UserSignUpRequest?)
+    case signUp(request: UserSignUpRequest)
     case checkUserValidity(accessToken: String)
     case reissueAccessToken(refreshToken: String)
     case getArtists(pageNumber: Int, pageSize: Int)

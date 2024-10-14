@@ -14,18 +14,20 @@ public struct UserSignUpRequest: Encodable {
     let authProvider: String
     let nickname: String
     let profileCharacter: String
-    let gender: String
-    let birthYear: Int
+    let gender: String?
+    let birthYear: String?
     let terms: [Term]
+    let isAdmin: Bool
 
     public init(
         socialAccessToken: String,
         authProvider: String,
         nickname: String,
         profileCharacter: String,
-        gender: String,
-        birthYear: Int,
-        terms: [Term]
+        gender: String?,
+        birthYear: String?,
+        terms: [Term],
+        isAdmin: Bool
     ) {
         self.socialAccessToken = socialAccessToken
         self.authProvider = authProvider
@@ -34,6 +36,7 @@ public struct UserSignUpRequest: Encodable {
         self.gender = gender
         self.birthYear = birthYear
         self.terms = terms
+        self.isAdmin = isAdmin
     }
 }
 
