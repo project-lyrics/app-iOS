@@ -253,18 +253,12 @@ public final class CommunityMainViewController: UIViewController, NoteMenuHandli
     private func setUpLayout() {
         self.view.backgroundColor = Colors.background
         self.view.addSubview(flexContainer)
+        let tabBarHeight = self.tabBarController?.tabBar.frame.height ?? 0
 
         flexContainer.flex.define { flex in
             flex.addItem(communityMainView)
                 .top(-UIApplication.shared.safeAreaInsets.top)
                 .grow(1)
-                .define { flex in
-                    flex.addItem(postNoteButton)
-                        .size(56)
-                        .position(.absolute)
-                        .bottom(20)
-                        .right(20)
-                }
 
             flex.addItem(navigationBackgroundView)
                 .backgroundColor(Colors.background)
@@ -278,6 +272,19 @@ public final class CommunityMainViewController: UIViewController, NoteMenuHandli
                 .marginLeft(10)
                 .height(self.navigationBarHeight)
                 .top(UIApplication.shared.safeAreaInsets.top)
+            
+            flex.addItem()
+                .direction(.row)
+                .define { flex in
+                    flex.addItem()
+                        .grow(1)
+
+                    flex.addItem(postNoteButton)
+                        .size(56)
+                        .bottom(20 + tabBarHeight)
+                        .right(20)
+                        .shrink(1)
+                }
         }
     }
 
