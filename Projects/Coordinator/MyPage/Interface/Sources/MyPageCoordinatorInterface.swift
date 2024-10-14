@@ -49,6 +49,7 @@ public final class MyPageCoordinator: Coordinator {
         }
 
         DIContainer.registerUserProfileService()
+        DIContainer.registerUserInfoStorage()
     }
 
     private func configureMyPageViewController() {

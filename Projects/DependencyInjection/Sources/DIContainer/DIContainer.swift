@@ -42,12 +42,18 @@ public extension DIContainer {
 
 // MARK: Login
 public extension DIContainer {
+    static func registerUserInfoStorage() {
+        standard.register(.userInfoStorage) { _ in
+            return UserInfoStorage()
+        }
+    }
+
     static func registerKakaoOAuthService() {
         standard.register(.kakaoOAuthService) { resolver in
             let tokenStorage = try resolver.resolve(.tokenStorage)
             let networkProvider = try resolver.resolve(.networkProvider)
             let recentLoginRecordService = try resolver.resolve(.recentLoginRecordService)
-            let userInfoStorage = UserInfoStorage()
+            let userInfoStorage = try resolver.resolve(.userInfoStorage)
 
             return KakaoOAuthService(
                 networkProvider: networkProvider,
@@ -63,7 +69,7 @@ public extension DIContainer {
             let tokenStorage = try resolver.resolve(.tokenStorage)
             let networkProvider = try resolver.resolve(.networkProvider)
             let recentLoginRecordService = try resolver.resolve(.recentLoginRecordService)
-            let userInfoStorage = UserInfoStorage()
+            let userInfoStorage = try resolver.resolve(.userInfoStorage)
 
             return AppleLoginService(
                 networkProvider: networkProvider,

@@ -37,6 +37,7 @@ private extension OnboardingCoordinator {
         DIContainer.registerRecentLoginRecordService()
         DIContainer.registerNetworkProvider(hasTokenStorage: false)
         DIContainer.registerUserValidityService()
+        DIContainer.registerUserInfoStorage()
         DIContainer.registerKakaoOAuthService()
         DIContainer.registerAppleOAuthService()
     }
