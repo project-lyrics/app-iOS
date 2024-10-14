@@ -89,14 +89,6 @@ extension OnboardingCoordinator: CoordinatorDelegate,
         navigationController.pushViewController(viewController, animated: true)
     }
 
-    public func pushServiceUsageViewController() {
-        
-    }
-
-    public func pushPersonalInfoUsageViewController() {
-
-    }
-
     public func pushUserInformationViewController(model: UserSignUpEntity) {
         let viewController = UserInformationViewController(model: model)
         viewController.coordinator = self
