@@ -53,7 +53,6 @@ final class UserProfileView: UIView {
         let label = UILabel()
         label.font = SharedDesignSystemFontFamily.Pretendard.medium.font(size: 14)
         label.textColor = Colors.gray09
-        label.text = "카카오 로그인"
 
         return label
     }()
@@ -71,7 +70,6 @@ final class UserProfileView: UIView {
         let label = UILabel()
         label.font = SharedDesignSystemFontFamily.Pretendard.medium.font(size: 14)
         label.textColor = Colors.gray09
-        label.text = "8ca0fd81-fd03-438c-8730-c6c4e7ef"
 
         return label
     }()
@@ -102,7 +100,7 @@ final class UserProfileView: UIView {
         let label = UILabel()
         label.font = SharedDesignSystemFontFamily.Pretendard.medium.font(size: 14)
         label.textColor = Colors.gray09
-        label.text = "여성ㆍ2000년"
+        label.text = "정보를 입력해주세요"
 
         return label
     }()
@@ -167,6 +165,7 @@ final class UserProfileView: UIView {
                                     .marginRight(6)
 
                                 flex.addItem(loginInfoLabel)
+                                    .shrink(1)
                             }
                     }
 
@@ -232,5 +231,11 @@ final class UserProfileView: UIView {
         loginInfoLabel.text = loginType?.info
         userIDInfoLabel.text = model.feedbackID
         otherInfoLabel.text = otherInfo
+
+        loginInfoLabel.flex.markDirty()
+        userIDInfoLabel.flex.markDirty()
+        otherInfoLabel.flex.markDirty()
+
+        rootFlexContainer.flex.layout()
     }
 }
