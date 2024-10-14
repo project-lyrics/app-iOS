@@ -135,7 +135,8 @@ public extension Project {
                 "ACCESS_TOKEN_KEY": "${ACCESS_TOKEN_KEY}",
                 "REFRESH_TOKEN_KEY": "${REFRESH_TOKEN_KEY}",
                 "USER_INFO_KEY": "${USER_INFO_KEY}",
-                "DEVELOPMENT_TEAM_ID": "${DEVELOPMENT_TEAM_ID}"
+                "DEVELOPMENT_TEAM_ID": "${DEVELOPMENT_TEAM_ID}",
+                "ITSAppUsesNonExemptEncryption": false
             ])
         }
     }
