@@ -7,6 +7,7 @@ import Core
 import Domain
 import DependencyInjection
 import FeatureOnboardingInterface
+import FeatureMyPageInterface
 
 public final class OnboardingCoordinator: Coordinator {
     public weak var delegate: CoordinatorDelegate?
@@ -82,7 +83,15 @@ extension OnboardingCoordinator: CoordinatorDelegate,
                                  UseAgreementViewControllerDelegate,
                                  UserInformationViewControllerDelegate,
                                  ProfileViewControllerDelegate,
+                                 InternalWebViewControllerDelegate,
                                  WelcomeViewControllerDelegate {
+    public func presentInternalWebViewController(url: String) {
+        let internalWebViewController = InternalWebViewController(url: url)
+        internalWebViewController.coordinator = self
+        internalWebViewController.modalPresentationStyle = .fullScreen
+        navigationController.present(internalWebViewController, animated: true)
+    }
+    
     public func pushUseAgreementViewController(model: UserSignUpEntity) {
         let viewController = UseAgreementViewController(model: model)
         viewController.coordinator = self
