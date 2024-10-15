@@ -62,7 +62,6 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
             cell.configure(with: note)
             
             cell.likeNoteButton.publisher(for: .touchUpInside)
-                .debounce(for: .milliseconds(600), scheduler: DispatchQueue.main)
                 .sink { [weak self] control in
                     self?.viewModel.setNoteLikeState(noteID: note.id, isLiked: control.isSelected)
                 }

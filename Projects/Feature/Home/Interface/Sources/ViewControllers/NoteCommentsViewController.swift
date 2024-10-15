@@ -69,7 +69,6 @@ public final class NoteCommentsViewController: UIViewController, CommentMenuHand
             )
             
             cell.likeNoteButton.publisher(for: .touchUpInside)
-                .debounce(for: .milliseconds(600), scheduler: DispatchQueue.main)
                 .sink { control in
                     self.viewModel.setNoteLikeState(
                         noteID: note.id,

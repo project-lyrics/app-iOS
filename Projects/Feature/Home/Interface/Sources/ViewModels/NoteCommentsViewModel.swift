@@ -154,36 +154,43 @@ extension NoteCommentsViewModel {
         noteID: Int,
         isLiked: Bool
     ) {
-        self.setNoteLikeUseCase.execute(
-            isLiked: isLiked,
-            noteID: noteID
-        )
-        .receive(on: DispatchQueue.main)
-        .mapToResult()
-        .sink { [weak self] result in
-            switch result {
-            case .success(let updatedNoteLike):
-                let indexToUpdate = self?.fetchedNotes.firstIndex(
-                    where: { $0.id == noteID }
-                )
-                
-                if let indexToUpdate = indexToUpdate {
-                    self?.fetchedNotes[indexToUpdate].isLiked = isLiked
-                    self?.fetchedNotes[indexToUpdate].likesCount = updatedNoteLike.likesCount
-                }
-                
-            case .failure(let noteError):
-                let indexToUpdate = self?.fetchedNotes.firstIndex(
-                    where: { $0.id == noteID }
-                )
-                
-                if let indexToUpdate = indexToUpdate {
-                    self?.fetchedNotes[indexToUpdate].isLiked = !isLiked
-                }
-                self?.error = noteError
-            }
+        guard let indexToUpdate = self.fetchedNotes.firstIndex(where: { $0.id == noteID }) else {
+            return
         }
-        .store(in: &cancellables)
+        
+        self.fetchedNotes[indexToUpdate].isLiked = isLiked
+        
+        let originalLikesCount = self.fetchedNotes[indexToUpdate].likesCount
+        
+        if isLiked {
+            self.fetchedNotes[indexToUpdate].likesCount = originalLikesCount + 1
+        } else {
+            self.fetchedNotes[indexToUpdate].likesCount = max(0, originalLikesCount - 1)
+        }
+        
+        Just<(isLiked: Bool, noteID: Int)>((isLiked, noteID))
+            .setFailureType(to: NoteError.self)
+            .map { [unowned self] isLiked, noteID in
+                return self.setNoteLikeUseCase.execute(
+                    isLiked: isLiked,
+                    noteID: noteID
+                )
+            }
+            .switchToLatest()
+            .mapToResult()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] result in
+                switch result {
+                case .success(let updatedNoteLike):
+                    self?.fetchedNotes[indexToUpdate].likesCount = updatedNoteLike.likesCount
+
+                case .failure(let error):
+                    self?.fetchedNotes[indexToUpdate].isLiked = !isLiked
+                    self?.fetchedNotes[indexToUpdate].likesCount = originalLikesCount
+                    self?.error = error
+                }
+            }
+            .store(in: &cancellables)
     }
 }
 

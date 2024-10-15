@@ -198,11 +198,6 @@ public final class BookmarkViewController: UIViewController,
             cell.configure(with: note)
 
             cell.likeNoteButton.publisher(for: .touchUpInside)
-            // 0.6초 사이에 발생한 가장 최신 좋아요 상태만 방출
-                .debounce(
-                    for: .milliseconds(600),
-                    scheduler: DispatchQueue.main
-                )
                 .sink { control in
                     self?.viewModel.setNoteLikeState(
                         noteID: note.id,
