@@ -65,6 +65,7 @@ public final class NoteCommentsViewController: UIViewController, CommentMenuHand
             
             cell.configure(
                 with: note,
+                showsFullNoteContents: true,
                 isHyperLinkTouchable: true
             )
             
