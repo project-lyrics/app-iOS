@@ -79,7 +79,6 @@ public final class BookmarkViewController: UIViewController,
         super.viewDidLoad()
 
         setUpDefault()
-        viewModel.getFavoriteArtists()
         bindUI()
         bindData()
         bindAction()
@@ -91,6 +90,10 @@ public final class BookmarkViewController: UIViewController,
 
     private func setUpDefault() {
         view.backgroundColor = Colors.background
+        
+        if userInfo != nil {
+            viewModel.getFavoriteArtists()
+        }
     }
 
     private func bindUI() {
@@ -301,7 +304,11 @@ public final class BookmarkViewController: UIViewController,
             let currentItems = snapshot.itemIdentifiers(inSection: .notes)
             if newItems.isEmpty {
                 snapshot.deleteItems(currentItems)
-                snapshot.appendItems([.emptyNote], toSection: .notes)
+                if userInfo != nil {
+                    snapshot.appendItems([.emptyNote], toSection: .notes)
+                } else {
+                    snapshot.appendItems([.requiredLogin], toSection: .notes)
+                }
             } else {
                 snapshot.deleteItems(currentItems)
                 snapshot.appendItems(newItems, toSection: .notes)

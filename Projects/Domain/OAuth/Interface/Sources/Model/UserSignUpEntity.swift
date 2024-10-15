@@ -13,8 +13,9 @@ public struct UserSignUpEntity {
     public var nickname: String?
     public var profileCharacter: String?
     public var gender: GenderEntity?
-    public var birthYear: Int?
+    public var birthYear: String?
     public var terms: [Term]
+    public var isAdmin: Bool
 
     public init(
         socialAccessToken: String? = nil,
@@ -22,8 +23,9 @@ public struct UserSignUpEntity {
         nickname: String? = nil,
         profileCharacter: String? = nil,
         gender: GenderEntity? = nil,
-        birthYear: Int? = nil,
-        terms: [Term] = []
+        birthYear: String? = nil,
+        terms: [Term] = [],
+        isAdmin: Bool = false
     ) {
         self.socialAccessToken = socialAccessToken
         self.oAuthType = oAuthType
@@ -32,27 +34,22 @@ public struct UserSignUpEntity {
         self.gender = gender
         self.birthYear = birthYear
         self.terms = terms
+        self.isAdmin = isAdmin
     }
 
-    public func toDTO() -> UserSignUpRequest? {
-        guard let socialAccessToken = socialAccessToken,
-              let oAuthType = oAuthType?.rawValue,
-              let authProvider = OAuthProvider(rawValue: oAuthType),
-              let nickname = nickname,
-              let profileCharacter = profileCharacter,
-              let gender = gender?.toDTO,
-              let birthYear = birthYear else {
-            return nil
-        }
+    public func toDTO() -> UserSignUpRequest {
+        let oAuthType = oAuthType ?? .apple
+        let authProvider = OAuthProvider(rawValue: oAuthType.rawValue) ?? .apple
 
         return UserSignUpRequest(
-            socialAccessToken: socialAccessToken,
+            socialAccessToken: socialAccessToken ?? "",
             authProvider: authProvider.rawValue,
-            nickname: nickname,
-            profileCharacter: profileCharacter,
-            gender: gender.rawValue,
-            birthYear: birthYear,
-            terms: terms
+            nickname: nickname ?? "",
+            profileCharacter: profileCharacter ?? "",
+            gender: gender?.toDTO.rawValue ?? "",
+            birthYear: birthYear ?? "",
+            terms: terms,
+            isAdmin: isAdmin
         )
     }
 }

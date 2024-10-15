@@ -24,6 +24,9 @@ public protocol MyPageViewControllerDelegate: AnyObject {
 
 public final class MyPageViewController: UIViewController {
 
+    @KeychainWrapper<UserInformation>(.userInfo)
+    private var userInfo
+
     public weak var coordinator: MyPageViewControllerDelegate?
 
     private let flexContainer = UIView()
@@ -65,7 +68,10 @@ public final class MyPageViewController: UIViewController {
 
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        viewModel.fetchUserProfile()
+
+        if userInfo != nil {
+            viewModel.fetchUserProfile()
+        }
     }
 
     private func setUpDefault() {

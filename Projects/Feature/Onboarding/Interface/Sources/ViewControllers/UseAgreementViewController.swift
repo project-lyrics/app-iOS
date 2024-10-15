@@ -15,8 +15,7 @@ import Domain
 
 public protocol UseAgreementViewControllerDelegate: AnyObject {
     func pushUserInformationViewController(model: UserSignUpEntity)
-    func pushServiceUsageViewController()
-    func pushPersonalInfoUsageViewController()
+    func presentInternalWebViewController(url: String)
     func popViewController()
 }
 
@@ -135,13 +134,15 @@ public final class UseAgreementViewController: UIViewController {
 
         checkServiceUsageButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in
-                self?.coordinator?.pushServiceUsageViewController()
+                let url = TermEntity.serviceUsage.notionLink
+                self?.coordinator?.presentInternalWebViewController(url: url)
             }
             .store(in: &cancellables)
 
         checkPersonalInfoUsageButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in
-                self?.coordinator?.pushPersonalInfoUsageViewController()
+                let url = TermEntity.personalInfo.notionLink
+                self?.coordinator?.presentInternalWebViewController(url: url)
             }
             .store(in: &cancellables)
 

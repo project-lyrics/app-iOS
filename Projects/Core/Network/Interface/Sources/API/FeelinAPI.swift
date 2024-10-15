@@ -13,7 +13,7 @@ public enum FeelinAPI<R> {
         oAuthProvider: OAuthProvider,
         oAuthAccessToken: String
     )
-    case signUp(request: UserSignUpRequest?)
+    case signUp(request: UserSignUpRequest)
     case checkUserValidity(accessToken: String)
     case reissueAccessToken(refreshToken: String)
     case getArtists(pageNumber: Int, pageSize: Int)
@@ -212,7 +212,20 @@ extension FeelinAPI: HTTPNetworking {
             return request
 
         case .patchUserProfile(let request):
-            return request
+            if let gender = request.gender?.rawValue,
+               let birthYear = request.birthYear {
+                return [
+                    "nickname": request.nickname,
+                    "profileCharacter": request.profileCharacter,
+                    "gender": gender,
+                    "birthYear": "\(birthYear)"
+                ]
+            }
+
+            return [
+                "nickname": request.nickname,
+                "profileCharacter": request.profileCharacter
+            ]
 
         case .patchNote(_, let request):
             return request

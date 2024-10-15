@@ -88,7 +88,7 @@ public final class UserInformationViewController: UIViewController {
 
         birthYearDropDownButtonPublisher
             .sink { [weak self] year in
-                self?.model.birthYear = year
+                self?.model.birthYear = "\(year)"
                 self?.birthYearDropDownButton.setDescription("\(year)년")
             }
             .store(in: &cancellables)
