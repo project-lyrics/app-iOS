@@ -199,6 +199,7 @@ extension FeelinAPI: HTTPNetworking {
                 "artistIds": ids
             ]
 
+        // 건너뛰어서 출생연도, 성별이 없는 경우 encoding 되지 않음
         case .signUp(let request):
             return request
 
