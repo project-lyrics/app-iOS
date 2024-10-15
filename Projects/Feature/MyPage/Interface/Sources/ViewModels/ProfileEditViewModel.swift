@@ -81,18 +81,17 @@ private extension ProfileEditViewModel {
             .compactMap { $0 }
             .eraseToAnyPublisher()
 
+        // 데이터 변경이 없는 경우, 기존 데이터를 보내면 API 에러가 발생함
         let combinedUserProfileModelPublisher = Publishers
             .CombineLatest(
                 validNicknamePublisher,
                 input.profileImagePublisher
             )
-            .map { (nickname, profileCharacter) -> UserProfileRequestValue in
+            .map { [weak self] (nickname, profileCharacter) -> UserProfileRequestValue in
                 let type = ProfileCharacterType(rawValue: profileCharacter) ?? .braidedHair
                 return UserProfileRequestValue(
-                    nickname: nickname,
-                    profileCharacter: type,
-                    gender: self.userProfile.gender,
-                    birthYear: self.userProfile.birthYear
+                    nickname: nickname != self?.userProfile.nickname ? nickname : nil,
+                    profileCharacter: type != self?.userProfile.profileCharacterType ? type : nil
                 )
             }
             .eraseToAnyPublisher()

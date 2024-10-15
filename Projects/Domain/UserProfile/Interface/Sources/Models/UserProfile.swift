@@ -17,7 +17,7 @@ public struct UserProfile {
     public let profileCharacterType: ProfileCharacterType
     public var gender: GenderEntity?
     public var birthYear: Int?
-    public let feedbackID: String?
+    public let feedbackID: String
     public let authProvider: String
 
     public init(
@@ -26,7 +26,7 @@ public struct UserProfile {
         profileCharacterType: ProfileCharacterType,
         gender: GenderEntity?,
         birthYear: Int?,
-        feedbackID: String?,
+        feedbackID: String,
         authProvider: String
     ) {
         self.id = id

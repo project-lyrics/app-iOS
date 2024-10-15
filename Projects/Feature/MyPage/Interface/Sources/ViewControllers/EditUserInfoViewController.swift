@@ -49,7 +49,7 @@ public final class EditUserInfoViewController: UIViewController {
         overrideUserInterfaceStyle = .light
         bind()
         genderCollectionView.dataSource = self
-        configure(model: viewModel.model)
+        configure(model: viewModel.userProfile)
     }
 
     private func bind() {
@@ -157,7 +157,7 @@ extension EditUserInfoViewController: UICollectionViewDataSource {
         let cell = collectionView.dequeueReusableCell(for: indexPath, cellType: GenderCell.self)
         cell.configure(with: GenderEntity.allCases[indexPath.row])
 
-        if let gender = viewModel.model.gender,
+        if let gender = viewModel.userProfile.gender,
            indexPath.row == gender.index {
             cell.setSelected(true)
             collectionView.selectItem(at: indexPath, animated: false, scrollPosition: [])

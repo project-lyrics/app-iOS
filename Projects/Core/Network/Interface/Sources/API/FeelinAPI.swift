@@ -212,21 +212,10 @@ extension FeelinAPI: HTTPNetworking {
         case .reportNote(let request):
             return request
 
+        // 프로필 수정API - 수정하지 않는 항목에 대해서는 아예 비워줘야 에러 발생안함
+        // 모든 값을 같이 보내면 안된다.
         case .patchUserProfile(let request):
-            if let gender = request.gender?.rawValue,
-               let birthYear = request.birthYear {
-                return [
-                    "nickname": request.nickname,
-                    "profileCharacter": request.profileCharacter,
-                    "gender": gender,
-                    "birthYear": "\(birthYear)"
-                ]
-            }
-
-            return [
-                "nickname": request.nickname,
-                "profileCharacter": request.profileCharacter
-            ]
+            return request
 
         case .patchNote(_, let request):
             return request
