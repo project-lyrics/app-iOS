@@ -99,9 +99,9 @@ public final class ProfileViewController: UIViewController {
                     self?.coordinator?.pushWelcomeViewController()
                 case .failure(let error):
                     self?.showAlert(
-                        title: error.localizedDescription,
-                        message: nil,
-                        singleActionTitle: "확인"
+                        shouldIgnoreDarkMode: true,
+                        title: "알림",
+                        message: error.localizedDescription
                     )
                 }
             }
