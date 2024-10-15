@@ -71,9 +71,14 @@ public final class SearchNoteViewController: UIViewController {
 
     override public func viewDidLoad() {
         super.viewDidLoad()
+        self.setUpDelegates()
         self.bindUI()
         self.bindAction()
         self.fetchInitialSearchedNotes()
+    }
+    
+    private func setUpDelegates() {
+        self.searchNoteTableView.delegate = self
     }
 
     private func updateSearchNoteCollectionView(with searchedNotes: [SearchedNote]) {
@@ -99,7 +104,7 @@ private extension SearchNoteViewController {
                         self.searchNoteTableView.contentInset = .init(
                             top: 0,
                             left: 0,
-                            bottom: height,
+                            bottom: height - self.view.safeAreaInsets.bottom,
                             right: 0
                         )
                     } else {
@@ -168,13 +173,20 @@ private extension SearchNoteViewController {
                 viewModel?.searchNotes(isInitialFetch: true)
             }
             .store(in: &cancellables)
+    }
+}
 
-        self.searchNoteTableView.publisher(for: [.didSelectItem])
-            .sink { [weak self] indexPath in
-                guard let item = self?.noteListDataSource.itemIdentifier(for: indexPath) else { return }
-                self?.coordinator?.pushNoteDetailViewController(selectedNote: item)
-            }
-            .store(in: &cancellables)
+// MARK: - UITableViewDelegate
+
+extension SearchNoteViewController: UITableViewDelegate {
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let item = self.noteListDataSource.itemIdentifier(for: indexPath) else {
+            return
+        }
+        
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        self.coordinator?.pushNoteDetailViewController(selectedNote: item)
     }
 }
 
