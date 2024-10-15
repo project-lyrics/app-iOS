@@ -68,7 +68,7 @@ public final class FeelinSearchBar: UIView {
         self.searchTextField.borderStyle = .none
         self.searchTextField.textColor = Colors.gray09
         self.searchTextField.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 14)
-        self.searchTextField.tintColor = .black
+        self.searchTextField.tintColor = Colors.gray09
         self.searchTextField.addTarget(
             self,
             action: #selector(textFieldDidChange),
