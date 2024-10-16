@@ -111,7 +111,7 @@ class NoteNotificationCell: UICollectionViewCell, Reusable {
         switch notification.type {
         case .commentOnNote:
             self.notificationImageView.kf.setImage(with: try? notification.image?.asURL())
-        case .public, .report:
+        case .public, .discipline:
             self.notificationImageView.image = FeelinImages.logo
         }
       
