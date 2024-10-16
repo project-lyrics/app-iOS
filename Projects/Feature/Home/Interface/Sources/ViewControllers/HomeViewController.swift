@@ -223,7 +223,9 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
                 snapshot.appendItems(newItems, toSection: .favoriteArtists)
             }
             
-            let isCountDifferent = currentItems.count != newItems.count
+            // 갯수를 비교할 때 새롭게 추가된 아티스트 cell + 찾아보기 cell과 기존 cell 갯수를 비교 해야 한다.
+            let searchItemButtonCount = 1
+            let isCountDifferent = currentItems.count != (newItems.count + searchItemButtonCount)
             
             guard let refreshControl = self.homeCollectionView.refreshControl else {
                 // pull-to-refresh가 없는 경우 apply snapshot만 적용. 갯수가 달라질때만 animation
