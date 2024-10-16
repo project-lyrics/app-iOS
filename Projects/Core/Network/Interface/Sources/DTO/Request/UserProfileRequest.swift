@@ -8,16 +8,16 @@
 import Foundation
 
 public struct UserProfileRequest: Encodable {
-    public let nickname: String
-    public let profileCharacter: String
+    public let nickname: String?
+    public let profileCharacter: String?
     public var gender: Gender?
     public var birthYear: Int?
 
     public init(
-        nickname: String,
-        profileCharacter: String,
-        gender: Gender?,
-        birthYear: Int?
+        nickname: String? = nil,
+        profileCharacter: String? = nil,
+        gender: Gender? = nil,
+        birthYear: Int? = nil
     ) {
         self.nickname = nickname
         self.profileCharacter = profileCharacter

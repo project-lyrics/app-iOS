@@ -29,14 +29,14 @@ public final class EditUserInfoViewModel {
     private let patchUserProfileUseCase: PatchUserProfileUseCaseInterface
 
     private var cancellables: Set<AnyCancellable> = .init()
-    public let model: UserProfile
+    public let userProfile: UserProfile
 
     public init(
         patchUserProfileUseCase: PatchUserProfileUseCaseInterface,
         model: UserProfile
     ) {
         self.patchUserProfileUseCase = patchUserProfileUseCase
-        self.model = model
+        self.userProfile = model
     }
 
     func transform(_ input: Input) -> Output {
@@ -52,7 +52,7 @@ public final class EditUserInfoViewModel {
     func checkSaveButtonIsEnabled(input: Input) -> AnyPublisher<Bool, Never> {
         return input.birthYearPublisher
             .map { [weak self] birthYear in
-                return self?.model.birthYear != birthYear
+                return self?.userProfile.birthYear != birthYear
             }
             .eraseToAnyPublisher()
     }
@@ -63,12 +63,12 @@ public final class EditUserInfoViewModel {
                 input.genderPublisher,
                 input.birthYearPublisher
             )
-            .map { (gender, birthYear) -> UserProfileRequestValue in
+            .map { [weak self] (gender, birthYear) -> UserProfileRequestValue in
+                let gender = GenderEntity(rawValue: gender)
+
                 return UserProfileRequestValue(
-                    nickname: self.model.nickname,
-                    profileCharacter: self.model.profileCharacterType,
-                    gender: GenderEntity(rawValue: gender),
-                    birthYear: birthYear
+                    gender: gender != self?.userProfile.gender ? gender : nil,
+                    birthYear: birthYear != self?.userProfile.birthYear ? birthYear : nil
                 )
             }
             .eraseToAnyPublisher()

@@ -24,8 +24,8 @@ public struct UserSignUpRequest: Encodable {
         authProvider: String,
         nickname: String,
         profileCharacter: String,
-        gender: String?,
-        birthYear: String?,
+        gender: String? = nil,
+        birthYear: String? = nil,
         terms: [Term],
         isAdmin: Bool
     ) {

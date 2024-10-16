@@ -13,7 +13,7 @@ public struct UserProfileResponse: Decodable {
     public let profileCharacterType: String
     public let gender: String?
     public let birthYear: Int?
-    public let feedbackID: String?
+    public let feedbackID: String
     public let authProvider: String
 
     public init(
@@ -22,7 +22,7 @@ public struct UserProfileResponse: Decodable {
         profileCharacterType: String,
         gender: String?,
         birthYear: Int?,
-        feedbackID: String?,
+        feedbackID: String,
         authProvider: String
     ) {
         self.id = id

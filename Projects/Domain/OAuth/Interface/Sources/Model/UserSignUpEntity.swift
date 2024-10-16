@@ -40,14 +40,14 @@ public struct UserSignUpEntity {
     public func toDTO() -> UserSignUpRequest {
         let oAuthType = oAuthType ?? .apple
         let authProvider = OAuthProvider(rawValue: oAuthType.rawValue) ?? .apple
-
+        
         return UserSignUpRequest(
             socialAccessToken: socialAccessToken ?? "",
             authProvider: authProvider.rawValue,
             nickname: nickname ?? "",
             profileCharacter: profileCharacter ?? "",
-            gender: gender?.toDTO.rawValue ?? "",
-            birthYear: birthYear ?? "",
+            gender: gender?.toDTO.rawValue,
+            birthYear: birthYear,
             terms: terms,
             isAdmin: isAdmin
         )

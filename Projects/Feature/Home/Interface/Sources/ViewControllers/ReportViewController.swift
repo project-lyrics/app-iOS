@@ -113,20 +113,8 @@ public final class ReportViewController: UIViewController {
 
         CombineKeyboard.keyboardHeightPublisher
             .sink { [weak self] keyboardHeight in
-                self?.rootScrollView.contentInset.bottom = keyboardHeight
-                self?.rootScrollView.verticalScrollIndicatorInsets.bottom = keyboardHeight
-
-                // 스크롤 위치 조정을 위해 caretRect를 사용
-                guard let textView = self?.selectedReportReasonView?.reasonTextView,
-                      let end = textView.selectedTextRange?.end else { return }
-                let caretRect = textView.caretRect(for: end)
-
-                // caret 위치로 스크롤 조정
-                self?.rootScrollView.scrollRectToVisible(caretRect, animated: true)
-
-                UIView.animate(withDuration: 0.3) {
-                    self?.view.layoutIfNeeded()
-                }
+                self?.rootScrollView.contentInset.bottom = keyboardHeight * 0.4
+                self?.rootScrollView.verticalScrollIndicatorInsets.bottom = keyboardHeight * 0.4
             }
             .store(in: &cancellables)
     }
@@ -157,7 +145,8 @@ public final class ReportViewController: UIViewController {
             view.endEditing(true)
         }
 
-        reportView.contentView.flex.layout(mode: .adjustHeight)
+        contentView.flex.markDirty()
+        rootScrollView.flex.layout(mode: .adjustHeight)
     }
 
     private func scrollToTextView(textView: UITextView?) {
@@ -178,9 +167,8 @@ public final class ReportViewController: UIViewController {
         reasonTextView.textPublisher(for: [.didChange, .didBeginEditing])
             .receive(on: DispatchQueue.main)
             .sink { [weak self] text in
-                self?.adjustTextViewHeight(reasonTextView)
-
                 guard text != "", text != Const.reasonPlaceholder else { return }
+                self?.adjustTextViewHeight(reasonTextView)
                 self?.reportReasonDescriptionPublisher.send(text)
             }
             .store(in: &cancellables)
@@ -209,14 +197,12 @@ public final class ReportViewController: UIViewController {
             textView.isScrollEnabled = true
         }
 
-        reportView.reportReasonView.flex.layout()
-        contentView.flex.layout(mode: .adjustHeight)
-
-        // rootScrollView의 contentSize를 업데이트
-        rootScrollView.contentSize = contentView.frame.size
-
         // 스크롤 위치 조정을 위해 caretRect를 사용
         scrollToTextView(textView: textView)
+
+        rootScrollView.flex.layout()
+        // rootScrollView의 contentSize를 업데이트
+        rootScrollView.contentSize = contentView.frame.size
     }
 }
 
