@@ -89,23 +89,28 @@ public final class CommunityMainViewModel {
 
 extension CommunityMainViewModel {
     func setFavoriteArtist(_ isFavorite: Bool) {
-        self.setFavoriteArtistUseCase.execute(
-            artistID: self.artist.id,
-            isFavorite: isFavorite
-        )
-        .mapToResult()
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] result in
-            switch result {
-            case .success:
-                self?.artist.isFavorite = isFavorite
-                
-            case .failure(let error):
-                self?.artist.isFavorite = !isFavorite
-                self?.error = .artistError(error)
+        Just<Bool>(isFavorite)
+            .setFailureType(to: ArtistError.self)
+            .map { [unowned self] isFavorite in
+                return self.setFavoriteArtistUseCase.execute(
+                    artistID: self.artist.id,
+                    isFavorite: isFavorite
+                )
             }
-        }
-        .store(in: &cancellables)
+            .switchToLatest()
+            .mapToResult()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] result in
+                switch result {
+                case .success:
+                    self?.artist.isFavorite = isFavorite
+                    
+                case .failure(let error):
+                    self?.artist.isFavorite = !isFavorite
+                    self?.error = .artistError(error)
+                }
+            }
+            .store(in: &cancellables)
     }
 }
 

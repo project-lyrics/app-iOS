@@ -69,7 +69,6 @@ public final class CommunityMainViewController: UIViewController, NoteMenuHandli
         let button = UIButton()
         let image = button.isEnabled ? FeelinImages.writingActive : FeelinImages.writingInactive
         button.setImage(image, for: .normal)
-        button.isEnabled = false
 
         return button
     }()
@@ -102,10 +101,6 @@ public final class CommunityMainViewController: UIViewController, NoteMenuHandli
             cell.configure(artist)
 
             cell.favoriteArtistSelectButton.publisher(for: .touchUpInside)
-                .debounce(
-                    for: .milliseconds(600),
-                    scheduler: DispatchQueue.main
-                )
                 .sink { control in
                     self.viewModel.setFavoriteArtist(control.isSelected)
                 }
