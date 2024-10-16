@@ -135,10 +135,6 @@ public final class CommunityMainViewController: UIViewController, NoteMenuHandli
                 .store(in: &cell.cancellables)
 
             cell.bookmarkButton.publisher(for: .touchUpInside)
-                .debounce(
-                    for: .milliseconds(600),
-                    scheduler: DispatchQueue.main
-                )
                 .sink { control in
                     self?.viewModel.setNoteBookmarkState(
                         noteID: note.id,

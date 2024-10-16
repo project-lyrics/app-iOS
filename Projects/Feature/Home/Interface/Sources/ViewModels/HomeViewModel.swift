@@ -243,37 +243,38 @@ extension HomeViewModel {
         noteID: Int,
         isBookmarked: Bool
     ) {
-        self.setBookmarkUseCase.execute(
-            isBookmarked: isBookmarked,
-            noteID: noteID
-        )
-        .mapToResult()
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] result in
-            switch result {
-            case .success(let bookmarkNoteID):
-                let indexToUpdate = self?.fetchedNotes.firstIndex(
-                    where: { $0.id == bookmarkNoteID }
-                )
-                
-                if let indexToUpdate = indexToUpdate {
-                    self?.fetchedNotes[indexToUpdate].isBookmarked = isBookmarked
-                }
-                
-            case .failure(let error):
-                let indexToUpdate = self?.fetchedNotes.firstIndex(
-                    where: { $0.id == noteID }
-                )
-                
-                if let indexToUpdate = indexToUpdate {
-                    self?.fetchedNotes[indexToUpdate].isBookmarked = !isBookmarked
-                }
-                
-                self?.error = .noteError(error)
-                
-            }
+        guard let indexToUpdate = self.fetchedNotes.firstIndex(where: { $0.id == noteID }) else {
+            return
         }
-        .store(in: &cancellables)
+        
+        self.fetchedNotes[indexToUpdate].isBookmarked = isBookmarked
+        
+        Just<Bool>(isBookmarked)
+            .setFailureType(to: NoteError.self)
+            .map { [unowned self] isBookmarked in
+                return self.setBookmarkUseCase.execute(
+                    isBookmarked: isBookmarked,
+                    noteID: noteID
+                )
+            }
+            .switchToLatest()
+            .mapToResult()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] result in
+                switch result {
+                case .success:
+                    return
+                    
+                case .failure(let error):
+                    guard let updatedIndexToUpdate = self?.fetchedNotes.firstIndex(where: { $0.id == noteID }) else {
+                        return
+                    }
+                    
+                    self?.fetchedNotes[updatedIndexToUpdate].isBookmarked = !isBookmarked
+                    self?.error = .noteError(error)
+                }
+            }
+            .store(in: &cancellables)
     }
 }
 
