@@ -43,6 +43,8 @@ public final class UserLinkedWebViewController: UIViewController {
             urlString: url.host ?? url.absoluteString
         )
         super.init(nibName: nil, bundle: .main)
+        
+        self.hidesBottomBarWhenPushed = true
     }
     
     @available(*, unavailable)

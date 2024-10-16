@@ -12,7 +12,7 @@ import Shared
 import FeatureOnboardingInterface
 
 public protocol ProfileEditViewControllerDelegate: AnyObject {
-    func popViewController(isHiddenTabBar: Bool)
+    func popViewController()
 }
 
 public final class ProfileEditViewController: UIViewController {
@@ -26,6 +26,8 @@ public final class ProfileEditViewController: UIViewController {
     public init(viewModel: ProfileEditViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+        
+        self.hidesBottomBarWhenPushed = true
     }
 
     @available(*, unavailable)
@@ -51,7 +53,7 @@ public final class ProfileEditViewController: UIViewController {
     private func bind() {
         backButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in
-                self?.coordinator?.popViewController(isHiddenTabBar: false)
+                self?.coordinator?.popViewController()
             }
             .store(in: &cancellables)
 
@@ -95,7 +97,7 @@ public final class ProfileEditViewController: UIViewController {
             .sink { [weak self] result in
                 switch result {
                 case .success:
-                    self?.coordinator?.popViewController(isHiddenTabBar: false)
+                    self?.coordinator?.popViewController()
                 case .failure(let error):
                     self?.showAlert(
                         title: error.localizedDescription,

@@ -28,6 +28,8 @@ public final class SearchSongViewController: UIViewController {
     public init(viewModel: SearchSongViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+        
+        self.hidesBottomBarWhenPushed = true
     }
 
     @available(*, unavailable)

@@ -10,7 +10,7 @@ import CoordinatorAppInterface
 import CoordinatorHomeInterface
 import CoordinatorSearchNoteInterface
 import CoordinatorMyPageInterface
-import SharedDesignSystem
+import Shared
 
 public final class TabBarCoordinator: Coordinator {
     public weak var delegate: CoordinatorDelegate?
@@ -70,14 +70,9 @@ private extension TabBarCoordinator {
     func createTabBarNavigationController(
         of page: TabBarPageType
     ) -> UINavigationController {
-        let tabBarNavigationController = UINavigationController()
+        let tabBarNavigationController = XBarSwipableNavigationController()
+        
         tabBarNavigationController.tabBarItem = page.tabBarItem
-
-        tabBarNavigationController.setNavigationBarHidden(
-            true,
-            animated: false
-        )
-
         connectTabCoordinator(
             of: page,
             to: tabBarNavigationController

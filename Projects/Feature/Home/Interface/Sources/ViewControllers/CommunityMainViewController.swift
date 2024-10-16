@@ -13,7 +13,7 @@ import Combine
 import UIKit
 
 public protocol CommunityMainViewControllerDelegate: AnyObject {
-    func popViewController(isHiddenTabBar: Bool)
+    func popViewController()
     func pushReportViewController(noteID: Int?, commentID: Int?)
     func presentEditNoteViewController(note: Note)
     func pushNoteNotificationViewController()
@@ -211,6 +211,8 @@ public final class CommunityMainViewController: UIViewController, NoteMenuHandli
         self.viewModel = viewModel
 
         super.init(nibName: nil, bundle: .main)
+        
+        self.hidesBottomBarWhenPushed = true
     }
 
     @available(*, unavailable)
@@ -457,7 +459,7 @@ private extension CommunityMainViewController {
 
         backButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in
-                self?.coordinator?.popViewController(isHiddenTabBar: false)
+                self?.coordinator?.popViewController()
             }
             .store(in: &cancellables)
 

@@ -13,7 +13,7 @@ import Domain
 import Shared
 
 public protocol NoteCommentsViewControllerDelegate: AnyObject {
-    func popViewController(isHiddenTabBar: Bool)
+    func popViewController()
     func pushReportViewController(noteID: Int?, commentID: Int?)
     func presentEditNoteViewController(note: Note)
     func presentUserLinkedWebViewController(url: URL)
@@ -197,6 +197,8 @@ public final class NoteCommentsViewController: UIViewController, CommentMenuHand
         self.viewModel = viewModel
         
         super.init(nibName: nil, bundle: .main)
+        
+        self.hidesBottomBarWhenPushed = true
     }
     
     @available(*, unavailable)
@@ -403,7 +405,7 @@ private extension NoteCommentsViewController {
 
         backButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in
-                self?.coordinator?.popViewController(isHiddenTabBar: false)
+                self?.coordinator?.popViewController()
             }
             .store(in: &cancellables)
     }

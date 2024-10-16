@@ -11,7 +11,7 @@ import Combine
 import Shared
 
 public protocol DeleteUserViewControllerDelegate: AnyObject {
-    func popViewController(isHiddenTabBar: Bool)
+    func popViewController()
     func didFinish()
 }
 
@@ -26,6 +26,8 @@ public final class DeleteUserViewController: UIViewController {
     public init(viewModel: DeleteUserViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+        
+        self.hidesBottomBarWhenPushed = true
     }
 
     @available(*, unavailable)
@@ -51,7 +53,7 @@ public final class DeleteUserViewController: UIViewController {
     private func bindAction() {
         backButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in
-                self?.coordinator?.popViewController(isHiddenTabBar: false)
+                self?.coordinator?.popViewController()
             }
             .store(in: &cancellables)
 
@@ -65,7 +67,7 @@ public final class DeleteUserViewController: UIViewController {
             .sink { [weak self] _ in
                 self?.showAlert(title: "탈퇴가 완료되었어요.", message: nil, singleActionTitle: "확인", actionCompletion: {
                     self?.viewModel.deleteUserInfo()
-                    self?.coordinator?.popViewController(isHiddenTabBar: false)
+                    self?.coordinator?.popViewController()
                     self?.coordinator?.didFinish()
                 })
             }

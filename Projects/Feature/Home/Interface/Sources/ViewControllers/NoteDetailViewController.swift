@@ -14,7 +14,7 @@ import Shared
 public protocol NoteDetailViewControllerDelegate: AnyObject {
     func pushReportViewController(noteID: Int?, commentID: Int?)
     func presentEditNoteViewController(note: Note)
-    func popViewController(isHiddenTabBar: Bool)
+    func popViewController()
     func pushNoteCommentsViewController(noteID: Int)
 }
 
@@ -173,6 +173,8 @@ public final class NoteDetailViewController: UIViewController, NoteMenuHandling,
         self.viewModel = viewModel
         
         super.init(nibName: nil, bundle: .main)
+        
+        self.hidesBottomBarWhenPushed = true
     }
     
     // MARK: - Init
@@ -181,6 +183,8 @@ public final class NoteDetailViewController: UIViewController, NoteMenuHandling,
     public required init?(coder: NSCoder) {
         fatalError()
     }
+    
+    // MARK: - View LifeCycle
     
     override public func loadView() {
         self.view = noteDetailView
@@ -289,7 +293,7 @@ private extension NoteDetailViewController {
     func bindAction() {
         backButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in
-                self?.coordinator?.popViewController(isHiddenTabBar: false)
+                self?.coordinator?.popViewController()
             }
             .store(in: &cancellables)
 
