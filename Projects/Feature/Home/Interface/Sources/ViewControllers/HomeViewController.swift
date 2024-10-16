@@ -314,7 +314,7 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.updateInitialHomeData()
-        
+        self.checkForUnReadNotification()
     }
     
     // MARK: - Favorite Artists
@@ -328,6 +328,12 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
            !userInfo.didEnterFirstFavoriteArtistsListPage {
             self.coordinator?.presentInitialArtistSelectViewController()
         }
+    }
+    
+    // MARK: - Notification Check
+    
+    private func checkForUnReadNotification() {
+        self.viewModel.checkForUnReadNotification()
     }
 }
 
@@ -383,6 +389,14 @@ private extension HomeViewController {
                 self?.updateNotes(fetchedNotes)
             }
             .store(in: &cancellables)
+        
+        viewModel.$hasUncheckedNotification
+            .sink { [weak self] hasUncheckedNotification in
+                hasUncheckedNotification
+                ? self?.notificationButton.setImage(FeelinImages.notificationOn, for: .normal)
+                : self?.notificationButton.setImage(FeelinImages.notificationOff, for: .normal)
+            }
+            .store(in: &cancellables)
     }
 
     func bindAction() {
@@ -421,6 +435,7 @@ private extension HomeViewController {
             .filter { $0 }
             .sink(receiveValue: { [weak viewModel] _ in
                 viewModel?.refreshAllData()
+                viewModel?.checkForUnReadNotification()
             })
             .store(in: &cancellables)
 

@@ -13,6 +13,7 @@ import Foundation
 public protocol NotificationAPIServiceInterface {
     func getNotifications(currentPage: Int?, numberOfNotifications: Int) -> AnyPublisher<GetNotificationsResponse, NotificationError>
     func checkNotification(notificationID: Int) -> AnyPublisher<FeelinSuccessResponse, NotificationError>
+    func getHasUncheckedNotification() -> AnyPublisher<UncheckedNotificationResponse, NotificationError>
 }
 
 public struct NotificationAPIService: NotificationAPIServiceInterface {
@@ -44,5 +45,11 @@ public struct NotificationAPIService: NotificationAPIServiceInterface {
             .eraseToAnyPublisher()
     }
     
-    
+    public func getHasUncheckedNotification() -> AnyPublisher<UncheckedNotificationResponse, NotificationError> {
+        let endpoint = FeelinAPI<UncheckedNotificationResponse>.getHasUncheckedNotification
+        
+        return networkProvider.request(endpoint)
+            .mapError(NotificationError.init)
+            .eraseToAnyPublisher()
+    }
 }

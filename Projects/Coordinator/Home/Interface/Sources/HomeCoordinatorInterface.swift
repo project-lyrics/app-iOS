@@ -65,6 +65,12 @@ public final class HomeCoordinator: Coordinator {
 
             return ArtistAPIService(networkProvider: networkProvider)
         }
+        
+        DIContainer.standard.register(.notificationAPIService) { resolver in
+            let networkProvider = try resolver.resolve(.networkProvider)
+            
+            return NotificationAPIService(networkProvider: networkProvider)
+        }
     }
 
     private func registerNoteCommentDI() {
@@ -241,6 +247,7 @@ extension HomeCoordinator {
         @Injected(.noteAPIService) var noteAPIService: NoteAPIServiceInterface
         @Injected(.notePaginationService) var notePaginationService: NotePaginationServiceInterface
         @Injected(.artistPaginationService) var artistPaginationService: KeywordPaginationServiceInterface
+        @Injected(.notificationAPIService) var notificationAPIService: NotificationAPIServiceInterface
 
         @KeychainWrapper<UserInformation>(.userInfo)
         var userInfo
@@ -262,13 +269,15 @@ extension HomeCoordinator {
         let setNoteLikeUseCase = SetNoteLikeUseCase(noteAPIService: noteAPIService)
         let setBookmarkUseCase = SetBookmarkUseCase(noteAPIService: noteAPIService)
         let deleteNoteUseCase = DeleteNoteUseCase(noteAPIService: noteAPIService)
+        let getHasUncheckedNotificationUseCase = GetHasUncheckedNotificationUseCase(notificationAPIService: notificationAPIService)
 
         let viewModel =  HomeViewModel(
             getNotesUseCase: getNoteUseCase,
             setNoteLikeUseCase: setNoteLikeUseCase,
             getFavoriteArtistsUseCase: getFavoriteArtistsUseCase,
             setBookmarkUseCase: setBookmarkUseCase,
-            deleteNoteUseCase: deleteNoteUseCase
+            deleteNoteUseCase: deleteNoteUseCase, 
+            getHasUncheckedNotificationUseCase: getHasUncheckedNotificationUseCase
         )
 
         return viewModel

@@ -18,12 +18,14 @@ final public class HomeViewModel {
     @Published private (set) var fetchedFavoriteArtists: [Artist] = []
     @Published private (set) var error: HomeError?
     @Published private (set) var refreshState: RefreshState<HomeError> = .idle
+    @Published private (set) var hasUncheckedNotification: Bool = false
     
     private let getNotesUseCase: GetNotesUseCaseInterface
     private let getFavoriteArtistsUseCase: GetFavoriteArtistsUseCaseInterface
     private let setNoteLikeUseCase: SetNoteLikeUseCaseInterface
     private let setBookmarkUseCase: SetBookmarkUseCaseInterface
     private let deleteNoteUseCase: DeleteNoteUseCaseInterface
+    private let getHasUncheckedNotificationUseCase: GetHasUncheckedNotificationUseCaseInterface
     
     private var cancellables: Set<AnyCancellable> = .init()
     
@@ -32,13 +34,15 @@ final public class HomeViewModel {
         setNoteLikeUseCase: SetNoteLikeUseCaseInterface,
         getFavoriteArtistsUseCase: GetFavoriteArtistsUseCaseInterface,
         setBookmarkUseCase: SetBookmarkUseCaseInterface,
-        deleteNoteUseCase: DeleteNoteUseCaseInterface
+        deleteNoteUseCase: DeleteNoteUseCaseInterface,
+        getHasUncheckedNotificationUseCase: GetHasUncheckedNotificationUseCaseInterface
     ) {
         self.getNotesUseCase = getNotesUseCase
         self.setNoteLikeUseCase = setNoteLikeUseCase
         self.getFavoriteArtistsUseCase = getFavoriteArtistsUseCase
         self.setBookmarkUseCase = setBookmarkUseCase
         self.deleteNoteUseCase = deleteNoteUseCase
+        self.getHasUncheckedNotificationUseCase = getHasUncheckedNotificationUseCase
     }
     
     func fetchArtistsThenNotes(
@@ -123,6 +127,17 @@ final public class HomeViewModel {
             }
         }
         .store(in: &cancellables)
+    }
+    
+    func checkForUnReadNotification() {
+        self.getHasUncheckedNotificationUseCase.execute()
+            .catch({ notificationError in
+                return Just(false)
+                    .eraseToAnyPublisher()
+            })
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .assign(to: &self.$hasUncheckedNotification)
     }
 }
 

@@ -43,6 +43,7 @@ public enum FeelinAPI<R> {
     case reportNote(request: ReportRequest)
     case getNotifications(cursor: Int?, size: Int)
     case checkNotification(notificationID: Int)
+    case getHasUncheckedNotification
     case getUserProfile
     case patchUserProfile(request: UserProfileRequest)
     case deleteUser
@@ -313,6 +314,9 @@ extension FeelinAPI: HTTPNetworking {
         case .getNotifications:
             return "/api/v1/notifications"
             
+        case .getHasUncheckedNotification:
+            return "/api/v1/notifications/check"
+            
         case .checkNotification(let notificationID):
             return "/api/v1/notifications/\(notificationID)"
 
@@ -349,6 +353,7 @@ extension FeelinAPI: HTTPNetworking {
              .getSongNotes,
              .getNoteWithComments,
              .getNotifications,
+             .getHasUncheckedNotification,
              .getArtistNotes,
              .getMyNotes,
              .getUserProfile,
