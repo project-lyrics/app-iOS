@@ -74,6 +74,12 @@ public final class NoteDetailViewController: UIViewController, NoteMenuHandling,
                 }
                 .store(in: &cell.cancellables)
             
+            cell.commentButton.publisher(for: .touchUpInside)
+                .sink { [weak self] _ in
+                    self?.coordinator?.pushNoteCommentsViewController(noteID: note.id)
+                }
+                .store(in: &cell.cancellables)
+            
             cell.bookmarkButton.publisher(for: .touchUpInside)
                 .debounce(
                     for: .milliseconds(600),

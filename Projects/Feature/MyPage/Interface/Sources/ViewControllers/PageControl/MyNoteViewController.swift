@@ -206,6 +206,12 @@ public final class MyNoteViewController: UIViewController,
                     )
                 }
                 .store(in: &cell.cancellables)
+            
+            cell.commentButton.publisher(for: .touchUpInside)
+                .sink { [weak self] _ in
+                    self?.coordinator?.pushNoteCommentsViewController(noteID: note.id)
+                }
+                .store(in: &cell.cancellables)
 
             cell.bookmarkButton.publisher(for: .touchUpInside)
                 .debounce(
