@@ -208,8 +208,6 @@ public final class CommunityMainViewController: UIViewController, NoteMenuHandli
         self.viewModel = viewModel
 
         super.init(nibName: nil, bundle: .main)
-        
-        self.hidesBottomBarWhenPushed = true
     }
 
     @available(*, unavailable)
@@ -252,7 +250,8 @@ public final class CommunityMainViewController: UIViewController, NoteMenuHandli
         self.view.backgroundColor = Colors.background
         self.view.addSubview(flexContainer)
         let tabBarHeight = self.tabBarController?.tabBar.frame.height ?? 0
-
+        let postNoteButtonHeight: CGFloat = 56
+        
         flexContainer.flex.define { flex in
             flex.addItem(communityMainView)
                 .top(-UIApplication.shared.safeAreaInsets.top)
@@ -271,18 +270,11 @@ public final class CommunityMainViewController: UIViewController, NoteMenuHandli
                 .height(self.navigationBarHeight)
                 .top(UIApplication.shared.safeAreaInsets.top)
             
-            flex.addItem()
-                .direction(.row)
-                .define { flex in
-                    flex.addItem()
-                        .grow(1)
-
-                    flex.addItem(postNoteButton)
-                        .size(56)
-                        .bottom(20 + tabBarHeight)
-                        .right(20)
-                        .shrink(1)
-                }
+            flex.addItem(postNoteButton)
+                .size(postNoteButtonHeight)
+                .position(.absolute)
+                .bottom(tabBarHeight + 20)
+                .right(20)
         }
     }
 
