@@ -14,7 +14,7 @@ import Shared
 public protocol NoteDetailViewControllerDelegate: AnyObject {
     func pushReportViewController(noteID: Int?, commentID: Int?)
     func presentEditNoteViewController(note: Note)
-    func popViewController(isHiddenTabBar: Bool)
+    func popViewController()
     func pushNoteCommentsViewController(noteID: Int)
 }
 
@@ -66,11 +66,6 @@ public final class NoteDetailViewController: UIViewController, NoteMenuHandling,
             cell.configure(with: note)
             
             cell.likeNoteButton.publisher(for: .touchUpInside)
-                // 0.6초 사이에 발생한 가장 최신 좋아요 상태만 방출
-                .debounce(
-                    for: .milliseconds(600),
-                    scheduler: DispatchQueue.main
-                )
                 .sink { control in
                     self?.viewModel.setNoteLikeState(
                         noteID: note.id,
@@ -79,11 +74,13 @@ public final class NoteDetailViewController: UIViewController, NoteMenuHandling,
                 }
                 .store(in: &cell.cancellables)
             
+            cell.commentButton.publisher(for: .touchUpInside)
+                .sink { [weak self] _ in
+                    self?.coordinator?.pushNoteCommentsViewController(noteID: note.id)
+                }
+                .store(in: &cell.cancellables)
+            
             cell.bookmarkButton.publisher(for: .touchUpInside)
-                .debounce(
-                    for: .milliseconds(600),
-                    scheduler: DispatchQueue.main
-                )
                 .sink { control in
                     self?.viewModel.setNoteBookmarkState(
                         noteID: note.id,
@@ -178,6 +175,8 @@ public final class NoteDetailViewController: UIViewController, NoteMenuHandling,
         self.viewModel = viewModel
         
         super.init(nibName: nil, bundle: .main)
+        
+        self.hidesBottomBarWhenPushed = true
     }
     
     // MARK: - Init
@@ -186,6 +185,8 @@ public final class NoteDetailViewController: UIViewController, NoteMenuHandling,
     public required init?(coder: NSCoder) {
         fatalError()
     }
+    
+    // MARK: - View LifeCycle
     
     override public func loadView() {
         self.view = noteDetailView
@@ -294,7 +295,7 @@ private extension NoteDetailViewController {
     func bindAction() {
         backButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in
-                self?.coordinator?.popViewController(isHiddenTabBar: false)
+                self?.coordinator?.popViewController()
             }
             .store(in: &cancellables)
 

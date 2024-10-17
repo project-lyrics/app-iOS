@@ -13,7 +13,7 @@ import Domain
 import FeatureOnboardingInterface
 
 public protocol EditUserInfoViewControllerDelegate: AnyObject {
-    func popViewController(isHiddenTabBar: Bool)
+    func popViewController()
 }
 
 public final class EditUserInfoViewController: UIViewController {
@@ -36,6 +36,8 @@ public final class EditUserInfoViewController: UIViewController {
     public init(viewModel: EditUserInfoViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+        
+        self.hidesBottomBarWhenPushed = true
     }
 
     @available(*, unavailable)
@@ -61,7 +63,7 @@ public final class EditUserInfoViewController: UIViewController {
                     leftActionTitle: "취소",
                     rightActionTitle: "나가기",
                     rightActionCompletion: {
-                        self?.coordinator?.popViewController(isHiddenTabBar: false)
+                        self?.coordinator?.popViewController()
                     }
                 )
             }
@@ -123,7 +125,7 @@ public final class EditUserInfoViewController: UIViewController {
             .sink { [weak self] result in
                 switch result {
                 case .success:
-                    self?.coordinator?.popViewController(isHiddenTabBar: false)
+                    self?.coordinator?.popViewController()
                 case .failure(let error):
                     self?.showAlert(
                         title: error.localizedDescription,

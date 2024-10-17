@@ -89,23 +89,28 @@ public final class CommunityMainViewModel {
 
 extension CommunityMainViewModel {
     func setFavoriteArtist(_ isFavorite: Bool) {
-        self.setFavoriteArtistUseCase.execute(
-            artistID: self.artist.id,
-            isFavorite: isFavorite
-        )
-        .mapToResult()
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] result in
-            switch result {
-            case .success:
-                self?.artist.isFavorite = isFavorite
-                
-            case .failure(let error):
-                self?.artist.isFavorite = !isFavorite
-                self?.error = .artistError(error)
+        Just<Bool>(isFavorite)
+            .setFailureType(to: ArtistError.self)
+            .map { [unowned self] isFavorite in
+                return self.setFavoriteArtistUseCase.execute(
+                    artistID: self.artist.id,
+                    isFavorite: isFavorite
+                )
             }
-        }
-        .store(in: &cancellables)
+            .switchToLatest()
+            .mapToResult()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] result in
+                switch result {
+                case .success:
+                    self?.artist.isFavorite = isFavorite
+                    
+                case .failure(let error):
+                    self?.artist.isFavorite = !isFavorite
+                    self?.error = .artistError(error)
+                }
+            }
+            .store(in: &cancellables)
     }
 }
 
@@ -116,37 +121,43 @@ extension CommunityMainViewModel {
         noteID: Int,
         isLiked: Bool
     ) {
-        self.setNoteLikeUseCase.execute(
-            isLiked: isLiked,
-            noteID: noteID
-        )
-        .mapToResult()
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] result in
-            switch result {
-            case .success(let updatedNoteLike):
-                let indexToUpdate = self?.fetchedNotes.firstIndex(
-                    where: { $0.id == noteID }
-                )
-                
-                if let indexToUpdate = indexToUpdate {
-                    self?.fetchedNotes[indexToUpdate].isLiked = isLiked
-                    self?.fetchedNotes[indexToUpdate].likesCount = updatedNoteLike.likesCount
-                }
-                
-            case .failure(let error):
-                let indexToUpdate = self?.fetchedNotes.firstIndex(
-                    where: { $0.id == noteID }
-                )
-                
-                if let indexToUpdate = indexToUpdate {
-                    self?.fetchedNotes[indexToUpdate].isLiked = !isLiked
-                }
-                self?.error = .noteError(error)
-                
-            }
+        guard let indexToUpdate = self.fetchedNotes.firstIndex(where: { $0.id == noteID }) else {
+            return
         }
-        .store(in: &cancellables)
+        
+        self.fetchedNotes[indexToUpdate].isLiked = isLiked
+        
+        let originalLikesCount = self.fetchedNotes[indexToUpdate].likesCount
+        
+        if isLiked {
+            self.fetchedNotes[indexToUpdate].likesCount = originalLikesCount + 1
+        } else {
+            self.fetchedNotes[indexToUpdate].likesCount = max(0, originalLikesCount - 1)
+        }
+        
+        Just<(isLiked: Bool, noteID: Int)>((isLiked, noteID))
+            .setFailureType(to: NoteError.self)
+            .map { [unowned self] isLiked, noteID in
+                return self.setNoteLikeUseCase.execute(
+                    isLiked: isLiked,
+                    noteID: noteID
+                )
+            }
+            .switchToLatest()
+            .mapToResult()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] result in
+                switch result {
+                case .success(let updatedNoteLike):
+                    self?.fetchedNotes[indexToUpdate].likesCount = updatedNoteLike.likesCount
+
+                case .failure(let error):
+                    self?.fetchedNotes[indexToUpdate].isLiked = !isLiked
+                    self?.fetchedNotes[indexToUpdate].likesCount = originalLikesCount
+                    self?.error = .noteError(error)
+                }
+            }
+            .store(in: &cancellables)
     }
 }
 
@@ -157,37 +168,38 @@ extension CommunityMainViewModel {
         noteID: Int,
         isBookmarked: Bool
     ) {
-        self.setBookmarkUseCase.execute(
-            isBookmarked: isBookmarked,
-            noteID: noteID
-        )
-        .mapToResult()
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] result in
-            switch result {
-            case .success(let bookmarkNoteID):
-                let indexToUpdate = self?.fetchedNotes.firstIndex(
-                    where: { $0.id == bookmarkNoteID }
-                )
-                
-                if let indexToUpdate = indexToUpdate {
-                    self?.fetchedNotes[indexToUpdate].isBookmarked = isBookmarked
-                }
-                
-            case .failure(let error):
-                let indexToUpdate = self?.fetchedNotes.firstIndex(
-                    where: { $0.id == noteID }
-                )
-                
-                if let indexToUpdate = indexToUpdate {
-                    self?.fetchedNotes[indexToUpdate].isBookmarked = !isBookmarked
-                }
-                
-                self?.error = .noteError(error)
-                
-            }
+        guard let indexToUpdate = self.fetchedNotes.firstIndex(where: { $0.id == noteID }) else {
+            return
         }
-        .store(in: &cancellables)
+        
+        self.fetchedNotes[indexToUpdate].isBookmarked = isBookmarked
+        
+        Just<Bool>(isBookmarked)
+            .setFailureType(to: NoteError.self)
+            .map { [unowned self] isBookmarked in
+                return self.setBookmarkUseCase.execute(
+                    isBookmarked: isBookmarked,
+                    noteID: noteID
+                )
+            }
+            .switchToLatest()
+            .mapToResult()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] result in
+                switch result {
+                case .success:
+                    return
+                    
+                case .failure(let error):
+                    guard let updatedIndexToUpdate = self?.fetchedNotes.firstIndex(where: { $0.id == noteID }) else {
+                        return
+                    }
+                    
+                    self?.fetchedNotes[updatedIndexToUpdate].isBookmarked = !isBookmarked
+                    self?.error = .noteError(error)
+                }
+            }
+            .store(in: &cancellables)
     }
 }
 

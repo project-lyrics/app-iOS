@@ -11,13 +11,13 @@ import Core
 
 public enum NotificationType: Equatable {
     case commentOnNote
-    case report
+    case discipline
     case `public`
     
     public init(dto: NotificationTypeResponse) {
         switch dto {
         case .commentOnNote:        self = .commentOnNote
-        case .report:               self = .report
+        case .discipline:           self = .discipline
         case .public:               self = .public
         }
     }

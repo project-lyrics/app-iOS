@@ -59,17 +59,11 @@ extension SearchNoteCoordinator: SearchNoteViewControllerDelegate,
                                  NoteCommentsViewControllerDelegate,
                                  EditNoteViewControllerDelegate,
                                  UserLinkedWebViewControllerDelegate {
-    public func popViewController(isHiddenTabBar: Bool) {
-        navigationController.tabBarController?.tabBar.isHidden = isHiddenTabBar
-        popViewController()
-    }
-
     public func pushNoteDetailViewController(selectedNote: SearchedNote) {
         let viewModel = noteDetailDependencies(selectedNote: selectedNote)
         let viewController = NoteDetailViewController(viewModel: viewModel)
         viewController.coordinator = self
-
-        navigationController.tabBarController?.tabBar.isHidden = true
+        
         navigationController.pushViewController(viewController, animated: true)
     }
 
@@ -79,7 +73,6 @@ extension SearchNoteCoordinator: SearchNoteViewControllerDelegate,
         let viewModel = reportNoteDependencies(noteID: noteID, commentID: commentID)
         let reportViewController = ReportViewController(viewModel: viewModel)
         reportViewController.coordinator = self
-        navigationController.tabBarController?.tabBar.isHidden = true
         navigationController.pushViewController(reportViewController, animated: true)
     }
 
@@ -98,7 +91,6 @@ extension SearchNoteCoordinator: SearchNoteViewControllerDelegate,
         let viewModel = noteCommentsDependencies(noteID: noteID)
         let noteCommentsViewController = NoteCommentsViewController(viewModel: viewModel)
         noteCommentsViewController.coordinator = self
-        navigationController.tabBarController?.tabBar.isHidden = true
         navigationController.pushViewController(noteCommentsViewController, animated: true)
     }
     

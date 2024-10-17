@@ -13,7 +13,7 @@ import Combine
 import UIKit
 
 public protocol CommunityMainViewControllerDelegate: AnyObject {
-    func popViewController(isHiddenTabBar: Bool)
+    func popViewController()
     func pushReportViewController(noteID: Int?, commentID: Int?)
     func presentEditNoteViewController(note: Note)
     func pushNoteNotificationViewController()
@@ -69,7 +69,6 @@ public final class CommunityMainViewController: UIViewController, NoteMenuHandli
         let button = UIButton()
         let image = button.isEnabled ? FeelinImages.writingActive : FeelinImages.writingInactive
         button.setImage(image, for: .normal)
-        button.isEnabled = false
 
         return button
     }()
@@ -102,10 +101,6 @@ public final class CommunityMainViewController: UIViewController, NoteMenuHandli
             cell.configure(artist)
 
             cell.favoriteArtistSelectButton.publisher(for: .touchUpInside)
-                .debounce(
-                    for: .milliseconds(600),
-                    scheduler: DispatchQueue.main
-                )
                 .sink { control in
                     self.viewModel.setFavoriteArtist(control.isSelected)
                 }
@@ -120,7 +115,6 @@ public final class CommunityMainViewController: UIViewController, NoteMenuHandli
             cell.configure(with: note)
 
             cell.likeNoteButton.publisher(for: .touchUpInside)
-                .debounce(for: .milliseconds(600), scheduler: DispatchQueue.main)
                 .sink { control in
                     self?.viewModel.setNoteLikeState(
                         noteID: note.id,
@@ -128,12 +122,14 @@ public final class CommunityMainViewController: UIViewController, NoteMenuHandli
                     )
                 }
                 .store(in: &cell.cancellables)
+            
+            cell.commentButton.publisher(for: .touchUpInside)
+                .sink { [weak self] _ in
+                    self?.coordinator?.pushNoteCommentsViewController(noteID: note.id)
+                }
+                .store(in: &cell.cancellables)
 
             cell.bookmarkButton.publisher(for: .touchUpInside)
-                .debounce(
-                    for: .milliseconds(600),
-                    scheduler: DispatchQueue.main
-                )
                 .sink { control in
                     self?.viewModel.setNoteBookmarkState(
                         noteID: note.id,
@@ -254,7 +250,8 @@ public final class CommunityMainViewController: UIViewController, NoteMenuHandli
         self.view.backgroundColor = Colors.background
         self.view.addSubview(flexContainer)
         let tabBarHeight = self.tabBarController?.tabBar.frame.height ?? 0
-
+        let postNoteButtonHeight: CGFloat = 56
+        
         flexContainer.flex.define { flex in
             flex.addItem(communityMainView)
                 .top(-UIApplication.shared.safeAreaInsets.top)
@@ -273,18 +270,11 @@ public final class CommunityMainViewController: UIViewController, NoteMenuHandli
                 .height(self.navigationBarHeight)
                 .top(UIApplication.shared.safeAreaInsets.top)
             
-            flex.addItem()
-                .direction(.row)
-                .define { flex in
-                    flex.addItem()
-                        .grow(1)
-
-                    flex.addItem(postNoteButton)
-                        .size(56)
-                        .bottom(20 + tabBarHeight)
-                        .right(20)
-                        .shrink(1)
-                }
+            flex.addItem(postNoteButton)
+                .size(postNoteButtonHeight)
+                .position(.absolute)
+                .bottom(tabBarHeight + 20)
+                .right(20)
         }
     }
 
@@ -458,7 +448,7 @@ private extension CommunityMainViewController {
 
         backButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in
-                self?.coordinator?.popViewController(isHiddenTabBar: false)
+                self?.coordinator?.popViewController()
             }
             .store(in: &cancellables)
 

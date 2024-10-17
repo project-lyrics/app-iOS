@@ -46,37 +46,43 @@ extension BookmarkViewModel {
         noteID: Int,
         isLiked: Bool
     ) {
-        self.setNoteLikeUseCase.execute(
-            isLiked: isLiked,
-            noteID: noteID
-        )
-        .mapToResult()
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] result in
-            switch result {
-            case .success(let updatedNoteLike):
-                let indexToUpdate = self?.fetchedNotes.firstIndex(
-                    where: { $0.id == noteID }
-                )
-
-                if let indexToUpdate = indexToUpdate {
-                    self?.fetchedNotes[indexToUpdate].isLiked = isLiked
-                    self?.fetchedNotes[indexToUpdate].likesCount = updatedNoteLike.likesCount
-                }
-
-            case .failure(let error):
-                let indexToUpdate = self?.fetchedNotes.firstIndex(
-                    where: { $0.id == noteID }
-                )
-
-                if let indexToUpdate = indexToUpdate {
-                    self?.fetchedNotes[indexToUpdate].isLiked = !isLiked
-                }
-                self?.error = error
-
-            }
+        guard let indexToUpdate = self.fetchedNotes.firstIndex(where: { $0.id == noteID }) else {
+            return
         }
-        .store(in: &cancellables)
+        
+        self.fetchedNotes[indexToUpdate].isLiked = isLiked
+        
+        let originalLikesCount = self.fetchedNotes[indexToUpdate].likesCount
+        
+        if isLiked {
+            self.fetchedNotes[indexToUpdate].likesCount = originalLikesCount + 1
+        } else {
+            self.fetchedNotes[indexToUpdate].likesCount = max(0, originalLikesCount - 1)
+        }
+        
+        Just<(isLiked: Bool, noteID: Int)>((isLiked, noteID))
+            .setFailureType(to: NoteError.self)
+            .map { [unowned self] isLiked, noteID in
+                return self.setNoteLikeUseCase.execute(
+                    isLiked: isLiked,
+                    noteID: noteID
+                )
+            }
+            .switchToLatest()
+            .mapToResult()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] result in
+                switch result {
+                case .success(let updatedNoteLike):
+                    self?.fetchedNotes[indexToUpdate].likesCount = updatedNoteLike.likesCount
+
+                case .failure(let error):
+                    self?.fetchedNotes[indexToUpdate].isLiked = !isLiked
+                    self?.fetchedNotes[indexToUpdate].likesCount = originalLikesCount
+                    self?.error = error
+                }
+            }
+            .store(in: &cancellables)
     }
 }
 
@@ -87,37 +93,38 @@ extension BookmarkViewModel {
         noteID: Int,
         isBookmarked: Bool
     ) {
-        self.setBookmarkUseCase.execute(
-            isBookmarked: isBookmarked,
-            noteID: noteID
-        )
-        .mapToResult()
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] result in
-            switch result {
-            case .success(let bookmarkNoteID):
-                let indexToUpdate = self?.fetchedNotes.firstIndex(
-                    where: { $0.id == bookmarkNoteID }
-                )
-
-                if let indexToUpdate = indexToUpdate {
-                    self?.fetchedNotes[indexToUpdate].isBookmarked = isBookmarked
-                }
-
-            case .failure(let error):
-                let indexToUpdate = self?.fetchedNotes.firstIndex(
-                    where: { $0.id == noteID }
-                )
-
-                if let indexToUpdate = indexToUpdate {
-                    self?.fetchedNotes[indexToUpdate].isBookmarked = !isBookmarked
-                }
-
-                self?.error = error
-
-            }
+        guard let indexToUpdate = self.fetchedNotes.firstIndex(where: { $0.id == noteID }) else {
+            return
         }
-        .store(in: &cancellables)
+        
+        self.fetchedNotes[indexToUpdate].isBookmarked = isBookmarked
+        
+        Just<Bool>(isBookmarked)
+            .setFailureType(to: NoteError.self)
+            .map { [unowned self] isBookmarked in
+                return self.setBookmarkUseCase.execute(
+                    isBookmarked: isBookmarked,
+                    noteID: noteID
+                )
+            }
+            .switchToLatest()
+            .mapToResult()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] result in
+                switch result {
+                case .success:
+                    return
+                    
+                case .failure(let error):
+                    guard let updatedIndexToUpdate = self?.fetchedNotes.firstIndex(where: { $0.id == noteID }) else {
+                        return
+                    }
+                    // TODO: - 북마크에서 제거될 경우 해당 노트데이터를 삭제하거나 filter처리가 필요하다.
+                    self?.fetchedNotes[updatedIndexToUpdate].isBookmarked = !isBookmarked
+                    self?.error = error
+                }
+            }
+            .store(in: &cancellables)
     }
 }
 

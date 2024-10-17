@@ -18,12 +18,14 @@ final public class HomeViewModel {
     @Published private (set) var fetchedFavoriteArtists: [Artist] = []
     @Published private (set) var error: HomeError?
     @Published private (set) var refreshState: RefreshState<HomeError> = .idle
+    @Published private (set) var hasUncheckedNotification: Bool = false
     
     private let getNotesUseCase: GetNotesUseCaseInterface
     private let getFavoriteArtistsUseCase: GetFavoriteArtistsUseCaseInterface
     private let setNoteLikeUseCase: SetNoteLikeUseCaseInterface
     private let setBookmarkUseCase: SetBookmarkUseCaseInterface
     private let deleteNoteUseCase: DeleteNoteUseCaseInterface
+    private let getHasUncheckedNotificationUseCase: GetHasUncheckedNotificationUseCaseInterface
     
     private var cancellables: Set<AnyCancellable> = .init()
     
@@ -32,13 +34,15 @@ final public class HomeViewModel {
         setNoteLikeUseCase: SetNoteLikeUseCaseInterface,
         getFavoriteArtistsUseCase: GetFavoriteArtistsUseCaseInterface,
         setBookmarkUseCase: SetBookmarkUseCaseInterface,
-        deleteNoteUseCase: DeleteNoteUseCaseInterface
+        deleteNoteUseCase: DeleteNoteUseCaseInterface,
+        getHasUncheckedNotificationUseCase: GetHasUncheckedNotificationUseCaseInterface
     ) {
         self.getNotesUseCase = getNotesUseCase
         self.setNoteLikeUseCase = setNoteLikeUseCase
         self.getFavoriteArtistsUseCase = getFavoriteArtistsUseCase
         self.setBookmarkUseCase = setBookmarkUseCase
         self.deleteNoteUseCase = deleteNoteUseCase
+        self.getHasUncheckedNotificationUseCase = getHasUncheckedNotificationUseCase
     }
     
     func fetchArtistsThenNotes(
@@ -124,6 +128,17 @@ final public class HomeViewModel {
         }
         .store(in: &cancellables)
     }
+    
+    func checkForUnReadNotification() {
+        self.getHasUncheckedNotificationUseCase.execute()
+            .catch({ notificationError in
+                return Just(false)
+                    .eraseToAnyPublisher()
+            })
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .assign(to: &self.$hasUncheckedNotification)
+    }
 }
 
 extension HomeViewModel {
@@ -181,37 +196,43 @@ extension HomeViewModel {
         noteID: Int,
         isLiked: Bool
     ) {
-        self.setNoteLikeUseCase.execute(
-            isLiked: isLiked,
-            noteID: noteID
-        )
-        .mapToResult()
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] result in
-            switch result {
-            case .success(let updatedNoteLike):
-                let indexToUpdate = self?.fetchedNotes.firstIndex(
-                    where: { $0.id == noteID }
-                )
-                
-                if let indexToUpdate = indexToUpdate {
-                    self?.fetchedNotes[indexToUpdate].isLiked = isLiked
-                    self?.fetchedNotes[indexToUpdate].likesCount = updatedNoteLike.likesCount
-                }
-                
-            case .failure(let error):
-                let indexToUpdate = self?.fetchedNotes.firstIndex(
-                    where: { $0.id == noteID }
-                )
-                
-                if let indexToUpdate = indexToUpdate {
-                    self?.fetchedNotes[indexToUpdate].isLiked = !isLiked
-                }
-                self?.error = .noteError(error)
-                
-            }
+        guard let indexToUpdate = self.fetchedNotes.firstIndex(where: { $0.id == noteID }) else {
+            return
         }
-        .store(in: &cancellables)
+        
+        self.fetchedNotes[indexToUpdate].isLiked = isLiked
+        
+        let originalLikesCount = self.fetchedNotes[indexToUpdate].likesCount
+        
+        if isLiked {
+            self.fetchedNotes[indexToUpdate].likesCount = originalLikesCount + 1
+        } else {
+            self.fetchedNotes[indexToUpdate].likesCount = max(0, originalLikesCount - 1)
+        }
+        
+        Just<(isLiked: Bool, noteID: Int)>((isLiked, noteID))
+            .setFailureType(to: NoteError.self)
+            .map { [unowned self] isLiked, noteID in
+                return self.setNoteLikeUseCase.execute(
+                    isLiked: isLiked,
+                    noteID: noteID
+                )
+            }
+            .switchToLatest()
+            .mapToResult()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] result in
+                switch result {
+                case .success(let updatedNoteLike):
+                    self?.fetchedNotes[indexToUpdate].likesCount = updatedNoteLike.likesCount
+
+                case .failure(let error):
+                    self?.fetchedNotes[indexToUpdate].isLiked = !isLiked
+                    self?.fetchedNotes[indexToUpdate].likesCount = originalLikesCount
+                    self?.error = .noteError(error)
+                }
+            }
+            .store(in: &cancellables)
     }
 }
 
@@ -222,37 +243,38 @@ extension HomeViewModel {
         noteID: Int,
         isBookmarked: Bool
     ) {
-        self.setBookmarkUseCase.execute(
-            isBookmarked: isBookmarked,
-            noteID: noteID
-        )
-        .mapToResult()
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] result in
-            switch result {
-            case .success(let bookmarkNoteID):
-                let indexToUpdate = self?.fetchedNotes.firstIndex(
-                    where: { $0.id == bookmarkNoteID }
-                )
-                
-                if let indexToUpdate = indexToUpdate {
-                    self?.fetchedNotes[indexToUpdate].isBookmarked = isBookmarked
-                }
-                
-            case .failure(let error):
-                let indexToUpdate = self?.fetchedNotes.firstIndex(
-                    where: { $0.id == noteID }
-                )
-                
-                if let indexToUpdate = indexToUpdate {
-                    self?.fetchedNotes[indexToUpdate].isBookmarked = !isBookmarked
-                }
-                
-                self?.error = .noteError(error)
-                
-            }
+        guard let indexToUpdate = self.fetchedNotes.firstIndex(where: { $0.id == noteID }) else {
+            return
         }
-        .store(in: &cancellables)
+        
+        self.fetchedNotes[indexToUpdate].isBookmarked = isBookmarked
+        
+        Just<Bool>(isBookmarked)
+            .setFailureType(to: NoteError.self)
+            .map { [unowned self] isBookmarked in
+                return self.setBookmarkUseCase.execute(
+                    isBookmarked: isBookmarked,
+                    noteID: noteID
+                )
+            }
+            .switchToLatest()
+            .mapToResult()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] result in
+                switch result {
+                case .success:
+                    return
+                    
+                case .failure(let error):
+                    guard let updatedIndexToUpdate = self?.fetchedNotes.firstIndex(where: { $0.id == noteID }) else {
+                        return
+                    }
+                    
+                    self?.fetchedNotes[updatedIndexToUpdate].isBookmarked = !isBookmarked
+                    self?.error = .noteError(error)
+                }
+            }
+            .store(in: &cancellables)
     }
 }
 

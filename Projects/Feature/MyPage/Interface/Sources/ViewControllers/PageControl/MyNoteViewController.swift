@@ -199,11 +199,6 @@ public final class MyNoteViewController: UIViewController,
             cell.configure(with: note)
 
             cell.likeNoteButton.publisher(for: .touchUpInside)
-            // 0.6초 사이에 발생한 가장 최신 좋아요 상태만 방출
-                .debounce(
-                    for: .milliseconds(600),
-                    scheduler: DispatchQueue.main
-                )
                 .sink { control in
                     self?.viewModel.setNoteLikeState(
                         noteID: note.id,
@@ -211,12 +206,14 @@ public final class MyNoteViewController: UIViewController,
                     )
                 }
                 .store(in: &cell.cancellables)
+            
+            cell.commentButton.publisher(for: .touchUpInside)
+                .sink { [weak self] _ in
+                    self?.coordinator?.pushNoteCommentsViewController(noteID: note.id)
+                }
+                .store(in: &cell.cancellables)
 
             cell.bookmarkButton.publisher(for: .touchUpInside)
-                .debounce(
-                    for: .milliseconds(600),
-                    scheduler: DispatchQueue.main
-                )
                 .sink { control in
                     self?.viewModel.setNoteBookmarkState(
                         noteID: note.id,

@@ -142,13 +142,12 @@ extension NoteNotificationViewController: UICollectionViewDelegate {
         if !self.viewModel.fetchedNotifications.isEmpty {
             self.viewModel.checkNotification(at: indexPath.row)
 
-            let selectedNotification =  self.viewModel.fetchedNotifications[indexPath.row]
-
-            if selectedNotification.type != .public {
-
-                self.coordinator?.pushNoteCommentsViewController(noteID: selectedNotification.noteID)
-            } else {
-                /// public 타입은 따로 처리할 필요 없음
+            let selectedNotification = self.viewModel.fetchedNotifications[indexPath.row]
+            
+            // 서버와 논의에 따라서 .public, 또는 .discipline이 경우 noteID는 nil일 것이기 때문에 아래와 같이
+            // noteID가 not nil인 경우에만 코멘트 화면으로 navigation
+            if let noteID = selectedNotification.noteID {
+                self.coordinator?.pushNoteCommentsViewController(noteID: noteID)
             }
         }
     }
@@ -203,6 +202,17 @@ private extension NoteNotificationViewController {
                 default:
                     return
                 }
+            }
+            .store(in: &cancellables)
+        
+        viewModel.$error
+            .compactMap { $0 }
+            .sink { [weak self] error in
+                self?.showAlert(
+                    title: error.errorDescription,
+                    message: nil,
+                    singleActionTitle: "확인"
+                )
             }
             .store(in: &cancellables)
     }

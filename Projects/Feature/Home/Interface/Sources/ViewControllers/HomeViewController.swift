@@ -62,17 +62,18 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
             cell.configure(with: note)
             
             cell.likeNoteButton.publisher(for: .touchUpInside)
-                .debounce(for: .milliseconds(600), scheduler: DispatchQueue.main)
                 .sink { [weak self] control in
                     self?.viewModel.setNoteLikeState(noteID: note.id, isLiked: control.isSelected)
                 }
                 .store(in: &cell.cancellables)
             
+            cell.commentButton.publisher(for: .touchUpInside)
+                .sink { [weak self] _ in
+                    self?.coordinator?.pushNoteCommentsViewController(noteID: note.id)
+                }
+                .store(in: &cell.cancellables)
+            
             cell.bookmarkButton.publisher(for: .touchUpInside)
-                .debounce(
-                    for: .milliseconds(600),
-                    scheduler: DispatchQueue.main
-                )
                 .sink { control in
                     self.viewModel.setNoteBookmarkState(
                         noteID: note.id,
@@ -224,7 +225,9 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
                 snapshot.appendItems(newItems, toSection: .favoriteArtists)
             }
             
-            let isCountDifferent = currentItems.count != newItems.count
+            // 갯수를 비교할 때 새롭게 추가된 아티스트 cell + 찾아보기 cell과 기존 cell 갯수를 비교 해야 한다.
+            let searchItemButtonCount = 1
+            let isCountDifferent = currentItems.count != (newItems.count + searchItemButtonCount)
             
             guard let refreshControl = self.homeCollectionView.refreshControl else {
                 // pull-to-refresh가 없는 경우 apply snapshot만 적용. 갯수가 달라질때만 animation
@@ -313,7 +316,7 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.updateInitialHomeData()
-        
+        self.checkForUnReadNotification()
     }
     
     // MARK: - Favorite Artists
@@ -327,6 +330,12 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
            !userInfo.didEnterFirstFavoriteArtistsListPage {
             self.coordinator?.presentInitialArtistSelectViewController()
         }
+    }
+    
+    // MARK: - Notification Check
+    
+    private func checkForUnReadNotification() {
+        self.viewModel.checkForUnReadNotification()
     }
 }
 
@@ -382,6 +391,14 @@ private extension HomeViewController {
                 self?.updateNotes(fetchedNotes)
             }
             .store(in: &cancellables)
+        
+        viewModel.$hasUncheckedNotification
+            .sink { [weak self] hasUncheckedNotification in
+                hasUncheckedNotification
+                ? self?.notificationButton.setImage(FeelinImages.notificationOn, for: .normal)
+                : self?.notificationButton.setImage(FeelinImages.notificationOff, for: .normal)
+            }
+            .store(in: &cancellables)
     }
 
     func bindAction() {
@@ -420,6 +437,7 @@ private extension HomeViewController {
             .filter { $0 }
             .sink(receiveValue: { [weak viewModel] _ in
                 viewModel?.refreshAllData()
+                viewModel?.checkForUnReadNotification()
             })
             .store(in: &cancellables)
 

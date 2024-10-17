@@ -83,11 +83,6 @@ extension MyPageCoordinator: MyPageViewControllerDelegate,
         delegate?.didFinish(childCoordinator: self)
     }
 
-    public func popViewController(isHiddenTabBar: Bool) {
-        navigationController.tabBarController?.tabBar.isHidden = isHiddenTabBar
-        popViewController()
-    }
-
     public func pushSettingViewController() {
         let logoutUseCase = LogoutUseCase(tokenStorage: TokenStorage())
         let viewModel = SettingViewModel(logoutUseCase: logoutUseCase)
@@ -99,7 +94,6 @@ extension MyPageCoordinator: MyPageViewControllerDelegate,
     public func pushNoteNotificationViewController() {
         let noteNotificationContainerViewController = NoteNotificationContainerViewController()
         noteNotificationContainerViewController.coordinator = self
-        navigationController.tabBarController?.tabBar.isHidden = true
         navigationController.pushViewController(noteNotificationContainerViewController, animated: true)
     }
 
@@ -107,7 +101,6 @@ extension MyPageCoordinator: MyPageViewControllerDelegate,
         let viewModel = noteCommentsDependencies(noteID: noteID)
         let noteCommentsViewController = NoteCommentsViewController(viewModel: viewModel)
         noteCommentsViewController.coordinator = self
-        navigationController.tabBarController?.tabBar.isHidden = true
         navigationController.pushViewController(noteCommentsViewController, animated: true)
     }
 
@@ -117,7 +110,6 @@ extension MyPageCoordinator: MyPageViewControllerDelegate,
         let viewModel = reportNoteDependencies(noteID: noteID, commentID: commentID)
         let reportViewController = ReportViewController(viewModel: viewModel)
         reportViewController.coordinator = self
-        navigationController.tabBarController?.tabBar.isHidden = true
         navigationController.pushViewController(reportViewController, animated: true)
     }
 
@@ -136,7 +128,6 @@ extension MyPageCoordinator: MyPageViewControllerDelegate,
         let viewModel = profileEditDependencies(userProfile: userProfile)
         let reportViewController = ProfileEditViewController(viewModel: viewModel)
         reportViewController.coordinator = self
-        navigationController.tabBarController?.tabBar.isHidden = true
         navigationController.pushViewController(reportViewController, animated: true)
     }
 
@@ -149,7 +140,6 @@ extension MyPageCoordinator: MyPageViewControllerDelegate,
         let searchSongViewController = SearchSongViewController(viewModel: searchSongViewModel)
         searchSongViewController.coordinator = self
 
-        topNavigationController.tabBarController?.tabBar.isHidden = true
         topNavigationController.pushViewController(searchSongViewController, animated: true)
     }
 
@@ -192,7 +182,6 @@ extension MyPageCoordinator: MyPageViewControllerDelegate,
         let viewModel = deleteUserDependencies()
         let viewController = DeleteUserViewController(viewModel: viewModel)
         viewController.coordinator = self
-        navigationController.tabBarController?.tabBar.isHidden = true
         navigationController.pushViewController(viewController, animated: true)
     }
 

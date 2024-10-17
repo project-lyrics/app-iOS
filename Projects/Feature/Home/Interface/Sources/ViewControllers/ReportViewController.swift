@@ -33,6 +33,8 @@ public final class ReportViewController: UIViewController {
     public init(viewModel: ReportViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+        
+        self.hidesBottomBarWhenPushed = true
     }
 
     @available(*, unavailable)

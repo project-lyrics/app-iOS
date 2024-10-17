@@ -31,6 +31,7 @@ final class SearchNoteCell: UITableViewCell, Reusable {
         let label = UILabel()
         label.font = SharedDesignSystemFontFamily.Pretendard.medium.font(size: 14)
         label.textColor = Colors.gray08
+        label.lineBreakMode = .byTruncatingTail
         label.numberOfLines = 1
         return label
     }()
@@ -75,6 +76,14 @@ final class SearchNoteCell: UITableViewCell, Reusable {
         flexContainer.flex.layout()
     }
     
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        if traitCollection.userInterfaceStyle != previousTraitCollection?.userInterfaceStyle {
+            self.selectedBackgroundView = UIImageView(image: Colors.gray01.image())
+        }
+    }
+    
     private func setUpColor() {
         self.selectedBackgroundView = UIImageView(image: Colors.gray01.image())
     }
@@ -84,35 +93,38 @@ final class SearchNoteCell: UITableViewCell, Reusable {
         
         flexContainer.flex
             .direction(.row)
-            .justifyContent(.center)
+            .justifyContent(.spaceBetween)
+            .padding(12, 20)
             .define { flex in
-                flex.addItem(albumImageView)
-                    .size(.init(width: 40, height: 40))
-                
-                // 노래 이름, 아티스트 이름 column
                 flex.addItem()
-                    .direction(.column)
-                    .justifyContent(.center)
+                    .direction(.row)
+                    .maxWidth(65%)
                     .define { flex in
-                        flex.addItem(songNameLabel)
-                        flex.addItem(artistNameLabel)
+                        flex.addItem(albumImageView)
+                            .size(.init(width: 40, height: 40))
+                        
+                        // 노래 이름, 아티스트 이름 column
+                        flex.addItem()
+                            .direction(.column)
+                            .justifyContent(.center)
+                            .define { flex in
+                                flex.addItem(songNameLabel)
+                                flex.addItem(artistNameLabel)
+                            }
+                            .marginLeft(10)
                     }
-                    .grow(1)
-                    .paddingLeft(10)
-                    .paddingRight(16)
                 
                 flex.addItem()
                     .alignSelf(.center)
                     .height(28)
                     .backgroundColor(Colors.secondary)
                     .cornerRadius(14)
+                    .padding(6, 12)
                     .define { flex in
                         flex.addItem(noteCountLabel)
                             .grow(1)
-                            .margin(6, 12)
                     }
             }
-            .padding(12, 20)
     }
     
     func configure(
@@ -126,6 +138,21 @@ final class SearchNoteCell: UITableViewCell, Reusable {
         self.noteCountLabel.text = "노트 \(noteCount.shortenedText())"
         self.albumImageView.kf.setImage(with: albumImageURL)
         
+        self.songNameLabel.flex.markDirty()
+        self.artistNameLabel.flex.markDirty()
         self.noteCountLabel.flex.markDirty()
+        self.albumImageView.flex.markDirty()
+        self.flexContainer.flex.layout()
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        self.songNameLabel.text = nil
+        self.artistNameLabel.text = nil
+        self.noteCountLabel.text = nil
+        self.albumImageView.image = nil
+        self.noteCountLabel.text = nil
+        
     }
 }

@@ -65,6 +65,12 @@ public final class HomeCoordinator: Coordinator {
 
             return ArtistAPIService(networkProvider: networkProvider)
         }
+        
+        DIContainer.standard.register(.notificationAPIService) { resolver in
+            let networkProvider = try resolver.resolve(.networkProvider)
+            
+            return NotificationAPIService(networkProvider: networkProvider)
+        }
     }
 
     private func registerNoteCommentDI() {
@@ -95,7 +101,6 @@ extension HomeCoordinator: HomeViewControllerDelegate,
     public func pushNoteNotificationViewController() {
         let noteNotificationContainerViewController = NoteNotificationContainerViewController()
         noteNotificationContainerViewController.coordinator = self
-        navigationController.tabBarController?.tabBar.isHidden = true
         navigationController.pushViewController(noteNotificationContainerViewController, animated: true)
     }
 
@@ -103,7 +108,6 @@ extension HomeCoordinator: HomeViewControllerDelegate,
         let viewModel = noteCommentsDependencies(noteID: noteID)
         let noteCommentsViewController = NoteCommentsViewController(viewModel: viewModel)
         noteCommentsViewController.coordinator = self
-        navigationController.tabBarController?.tabBar.isHidden = true
         navigationController.pushViewController(noteCommentsViewController, animated: true)
     }
 
@@ -113,7 +117,6 @@ extension HomeCoordinator: HomeViewControllerDelegate,
         let viewModel = reportNoteDependencies(noteID: noteID, commentID: commentID)
         let reportViewController = ReportViewController(viewModel: viewModel)
         reportViewController.coordinator = self
-        navigationController.tabBarController?.tabBar.isHidden = true
         navigationController.pushViewController(reportViewController, animated: true)
     }
 
@@ -153,19 +156,6 @@ extension HomeCoordinator: CoordinatorDelegate,
                            PostNoteViewControllerDelegate,
                            EditNoteViewControllerDelegate,
                            SearchSongViewControllerDelegate {
-    /// 1. HomeVC > 커뮤니티 > 알림 > 노트 상세
-    /// 노트 상세의 뒤로가기 액션에서, isHiddenTabBar default는 false이다.
-    /// 그래서 아래 guard let으로 hidden false를 하지 않도록한다.
-    /// 2. HomeVC > 노트 상세의 경우 false
-    public func popViewController(isHiddenTabBar: Bool) {
-        popViewController()
-
-        guard navigationController.viewControllers.filter({ $0 is NoteNotificationContainerViewController }).isEmpty else {
-            return
-        }
-
-        navigationController.tabBarController?.tabBar.isHidden = isHiddenTabBar
-    }
 
     public func popRootViewController() {
         guard let topNavigationController = navigationController.presentedViewController as? UINavigationController 
@@ -221,8 +211,7 @@ extension HomeCoordinator: CoordinatorDelegate,
         let searchSongViewModel = searchSongDependencies(artistID: artistID)
         let searchSongViewController = SearchSongViewController(viewModel: searchSongViewModel)
         searchSongViewController.coordinator = self
-
-        topNavigationController.tabBarController?.tabBar.isHidden = true
+        
         topNavigationController.pushViewController(searchSongViewController, animated: true)
     }
 
@@ -258,6 +247,7 @@ extension HomeCoordinator {
         @Injected(.noteAPIService) var noteAPIService: NoteAPIServiceInterface
         @Injected(.notePaginationService) var notePaginationService: NotePaginationServiceInterface
         @Injected(.artistPaginationService) var artistPaginationService: KeywordPaginationServiceInterface
+        @Injected(.notificationAPIService) var notificationAPIService: NotificationAPIServiceInterface
 
         @KeychainWrapper<UserInformation>(.userInfo)
         var userInfo
@@ -279,13 +269,15 @@ extension HomeCoordinator {
         let setNoteLikeUseCase = SetNoteLikeUseCase(noteAPIService: noteAPIService)
         let setBookmarkUseCase = SetBookmarkUseCase(noteAPIService: noteAPIService)
         let deleteNoteUseCase = DeleteNoteUseCase(noteAPIService: noteAPIService)
+        let getHasUncheckedNotificationUseCase = GetHasUncheckedNotificationUseCase(notificationAPIService: notificationAPIService)
 
         let viewModel =  HomeViewModel(
             getNotesUseCase: getNoteUseCase,
             setNoteLikeUseCase: setNoteLikeUseCase,
             getFavoriteArtistsUseCase: getFavoriteArtistsUseCase,
             setBookmarkUseCase: setBookmarkUseCase,
-            deleteNoteUseCase: deleteNoteUseCase
+            deleteNoteUseCase: deleteNoteUseCase, 
+            getHasUncheckedNotificationUseCase: getHasUncheckedNotificationUseCase
         )
 
         return viewModel

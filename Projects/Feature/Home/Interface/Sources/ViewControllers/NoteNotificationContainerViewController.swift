@@ -14,7 +14,7 @@ import Combine
 import UIKit
 
 public protocol NoteNotificationContainerViewControllerDelegate: AnyObject {
-    func popViewController(isHiddenTabBar: Bool)
+    func popViewController()
     func pushNoteCommentsViewController(noteID: Int)
 }
 
@@ -46,6 +46,18 @@ public final class NoteNotificationContainerViewController: UIViewController {
 
         return label
     }()
+    
+    // MARK: - Init
+    
+    public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+        self.hidesBottomBarWhenPushed = true
+    }
+    
+    @available(*, unavailable)
+    public required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
 
     // MARK: - View Lifecycle
 
@@ -86,7 +98,7 @@ public final class NoteNotificationContainerViewController: UIViewController {
     private func bindAction() {
         backButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in
-                self?.coordinator?.popViewController(isHiddenTabBar: false)
+                self?.coordinator?.popViewController()
             }
             .store(in: &cancellables)
     }

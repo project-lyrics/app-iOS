@@ -16,8 +16,8 @@ public struct NoteNotification: Hashable {
     public let type: NotificationType
     public let image: String?
     public var hasRead: Bool
-    public let content: String
-    public let noteID: Int
+    public let content: String?
+    public let noteID: Int?
     public let time: Date
     
     public init(
@@ -43,8 +43,11 @@ public struct NoteNotification: Hashable {
         self.type = NotificationType(dto: dto.type)
         self.image = dto.artistImageUrl
         self.hasRead = dto.checked
-        if dto.type == .public {
-            self.content = dto.content
+        
+        // .commentsOnNote일 경우 noteContent != nil, content == nil
+        // .public, .discipline일 경우 content != nil, noteContent == nil, noteID == nil, image == nil
+        if dto.type == .commentOnNote {
+            self.content = dto.noteContent
         } else {
             self.content = dto.noteContent
         }
@@ -57,8 +60,8 @@ public struct NoteNotification: Hashable {
 extension NoteNotification {
     public static let mockData = [
         NoteNotification(id: 1, type: .commentOnNote, image: "https://artist.image.com/1", hasRead: false, content: "notification content", noteID: 1, time: Date()),
-        NoteNotification(id: 2, type: .report, image: "https://artist.image.com/2", hasRead: true, content: "notification content", noteID: 1, time: Date()),
-        NoteNotification(id: 3, type: .report, image: "https://artist.image.com/3", hasRead: false, content: "notification content", noteID: 1, time: Date()),
+        NoteNotification(id: 2, type: .discipline, image: "https://artist.image.com/2", hasRead: true, content: "notification content", noteID: 1, time: Date()),
+        NoteNotification(id: 3, type: .discipline, image: "https://artist.image.com/3", hasRead: false, content: "notification content", noteID: 1, time: Date()),
         NoteNotification(id: 4, type: .commentOnNote, image: "https://artist.image.com/4", hasRead: true, content: "notification content", noteID: 1, time: Date()),
         NoteNotification(id: 5, type: .commentOnNote, image: "https://artist.image.com/5", hasRead: false, content: "notification content", noteID: 1, time: Date()),
         NoteNotification(id: 6, type: .commentOnNote, image: "https://artist.image.com/6", hasRead: true, content: "notification content", noteID: 1, time: Date()),
