@@ -20,7 +20,6 @@ final class EditUserInfoView: UIView {
 
     let backButton: UIButton = {
         let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
         let image = FeelinImages.back
         button.setImage(image, for: .normal)
 

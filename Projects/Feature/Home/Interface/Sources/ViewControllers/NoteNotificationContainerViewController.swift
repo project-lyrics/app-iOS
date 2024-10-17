@@ -31,7 +31,6 @@ public final class NoteNotificationContainerViewController: UIViewController {
 
     private let backButton: UIButton = {
         let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
         button.setImage(FeelinImages.back, for: .normal)
 
         return button
@@ -40,7 +39,6 @@ public final class NoteNotificationContainerViewController: UIViewController {
     private var navigationTitleLabel: UILabel = {
         let label = UILabel()
         label.text = "알림"
-        label.translatesAutoresizingMaskIntoConstraints = false
         label.font = SharedDesignSystemFontFamily.Pretendard.bold.font(size: 18)
         label.textColor = Colors.gray09
 
