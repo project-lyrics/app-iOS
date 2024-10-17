@@ -21,7 +21,6 @@ final class SearchSongView: UIView {
 
     let backButton: UIButton = {
         let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
         button.setImage(FeelinImages.back, for: .normal)
 
         return button
@@ -85,7 +84,7 @@ final class SearchSongView: UIView {
             .direction(.column)
             .define { flex in
                 flex.addItem(navigationBar)
-                    .marginHorizontal(20)
+                    .marginHorizontal(10)
                     .height(44)
                     .marginTop(pin.safeArea.top)
 

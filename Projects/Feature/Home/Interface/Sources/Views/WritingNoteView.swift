@@ -20,7 +20,6 @@ public final class WritingNoteView: UIView {
 
     public lazy var closeButton: UIButton = {
         let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
         button.setImage(FeelinImages.x, for: .normal)
 
         return button
@@ -28,7 +27,6 @@ public final class WritingNoteView: UIView {
 
     private let naviTitleLabel: UILabel = {
         let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "노트 작성"
         label.font = SharedDesignSystemFontFamily.Pretendard.bold.font(size: 18)
         label.textColor = Colors.gray09

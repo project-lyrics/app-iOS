@@ -28,9 +28,8 @@ public final class ProfileEditView: UIView {
         return label
     }()
 
-    public private (set) lazy var backButton: UIButton = {
+    public let backButton: UIButton = {
         let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
 
         let image = FeelinImages.back
         button.setImage(image, for: .normal)

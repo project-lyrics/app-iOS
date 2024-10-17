@@ -24,7 +24,6 @@ final class DeleteUserView: UIView {
 
     let backButton: UIButton = {
         let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
         let image = FeelinImages.back
         button.setImage(image, for: .normal)
 
@@ -78,8 +77,8 @@ final class DeleteUserView: UIView {
     private func setUpLayouts() {
         addSubview(rootFlexContainer)
 
-        navigationBar.addTitleView(naviTitleLabel)
         navigationBar.addLeftBarView([backButton])
+        navigationBar.addTitleView(naviTitleLabel)
 
         rootFlexContainer
             .flex
