@@ -68,9 +68,10 @@ final class SearchSongView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        setUpSongsCollectionViewLayout()
         rootFlexContainer.pin.all(pin.safeArea)
         rootFlexContainer.flex.layout()
+
+        setUpSongsCollectionViewLayout()
     }
 
     private func setUpLayout() {
@@ -86,7 +87,6 @@ final class SearchSongView: UIView {
                 flex.addItem(navigationBar)
                     .marginHorizontal(10)
                     .height(44)
-                    .marginTop(pin.safeArea.top)
 
                 flex.addItem(searchBarView)
                     .marginHorizontal(20)
