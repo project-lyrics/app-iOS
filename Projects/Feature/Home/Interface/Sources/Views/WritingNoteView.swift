@@ -235,7 +235,7 @@ public final class WritingNoteView: UIView {
                     }
             }
 
-        rootScrollView.addSubview(addTrackLabel)
+        contentView.addSubview(addTrackLabel)
         addSubview(noteCharCountLabel)
 
         NSLayoutConstraint.activate([
