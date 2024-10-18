@@ -70,10 +70,11 @@ public final class SearchSongViewController: UIViewController {
 
         viewModel.$fetchedSongs
             .receive(on: DispatchQueue.main)
-            .sink { songs in
+            .sink { [weak self] songs in
                 guard !songs.isEmpty else { return }
 
-                self.songCollectionView.reloadData()
+                self?.songCollectionView.reloadData()
+                self?.searchSongView.rootFlexContainer.flex.layout()
             }
             .store(in: &cancellables)
 

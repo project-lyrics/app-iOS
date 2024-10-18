@@ -289,12 +289,12 @@ public final class PostNoteViewController: UIViewController {
     }
 
     private func updateCharacterCountForLyrics() {
-        let count = lyricsTextView.text.count
+        let count = lyricsTextView.text.count <= 50 ? lyricsTextView.text.count : 50
         lyricsCharCountLabel.text = "\(count)/\(Const.lyricsMaxTextLength)"
     }
 
     private func updateCharacterCountForNote() {
-        let count = noteTextView.text.count
+        let count = noteTextView.text.count <= 1000 ? noteTextView.text.count : 1000
         noteCharCountLabel.text = "\(count)/\(Const.noteMaxTextLength)"
     }
 }

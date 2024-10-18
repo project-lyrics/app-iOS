@@ -19,7 +19,6 @@ final class UserInformationView: UIView {
     
     let backButton: UIButton = {
         let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
         let image = FeelinImages.back
         button.setImage(image, for: .normal)
 
@@ -28,7 +27,6 @@ final class UserInformationView: UIView {
 
     let skipButton: UIButton = {
         let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("건너뛰기", for: .normal)
         button.titleLabel?.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 16)
         button.setTitleColor(Colors.gray05, for: .normal)

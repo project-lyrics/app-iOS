@@ -24,7 +24,6 @@ final class ReportView: UIView {
 
     let backButton: UIButton = {
         let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
         button.setImage(FeelinImages.back, for: .normal)
 
         return button
