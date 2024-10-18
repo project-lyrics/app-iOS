@@ -19,6 +19,7 @@ protocol SplashViewControllerDelegate: AnyObject {
 final class SplashViewController: UIViewController {
     private let logoImageView: UIImageView = {
         let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFit
         imageView.image = FeelinImages.logo
         return imageView
