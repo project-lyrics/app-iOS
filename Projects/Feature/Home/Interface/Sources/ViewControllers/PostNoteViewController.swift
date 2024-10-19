@@ -210,7 +210,8 @@ public final class PostNoteViewController: UIViewController {
                 guard let self = self else { return }
 
                 if text?.isEmpty == true {
-                    noteTextView.setUpTextView(text: Const.notePlaceholder, textColor: Colors.gray02)
+                    noteTextView.setUpTextView(text: Const.notePlaceholder, textColor: Colors.gray04)
+                    noteCharCountLabel.textColor = Colors.gray04
                 } else if text == Const.notePlaceholder {
                     noteTextView.setUpTextView(text: "", textColor: Colors.gray08)
                 } else {
@@ -234,6 +235,12 @@ public final class PostNoteViewController: UIViewController {
                 guard let end = noteTextView.selectedTextRange?.end else { return }
                 let caretRect = noteTextView.caretRect(for: end)
                 rootScrollView.scrollRectToVisible(caretRect, animated: true)
+
+                // 텍스트 길이 초과 방지
+                if self.noteTextView.text.count > Const.noteMaxTextLength {
+                    self.noteTextView.text = String(self.noteTextView.text.prefix(Const.noteMaxTextLength))
+                }
+
                 updateCharacterCountForNote()
             }
             .store(in: &cancellables)
@@ -245,7 +252,8 @@ public final class PostNoteViewController: UIViewController {
                 }
 
                 if text?.isEmpty == true {
-                    lyricsTextView.setUpTextView(text: Const.lyricsPlaceholder, textColor: Colors.gray02)
+                    lyricsTextView.setUpTextView(text: Const.lyricsPlaceholder, textColor: Colors.gray02.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)))
+                    lyricsCharCountLabel.textColor = Colors.gray02.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
                 } else if text == Const.lyricsPlaceholder {
                     lyricsTextView.setUpTextView(text: "", textColor: Colors.gray08)
                     setupLyricsTextviewTextCenterVertically(lyricsTextView)
@@ -291,11 +299,13 @@ public final class PostNoteViewController: UIViewController {
     private func updateCharacterCountForLyrics() {
         let count = lyricsTextView.text.count <= 50 ? lyricsTextView.text.count : 50
         lyricsCharCountLabel.text = "\(count)/\(Const.lyricsMaxTextLength)"
+        lyricsCharCountLabel.textColor = Colors.gray06.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
     }
 
     private func updateCharacterCountForNote() {
         let count = noteTextView.text.count <= 1000 ? noteTextView.text.count : 1000
         noteCharCountLabel.text = "\(count)/\(Const.noteMaxTextLength)"
+        noteCharCountLabel.textColor = Colors.gray06
     }
 }
 

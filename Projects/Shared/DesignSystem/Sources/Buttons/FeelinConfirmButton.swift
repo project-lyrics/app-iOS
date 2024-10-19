@@ -50,11 +50,12 @@ public class FeelinConfirmButton: UIButton {
     }
 
     private func updateAppearance() {
-        if setting == .background {
+        switch setting {
+        case .background:
             backgroundColor = isEnabled ? enabledColor : disabledColor
             setTitleColor(.white, for: .normal)
-        } else {
-            backgroundColor = .white
+        case .text:
+            backgroundColor = Colors.background
 
             let titleColor = isEnabled ? Colors.primary : disabledColor
             setTitleColor(titleColor, for: .normal)
