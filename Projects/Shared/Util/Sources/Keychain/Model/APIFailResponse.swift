@@ -1,8 +1,8 @@
 //
 //  APIFailResponse.swift
-//  CoreNetworkInterface
+//  SharedUtil
 //
-//  Created by 황인우 on 5/29/24.
+//  Created by 황인우 on 10/19/24.
 //
 
 import Foundation
