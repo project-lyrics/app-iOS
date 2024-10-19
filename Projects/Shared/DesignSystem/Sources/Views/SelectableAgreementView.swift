@@ -14,7 +14,17 @@ public final class SelectableAgreementView: UIView {
 
     private let flexContainer = UIView()
     
-    private let subFlexContainer = UIView()
+    private lazy var subFlexContainer: UIView = {
+        let view = UIView()
+        view.layer.cornerRadius = 14
+        view.layer.borderWidth = 2
+
+        let style: UIUserInterfaceStyle = traitCollection.userInterfaceStyle
+        view.layer.borderColor = style == .light ? Colors.fixedGray01.cgColor :
+        Colors.gray01.resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)).cgColor
+
+        return view
+    }()
 
     private let descriptionLabel: UILabel = {
         let label = UILabel()
@@ -85,8 +95,6 @@ public final class SelectableAgreementView: UIView {
             .alignItems(.center)
             .addItem()
             .size(.init(width: 49, height: 28))
-            .cornerRadius(14)
-            .border(2, Colors.fixedGray01)
             .define { flex in
                 flex.addItem(requiredOptionLabel)
                     .marginVertical(4)
@@ -97,7 +105,7 @@ public final class SelectableAgreementView: UIView {
 
     private func updateBorderColor(for userInterfaceStyle: UIUserInterfaceStyle) {
         if userInterfaceStyle == .dark {
-            subFlexContainer.layer.borderColor = Colors.gray01.cgColor
+            subFlexContainer.layer.borderColor = Colors.gray01.resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)).cgColor
            } else {
                subFlexContainer.layer.borderColor = Colors.fixedGray01.cgColor
            }

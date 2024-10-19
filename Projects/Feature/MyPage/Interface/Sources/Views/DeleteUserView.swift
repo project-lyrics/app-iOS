@@ -30,11 +30,13 @@ final class DeleteUserView: UIView {
         return button
     }()
 
-    private let contentTitleLabel: UILabel = {
+    private lazy var contentTitleLabel: UILabel = {
         let label = UILabel()
         label.text = "탈퇴하기 전 확인해주세요"
         label.font = SharedDesignSystemFontFamily.Pretendard.bold.font(size: 18)
-        label.textColor = Colors.tertiary
+        let style: UIUserInterfaceStyle = traitCollection.userInterfaceStyle
+        label.textColor = style == .light ? Colors.tertiary :
+        Colors.secondary.resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark))
 
         return label
     }()
@@ -61,6 +63,11 @@ final class DeleteUserView: UIView {
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError()
+    }
+
+    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        updateBorderColor(for: traitCollection.userInterfaceStyle)
     }
 
     override func layoutSubviews() {
@@ -142,6 +149,14 @@ final class DeleteUserView: UIView {
             }
 
         return flexContainerView
+    }
+
+    private func updateBorderColor(for userInterfaceStyle: UIUserInterfaceStyle) {
+        if userInterfaceStyle == .dark {
+            contentTitleLabel.textColor = Colors.secondary.resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark))
+        } else {
+            contentTitleLabel.textColor = Colors.tertiary
+        }
     }
 }
 
