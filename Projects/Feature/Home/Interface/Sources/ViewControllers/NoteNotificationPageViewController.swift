@@ -21,6 +21,7 @@ public final class NoteNotificationPageViewController: ButtonBarPagerTabStripVie
     override public func viewDidLoad() {
         settings.style.defaultBarBackgroundColor = Colors.gray01
         settings.style.buttonBarBackgroundColor = Colors.background
+        settings.style.buttonBarItemTitleColor = Colors.gray03
         settings.style.selectedBarHeight = 2
         settings.style.selectedBarBackgroundColor = Colors.primary
         settings.style.buttonBarItemFont = SharedDesignSystemFontFamily.Pretendard.semiBold.font(size: 16)
@@ -28,6 +29,11 @@ public final class NoteNotificationPageViewController: ButtonBarPagerTabStripVie
         DIContainer.registerNotificationService()
         DIContainer.registerNotificationPaginationService()
 
+        changeCurrentIndexProgressive = { (oldCell: ButtonBarViewCell?, newCell: ButtonBarViewCell?, progressPercentage: CGFloat, changeCurrentIndex: Bool, animated: Bool) -> Void in
+            guard changeCurrentIndex == true else { return }
+            oldCell?.label.textColor = Colors.gray03
+            newCell?.label.textColor = Colors.primary
+        }
         super.viewDidLoad()
     }
     

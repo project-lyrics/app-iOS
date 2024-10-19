@@ -109,11 +109,7 @@ public final class NoteNotificationViewController: UIViewController {
         super.viewWillAppear(animated)
         viewModel.getNotifications(isInitial: true)
     }
-    
-    public override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-    }
-    
+
     // MARK: - UI Settings
     
     private func setUpDefault() {

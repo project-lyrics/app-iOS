@@ -36,6 +36,12 @@ public final class MyPageTabViewController: ButtonBarPagerTabStripViewController
             return NotePaginationService()
         }
 
+        changeCurrentIndexProgressive = { (oldCell: ButtonBarViewCell?, newCell: ButtonBarViewCell?, progressPercentage: CGFloat, changeCurrentIndex: Bool, animated: Bool) -> Void in
+            guard changeCurrentIndex == true else { return }
+            oldCell?.label.textColor = Colors.gray03
+            newCell?.label.textColor = Colors.primary
+        }
+
         super.viewDidLoad()
     }
 
