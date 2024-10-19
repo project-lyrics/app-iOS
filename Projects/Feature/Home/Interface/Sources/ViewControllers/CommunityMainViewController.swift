@@ -67,8 +67,7 @@ public final class CommunityMainViewController: UIViewController, NoteMenuHandli
 
     private let postNoteButton: UIButton = {
         let button = UIButton()
-        let image = button.isEnabled ? FeelinImages.writingActive : FeelinImages.writingInactive
-        button.setImage(image, for: .normal)
+        button.setImage(FeelinImages.writingInactive, for: .normal)
 
         return button
     }()
@@ -404,7 +403,15 @@ private extension CommunityMainViewController {
         
         viewModel.$artist
             .map(\.isFavorite)
-            .assign(to: \.isEnabled, on: self.postNoteButton)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isFavorite in
+                guard let self = self else { return }
+                postNoteButton.isEnabled = isFavorite
+
+                let image = isFavorite ? FeelinImages.writingActive : FeelinImages.writingInactive
+
+                postNoteButton.setImage(image, for: .normal)
+            }
             .store(in: &cancellables)
     }
 
