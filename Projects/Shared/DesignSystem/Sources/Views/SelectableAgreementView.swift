@@ -53,6 +53,11 @@ public final class SelectableAgreementView: UIView {
 
     // MARK: - Layout
 
+    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        updateBorderColor(for: traitCollection.userInterfaceStyle)
+    }
+
     public override func layoutSubviews() {
         super.layoutSubviews()
 
@@ -88,6 +93,14 @@ public final class SelectableAgreementView: UIView {
                     .marginHorizontal(12)
             }
         return subFlexContainer
+    }
+
+    private func updateBorderColor(for userInterfaceStyle: UIUserInterfaceStyle) {
+        if userInterfaceStyle == .dark {
+            subFlexContainer.layer.borderColor = Colors.gray01.cgColor
+           } else {
+               subFlexContainer.layer.borderColor = Colors.fixedGray01.cgColor
+           }
     }
 
     public func setTitle(_ description: String) {
