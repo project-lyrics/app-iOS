@@ -66,13 +66,7 @@ final class ArtistNameCollectionViewCell: UICollectionViewCell, Reusable {
 
     override func prepareForReuse() {
         super.prepareForReuse()
-
-        if model?.imageSource != nil {
-            artistIconImageView.image = nil
-        } else {
-            artistIconImageView.image = FeelinImages.filterAll.withRenderingMode(.alwaysTemplate)
-        }
-
+        artistIconImageView.image = nil
         artistNameLabel.text = nil
     }
 
@@ -116,6 +110,7 @@ final class ArtistNameCollectionViewCell: UICollectionViewCell, Reusable {
             artistIconImageView.kf.setImage(with: imageUrl)
         } else {
             // 이미지가 없을 때는 곡률을 제거
+            artistIconImageView.image = FeelinImages.filterAll.withRenderingMode(.alwaysTemplate)
             artistIconImageView.layer.cornerRadius = 0
         }
 
