@@ -208,11 +208,15 @@ public final class NoteCommentsViewController: UIViewController, CommentMenuHand
     
     override public func viewDidLoad() {
         super.viewDidLoad()
-        self.fetchNoteWithComments()
         self.bindUI()
         self.bindAction()
     }
-    
+
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.fetchNoteWithComments()
+    }
+
     private func fetchNoteWithComments() {
         self.viewModel.fetchNoteWithComments()
     }
