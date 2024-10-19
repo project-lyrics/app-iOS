@@ -206,7 +206,7 @@ public final class EditNoteViewController: UIViewController {
                 guard let self = self else { return }
 
                 if text?.isEmpty == true {
-                    noteTextView.setUpTextView(text: Const.notePlaceholder, textColor: Colors.gray04)
+                    noteTextView.setUpTextView(text: Const.notePlaceholder, textColor: Colors.gray02)
                 } else if text == Const.notePlaceholder {
                     noteTextView.setUpTextView(text: "", textColor: Colors.gray08)
                 } else {
@@ -241,7 +241,7 @@ public final class EditNoteViewController: UIViewController {
                 }
 
                 if text?.isEmpty == true {
-                    lyricsTextView.setUpTextView(text: Const.lyricsPlaceholder, textColor: Colors.gray04)
+                    lyricsTextView.setUpTextView(text: Const.lyricsPlaceholder, textColor: Colors.gray02)
                 } else if text == Const.lyricsPlaceholder {
                     lyricsTextView.setUpTextView(text: "", textColor: Colors.gray08)
                     setupLyricsTextviewTextCenterVertically(lyricsTextView)

@@ -104,7 +104,7 @@ public final class WritingNoteView: UIView {
         textView.textAlignment = .center
         textView.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 16)
         textView.tintColor = Colors.gray08
-        textView.textColor = Colors.gray04
+        textView.textColor = Colors.gray02
         textView.isScrollEnabled = false
         textView.backgroundColor = UIColor(patternImage: FeelinImages.image00Default)
         textView.textContainer.maximumNumberOfLines = 3
