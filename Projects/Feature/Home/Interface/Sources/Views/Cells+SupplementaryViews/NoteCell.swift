@@ -54,6 +54,7 @@ public final class NoteCell: UICollectionViewCell, Reusable {
     
     private lazy var noteContentTextView: UnSelectableTextView = {
         let textView = UnSelectableTextView()
+        textView.backgroundColor = Colors.background
         textView.delegate = self
         textView.isEditable = false
         textView.isSelectable = true
@@ -234,14 +235,14 @@ public final class NoteCell: UICollectionViewCell, Reusable {
             // 좋아요 & 댓글 row
             flex.addItem().direction(.row).define { flex in
                 flex.addItem(likeNoteButton)
-                    .paddingRight(4)
+                    .marginRight(4)
 
                 flex.addItem(likeAmountLabel)
 
                 flex.addItem().width(16)
 
                 flex.addItem(commentButton)
-                    .paddingRight(4)
+                    .marginRight(4)
 
                 flex.addItem(commentAmountLabel)
 
@@ -250,7 +251,7 @@ public final class NoteCell: UICollectionViewCell, Reusable {
                 flex.addItem(bookmarkButton)
             }
             .paddingTop(24)
-            .paddingBottom(28)
+            .paddingBottom(24)
         }
     }
 
