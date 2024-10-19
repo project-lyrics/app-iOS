@@ -107,6 +107,26 @@ public final class MyNoteViewController: UIViewController,
                 )
             }
             .store(in: &cancellables)
+
+        viewModel.$refreshState
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] refreshState in
+                switch refreshState {
+                case .failed(let error):
+                    self?.showAlert(
+                        title: error.errorDescription,
+                        message: nil,
+                        singleActionTitle: "확인"
+                    )
+
+                case .completed:
+                    self?.noteDetailCollectionView.refreshControl?.endRefreshing()
+
+                default:
+                    return
+                }
+            })
+            .store(in: &cancellables)
     }
 
     func bindAction() {
@@ -161,6 +181,13 @@ public final class MyNoteViewController: UIViewController,
                     break
                 }
             }
+            .store(in: &cancellables)
+
+        noteDetailCollectionView.refreshControl?.isRefreshingPublisher
+            .filter { $0 }
+            .sink(receiveValue: { [weak viewModel] _ in
+                viewModel?.getMyNotes(isInitialFetch: true)
+            })
             .store(in: &cancellables)
     }
 
@@ -317,6 +344,7 @@ public final class MyNoteViewController: UIViewController,
             // pull-to-refresh 중일 경우 reloadData를 활용하여 apply snapshot에 의해서 생기는 bounce 방지
             if refreshControl.isRefreshing {
                 noteDetailDataSource.applySnapshotUsingReloadData(snapshot)
+                selectFirstArtistCategory()
             } else {
                 // 그 외의 경우 apply snapshot 활용. 기존 데이터와 신규 데이터의 갯수가 달라질 때만 animation
                 noteDetailDataSource.apply(
@@ -366,16 +394,19 @@ public final class MyNoteViewController: UIViewController,
             // 스냅샷을 적용
             noteDetailDataSource.apply(snapshot, animatingDifferences: true) { [weak self] in
                 // 스냅샷 적용 후 첫 번째 아이템을 자동으로 선택
-                guard let self = self, let firstItem = noteRows.first else { return }
-
-                let firstIndexPath = IndexPath(item: 0, section: 0)
-                self.noteDetailCollectionView.selectItem(at: firstIndexPath, animated: false, scrollPosition: .top)
+                guard let self = self else { return }
+                selectFirstArtistCategory()
                 viewModel.getMyNotes(isInitialFetch: true)
             }
         } else {
             // 그 외에는 cell 갯수는 변화가 없으나 컨텐츠에 변화가 있다고 판단. reloadData 수행
             noteDetailDataSource.applySnapshotUsingReloadData(snapshot)
         }
+    }
+
+    private func selectFirstArtistCategory() {
+        let firstIndexPath = IndexPath(item: 0, section: 0)
+        noteDetailCollectionView.selectItem(at: firstIndexPath, animated: false, scrollPosition: .top)
     }
 }
 

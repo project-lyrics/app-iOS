@@ -20,7 +20,6 @@ public final class WritingNoteView: UIView {
 
     public lazy var closeButton: UIButton = {
         let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
         button.setImage(FeelinImages.x, for: .normal)
 
         return button
@@ -28,7 +27,6 @@ public final class WritingNoteView: UIView {
 
     private let naviTitleLabel: UILabel = {
         let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "노트 작성"
         label.font = SharedDesignSystemFontFamily.Pretendard.bold.font(size: 18)
         label.textColor = Colors.gray09
@@ -106,7 +104,7 @@ public final class WritingNoteView: UIView {
         textView.textAlignment = .center
         textView.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 16)
         textView.tintColor = Colors.gray08
-        textView.textColor = Colors.gray04
+        textView.textColor = Colors.gray02.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
         textView.isScrollEnabled = false
         textView.backgroundColor = UIColor(patternImage: FeelinImages.image00Default)
         textView.textContainer.maximumNumberOfLines = 3
@@ -118,7 +116,7 @@ public final class WritingNoteView: UIView {
     public let lyricsCharCountLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .right
-        label.textColor = Colors.gray04
+        label.textColor = Colors.gray02.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
         label.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 14)
         label.text = "0/50"
         label.lineBreakMode = .byClipping
@@ -237,7 +235,7 @@ public final class WritingNoteView: UIView {
                     }
             }
 
-        rootScrollView.addSubview(addTrackLabel)
+        contentView.addSubview(addTrackLabel)
         addSubview(noteCharCountLabel)
 
         NSLayoutConstraint.activate([

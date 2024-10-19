@@ -32,7 +32,6 @@ public final class ProfileEditButton: UIButton {
         let view = UIView()
         view.backgroundColor = Colors.primary
         view.clipsToBounds = true
-        view.layer.borderColor = Colors.fixedBackground.cgColor
         view.layer.borderWidth = 5
         return view
     }()
@@ -58,7 +57,12 @@ public final class ProfileEditButton: UIButton {
     }
     
     // MARK: - layout
-    
+
+    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        updateBorderColor(for: traitCollection.userInterfaceStyle)
+    }
+
     public override func layoutSubviews() {
         super.layoutSubviews()
         
@@ -92,7 +96,15 @@ public final class ProfileEditButton: UIButton {
                 }
         }
     }
-    
+
+    private func updateBorderColor(for userInterfaceStyle: UIUserInterfaceStyle) {
+        if userInterfaceStyle == .dark {
+            circleView.layer.borderColor = Colors.gray09.cgColor
+           } else {
+               circleView.layer.borderColor = Colors.fixedBackground.cgColor
+           }
+    }
+
     public func setProfileImage(with image: UIImage?) {
         profileImageView.image = image
     }

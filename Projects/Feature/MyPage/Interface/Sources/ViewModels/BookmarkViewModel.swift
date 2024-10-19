@@ -9,11 +9,13 @@ import Domain
 
 import Combine
 import Foundation
+import FeatureHomeInterface
 
 public final class BookmarkViewModel {
     @Published private (set) var fetchedNotes: [Note] = []
     @Published private (set) var fetchedFavoriteArtistNotes: [FavoriteArtistHavingNote] = []
     @Published private (set) var error: NoteError?
+    @Published private (set) var refreshState: RefreshState<NoteError> = .idle
 
     private var cancellables: Set<AnyCancellable> = .init()
     private var selectedArtistID: Int?
@@ -113,8 +115,8 @@ extension BookmarkViewModel {
             .sink { [weak self] result in
                 switch result {
                 case .success:
-                    return
-                    
+                    self?.fetchedNotes.remove(at: indexToUpdate)
+
                 case .failure(let error):
                     guard let updatedIndexToUpdate = self?.fetchedNotes.firstIndex(where: { $0.id == noteID }) else {
                         return
@@ -178,6 +180,8 @@ extension BookmarkViewModel {
         perPage: Int = 10,
         artistID: Int? = nil
     ) {
+        self.refreshState = .refreshing
+
         self.getMyNotesByBookmarkUseCase.execute(
             isInitial: isInitialFetch,
             perPage: perPage,
@@ -194,7 +198,10 @@ extension BookmarkViewModel {
                 } else {
                     self?.fetchedNotes.append(contentsOf: data)
                 }
+                self?.refreshState = .completed
+
             case .failure(let noteError):
+                self?.refreshState = .failed(noteError)
                 self?.error = noteError
             }
         }

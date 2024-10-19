@@ -207,6 +207,7 @@ public final class EditNoteViewController: UIViewController {
 
                 if text?.isEmpty == true {
                     noteTextView.setUpTextView(text: Const.notePlaceholder, textColor: Colors.gray04)
+                    noteCharCountLabel.textColor = Colors.gray04
                 } else if text == Const.notePlaceholder {
                     noteTextView.setUpTextView(text: "", textColor: Colors.gray08)
                 } else {
@@ -241,7 +242,8 @@ public final class EditNoteViewController: UIViewController {
                 }
 
                 if text?.isEmpty == true {
-                    lyricsTextView.setUpTextView(text: Const.lyricsPlaceholder, textColor: Colors.gray04)
+                    lyricsTextView.setUpTextView(text: Const.lyricsPlaceholder, textColor: Colors.gray02.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)))
+                    lyricsCharCountLabel.textColor = Colors.gray02.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
                 } else if text == Const.lyricsPlaceholder {
                     lyricsTextView.setUpTextView(text: "", textColor: Colors.gray08)
                     setupLyricsTextviewTextCenterVertically(lyricsTextView)
@@ -285,13 +287,15 @@ public final class EditNoteViewController: UIViewController {
     }
 
     private func updateCharacterCountForLyrics() {
-        let count = lyricsTextView.text.count
+        let count = lyricsTextView.text.count <= 50 ? lyricsTextView.text.count : 50
         lyricsCharCountLabel.text = "\(count)/\(Const.lyricsMaxTextLength)"
+        lyricsCharCountLabel.textColor = Colors.gray06.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
     }
 
     private func updateCharacterCountForNote() {
-        let count = noteTextView.text.count
+        let count = noteTextView.text.count <= 1000 ? noteTextView.text.count : 1000
         noteCharCountLabel.text = "\(count)/\(Const.noteMaxTextLength)"
+        noteCharCountLabel.textColor = Colors.gray06
     }
 
     private func configure(_ model: Note) {

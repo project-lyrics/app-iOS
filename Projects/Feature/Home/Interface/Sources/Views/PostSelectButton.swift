@@ -37,8 +37,8 @@ public final class PostSelectButton: UIView {
         super.init(frame: frame)
 
         self.backgroundColor = Colors.background
-
         self.setUpLayout()
+        self.setUpLayer()  // 레이어 설정
     }
 
     @available(*, unavailable)
@@ -60,10 +60,6 @@ public final class PostSelectButton: UIView {
     private func setUpLayout() {
         self.addSubview(rootFlexContainer)
 
-        layer.borderColor = Colors.gray01.cgColor
-        layer.cornerRadius = 8
-        layer.borderWidth = 1
-        
         rootFlexContainer
             .flex
             .direction(.row)
@@ -78,6 +74,23 @@ public final class PostSelectButton: UIView {
                     .marginTop(6)
                     .marginBottom(6)
             }
+    }
+
+    private func setUpLayer() {
+        layer.cornerRadius = 8
+        layer.borderWidth = 1
+        updateBorderColor()
+    }
+
+    // traitCollection이 변경될 때마다 테두리 색상을 업데이트
+    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        updateBorderColor()
+    }
+
+    // 테두리 색상을 다크 모드와 라이트 모드에 따라 변경하는 메서드
+    private func updateBorderColor() {
+        layer.borderColor = Colors.gray01.cgColor
     }
 
     private func updateUI(_ isEnabled: Bool) {

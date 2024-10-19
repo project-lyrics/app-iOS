@@ -37,7 +37,10 @@ final class MyNoteContentView: UIView {
             frame: .zero,
             collectionViewLayout: compositionalLayout
         )
-        
+
+        let refreshControl = UIRefreshControl()
+        collectionView.refreshControl = refreshControl
+
         collectionView.backgroundColor = Colors.background
         collectionView.showsVerticalScrollIndicator = false
         collectionView.register(cellType: RequiredLoginNoteCell.self)
@@ -63,6 +66,13 @@ final class MyNoteContentView: UIView {
 
     override func layoutSubviews() {
         super.layoutSubviews()
+
+        noteDetailCollectionView.refreshControl?.bounds = CGRect(
+            x: noteDetailCollectionView.refreshControl?.bounds.minX ?? 0,
+            y: -UIApplication.shared.safeAreaInsets.top,
+            width: noteDetailCollectionView.refreshControl?.bounds.width ?? 0,
+            height: noteDetailCollectionView.refreshControl?.bounds.height ?? 0
+        )
 
         noteDetailCollectionView.pin.all(pin.safeArea)
         noteDetailCollectionView.flex.layout()

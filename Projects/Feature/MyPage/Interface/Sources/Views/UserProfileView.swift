@@ -25,7 +25,6 @@ final class UserProfileView: UIView {
 
     let backButton: UIButton = {
         let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
         let image = FeelinImages.back
         button.setImage(image, for: .normal)
 
@@ -139,8 +138,8 @@ final class UserProfileView: UIView {
     private func setUpLayouts() {
         addSubview(rootFlexContainer)
 
-        navigationBar.addTitleView(titleLabel)
         navigationBar.addLeftBarView([backButton])
+        navigationBar.addTitleView(titleLabel)
 
         rootFlexContainer
             .flex

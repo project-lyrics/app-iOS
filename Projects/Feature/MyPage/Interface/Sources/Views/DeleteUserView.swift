@@ -24,18 +24,19 @@ final class DeleteUserView: UIView {
 
     let backButton: UIButton = {
         let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
         let image = FeelinImages.back
         button.setImage(image, for: .normal)
 
         return button
     }()
 
-    private let contentTitleLabel: UILabel = {
+    private lazy var contentTitleLabel: UILabel = {
         let label = UILabel()
         label.text = "탈퇴하기 전 확인해주세요"
         label.font = SharedDesignSystemFontFamily.Pretendard.bold.font(size: 18)
-        label.textColor = Colors.tertiary
+        let style: UIUserInterfaceStyle = traitCollection.userInterfaceStyle
+        label.textColor = style == .light ? Colors.tertiary :
+        Colors.secondary.resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark))
 
         return label
     }()
@@ -64,6 +65,11 @@ final class DeleteUserView: UIView {
         fatalError()
     }
 
+    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        updateBorderColor(for: traitCollection.userInterfaceStyle)
+    }
+
     override func layoutSubviews() {
         super.layoutSubviews()
 
@@ -78,8 +84,8 @@ final class DeleteUserView: UIView {
     private func setUpLayouts() {
         addSubview(rootFlexContainer)
 
-        navigationBar.addTitleView(naviTitleLabel)
         navigationBar.addLeftBarView([backButton])
+        navigationBar.addTitleView(naviTitleLabel)
 
         rootFlexContainer
             .flex
@@ -143,6 +149,14 @@ final class DeleteUserView: UIView {
             }
 
         return flexContainerView
+    }
+
+    private func updateBorderColor(for userInterfaceStyle: UIUserInterfaceStyle) {
+        if userInterfaceStyle == .dark {
+            contentTitleLabel.textColor = Colors.secondary.resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark))
+        } else {
+            contentTitleLabel.textColor = Colors.tertiary
+        }
     }
 }
 
