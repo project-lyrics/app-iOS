@@ -245,10 +245,10 @@ open class ButtonBarPagerTabStripViewController: FeelinPagerTabViewController, P
         cell.label.font = settings.style.buttonBarItemFont
 
         if indexPath.item == currentIndex {
-             cell.label.textColor = settings.style.selectedBarItemTitleColor  ?? cell.label.textColor
-         } else {
-             cell.label.textColor = settings.style.buttonBarItemTitleColor
-         }
+            cell.label.textColor = settings.style.selectedBarItemTitleColor  ?? cell.label.textColor
+        } else {
+            cell.label.textColor = settings.style.buttonBarItemTitleColor
+        }
 
         cell.contentView.backgroundColor = settings.style.buttonBarItemBackgroundColor ?? cell.contentView.backgroundColor
         
@@ -276,13 +276,6 @@ open class ButtonBarPagerTabStripViewController: FeelinPagerTabViewController, P
 
         let oldIndexPath = IndexPath(item: currentIndex, section: 0)
         let newIndexPath = IndexPath(item: indexPath.item, section: 0)
-
-        let oldCell = collectionView.cellForItem(at: oldIndexPath) as? ButtonBarViewCell
-        let newCell = collectionView.cellForItem(at: newIndexPath) as? ButtonBarViewCell
-
-        oldCell?.label.textColor = settings.style.buttonBarItemTitleColor
-        newCell?.label.textColor = settings.style.selectedBarItemTitleColor ?? settings.style.buttonBarItemTitleColor
-
         let cells = cellForItems(at: [oldIndexPath, newIndexPath], reloadIfNotVisible: collectionViewDidLoad)
 
         if pagerBehaviour.isProgressiveIndicator {
