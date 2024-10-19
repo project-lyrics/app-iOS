@@ -35,10 +35,12 @@ public final class LyricsBackgroundCollectionViewCell: UICollectionViewCell, Reu
         return label
     }()
 
-    private (set) var checkButton = FeelinSelectableImageButton(
-        selectedImage: FeelinImages.checkBoxActive,
-        unSelectedImage: FeelinImages.checkBoxInactive
-    )
+    private let checkButtonImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.image = FeelinImages.checkBoxInactive
+        return imageView
+    }()
 
     // MARK: - Init
 
@@ -58,7 +60,7 @@ public final class LyricsBackgroundCollectionViewCell: UICollectionViewCell, Reu
         flexContainer.pin.all()
         flexContainer.flex.layout()
 
-        checkButton.pin
+        checkButtonImageView.pin
             .top(16)
             .right(16)
             .size(24)
@@ -80,7 +82,7 @@ public final class LyricsBackgroundCollectionViewCell: UICollectionViewCell, Reu
                 .height(132)
         }
 
-        flexContainer.addSubview(checkButton)
+        flexContainer.addSubview(checkButtonImageView)
     }
 
     public func configure(image: UIImage) {
@@ -88,7 +90,7 @@ public final class LyricsBackgroundCollectionViewCell: UICollectionViewCell, Reu
     }
 
     public func setSelected(_ selected: Bool) {
-        checkButton.isSelected = selected
+        checkButtonImageView.image = selected ? FeelinImages.checkBoxActive : FeelinImages.checkBoxInactive
     }
 }
 
