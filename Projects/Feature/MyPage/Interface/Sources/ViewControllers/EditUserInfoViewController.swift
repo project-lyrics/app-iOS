@@ -47,8 +47,7 @@ public final class EditUserInfoViewController: UIViewController {
 
     public override func viewDidLoad() {
         super.viewDidLoad()
-
-        overrideUserInterfaceStyle = .light
+        
         bind()
         genderCollectionView.dataSource = self
         configure(model: viewModel.userProfile)
