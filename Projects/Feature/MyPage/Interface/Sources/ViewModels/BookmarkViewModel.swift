@@ -115,8 +115,8 @@ extension BookmarkViewModel {
             .sink { [weak self] result in
                 switch result {
                 case .success:
-                    return
-                    
+                    self?.fetchedNotes.remove(at: indexToUpdate)
+
                 case .failure(let error):
                     guard let updatedIndexToUpdate = self?.fetchedNotes.firstIndex(where: { $0.id == noteID }) else {
                         return
