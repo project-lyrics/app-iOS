@@ -136,7 +136,7 @@ private extension ArtistSelectViewController {
             .compactMap { $0 }
             .sink { [weak self] error in
                 self?.showAlert(
-                    title: error.localizedDescription,
+                    title: error.errorMessage,
                     message: nil,
                     singleActionTitle: "확인"
                 )
@@ -213,7 +213,7 @@ private extension ArtistSelectViewController {
                     
                 case .failure(let error):
                     self?.showAlert(
-                        title: error.localizedDescription,
+                        title: error.errorMessage,
                         message: nil,
                         singleActionTitle: "확인"
                     )

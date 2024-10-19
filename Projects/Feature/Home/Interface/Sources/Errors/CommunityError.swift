@@ -27,11 +27,32 @@ public enum CommunityError: LocalizedError {
     public var errorDescription: String {
         switch self {
         case .noteError(let noteError):
-            return noteError.errorDescription
+            return noteError.errorMessage
+            
         case .artistError(let artistError):
-            return artistError.errorDescription
+            return artistError.errorMessage
+            
         case .unknownError(let description):
             return description
         }
+    }
+    
+    public var errorMessage: String {
+        return errorDescription
+    }
+    
+    public var errorCode: String? {
+        switch self {
+        case .noteError(let noteError):
+            return noteError.errorCode
+        case .artistError(let artistError):
+            return artistError.errorCode
+        case .unknownError:
+            return nil
+        }
+    }
+    
+    public var errorMessageWithCode: String {
+        return errorMessage + "\n에러코드(\(errorCode ?? "nil"))"
     }
 }

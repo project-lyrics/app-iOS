@@ -118,7 +118,7 @@ private extension SearchNoteViewController {
             .compactMap { $0 }
             .sink { [weak self] error in
                 self?.showAlert(
-                    title: error.localizedDescription,
+                    title: error.errorMessageWithCode,
                     message: nil,
                     singleActionTitle: "확인"
                 )

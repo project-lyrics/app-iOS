@@ -30,6 +30,10 @@ public enum AppleOAuthError: LocalizedError {
         }
     }
     
+    public var errorMessage: String {
+        return errorDescription ?? "unknown appleOAuthError: \(self.localizedDescription)"
+    }
+    
     public init(error: Error) {
         switch (error as NSError).code {
         case 1000:      self = .unknown

@@ -307,7 +307,7 @@ private extension NoteCommentsViewController {
             .compactMap { $0 }
             .sink { [weak self] error in
                 self?.showAlert(
-                    title: error.errorDescription,
+                    title: error.errorMessageWithCode,
                     message: nil,
                     singleActionTitle: "확인"
                 )
@@ -332,7 +332,7 @@ private extension NoteCommentsViewController {
                 switch refreshState {
                 case .failed(let error):
                     self?.showAlert(
-                        title: error.errorDescription,
+                        title: error.errorMessageWithCode,
                         message: nil,
                         singleActionTitle: "확인"
                     )

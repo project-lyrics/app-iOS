@@ -68,6 +68,7 @@ public final class NotePersonalNotificationViewController: UIViewController {
     
     public init(viewModel: NotePersonalNotificationViewModel) {
         self.viewModel = viewModel
+        self.errorAlertSubject = errorAlertSubject
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -183,6 +184,7 @@ private extension NotePersonalNotificationViewController {
             .store(in: &cancellables)
         
         viewModel.$error
+            .receive(on: DispatchQueue.main)
             .compactMap { $0 }
             .sink { [weak self] error in
                 self?.coordinator?.presentErrorAlert(message: error.errorDescription)

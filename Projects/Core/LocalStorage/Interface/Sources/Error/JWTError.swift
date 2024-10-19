@@ -19,4 +19,8 @@ public enum JWTError: LocalizedError {
         case .parsePayloadJSONError:            return "페이로드 JSON을 파싱하는 데 실패했습니다"
         }
     }
+    
+    public var errorMessage: String {
+        return errorDescription ?? "unknown error"
+    }
 }

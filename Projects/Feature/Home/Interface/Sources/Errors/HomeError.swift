@@ -27,12 +27,18 @@ public enum HomeError: LocalizedError {
     public var errorDescription: String {
         switch self {
         case .noteError(let noteError):
-            return noteError.errorDescription
+            return noteError.errorMessage + "에러코드: \(noteError.errorCode ?? "nil")"
+            
         case .artistError(let artistError):
-            return artistError.errorDescription
+            return artistError.errorMessage + "에러코드: \(artistError.errorCode ?? "nil")"
+            
         case .unknownError(let description):
             return description
         }
+    }
+    
+    public var errorMessage: String {
+        return self.errorDescription
     }
     
     public var errorCode: String? {
@@ -41,7 +47,7 @@ public enum HomeError: LocalizedError {
             return noteError.errorCode
         case .artistError(let artistError):
             return artistError.errorCode
-        case .unknownError(_):
+        case .unknownError:
             return nil
         }
     }

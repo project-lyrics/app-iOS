@@ -49,15 +49,22 @@ extension UserVerifiable {
                 switch error {
                 case let error as KakaoOAuthError:
                     return AuthError.kakaoOAuthError(error)
+                    
+                case let error as AppleOAuthError:
+                    return AuthError.appleOAuthError(error)
 
                 case let error as KeychainError:
                     return AuthError.keychainError(error)
 
                 case let error as NetworkError:
                     switch error {
-                    case .feelinAPIError(.userDataNotFound(_,_)):
-                        return AuthError.feelinError(.userNotFound((accessToken: oAuthToken, oAuthType: type)))
-
+                    case .feelinAPIError(let feelinAPIError):
+                        if case .userDataNotFound = feelinAPIError {
+                            return AuthError.userNotFound(.init(accessToken: oAuthToken, oAuthType: type))
+                        } else {
+                            return AuthError.feelinAPIError(feelinAPIError)
+                        }
+                        
                     default:
                         return AuthError.networkError(error)
                     }

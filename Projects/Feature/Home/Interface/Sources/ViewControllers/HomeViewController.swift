@@ -357,7 +357,7 @@ private extension HomeViewController {
             .sink { [weak self] error in
                 if let _ = self?.userInfo?.userID {
                     self?.showAlert(
-                        title: error.errorDescription,
+                        title: error.errorMessage,
                         message: nil,
                         singleActionTitle: "확인"
                     )
@@ -371,7 +371,7 @@ private extension HomeViewController {
                 switch refreshState {
                 case .failed(let error):
                     self?.showAlert(
-                        title: error.errorDescription,
+                        title: error.errorMessage,
                         message: nil,
                         singleActionTitle: "확인"
                     )

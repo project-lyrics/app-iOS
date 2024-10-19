@@ -284,7 +284,7 @@ private extension NoteDetailViewController {
             .compactMap { $0 }
             .sink { [weak self] error in
                 self?.showAlert(
-                    title: error.errorDescription,
+                    title: error.errorMessageWithCode,
                     message: nil,
                     singleActionTitle: "확인"
                 )
