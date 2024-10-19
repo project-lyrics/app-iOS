@@ -363,7 +363,7 @@ public final class BookmarkViewController: UIViewController,
             // 스냅샷을 적용
             noteDetailDataSource.apply(snapshot, animatingDifferences: true) { [weak self] in
                 // 스냅샷 적용 후 첫 번째 아이템을 자동으로 선택
-                guard let self = self, let firstItem = noteRows.first else { return }
+                guard let self = self else { return }
 
                 let firstIndexPath = IndexPath(item: 0, section: 0)
                 self.noteDetailCollectionView.selectItem(at: firstIndexPath, animated: false, scrollPosition: .top)
