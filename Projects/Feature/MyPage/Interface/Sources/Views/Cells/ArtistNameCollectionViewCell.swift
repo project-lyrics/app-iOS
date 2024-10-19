@@ -64,6 +64,12 @@ final class ArtistNameCollectionViewCell: UICollectionViewCell, Reusable {
         return self.flexContainer.frame.size
     }
 
+    // traitCollection이 변경될 때마다 테두리 색상을 업데이트
+    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        updateBorderColor()
+    }
+
     override func prepareForReuse() {
         super.prepareForReuse()
         artistIconImageView.image = nil
@@ -97,6 +103,18 @@ final class ArtistNameCollectionViewCell: UICollectionViewCell, Reusable {
         }
     }
 
+    private func updateAppearance() {
+        flexContainer.layer.borderColor = isSelected ? Colors.primary.cgColor : Colors.gray04.cgColor
+        flexContainer.backgroundColor = isSelected ? Colors.pressedBrand : Colors.background
+        artistNameLabel.textColor = isSelected ? Colors.primary : Colors.gray04
+        artistIconImageView.tintColor = isSelected ? Colors.primary : Colors.gray04
+    }
+
+    // 테두리 색상을 다크 모드와 라이트 모드에 따라 변경하는 메서드
+    private func updateBorderColor() {
+        flexContainer.layer.borderColor = Colors.gray02.cgColor
+    }
+
     func configure(model: Artist) {
         self.model = model
 
@@ -115,12 +133,5 @@ final class ArtistNameCollectionViewCell: UICollectionViewCell, Reusable {
         }
 
         flexContainer.flex.layout(mode: .adjustHeight)
-    }
-
-    private func updateAppearance() {
-        flexContainer.layer.borderColor = isSelected ? Colors.primary.cgColor : Colors.gray04.cgColor
-        flexContainer.backgroundColor = isSelected ? Colors.pressedBrand : Colors.background
-        artistNameLabel.textColor = isSelected ? Colors.primary : Colors.gray04
-        artistIconImageView.tintColor = isSelected ? Colors.primary : Colors.gray04
     }
 }
