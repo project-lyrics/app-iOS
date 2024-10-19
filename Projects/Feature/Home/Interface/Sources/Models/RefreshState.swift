@@ -9,7 +9,7 @@ import Domain
 
 import Foundation
 
-enum RefreshState<E: LocalizedError> {
+public enum RefreshState<E: LocalizedError> {
     case idle               // 대기 상태
     case refreshing         // 새로고침 중
     case completed          // 새로고침 완료

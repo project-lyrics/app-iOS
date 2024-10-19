@@ -9,12 +9,14 @@ import Domain
 
 import Combine
 import Foundation
+import FeatureHomeInterface
 
 public final class MyNoteViewModel {
     @Published private (set) var fetchedNotes: [Note] = []
     @Published private (set) var fetchedFavoriteArtistNotes: [FavoriteArtistHavingNote] = []
     @Published private (set) var error: NoteError?
-    
+    @Published private (set) var refreshState: RefreshState<NoteError> = .idle
+
     private var cancellables: Set<AnyCancellable> = .init()
     private var selectedArtistID: Int?
 
@@ -172,6 +174,8 @@ extension MyNoteViewModel {
         perPage: Int = 10,
         artistID: Int? = nil
     ) {
+        self.refreshState = .refreshing
+
         self.getMyNotesUseCase.execute(
             isInitial: isInitialFetch,
             perPage: perPage,
@@ -189,7 +193,12 @@ extension MyNoteViewModel {
                     self?.fetchedNotes.append(contentsOf: data)
                     print(data)
                 }
+
+                self?.refreshState = .completed
+
             case .failure(let noteError):
+                self?.refreshState = .failed(noteError)
+
                 if let errorCode = noteError.errorCode,
                    // 토큰이 없는 경우 발생하는 에러코드. 일단 해당 뷰모델에서는 무시해야 한다.
                    // 일단 임시로 아래와 같이 처리 추후 수정 필요.

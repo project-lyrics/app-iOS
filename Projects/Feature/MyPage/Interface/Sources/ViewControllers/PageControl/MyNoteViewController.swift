@@ -107,6 +107,26 @@ public final class MyNoteViewController: UIViewController,
                 )
             }
             .store(in: &cancellables)
+
+        viewModel.$refreshState
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] refreshState in
+                switch refreshState {
+                case .failed(let error):
+                    self?.showAlert(
+                        title: error.errorDescription,
+                        message: nil,
+                        singleActionTitle: "확인"
+                    )
+
+                case .completed:
+                    self?.noteDetailCollectionView.refreshControl?.endRefreshing()
+
+                default:
+                    return
+                }
+            })
+            .store(in: &cancellables)
     }
 
     func bindAction() {
@@ -161,6 +181,13 @@ public final class MyNoteViewController: UIViewController,
                     break
                 }
             }
+            .store(in: &cancellables)
+
+        noteDetailCollectionView.refreshControl?.isRefreshingPublisher
+            .filter { $0 }
+            .sink(receiveValue: { [weak viewModel] _ in
+                viewModel?.getMyNotes(isInitialFetch: true)
+            })
             .store(in: &cancellables)
     }
 
