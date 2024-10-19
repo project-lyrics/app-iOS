@@ -28,13 +28,11 @@ public struct SetBookmarkUseCase: SetBookmarkUseCaseInterface {
         if isBookmarked {
             return noteAPIService.postBookmark(noteID: noteID)
                 .map(\.noteId)
-                .mapError(NoteError.init)
                 .eraseToAnyPublisher()
             
         } else {
             return noteAPIService.deleteBookmark(noteID: noteID)
                 .map(\.noteId)
-                .mapError(NoteError.init)
                 .eraseToAnyPublisher()
         }
     }
