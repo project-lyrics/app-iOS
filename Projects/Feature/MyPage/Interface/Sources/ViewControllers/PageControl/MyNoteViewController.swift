@@ -19,6 +19,8 @@ public protocol MyNoteViewControllerDelegate: AnyObject {
     func popViewController()
     func pushNoteCommentsViewController(noteID: Int)
     func didFinish()
+    func presentErrorAlert(message: String)
+    func presentDeleteNoteAlert(_ completionHandler: (() -> Void)?)
 }
 
 public final class MyNoteViewController: UIViewController,
@@ -82,6 +84,7 @@ public final class MyNoteViewController: UIViewController,
         bindUI()
         bindData()
         bindAction()
+        coordinator?.presentErrorAlert(message: "작성글 에러")
     }
 
     public func indicatorInfo(for pagerTabStripController: FeelinPagerTabViewController) -> IndicatorInfo {
@@ -100,11 +103,7 @@ public final class MyNoteViewController: UIViewController,
         viewModel.$error
             .compactMap { $0 }
             .sink { [weak self] error in
-                self?.showAlert(
-                    title: error.errorDescription,
-                    message: nil,
-                    singleActionTitle: "확인"
-                )
+                self?.coordinator?.presentErrorAlert(message: error.errorDescription)
             }
             .store(in: &cancellables)
 
@@ -113,11 +112,7 @@ public final class MyNoteViewController: UIViewController,
             .sink(receiveValue: { [weak self] refreshState in
                 switch refreshState {
                 case .failed(let error):
-                    self?.showAlert(
-                        title: error.errorDescription,
-                        message: nil,
-                        singleActionTitle: "확인"
-                    )
+                    self?.coordinator?.presentErrorAlert(message: error.errorDescription)
 
                 case .completed:
                     self?.noteDetailCollectionView.refreshControl?.endRefreshing()
@@ -144,12 +139,9 @@ public final class MyNoteViewController: UIViewController,
 
         onDeleteNote.eraseToAnyPublisher()
             .sink { [weak self] noteID in
-                self?.showAlert(
-                    title: "노트를 삭제하시겠어요?",
-                    message: nil,
-                    rightActionCompletion: {
-                        self?.viewModel.deleteNote(id: noteID)
-                    })
+                self?.coordinator?.presentDeleteNoteAlert {
+                    self?.viewModel.deleteNote(id: noteID)
+                }
             }
             .store(in: &cancellables)
 
