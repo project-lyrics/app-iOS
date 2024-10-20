@@ -41,7 +41,7 @@ public enum HomeError: LocalizedError {
             return noteError.errorCode
         case .artistError(let artistError):
             return artistError.errorCode
-        case .unknownError(let description):
+        case .unknownError(_):
             return nil
         }
     }

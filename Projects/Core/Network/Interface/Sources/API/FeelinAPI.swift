@@ -47,6 +47,7 @@ public enum FeelinAPI<R> {
     case getUserProfile
     case patchUserProfile(request: UserProfileRequest)
     case deleteUser
+    case checkFirstVisitor
 }
 
 extension FeelinAPI: HTTPNetworking {
@@ -325,6 +326,9 @@ extension FeelinAPI: HTTPNetworking {
 
         case .deleteUser:
             return "/api/v1/auth/delete"
+
+        case .checkFirstVisitor:
+            return "/api/v1/users/first-time"
         }
     }
 
@@ -357,6 +361,7 @@ extension FeelinAPI: HTTPNetworking {
              .getArtistNotes,
              .getMyNotes,
              .getUserProfile,
+             .checkFirstVisitor,
              .getMyNotesByBookmark:
             return .get
             

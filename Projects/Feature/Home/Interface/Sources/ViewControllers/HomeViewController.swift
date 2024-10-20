@@ -308,7 +308,7 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
 
     override public func viewDidLoad() {
         super.viewDidLoad()
-        self.showSelectArtistListIfNeeded()
+        self.checkFirstVisitor()
         self.bindUI()
         self.bindAction()
     }
@@ -337,6 +337,12 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
     private func checkForUnReadNotification() {
         self.viewModel.checkForUnReadNotification()
     }
+
+    // MARK: - First Visitor Check
+
+    private func checkFirstVisitor() {
+        self.viewModel.checkFirstVisitor()
+    }
 }
 
 private extension HomeViewController {
@@ -349,8 +355,7 @@ private extension HomeViewController {
         viewModel.$error
             .compactMap { $0 }
             .sink { [weak self] error in
-                //
-                if let userID = self?.userInfo?.userID {
+                if let _ = self?.userInfo?.userID {
                     self?.showAlert(
                         title: error.errorDescription,
                         message: nil,
@@ -397,6 +402,13 @@ private extension HomeViewController {
                 hasUncheckedNotification
                 ? self?.notificationButton.setImage(FeelinImages.notificationOn, for: .normal)
                 : self?.notificationButton.setImage(FeelinImages.notificationOff, for: .normal)
+            }
+            .store(in: &cancellables)
+
+        viewModel.$isFirstVisitor
+            .sink { [weak self] isFirstVisitor in
+                guard isFirstVisitor else { return }
+                self?.showSelectArtistListIfNeeded()
             }
             .store(in: &cancellables)
     }
