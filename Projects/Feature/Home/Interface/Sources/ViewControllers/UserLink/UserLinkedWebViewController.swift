@@ -160,7 +160,7 @@ private extension UserLinkedWebViewController {
                     activityViewController.popoverPresentationController?.sourceView = self?.view
                     
                     self?.present(activityViewController, animated: true)
-                case .failure(let error):
+                case .failure(_):
                     break
                 }
             }

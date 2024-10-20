@@ -11,7 +11,7 @@ import FlexLayout
 import PinLayout
 import Shared
 
-class UserLinkedMenuItemButton: UIButton {
+final class UserLinkedMenuItemButton: UIButton {
     private var itemDescriptionLabel: UILabel
     
     public init(
