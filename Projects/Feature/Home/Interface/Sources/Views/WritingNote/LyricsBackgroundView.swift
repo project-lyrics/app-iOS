@@ -124,8 +124,8 @@ extension LyricsBackgroundView: UICollectionViewDataSource {
 
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(for: indexPath, cellType: LyricsBackgroundCollectionViewCell.self)
-        let image = LyricsBackground.allCases[indexPath.row].image
-        cell.configure(image: image)
+        let lyricsBackground = LyricsBackground.allCases[indexPath.row]
+        cell.configure(lyricsBackground: lyricsBackground)
 
         let isSelected = collectionView.indexPathsForSelectedItems?.contains(indexPath) ?? false
         cell.setSelected(isSelected)

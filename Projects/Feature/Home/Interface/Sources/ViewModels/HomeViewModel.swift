@@ -19,14 +19,16 @@ final public class HomeViewModel {
     @Published private (set) var error: HomeError?
     @Published private (set) var refreshState: RefreshState<HomeError> = .idle
     @Published private (set) var hasUncheckedNotification: Bool = false
-    
+    @Published private (set) var isFirstVisitor: Bool = false
+
     private let getNotesUseCase: GetNotesUseCaseInterface
     private let getFavoriteArtistsUseCase: GetFavoriteArtistsUseCaseInterface
     private let setNoteLikeUseCase: SetNoteLikeUseCaseInterface
     private let setBookmarkUseCase: SetBookmarkUseCaseInterface
     private let deleteNoteUseCase: DeleteNoteUseCaseInterface
     private let getHasUncheckedNotificationUseCase: GetHasUncheckedNotificationUseCaseInterface
-    
+    private let checkFirstVisitorUseCase: CheckFirstVisitorUseCaseInterface
+
     private var cancellables: Set<AnyCancellable> = .init()
     
     public init(
@@ -35,7 +37,8 @@ final public class HomeViewModel {
         getFavoriteArtistsUseCase: GetFavoriteArtistsUseCaseInterface,
         setBookmarkUseCase: SetBookmarkUseCaseInterface,
         deleteNoteUseCase: DeleteNoteUseCaseInterface,
-        getHasUncheckedNotificationUseCase: GetHasUncheckedNotificationUseCaseInterface
+        getHasUncheckedNotificationUseCase: GetHasUncheckedNotificationUseCaseInterface,
+        checkFirstVisitorUseCase: CheckFirstVisitorUseCaseInterface
     ) {
         self.getNotesUseCase = getNotesUseCase
         self.setNoteLikeUseCase = setNoteLikeUseCase
@@ -43,6 +46,7 @@ final public class HomeViewModel {
         self.setBookmarkUseCase = setBookmarkUseCase
         self.deleteNoteUseCase = deleteNoteUseCase
         self.getHasUncheckedNotificationUseCase = getHasUncheckedNotificationUseCase
+        self.checkFirstVisitorUseCase = checkFirstVisitorUseCase
     }
     
     func fetchArtistsThenNotes(
@@ -138,6 +142,16 @@ final public class HomeViewModel {
             .removeDuplicates()
             .receive(on: DispatchQueue.main)
             .assign(to: &self.$hasUncheckedNotification)
+    }
+
+    func checkFirstVisitor() {
+        self.checkFirstVisitorUseCase.execute()
+            .catch({ isFirst in
+                return Just(false)
+                    .eraseToAnyPublisher()
+            })
+            .receive(on: DispatchQueue.main)
+            .assign(to: &self.$isFirstVisitor)
     }
 }
 

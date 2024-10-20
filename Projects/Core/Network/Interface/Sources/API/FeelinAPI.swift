@@ -41,12 +41,14 @@ public enum FeelinAPI<R> {
     case postComment(body: PostCommentRequest)
     case deleteComment(commentID: Int)
     case reportNote(request: ReportRequest)
-    case getNotifications(cursor: Int?, size: Int)
+    case getPersonalNotifications(cursor: Int?, size: Int)
+    case getPublicNotifications(cursor: Int?, size: Int)
     case checkNotification(notificationID: Int)
     case getHasUncheckedNotification
     case getUserProfile
     case patchUserProfile(request: UserProfileRequest)
     case deleteUser
+    case checkFirstVisitor
 }
 
 extension FeelinAPI: HTTPNetworking {
@@ -73,7 +75,8 @@ extension FeelinAPI: HTTPNetworking {
     public var queryParameters: Encodable? {
         switch self {
         case .getFavoriteArtists(let cursor, let size),
-             .getNotifications(let cursor, let size):
+             .getPersonalNotifications(let cursor, let size),
+             .getPublicNotifications(let cursor, let size):
             if let cursor = cursor {
                 return [
                     "cursor": cursor,
@@ -310,10 +313,13 @@ extension FeelinAPI: HTTPNetworking {
 
         case .reportNote:
             return "/api/v1/reports"
-            
-        case .getNotifications:
-            return "/api/v1/notifications"
-            
+
+        case .getPersonalNotifications:
+            return "/api/v1/notifications/personal"
+
+        case .getPublicNotifications:
+            return "/api/v1/notifications/public"
+
         case .getHasUncheckedNotification:
             return "/api/v1/notifications/check"
             
@@ -325,6 +331,9 @@ extension FeelinAPI: HTTPNetworking {
 
         case .deleteUser:
             return "/api/v1/auth/delete"
+
+        case .checkFirstVisitor:
+            return "/api/v1/users/first-time"
         }
     }
 
@@ -352,11 +361,13 @@ extension FeelinAPI: HTTPNetworking {
              .getSearchedNotes,
              .getSongNotes,
              .getNoteWithComments,
-             .getNotifications,
+             .getPersonalNotifications,
+             .getPublicNotifications,
              .getHasUncheckedNotification,
              .getArtistNotes,
              .getMyNotes,
              .getUserProfile,
+             .checkFirstVisitor,
              .getMyNotesByBookmark:
             return .get
             

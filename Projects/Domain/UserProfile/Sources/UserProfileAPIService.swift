@@ -42,4 +42,13 @@ public struct UserProfileAPIService: UserProfileAPIServiceInterface {
             .mapError(UserProfileError.init)
             .eraseToAnyPublisher()
     }
+
+    public func checkFirstVisitor() -> AnyPublisher<FirstVisitorResponse, UserProfileError> {
+        let endpoint = FeelinAPI<FirstVisitorResponse>.checkFirstVisitor
+
+        return networkProvider.request(endpoint)
+            .mapError(UserProfileError.init)
+            .eraseToAnyPublisher()
+
+    }
 }

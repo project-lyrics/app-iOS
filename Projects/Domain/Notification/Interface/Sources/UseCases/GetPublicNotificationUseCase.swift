@@ -1,8 +1,8 @@
 //
-//  GetNotificationUseCase.swift
-//  DomainNotification
+//  GetPublicNotificationUseCase.swift
+//  DomainNotificationInterface
 //
-//  Created by 황인우 on 10/5/24.
+//  Created by Derrick kim on 10/20/24.
 //
 
 import Combine
@@ -10,14 +10,10 @@ import Foundation
 
 import Core
 
-public protocol GetNotificationUseCaseInterface {
-    func execute(isInitial: Bool, perPage: Int) -> AnyPublisher<[NoteNotification], NotificationError>
-}
-
-public struct GetNotificationUseCase: GetNotificationUseCaseInterface {
+public struct GetPublicNotificationUseCase: GetNotificationUseCaseInterface {
     private let notificationAPIService: NotificationAPIServiceInterface
     private let notificationPaginationService: NotificationPaginationServiceInterface
-    
+
     public init(
         notificationAPIService: NotificationAPIServiceInterface,
         notificationPaginationService: NotificationPaginationServiceInterface
@@ -25,7 +21,7 @@ public struct GetNotificationUseCase: GetNotificationUseCaseInterface {
         self.notificationAPIService = notificationAPIService
         self.notificationPaginationService = notificationPaginationService
     }
-    
+
     public func execute(
         isInitial: Bool,
         perPage: Int
@@ -34,22 +30,22 @@ public struct GetNotificationUseCase: GetNotificationUseCaseInterface {
             return Empty()
                 .eraseToAnyPublisher()
         }
-        
+
         if isInitial {
             self.notificationPaginationService.update(
                 currentPage: nil,
                 hasNextPage: true
             )
         }
-        
+
         guard notificationPaginationService.hasNextPage else {
             return Empty()
                 .eraseToAnyPublisher()
         }
-        
+
         notificationPaginationService.setLoading(true)
-        
-        return notificationAPIService.getNotifications(
+
+        return notificationAPIService.getPersonalNotifications(
             currentPage: notificationPaginationService.currentPage,
             numberOfNotifications: perPage
         )
@@ -60,12 +56,12 @@ public struct GetNotificationUseCase: GetNotificationUseCaseInterface {
                 hasNextPage: getNotificationsResponse.hasNext
             )
             notificationPaginationService?.setLoading(false)
-            
+
             return getNotificationsResponse.data.map(NoteNotification.init)
         })
         .catch { [weak notificationPaginationService] error -> AnyPublisher<[NoteNotification], NotificationError> in
             notificationPaginationService?.setLoading(false)
-            
+
             return Fail(error: error)
                 .eraseToAnyPublisher()
         }

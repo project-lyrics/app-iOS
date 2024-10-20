@@ -9,12 +9,7 @@ import Core
 
 import Combine
 import Foundation
-
-public protocol NotificationAPIServiceInterface {
-    func getNotifications(currentPage: Int?, numberOfNotifications: Int) -> AnyPublisher<GetNotificationsResponse, NotificationError>
-    func checkNotification(notificationID: Int) -> AnyPublisher<FeelinSuccessResponse, NotificationError>
-    func getHasUncheckedNotification() -> AnyPublisher<UncheckedNotificationResponse, NotificationError>
-}
+import DomainNotificationInterface
 
 public struct NotificationAPIService: NotificationAPIServiceInterface {
     private let networkProvider: NetworkProviderInterface
@@ -23,11 +18,11 @@ public struct NotificationAPIService: NotificationAPIServiceInterface {
         self.networkProvider = networkProvider
     }
     
-    public func getNotifications(
+    public func getPersonalNotifications(
         currentPage: Int?,
         numberOfNotifications: Int
     ) -> AnyPublisher<GetNotificationsResponse, NotificationError> {
-        let endpoint = FeelinAPI<GetNotificationsResponse>.getNotifications(
+        let endpoint = FeelinAPI<GetNotificationsResponse>.getPersonalNotifications(
             cursor: currentPage,
             size: numberOfNotifications
         )
@@ -36,7 +31,18 @@ public struct NotificationAPIService: NotificationAPIServiceInterface {
             .mapError(NotificationError.init)
             .eraseToAnyPublisher()
     }
-    
+
+    public func getPublicNotifications(currentPage: Int?, numberOfNotifications: Int) -> AnyPublisher<GetNotificationsResponse, NotificationError> {
+        let endpoint = FeelinAPI<GetNotificationsResponse>.getPublicNotifications(
+            cursor: currentPage,
+            size: numberOfNotifications
+        )
+
+        return networkProvider.request(endpoint)
+            .mapError(NotificationError.init)
+            .eraseToAnyPublisher()
+    }
+
     public func checkNotification(notificationID: Int) -> AnyPublisher<FeelinSuccessResponse, NotificationError> {
         let endpoint = FeelinAPI<FeelinSuccessResponse>.checkNotification(notificationID: notificationID)
         

@@ -65,12 +65,14 @@ public final class HomeCoordinator: Coordinator {
 
             return ArtistAPIService(networkProvider: networkProvider)
         }
-        
+
         DIContainer.standard.register(.notificationAPIService) { resolver in
             let networkProvider = try resolver.resolve(.networkProvider)
-            
+
             return NotificationAPIService(networkProvider: networkProvider)
         }
+
+        DIContainer.registerUserProfileService()
     }
 
     private func registerNoteCommentDI() {
@@ -133,14 +135,14 @@ extension HomeCoordinator: HomeViewControllerDelegate,
         viewController.coordinator = self
         navigationController.pushViewController(viewController, animated: true)
     }
-    
+
     public func presentUserLinkedWebViewController(url: URL) {
         let viewController = UserLinkedWebViewController(url: url)
         viewController.coordinator = self
         viewController.modalPresentationStyle = .fullScreen
         navigationController.present(viewController, animated: true)
     }
-    
+
     public func presentSearchMoreFavoriteArtistViewController() {
         let viewModel = searchMoreFavoriteArtistsDependencies()
         let viewController = SearchMoreFavoriteArtistViewController(viewModel: viewModel)
@@ -158,7 +160,7 @@ extension HomeCoordinator: CoordinatorDelegate,
                            SearchSongViewControllerDelegate {
 
     public func popRootViewController() {
-        guard let topNavigationController = navigationController.presentedViewController as? UINavigationController 
+        guard let topNavigationController = navigationController.presentedViewController as? UINavigationController
         else {
             return
         }
@@ -179,13 +181,13 @@ extension HomeCoordinator: CoordinatorDelegate,
 
         topNavigationController.popViewController(animated: true)
     }
-    
+
     public func presentPostNoteViewController(artistID: Int) {
         registerPostNoteDI()
         let viewModel = postNoteDependencies(artistID: artistID)
         let postNoteViewController = PostNoteViewController(viewModel: viewModel)
         postNoteViewController.coordinator = self
-        
+
         let navController = UINavigationController(rootViewController: postNoteViewController)
         navController.isNavigationBarHidden = true
         navController.modalPresentationStyle = .fullScreen
@@ -211,7 +213,7 @@ extension HomeCoordinator: CoordinatorDelegate,
         let searchSongViewModel = searchSongDependencies(artistID: artistID)
         let searchSongViewController = SearchSongViewController(viewModel: searchSongViewModel)
         searchSongViewController.coordinator = self
-        
+
         topNavigationController.pushViewController(searchSongViewController, animated: true)
     }
 
@@ -230,7 +232,7 @@ extension HomeCoordinator: ArtistSelectViewControllerDelegate {
         artistSelectViewController.modalPresentationStyle = .fullScreen
         navigationController.present(artistSelectViewController, animated: true)
     }
-    
+
     public func didFinishSelectingInitialFavoriteArtists() {
         guard let homeViewController = navigationController.viewControllers.first(where: { $0 is HomeViewController }) as? HomeViewController else {
             return
@@ -248,6 +250,7 @@ extension HomeCoordinator {
         @Injected(.notePaginationService) var notePaginationService: NotePaginationServiceInterface
         @Injected(.artistPaginationService) var artistPaginationService: KeywordPaginationServiceInterface
         @Injected(.notificationAPIService) var notificationAPIService: NotificationAPIServiceInterface
+        @Injected(.userProfileAPIService) var userProfileAPIService: UserProfileAPIServiceInterface
 
         @KeychainWrapper<UserInformation>(.userInfo)
         var userInfo
@@ -270,14 +273,16 @@ extension HomeCoordinator {
         let setBookmarkUseCase = SetBookmarkUseCase(noteAPIService: noteAPIService)
         let deleteNoteUseCase = DeleteNoteUseCase(noteAPIService: noteAPIService)
         let getHasUncheckedNotificationUseCase = GetHasUncheckedNotificationUseCase(notificationAPIService: notificationAPIService)
+        let checkFirstVisitorUseCase = CheckFirstVisitorUseCase(userProfileAPIService: userProfileAPIService)
 
         let viewModel =  HomeViewModel(
             getNotesUseCase: getNoteUseCase,
             setNoteLikeUseCase: setNoteLikeUseCase,
             getFavoriteArtistsUseCase: getFavoriteArtistsUseCase,
             setBookmarkUseCase: setBookmarkUseCase,
-            deleteNoteUseCase: deleteNoteUseCase, 
-            getHasUncheckedNotificationUseCase: getHasUncheckedNotificationUseCase
+            deleteNoteUseCase: deleteNoteUseCase,
+            getHasUncheckedNotificationUseCase: getHasUncheckedNotificationUseCase,
+            checkFirstVisitorUseCase: checkFirstVisitorUseCase
         )
 
         return viewModel
@@ -363,6 +368,7 @@ extension HomeCoordinator {
         @Injected(.noteAPIService) var noteAPIService: NoteAPIServiceInterface
         @Injected(.notePaginationService) var notePaginationService: NotePaginationServiceInterface
         @Injected(.artistAPIService) var artistAPIService: ArtistAPIServiceInterface
+        @Injected(.notificationAPIService) var notificationAPIService: NotificationAPIServiceInterface
 
         let getArtistNotesUseCase = GetArtistNotesUseCase(
             noteAPIService: noteAPIService,
@@ -372,6 +378,7 @@ extension HomeCoordinator {
         let setBookmarkUseCase = SetBookmarkUseCase(noteAPIService: noteAPIService)
         let deleteNoteUseCase = DeleteNoteUseCase(noteAPIService: noteAPIService)
         let setFavoriteArtistUseCase = SetFavoriteArtistUseCase(artistAPIService: artistAPIService)
+        let getHasUncheckedNotificationUseCase = GetHasUncheckedNotificationUseCase(notificationAPIService: notificationAPIService)
 
         let viewModel = CommunityMainViewModel(
             artist: artist,
@@ -379,37 +386,38 @@ extension HomeCoordinator {
             setNoteLikeUseCase: setNoteLikeUseCase,
             setBookmarkUseCase: setBookmarkUseCase,
             deleteNoteUseCase: deleteNoteUseCase,
-            setFavoriteArtistUseCase: setFavoriteArtistUseCase
+            setFavoriteArtistUseCase: setFavoriteArtistUseCase,
+            getHasUncheckedNotificationUseCase: getHasUncheckedNotificationUseCase
         )
         return viewModel
     }
-    
+
     private func InitialArtistSelectDependencies() -> ArtistSelectViewModel {
         self.registerNetwork()
-        
+
         @Injected(.artistAPIService) var artistAPIService: ArtistAPIServiceInterface
         let artistPaginationService = ArtistPaginationService()
-        
+
         let getArtistsUseCase = GetArtistsUseCase(
             artistAPIService: artistAPIService,
             artistPaginationService: artistPaginationService
         )
-        
+
         let searchArtistsUseCase = SearchArtistsUseCase(
             artistAPIService: artistAPIService,
             artistPaginationService: artistPaginationService
         )
-        
+
         let postFavoriteArtistsUseCase = PostFavoriteArtistsUseCase(
             artistAPIService: artistAPIService
         )
-        
+
         let viewModel = ArtistSelectViewModel(
             getArtistsUseCase: getArtistsUseCase,
             searchArtistsUseCase: searchArtistsUseCase,
             postFavoriteArtistsUseCase: postFavoriteArtistsUseCase
         )
-        
+
         return viewModel
     }
     
@@ -419,7 +427,7 @@ extension HomeCoordinator {
         let getArtistsUseCase = GetArtistsUseCase(artistAPIService: artistAPIService, artistPaginationService: artistPaginationService)
         let searchArtistsUseCase = SearchArtistsUseCase(artistAPIService: artistAPIService, artistPaginationService: artistPaginationService)
         let viewModel = SearchMoreFavoriteArtistViewModel(getArtistsUseCase: getArtistsUseCase, searchArtistsUseCase: searchArtistsUseCase)
-        
+
         return viewModel
     }
 }

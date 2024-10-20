@@ -1,8 +1,8 @@
 //
-//  NoteNotificationViewModel.swift
+//  NotePublicNotificationViewModel.swift
 //  FeatureHomeInterface
 //
-//  Created by 황인우 on 9/29/24.
+//  Created by Derrick kim on 10/20/24.
 //
 
 import Combine
@@ -10,29 +10,29 @@ import Foundation
 
 import Domain
 
-public final class NoteNotificationViewModel {
-    @Published private (set) var fetchedNotifications: [NoteNotification] = []
+public final class NotePublicNotificationViewModel {
+    @Published private (set) var fetchedPublicNotifications: [NoteNotification] = []
     @Published private (set) var error: NotificationError?
     @Published private (set) var refreshState: RefreshState<NotificationError> = .idle
-    
+
     private var cancellables: Set<AnyCancellable> = .init()
-    
+
     private let checkNotificationUseCase: CheckNotificationUseCaseInterface
-    private let getNotificationUseCase: GetNotificationUseCaseInterface
-    
+    private let getPublicNotificationUseCase: GetNotificationUseCaseInterface
+
     public init(
         checkNotificationUseCase: CheckNotificationUseCaseInterface,
-        getNotificationUseCase: GetNotificationUseCaseInterface
+        getPublicNotificationUseCase: GetNotificationUseCaseInterface
     ) {
         self.checkNotificationUseCase = checkNotificationUseCase
-        self.getNotificationUseCase = getNotificationUseCase
+        self.getPublicNotificationUseCase = getPublicNotificationUseCase
     }
-    
-    func getNotifications(
+
+    func getPublicNotification(
         isInitial: Bool,
         perPage: Int = 10
     ) {
-        self.getNotificationUseCase.execute(
+        self.getPublicNotificationUseCase.execute(
             isInitial: isInitial,
             perPage: perPage
         )
@@ -42,9 +42,9 @@ public final class NoteNotificationViewModel {
             switch result {
             case .success(let notifications):
                 if isInitial {
-                    self?.fetchedNotifications = notifications
+                    self?.fetchedPublicNotifications = notifications
                 } else {
-                    self?.fetchedNotifications.append(contentsOf: notifications)
+                    self?.fetchedPublicNotifications.append(contentsOf: notifications)
                 }
             case .failure(let error):
                 self?.error = error
@@ -52,11 +52,11 @@ public final class NoteNotificationViewModel {
         }
         .store(in: &cancellables)
     }
-    
+
     func refreshNotifications(perPage: Int = 10) {
         self.refreshState = .refreshing
-        
-        self.getNotificationUseCase.execute(
+
+        self.getPublicNotificationUseCase.execute(
             isInitial: true,
             perPage: perPage
         )
@@ -65,7 +65,7 @@ public final class NoteNotificationViewModel {
         .sink { [weak self] result in
             switch result {
             case .success(let notifications):
-                self?.fetchedNotifications = notifications
+                self?.fetchedPublicNotifications = notifications
                 self?.refreshState = .completed
             case .failure(let error):
                 self?.refreshState = .failed(error)
@@ -73,18 +73,18 @@ public final class NoteNotificationViewModel {
         }
         .store(in: &cancellables)
     }
-    
+
     func checkNotification(at index: Int) {
-        let selectedNotification = self.fetchedNotifications[index]
-        
+        let selectedNotification = self.fetchedPublicNotifications[index]
+
         self.checkNotificationUseCase.execute(notificationID: selectedNotification.id)
             .receive(on: DispatchQueue.main)
             .mapToResult()
             .sink { [weak self] result in
                 switch result {
-                case .success(let isSuccess):
+                case .success:
                     return
-                    
+
                 case .failure(let error):
                     self?.error = error
                 }
@@ -92,3 +92,4 @@ public final class NoteNotificationViewModel {
             .store(in: &cancellables)
     }
 }
+

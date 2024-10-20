@@ -413,6 +413,14 @@ private extension CommunityMainViewController {
                 postNoteButton.setImage(image, for: .normal)
             }
             .store(in: &cancellables)
+
+        viewModel.$hasUncheckedNotification
+            .sink { [weak self] hasUncheckedNotification in
+                hasUncheckedNotification
+                ? self?.notificationButton.setImage(FeelinImages.notificationOn, for: .normal)
+                : self?.notificationButton.setImage(FeelinImages.notificationOff, for: .normal)
+            }
+            .store(in: &cancellables)
     }
 
     func bindAction() {

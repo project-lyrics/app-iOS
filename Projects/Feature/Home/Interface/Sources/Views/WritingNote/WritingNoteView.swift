@@ -103,7 +103,7 @@ public final class WritingNoteView: UIView {
         textView.layer.cornerRadius = 4.0
         textView.textAlignment = .center
         textView.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 16)
-        textView.tintColor = Colors.gray08
+        textView.tintColor = Colors.gray08.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
         textView.textColor = Colors.gray02.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
         textView.isScrollEnabled = false
         textView.backgroundColor = UIColor(patternImage: FeelinImages.image00Default)

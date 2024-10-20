@@ -70,6 +70,23 @@ public final class MyPageTabViewController: ButtonBarPagerTabStripViewController
 
 extension MyPageTabViewController: MyNoteViewControllerDelegate,
                                    BookmarkViewControllerDelegate{
+    public func presentErrorAlert(message: String) {
+        showAlert(
+            title: message,
+            message: nil,
+            singleActionTitle: "확인"
+        )
+    }
+    
+    public func presentDeleteNoteAlert(_ completionHandler: (() -> Void)?) {
+        showAlert(
+            title: "노트를 삭제하시겠어요?",
+            message: nil,
+            rightActionCompletion: {
+                completionHandler?()
+            })
+    }
+    
     public func pushReportViewController(noteID: Int?, commentID: Int?) {
         coordinator?.pushReportViewController(noteID: noteID, commentID: commentID)
     }

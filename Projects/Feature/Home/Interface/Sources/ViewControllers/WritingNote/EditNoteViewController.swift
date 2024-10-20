@@ -178,6 +178,24 @@ public final class EditNoteViewController: UIViewController {
             .sink { [weak self] background in
                 let backgroundImage = background?.image ?? LyricsBackground.default.image
                 self?.lyricsTextView.backgroundColor = UIColor(patternImage: backgroundImage)
+
+                guard let text = self?.lyricsTextView.text, !text.isEmpty, text != Const.lyricsPlaceholder else { return }
+
+                var textViewColor: UIColor
+
+                switch background {
+                case .red, .black:
+                    textViewColor = Colors.fixedModal.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
+                default:
+                    textViewColor = Colors.gray08.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
+                }
+                let defaultCountLabelTextColor = Colors.gray06.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
+
+                self?.updateTextViewAndCountLabelTextColor(
+                    text: text,
+                    textViewTextColor: textViewColor,
+                    labelTextColor: defaultCountLabelTextColor
+                )
             }
             .store(in: &cancellables)
 
@@ -236,16 +254,39 @@ public final class EditNoteViewController: UIViewController {
             .store(in: &cancellables)
 
         lyricsTextView.textPublisher(for: [.didBeginEditing, .didEndEditing])
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] text in
                 guard let self = self else {
                     return
                 }
 
+                let background = lyricsBackgroundViewController.backgroundPublisher.value
+
+                let defaultCountLabelTextColor = Colors.gray02.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
+
                 if text?.isEmpty == true {
-                    lyricsTextView.setUpTextView(text: Const.lyricsPlaceholder, textColor: Colors.gray02.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)))
-                    lyricsCharCountLabel.textColor = Colors.gray02.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
+                    let textViewColor = Colors.gray02.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
+
+                    updateTextViewAndCountLabelTextColor(
+                        text: Const.lyricsPlaceholder,
+                        textViewTextColor: textViewColor,
+                        labelTextColor: defaultCountLabelTextColor
+                    )
                 } else if text == Const.lyricsPlaceholder {
-                    lyricsTextView.setUpTextView(text: "", textColor: Colors.gray08)
+                    var textViewColor: UIColor
+
+                    switch background {
+                    case .red, .black:
+                        textViewColor = Colors.fixedModal.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
+                    default:
+                        textViewColor = Colors.gray08.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
+                    }
+                    let defaultCountLabelTextColor = Colors.gray06.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
+                    updateTextViewAndCountLabelTextColor(
+                        text: "",
+                        textViewTextColor: textViewColor,
+                        labelTextColor: defaultCountLabelTextColor
+                    )
                     setupLyricsTextviewTextCenterVertically(lyricsTextView)
                 }
             }
@@ -296,6 +337,15 @@ public final class EditNoteViewController: UIViewController {
         let count = noteTextView.text.count <= 1000 ? noteTextView.text.count : 1000
         noteCharCountLabel.text = "\(count)/\(Const.noteMaxTextLength)"
         noteCharCountLabel.textColor = Colors.gray06
+    }
+
+    private func updateTextViewAndCountLabelTextColor(
+        text: String,
+        textViewTextColor: UIColor,
+        labelTextColor: UIColor
+    ) {
+        lyricsTextView.setUpTextView(text: text, textColor: textViewTextColor)
+        lyricsCharCountLabel.textColor = labelTextColor
     }
 
     private func configure(_ model: Note) {
