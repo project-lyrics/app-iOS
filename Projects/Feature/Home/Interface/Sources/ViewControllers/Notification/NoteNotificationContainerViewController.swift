@@ -103,6 +103,14 @@ public final class NoteNotificationContainerViewController: UIViewController {
 }
 
 extension NoteNotificationContainerViewController: NoteNotificationPageViewControllerDelegate {
+    public func presentErrorAlert(message: String) {
+        showAlert(
+            title: message,
+            message: nil,
+            singleActionTitle: "확인"
+        )
+    }
+    
     public func pushNoteCommentsViewController(noteID: Int) {
         coordinator?.pushNoteCommentsViewController(noteID: noteID)
     }

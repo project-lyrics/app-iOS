@@ -1,5 +1,5 @@
 //
-//  NoteNotificationViewController.swift
+//  NotePersonalNotificationViewController.swift
 //  FeatureHomeInterface
 //
 //  Created by 황인우 on 9/29/24.
@@ -11,28 +11,17 @@ import UIKit
 import Domain
 import Shared
 
-public protocol NoteNotificationViewControllerDelegate: AnyObject {
+public protocol NotePersonalNotificationViewControllerDelegate: AnyObject {
     func pushNoteCommentsViewController(noteID: Int)
+    func presentErrorAlert(message: String)
 }
 
-public final class NoteNotificationViewController: UIViewController {
-    public enum IndicatorType: CustomStringConvertible {
-        case myNotification
-        case allNotification
-        
-        public var description: String {
-            switch self {
-            case .myNotification:          return "내 소식"
-            case .allNotification:          return "전체"
-            }
-        }
-    }
+public final class NotePersonalNotificationViewController: UIViewController {
 
-    public weak var coordinator: NoteNotificationViewControllerDelegate?
+    public weak var coordinator: NotePersonalNotificationViewControllerDelegate?
 
-    private let viewModel: NoteNotificationViewModel
-    private let indicatorType: IndicatorType
-    
+    private let viewModel: NotePersonalNotificationViewModel
+
     private let noteNotificationView = NoteNotificationView()
     private var cancellables: Set<AnyCancellable> = .init()
     
@@ -77,11 +66,7 @@ public final class NoteNotificationViewController: UIViewController {
     
     // MARK: - Init
     
-    public init(
-        indicatorType: IndicatorType,
-        viewModel: NoteNotificationViewModel
-    ) {
-        self.indicatorType = indicatorType
+    public init(viewModel: NotePersonalNotificationViewModel) {
         self.viewModel = viewModel
         
         super.init(nibName: nil, bundle: nil)
@@ -132,14 +117,14 @@ public final class NoteNotificationViewController: UIViewController {
 
 // MARK: - UICollectionViewDelegate
 
-extension NoteNotificationViewController: UICollectionViewDelegate {
+extension NotePersonalNotificationViewController: UICollectionViewDelegate {
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         // emptyNotificationCell을 탭할 경우 화면전환 및 api콜을 하지 않도록 하는 방지문
-        if !self.viewModel.fetchedNotifications.isEmpty {
+        if !self.viewModel.fetchedPersonalNotifications.isEmpty {
             self.viewModel.checkNotification(at: indexPath.row)
 
-            let selectedNotification = self.viewModel.fetchedNotifications[indexPath.row]
-            
+            let selectedNotification = self.viewModel.fetchedPersonalNotifications[indexPath.row]
+
             // 서버와 논의에 따라서 .public, 또는 .discipline이 경우 noteID는 nil일 것이기 때문에 아래와 같이
             // noteID가 not nil인 경우에만 코멘트 화면으로 navigation
             if let noteID = selectedNotification.noteID {
@@ -149,7 +134,7 @@ extension NoteNotificationViewController: UICollectionViewDelegate {
     }
 }
 
-extension NoteNotificationViewController: UICollectionViewDelegateFlowLayout {
+extension NotePersonalNotificationViewController: UICollectionViewDelegateFlowLayout {
     public func collectionView(
         _ collectionView: UICollectionView,
         layout collectionViewLayout: UICollectionViewLayout,
@@ -164,7 +149,7 @@ extension NoteNotificationViewController: UICollectionViewDelegateFlowLayout {
 
 // MARK: - NoteNotificationView
 
-private extension NoteNotificationViewController {
+private extension NotePersonalNotificationViewController {
     var noteNotificationCollectionView: UICollectionView {
         return self.noteNotificationView.noteNotificationCollectionView
     }
@@ -172,9 +157,9 @@ private extension NoteNotificationViewController {
 
 // MARK: - Bindings
 
-private extension NoteNotificationViewController {
+private extension NotePersonalNotificationViewController {
     func bindUI() {
-        viewModel.$fetchedNotifications
+        viewModel.$fetchedPersonalNotifications
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] notifications in
                 self?.updateNotificationCollectionView(with: notifications)
@@ -186,12 +171,8 @@ private extension NoteNotificationViewController {
             .sink { [weak self] refreshState in
                 switch refreshState {
                 case .failed(let error):
-                    self?.showAlert(
-                        title: error.errorDescription,
-                        message: nil,
-                        singleActionTitle: "확인"
-                    )
-                    
+                    self?.coordinator?.presentErrorAlert(message: error.errorDescription)
+
                 case .completed:
                     self?.noteNotificationCollectionView.refreshControl?.endRefreshing()
                     
@@ -204,11 +185,7 @@ private extension NoteNotificationViewController {
         viewModel.$error
             .compactMap { $0 }
             .sink { [weak self] error in
-                self?.showAlert(
-                    title: error.errorDescription,
-                    message: nil,
-                    singleActionTitle: "확인"
-                )
+                self?.coordinator?.presentErrorAlert(message: error.errorDescription)
             }
             .store(in: &cancellables)
     }
@@ -232,8 +209,8 @@ private extension NoteNotificationViewController {
 
 // MARK: - IndicatorInfoProvider
 
-extension NoteNotificationViewController: IndicatorInfoProvider {
+extension NotePersonalNotificationViewController: IndicatorInfoProvider {
     public func indicatorInfo(for pagerTabStripController: FeelinPagerTabViewController) -> IndicatorInfo {
-        return IndicatorInfo(title: self.indicatorType.description)
+        return IndicatorInfo(title: "내 소식")
     }
 }
