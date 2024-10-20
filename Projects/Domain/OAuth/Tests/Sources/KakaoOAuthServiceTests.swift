@@ -67,7 +67,8 @@ final class KakaoOAuthServiceTests: XCTestCase {
         sut = KakaoOAuthService(
             kakaoUserAPI: kakaoUserAPITestDouble,
             networkProvider: networkProviderTestDouble,
-            tokenStorage: mockTokenStorage, 
+            tokenStorage: mockTokenStorage,
+            userInfoStorage: FakeUserInfoStorage(),
             recentLoginRecordService: mockRecentLoginRecordService,
             tokenKeyHolder: mockTokenKeyHolder
         )
@@ -98,7 +99,8 @@ final class KakaoOAuthServiceTests: XCTestCase {
         sut = KakaoOAuthService(
             kakaoUserAPI: kakaoUserAPITestDouble,
             networkProvider: networkProviderTestDouble,
-            tokenStorage: mockTokenStorage, 
+            tokenStorage: mockTokenStorage,
+            userInfoStorage: FakeUserInfoStorage(),
             recentLoginRecordService: mockRecentLoginRecordService
         )
 
@@ -131,7 +133,8 @@ final class KakaoOAuthServiceTests: XCTestCase {
         sut = KakaoOAuthService(
             kakaoUserAPI: kakaoUserAPITestDouble,
             networkProvider: networkProviderTestDouble,
-            tokenStorage: dummyTokenStorage, 
+            tokenStorage: dummyTokenStorage,
+            userInfoStorage: FakeUserInfoStorage(),
             recentLoginRecordService: mockRecentLoginRecordService
         )
 

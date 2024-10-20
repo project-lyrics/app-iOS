@@ -28,7 +28,7 @@ final class MyPageView: UIView {
         return button
     }()
 
-    let notificationBarButton: UIButton = {
+    let notificationButton: UIButton = {
         let button = UIButton()
         button.setImage(FeelinImages.notificationOff, for: .normal)
         return button
@@ -88,7 +88,7 @@ final class MyPageView: UIView {
 
         navigationBar.addLeftBarView([])
         navigationBar.addTitleView(titleLabel)
-        navigationBar.addRightBarView([settingBarButton, notificationBarButton])
+        navigationBar.addRightBarView([settingBarButton, notificationButton])
 
         rootFlexContainer
             .flex

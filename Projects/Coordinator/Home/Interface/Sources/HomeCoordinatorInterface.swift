@@ -368,6 +368,7 @@ extension HomeCoordinator {
         @Injected(.noteAPIService) var noteAPIService: NoteAPIServiceInterface
         @Injected(.notePaginationService) var notePaginationService: NotePaginationServiceInterface
         @Injected(.artistAPIService) var artistAPIService: ArtistAPIServiceInterface
+        @Injected(.notificationAPIService) var notificationAPIService: NotificationAPIServiceInterface
 
         let getArtistNotesUseCase = GetArtistNotesUseCase(
             noteAPIService: noteAPIService,
@@ -377,6 +378,7 @@ extension HomeCoordinator {
         let setBookmarkUseCase = SetBookmarkUseCase(noteAPIService: noteAPIService)
         let deleteNoteUseCase = DeleteNoteUseCase(noteAPIService: noteAPIService)
         let setFavoriteArtistUseCase = SetFavoriteArtistUseCase(artistAPIService: artistAPIService)
+        let getHasUncheckedNotificationUseCase = GetHasUncheckedNotificationUseCase(notificationAPIService: notificationAPIService)
 
         let viewModel = CommunityMainViewModel(
             artist: artist,
@@ -384,7 +386,8 @@ extension HomeCoordinator {
             setNoteLikeUseCase: setNoteLikeUseCase,
             setBookmarkUseCase: setBookmarkUseCase,
             deleteNoteUseCase: deleteNoteUseCase,
-            setFavoriteArtistUseCase: setFavoriteArtistUseCase
+            setFavoriteArtistUseCase: setFavoriteArtistUseCase,
+            getHasUncheckedNotificationUseCase: getHasUncheckedNotificationUseCase
         )
         return viewModel
     }

@@ -99,7 +99,7 @@ public final class MyPageViewController: UIViewController {
             }
             .store(in: &cancellables)
 
-        notificationBarButton.publisher(for: .touchUpInside)
+        notificationButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in
                 self?.coordinator?.pushNoteNotificationViewController()
             }
@@ -134,6 +134,14 @@ public final class MyPageViewController: UIViewController {
                 )
             }
             .store(in: &cancellables)
+
+        viewModel.$hasUncheckedNotification
+            .sink { [weak self] hasUncheckedNotification in
+                hasUncheckedNotification
+                ? self?.notificationButton.setImage(FeelinImages.notificationOn, for: .normal)
+                : self?.notificationButton.setImage(FeelinImages.notificationOff, for: .normal)
+            }
+            .store(in: &cancellables)
     }
 }
 
@@ -164,8 +172,8 @@ extension MyPageViewController {
         return myPageView.settingBarButton
     }
 
-    var notificationBarButton: UIButton {
-        return myPageView.notificationBarButton
+    var notificationButton: UIButton {
+        return myPageView.notificationButton
     }
 
     var userNicknameContainerView: UIView {

@@ -50,6 +50,12 @@ public final class MyPageCoordinator: Coordinator {
 
         DIContainer.registerUserProfileService()
         DIContainer.registerUserInfoStorage()
+
+        DIContainer.standard.register(.notificationAPIService) { resolver in
+            let networkProvider = try resolver.resolve(.networkProvider)
+
+            return NotificationAPIService(networkProvider: networkProvider)
+        }
     }
 
     private func configureMyPageViewController() {
@@ -241,12 +247,16 @@ private extension MyPageCoordinator {
 
     func myPageDependencies() -> MyPageViewModel {
         @Injected(.userProfileAPIService) var userProfileAPIService: UserProfileAPIServiceInterface
+        @Injected(.notificationAPIService) var notificationAPIService: NotificationAPIServiceInterface
 
         let getUserProfileUseCase: GetUserProfileUseCaseInterface = GetUserProfileUseCase(
             userProfileAPIService: userProfileAPIService
         )
+        let getHasUncheckedNotificationUseCase = GetHasUncheckedNotificationUseCase(notificationAPIService: notificationAPIService)
+
         let viewModel = MyPageViewModel(
-            getUserProfileUseCase: getUserProfileUseCase
+            getUserProfileUseCase: getUserProfileUseCase,
+            getHasUncheckedNotificationUseCase: getHasUncheckedNotificationUseCase
         )
 
         return viewModel

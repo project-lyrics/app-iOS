@@ -191,7 +191,6 @@ extension MyNoteViewModel {
                     self?.selectedArtistID = artistID
                 } else {
                     self?.fetchedNotes.append(contentsOf: data)
-                    print(data)
                 }
 
                 self?.refreshState = .completed

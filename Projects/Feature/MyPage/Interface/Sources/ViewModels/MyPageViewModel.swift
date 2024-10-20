@@ -12,13 +12,20 @@ import Domain
 
 public final class MyPageViewModel {
     @Published private (set) var fetchedUserProfile: UserProfile?
+    @Published private (set) var hasUncheckedNotification: Bool = false
+
     @Published private (set) var error: UserProfileError?
 
     private let getUserProfileUseCase: GetUserProfileUseCaseInterface
+    private let getHasUncheckedNotificationUseCase: GetHasUncheckedNotificationUseCaseInterface
     private var cancellables: Set<AnyCancellable> = .init()
 
-    public init(getUserProfileUseCase: GetUserProfileUseCaseInterface) {
+    public init(
+        getUserProfileUseCase: GetUserProfileUseCaseInterface,
+        getHasUncheckedNotificationUseCase: GetHasUncheckedNotificationUseCaseInterface
+    ) {
         self.getUserProfileUseCase = getUserProfileUseCase
+        self.getHasUncheckedNotificationUseCase = getHasUncheckedNotificationUseCase
     }
 
     public func fetchUserProfile() {
@@ -33,5 +40,16 @@ public final class MyPageViewModel {
                 }
             }
             .store(in: &cancellables)
+    }
+
+    func checkForUnReadNotification() {
+        self.getHasUncheckedNotificationUseCase.execute()
+            .catch({ notificationError in
+                return Just(false)
+                    .eraseToAnyPublisher()
+            })
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .assign(to: &self.$hasUncheckedNotification)
     }
 }

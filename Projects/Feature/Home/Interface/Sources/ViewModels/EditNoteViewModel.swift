@@ -113,7 +113,7 @@ private extension EditNoteViewModel {
         let combinedPublisher = requiredFieldsPublisher
             .combineLatest(optionalFieldsPublisher)
             .map { (requiredFields, optionalFields) -> PatchNoteValue in
-                let (song, noteContent, status) = requiredFields
+                let (_, noteContent, status) = requiredFields
                 let (lyrics, lyricsBackground) = optionalFields
 
                 return PatchNoteValue(

@@ -14,6 +14,8 @@ public final class CommunityMainViewModel {
     @Published private (set) var fetchedNotes: [Note] = []
     @Published private (set) var artist: Artist
     @Published var mustHaveLyrics: Bool = false
+    @Published private (set) var hasUncheckedNotification: Bool = false
+
     @Published private (set) var error: CommunityError?
     @Published private (set) var refreshState: RefreshState<CommunityError> = .idle
     
@@ -23,14 +25,16 @@ public final class CommunityMainViewModel {
     private let setBookmarkUseCase: SetBookmarkUseCaseInterface
     private let deleteNoteUseCase: DeleteNoteUseCaseInterface
     private let setFavoriteArtistUseCase: SetFavoriteArtistUseCaseInterface
-    
+    private let getHasUncheckedNotificationUseCase: GetHasUncheckedNotificationUseCaseInterface
+
     public init(
         artist: Artist,
         getArtistNotesUseCase: GetArtistNotesUseCaseInterface,
         setNoteLikeUseCase: SetNoteLikeUseCaseInterface,
         setBookmarkUseCase: SetBookmarkUseCaseInterface,
         deleteNoteUseCase: DeleteNoteUseCaseInterface,
-        setFavoriteArtistUseCase: SetFavoriteArtistUseCaseInterface
+        setFavoriteArtistUseCase: SetFavoriteArtistUseCaseInterface,
+        getHasUncheckedNotificationUseCase: GetHasUncheckedNotificationUseCaseInterface
     ) {
         self._artist = .init(initialValue: artist)
         self.getArtistNotesUseCase = getArtistNotesUseCase
@@ -38,7 +42,8 @@ public final class CommunityMainViewModel {
         self.setBookmarkUseCase = setBookmarkUseCase
         self.deleteNoteUseCase = deleteNoteUseCase
         self.setFavoriteArtistUseCase = setFavoriteArtistUseCase
-        
+        self.getHasUncheckedNotificationUseCase = getHasUncheckedNotificationUseCase
+
         // mustHaveLyrics가 변경될 때 데이터를 새로 가져오는 로직
         $mustHaveLyrics
             .sink { [weak self] mustHaveLyrics in
@@ -220,5 +225,20 @@ extension CommunityMainViewModel {
                 }
             }
             .store(in: &cancellables)
+    }
+}
+
+// MARK: Unchecked Notification
+
+extension CommunityMainViewModel {
+    func checkForUnReadNotification() {
+        self.getHasUncheckedNotificationUseCase.execute()
+            .catch({ notificationError in
+                return Just(false)
+                    .eraseToAnyPublisher()
+            })
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .assign(to: &self.$hasUncheckedNotification)
     }
 }
