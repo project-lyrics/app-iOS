@@ -84,7 +84,6 @@ public final class MyNoteViewController: UIViewController,
         bindUI()
         bindData()
         bindAction()
-        coordinator?.presentErrorAlert(message: "작성글 에러")
     }
 
     public func indicatorInfo(for pagerTabStripController: FeelinPagerTabViewController) -> IndicatorInfo {

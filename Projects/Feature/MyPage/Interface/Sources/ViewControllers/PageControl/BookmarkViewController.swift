@@ -84,8 +84,6 @@ public final class BookmarkViewController: UIViewController,
         bindUI()
         bindData()
         bindAction()
-
-        coordinator?.presentErrorAlert(message: "북마크 에러")
     }
 
     public func indicatorInfo(for pagerTabStripController: FeelinPagerTabViewController) -> IndicatorInfo {
