@@ -29,7 +29,7 @@ public final class LyricsBackgroundCollectionViewCell: UICollectionViewCell, Reu
         let label = UILabel()
         label.text = "이야기로 음악을 느끼다\n이야기로 음악을 채우다"
         label.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 16)
-        label.textColor = Colors.gray08
+        label.textColor = Colors.gray08.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
         label.textAlignment = .center
         label.numberOfLines = 2
         return label
@@ -85,8 +85,15 @@ public final class LyricsBackgroundCollectionViewCell: UICollectionViewCell, Reu
         flexContainer.addSubview(checkButtonImageView)
     }
 
-    public func configure(image: UIImage) {
-        lyricsBackgroundImageView.image = image
+    public func configure(lyricsBackground: LyricsBackground) {
+        lyricsBackgroundImageView.image = lyricsBackground.image
+
+        switch lyricsBackground {
+        case .black, .red:
+            lyricsDefaultTextLabel.textColor = Colors.gray09.resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark))
+        default:
+            lyricsDefaultTextLabel.textColor = Colors.gray08.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
+        }
     }
 
     public func setSelected(_ selected: Bool) {
