@@ -72,7 +72,7 @@ final class BalloonView: UIView {
         let balloonShape = CAShapeLayer()
         balloonShape.path = balloonPath.cgPath
         balloonShape.fillColor = UIColor.white.cgColor
-        balloonShape.strokeColor = Colors.gray02.cgColor
+        balloonShape.strokeColor = Colors.gray02.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)).cgColor
         balloonShape.lineWidth = 1.0
 
         layer.insertSublayer(balloonShape, at: 0)
