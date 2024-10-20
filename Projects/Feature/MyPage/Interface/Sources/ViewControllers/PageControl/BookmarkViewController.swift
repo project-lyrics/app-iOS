@@ -102,7 +102,9 @@ public final class BookmarkViewController: UIViewController,
         viewModel.$error
             .compactMap { $0 }
             .sink { [weak self] error in
-                self?.coordinator?.presentErrorAlert(message: error.errorDescription)
+                self?.coordinator?.presentErrorAlert(
+                    message: error.errorMessageWithCode
+                )
             }
             .store(in: &cancellables)
 
@@ -111,7 +113,9 @@ public final class BookmarkViewController: UIViewController,
             .sink(receiveValue: { [weak self] refreshState in
                 switch refreshState {
                 case .failed(let error):
-                    self?.coordinator?.presentErrorAlert(message: error.errorDescription)
+                    self?.coordinator?.presentErrorAlert(
+                        message: error.errorMessageWithCode
+                    )
 
                 case .completed:
                     self?.noteDetailCollectionView.refreshControl?.endRefreshing()

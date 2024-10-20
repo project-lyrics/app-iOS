@@ -24,9 +24,7 @@ public final class NoteNotificationContainerViewController: UIViewController {
     
     private let errorAlertSubject: PassthroughSubject<NotificationError, Never> = .init()
 
-    private lazy var noteNotificationPageViewController: NoteNotificationPageViewController = {
-        return NoteNotificationPageViewController(errorAlertSubject: self.errorAlertSubject)
-    }()
+    private let noteNotificationPageViewController: NoteNotificationPageViewController = .init()
 
     // MARK: - UI
 

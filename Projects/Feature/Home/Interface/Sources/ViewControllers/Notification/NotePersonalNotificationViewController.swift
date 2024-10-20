@@ -68,8 +68,6 @@ public final class NotePersonalNotificationViewController: UIViewController {
     
     public init(viewModel: NotePersonalNotificationViewModel) {
         self.viewModel = viewModel
-        self.errorAlertSubject = errorAlertSubject
-        
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -172,7 +170,7 @@ private extension NotePersonalNotificationViewController {
             .sink { [weak self] refreshState in
                 switch refreshState {
                 case .failed(let error):
-                    self?.coordinator?.presentErrorAlert(message: error.errorDescription)
+                    self?.coordinator?.presentErrorAlert(message: error.errorMessageWithCode)
 
                 case .completed:
                     self?.noteNotificationCollectionView.refreshControl?.endRefreshing()
@@ -187,7 +185,7 @@ private extension NotePersonalNotificationViewController {
             .receive(on: DispatchQueue.main)
             .compactMap { $0 }
             .sink { [weak self] error in
-                self?.coordinator?.presentErrorAlert(message: error.errorDescription)
+                self?.coordinator?.presentErrorAlert(message: error.errorMessageWithCode)
             }
             .store(in: &cancellables)
     }

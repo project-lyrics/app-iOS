@@ -171,7 +171,7 @@ private extension NotePublicNotificationViewController {
             .sink { [weak self] refreshState in
                 switch refreshState {
                 case .failed(let error):
-                    self?.coordinator?.presentErrorAlert(message: error.errorDescription)
+                    self?.coordinator?.presentErrorAlert(message: error.errorMessageWithCode)
 
                 case .completed:
                     self?.noteNotificationCollectionView.refreshControl?.endRefreshing()
@@ -185,7 +185,7 @@ private extension NotePublicNotificationViewController {
         viewModel.$error
             .compactMap { $0 }
             .sink { [weak self] error in
-                self?.coordinator?.presentErrorAlert(message: error.errorDescription)
+                self?.coordinator?.presentErrorAlert(message: error.errorMessageWithCode)
             }
             .store(in: &cancellables)
     }
