@@ -13,6 +13,13 @@ import UIKit
 
 final class WriteCommentView: UIView, UITextViewDelegate {
     
+    @KeychainWrapper(.userInfo)
+    public var userInfo: UserInformation?
+    
+    private var isLoggedIn: Bool {
+        return self.userInfo?.userID != nil
+    }
+    
     // MARK: - Subjects & Publishers
     
     var didTapSendPublisher: AnyPublisher<String, Never> {
@@ -72,7 +79,7 @@ final class WriteCommentView: UIView, UITextViewDelegate {
     }()
     
     // Placeholder를 위한 UILabel
-    private var placeholderLabel: UILabel = {
+    private lazy var placeholderLabel: UILabel = {
         let label = UILabel()
         label.text = "댓글을 입력하세요"
         label.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 14)

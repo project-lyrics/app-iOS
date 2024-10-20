@@ -17,6 +17,7 @@ public protocol NoteCommentsViewControllerDelegate: AnyObject {
     func pushReportViewController(noteID: Int?, commentID: Int?)
     func presentEditNoteViewController(note: Note)
     func presentUserLinkedWebViewController(url: URL)
+    func didFinish()
 }
 
 public final class NoteCommentsViewController: UIViewController, CommentMenuHandling, NoteMenuHandling, NoteMusicHandling {
@@ -26,6 +27,10 @@ public final class NoteCommentsViewController: UIViewController, CommentMenuHand
     
     @KeychainWrapper(.userInfo)
     public var userInfo: UserInformation?
+    
+    private var isLoggedIn: Bool {
+        return self.userInfo?.userID != nil
+    }
     
     public weak var coordinator: NoteCommentsViewControllerDelegate?
 
@@ -202,12 +207,15 @@ public final class NoteCommentsViewController: UIViewController, CommentMenuHand
         fatalError()
     }
     
+    // MARK: - View Lifecycle
+    
     public override func loadView() {
         self.view = noteCommentsView
     }
     
     override public func viewDidLoad() {
         super.viewDidLoad()
+        self.setUpDefaults()
         self.bindUI()
         self.bindAction()
     }
@@ -215,6 +223,12 @@ public final class NoteCommentsViewController: UIViewController, CommentMenuHand
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.fetchNoteWithComments()
+    }
+    
+    private func setUpDefaults() {
+        if !self.isLoggedIn {
+            self.writeCommentView.isEditable = false
+        }
     }
 
     private func fetchNoteWithComments() {
@@ -306,11 +320,42 @@ private extension NoteCommentsViewController {
         viewModel.$error
             .compactMap { $0 }
             .sink { [weak self] error in
-                self?.showAlert(
-                    title: error.errorMessageWithCode,
-                    message: nil,
-                    singleActionTitle: "확인"
-                )
+                if case let .feelinAPIError(feelinAPIError) = error,
+                   case .tokenNotFound = feelinAPIError {
+                    self?.showAlert(
+                        title: "로그인 후 이용할 수 있어요.",
+                        message: nil,
+                        rightActionTitle: "로그인",
+                        rightActionCompletion: {
+                            self?.viewModel.logout()
+                        }
+                    )
+                } else {
+                    self?.showAlert(
+                        title: error.errorMessageWithCode,
+                        message: nil,
+                        singleActionTitle: "확인"
+                    )
+                }
+            }
+            .store(in: &cancellables)
+        
+        viewModel.$logoutResult
+            .sink { [weak self] result in
+                switch result {
+                case .success:
+                    self?.coordinator?.didFinish()
+                    
+                case .failure(let error):
+                    self?.showAlert(
+                        title: error.errorMessageWithCode,
+                        message: nil,
+                        singleActionTitle: "확인"
+                    )
+                    
+                default:
+                    break
+                }
             }
             .store(in: &cancellables)
         
@@ -353,6 +398,22 @@ private extension NoteCommentsViewController {
             .sink(receiveValue: { [weak viewModel] _ in
                 viewModel?.refreshNoteWithComments()
             })
+            .store(in: &cancellables)
+        
+        writeCommentView.tapPublisher
+            .sink { [weak self] in
+                guard let self = self else { return }
+                if !self.isLoggedIn {
+                    self.showAlert(
+                        title: "로그인 후 이용할 수 있어요.",
+                        message: nil,
+                        rightActionTitle: "로그인",
+                        rightActionCompletion: {
+                            self.viewModel.logout()
+                        }
+                    )
+                }
+            }
             .store(in: &cancellables)
 
         writeCommentView.didTapSendPublisher
@@ -465,10 +526,4 @@ private extension NoteCommentsViewController.Row {
             )
         }
     }
-}
-
-// MARK: - HyperLink
-
-private extension NoteCommentsViewController {
-    
 }

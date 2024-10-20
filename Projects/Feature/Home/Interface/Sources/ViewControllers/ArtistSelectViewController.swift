@@ -207,7 +207,6 @@ private extension ArtistSelectViewController {
             .sink(receiveValue: { [weak self] result in
                 switch result {
                 case .success:
-                    self?.userInfo?.didEnterFirstFavoriteArtistsListPage = true
                     self?.coordinator?.didFinishSelectingInitialFavoriteArtists()
                     self?.coordinator?.dismissViewController()
                     
@@ -229,7 +228,6 @@ private extension ArtistSelectViewController {
                     leftActionTitle: "취소",
                     rightActionTitle: "나가기",
                     rightActionCompletion: {
-                        self.userInfo?.didEnterFirstFavoriteArtistsListPage = true
                         self.coordinator?.dismissViewController()
                     }
                 )

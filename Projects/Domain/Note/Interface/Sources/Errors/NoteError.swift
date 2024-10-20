@@ -10,7 +10,7 @@ import Foundation
 import Core
 import Shared
 
-public enum NoteError: LocalizedError {
+public enum NoteError: LocalizedError, Equatable {
     case feelinAPIError(FeelinAPIError)
     case networkError(NetworkError)
     case keychainError(KeychainError)

@@ -100,6 +100,10 @@ extension HomeCoordinator: HomeViewControllerDelegate,
                            CommunityMainViewControllerDelegate,
                            UserLinkedWebViewControllerDelegate,
                            SearchMoreFavoriteArtistDelegate {
+    public func didFinish() {
+        didFinish(childCoordinator: self)
+    }
+    
     public func pushNoteNotificationViewController() {
         let noteNotificationContainerViewController = NoteNotificationContainerViewController()
         noteNotificationContainerViewController.coordinator = self
@@ -218,7 +222,7 @@ extension HomeCoordinator: CoordinatorDelegate,
     }
 
     public func didFinish(childCoordinator: Coordinator) {
-
+        self.delegate?.didFinish(childCoordinator: childCoordinator)
     }
 }
 
@@ -343,6 +347,7 @@ extension HomeCoordinator {
 
         @Injected(.noteAPIService) var noteAPIService: NoteAPIServiceInterface
         @Injected(.commentAPIService) var commentAPIService: CommentAPIServiceInterface
+        let tokenStorage = TokenStorage()
 
         let setNoteLikeUseCase = SetNoteLikeUseCase(noteAPIService: noteAPIService)
         let setBookmarkUseCase = SetBookmarkUseCase(noteAPIService: noteAPIService)
@@ -350,6 +355,7 @@ extension HomeCoordinator {
         let getNoteWithCommentsUseCase = GetNoteWithCommentsUseCase(commentAPIService: commentAPIService)
         let writeCommentUseCase = WriteCommentUseCase(commentAPIService: commentAPIService)
         let deleteCommentUseCase = DeleteCommentUseCase(commentAPIService: commentAPIService)
+        let logoutUseCase = LogoutUseCase(tokenStorage: tokenStorage)
 
         let viewModel = NoteCommentsViewModel(
             noteID: noteID,
@@ -358,7 +364,8 @@ extension HomeCoordinator {
             deleteNoteUseCase: deleteNoteUseCase,
             getNoteWithCommentsUseCase: getNoteWithCommentsUseCase,
             writeCommentUseCase: writeCommentUseCase,
-            deleteCommentUseCase: deleteCommentUseCase
+            deleteCommentUseCase: deleteCommentUseCase, 
+            logoutUseCase: logoutUseCase
         )
 
         return viewModel
@@ -369,6 +376,7 @@ extension HomeCoordinator {
         @Injected(.notePaginationService) var notePaginationService: NotePaginationServiceInterface
         @Injected(.artistAPIService) var artistAPIService: ArtistAPIServiceInterface
         @Injected(.notificationAPIService) var notificationAPIService: NotificationAPIServiceInterface
+        let tokenStorage = TokenStorage()
 
         let getArtistNotesUseCase = GetArtistNotesUseCase(
             noteAPIService: noteAPIService,
@@ -379,6 +387,7 @@ extension HomeCoordinator {
         let deleteNoteUseCase = DeleteNoteUseCase(noteAPIService: noteAPIService)
         let setFavoriteArtistUseCase = SetFavoriteArtistUseCase(artistAPIService: artistAPIService)
         let getHasUncheckedNotificationUseCase = GetHasUncheckedNotificationUseCase(notificationAPIService: notificationAPIService)
+        let logoutUseCase = LogoutUseCase(tokenStorage: tokenStorage)
 
         let viewModel = CommunityMainViewModel(
             artist: artist,
@@ -387,7 +396,8 @@ extension HomeCoordinator {
             setBookmarkUseCase: setBookmarkUseCase,
             deleteNoteUseCase: deleteNoteUseCase,
             setFavoriteArtistUseCase: setFavoriteArtistUseCase,
-            getHasUncheckedNotificationUseCase: getHasUncheckedNotificationUseCase
+            getHasUncheckedNotificationUseCase: getHasUncheckedNotificationUseCase, 
+            logoutUseCase: logoutUseCase
         )
         return viewModel
     }

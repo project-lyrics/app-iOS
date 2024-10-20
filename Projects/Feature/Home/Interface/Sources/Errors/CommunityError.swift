@@ -6,19 +6,29 @@
 //
 
 import Domain
+import Shared
 
 import Foundation
 
-public enum CommunityError: LocalizedError {
+public enum CommunityError: LocalizedError, Equatable {
     case noteError(NoteError)
     case artistError(ArtistError)
+    case feelinAPIError(FeelinAPIError)
     case unknownError(description: String)
     
     public init(error: Error) {
         if let artistError = error as? ArtistError {
-            self = .artistError(artistError)
+            if case let .feelinAPIError(feelinAPIError) = artistError {
+                self = .feelinAPIError(feelinAPIError)
+            } else {
+                self = .artistError(artistError)
+            }
         } else if let noteError = error as? NoteError {
-            self = .noteError(noteError)
+            if case let .feelinAPIError(feelinAPIError) = noteError {
+                self = .feelinAPIError(feelinAPIError)
+            } else {
+                self = .noteError(noteError)
+            }
         } else {
             self = .unknownError(description: error.localizedDescription)
         }
@@ -31,6 +41,9 @@ public enum CommunityError: LocalizedError {
             
         case .artistError(let artistError):
             return artistError.errorMessage
+            
+        case .feelinAPIError(let feelinAPIError):
+            return feelinAPIError.errorMessage
             
         case .unknownError(let description):
             return description
@@ -47,6 +60,8 @@ public enum CommunityError: LocalizedError {
             return noteError.errorCode
         case .artistError(let artistError):
             return artistError.errorCode
+        case .feelinAPIError(let feelinAPiError):
+            return feelinAPiError.errorCode
         case .unknownError:
             return nil
         }

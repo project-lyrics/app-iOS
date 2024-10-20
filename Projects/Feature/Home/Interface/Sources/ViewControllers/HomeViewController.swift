@@ -34,6 +34,10 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
 
     @KeychainWrapper<UserInformation>(.userInfo)
     public var userInfo
+    
+    private var isLoggedIn: Bool {
+        return self.userInfo?.userID != nil
+    }
 
     // MARK: - UI Components
 
@@ -308,6 +312,8 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
 
     override public func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.setUpDefault()
         self.checkFirstVisitor()
         self.bindUI()
         self.bindAction()
@@ -315,8 +321,16 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.updateInitialHomeData()
-        self.checkForUnReadNotification()
+        if self.isLoggedIn {
+            self.updateInitialHomeData()
+            self.checkForUnReadNotification()
+        }
+    }
+    
+    private func setUpDefault() {
+        if !self.isLoggedIn {
+            self.homeCollectionView.refreshControl = nil
+        }
     }
     
     // MARK: - Favorite Artists
@@ -326,8 +340,7 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
     }
     
     private func showSelectArtistListIfNeeded() {
-        if let userInfo = userInfo,
-           !userInfo.didEnterFirstFavoriteArtistsListPage {
+        if isLoggedIn {
             self.coordinator?.presentInitialArtistSelectViewController()
         }
     }
@@ -355,13 +368,11 @@ private extension HomeViewController {
         viewModel.$error
             .compactMap { $0 }
             .sink { [weak self] error in
-                if let _ = self?.userInfo?.userID {
-                    self?.showAlert(
-                        title: error.errorMessage,
-                        message: nil,
-                        singleActionTitle: "확인"
-                    )
-                }
+                self?.showAlert(
+                    title: error.errorMessage,
+                    message: nil,
+                    singleActionTitle: "확인"
+                )
             }
             .store(in: &cancellables)
 
@@ -415,8 +426,11 @@ private extension HomeViewController {
 
     func bindAction() {
         homeCollectionView.didScrollToBottomPublisher()
-            .sink { [weak viewModel] in
-                viewModel?.fetchNotes(isInitialFetch: false)
+            .sink { [weak self] in
+                guard let self = self else { return }
+                if self.isLoggedIn {
+                    self.viewModel.fetchNotes(isInitialFetch: false)
+                }
             }
             .store(in: &cancellables)
 

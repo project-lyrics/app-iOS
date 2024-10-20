@@ -18,6 +18,7 @@ public final class CommunityMainViewModel {
 
     @Published private (set) var error: CommunityError?
     @Published private (set) var refreshState: RefreshState<CommunityError> = .idle
+    @Published private (set) var logoutResult: LogoutResult = .none
     
     private var cancellables: Set<AnyCancellable> = .init()
     private let getArtistNotesUseCase: GetArtistNotesUseCaseInterface
@@ -26,6 +27,7 @@ public final class CommunityMainViewModel {
     private let deleteNoteUseCase: DeleteNoteUseCaseInterface
     private let setFavoriteArtistUseCase: SetFavoriteArtistUseCaseInterface
     private let getHasUncheckedNotificationUseCase: GetHasUncheckedNotificationUseCaseInterface
+    private let logoutUseCase: LogoutUseCaseInterface
 
     public init(
         artist: Artist,
@@ -34,7 +36,8 @@ public final class CommunityMainViewModel {
         setBookmarkUseCase: SetBookmarkUseCaseInterface,
         deleteNoteUseCase: DeleteNoteUseCaseInterface,
         setFavoriteArtistUseCase: SetFavoriteArtistUseCaseInterface,
-        getHasUncheckedNotificationUseCase: GetHasUncheckedNotificationUseCaseInterface
+        getHasUncheckedNotificationUseCase: GetHasUncheckedNotificationUseCaseInterface,
+        logoutUseCase: LogoutUseCaseInterface
     ) {
         self._artist = .init(initialValue: artist)
         self.getArtistNotesUseCase = getArtistNotesUseCase
@@ -43,6 +46,7 @@ public final class CommunityMainViewModel {
         self.deleteNoteUseCase = deleteNoteUseCase
         self.setFavoriteArtistUseCase = setFavoriteArtistUseCase
         self.getHasUncheckedNotificationUseCase = getHasUncheckedNotificationUseCase
+        self.logoutUseCase = logoutUseCase
 
         // mustHaveLyrics가 변경될 때 데이터를 새로 가져오는 로직
         $mustHaveLyrics
@@ -88,6 +92,21 @@ public final class CommunityMainViewModel {
         }
         .store(in: &cancellables)
     }
+    
+    func logout() {
+        self.logoutUseCase.execute()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] result in
+                switch result {
+                case .success:
+                    self?.logoutResult = .success
+                    
+                case .failure(let error):
+                    self?.logoutResult = .failure(error)
+                }
+            }
+            .store(in: &cancellables)
+    }
 }
 
 // MARK: - add/delete favorite Artist
@@ -95,12 +114,13 @@ public final class CommunityMainViewModel {
 extension CommunityMainViewModel {
     func setFavoriteArtist(_ isFavorite: Bool) {
         Just<Bool>(isFavorite)
-            .setFailureType(to: ArtistError.self)
+            .setFailureType(to: CommunityError.self)
             .map { [unowned self] isFavorite in
                 return self.setFavoriteArtistUseCase.execute(
                     artistID: self.artist.id,
                     isFavorite: isFavorite
                 )
+                .mapError(CommunityError.init)
             }
             .switchToLatest()
             .mapToResult()
@@ -112,7 +132,7 @@ extension CommunityMainViewModel {
                     
                 case .failure(let error):
                     self?.artist.isFavorite = !isFavorite
-                    self?.error = .artistError(error)
+                    self?.error = error
                 }
             }
             .store(in: &cancellables)
@@ -141,12 +161,13 @@ extension CommunityMainViewModel {
         }
         
         Just<(isLiked: Bool, noteID: Int)>((isLiked, noteID))
-            .setFailureType(to: NoteError.self)
+            .setFailureType(to: CommunityError.self)
             .map { [unowned self] isLiked, noteID in
                 return self.setNoteLikeUseCase.execute(
                     isLiked: isLiked,
                     noteID: noteID
                 )
+                .mapError(CommunityError.init)
             }
             .switchToLatest()
             .mapToResult()
@@ -159,7 +180,7 @@ extension CommunityMainViewModel {
                 case .failure(let error):
                     self?.fetchedNotes[indexToUpdate].isLiked = !isLiked
                     self?.fetchedNotes[indexToUpdate].likesCount = originalLikesCount
-                    self?.error = .noteError(error)
+                    self?.error = error
                 }
             }
             .store(in: &cancellables)
@@ -180,12 +201,13 @@ extension CommunityMainViewModel {
         self.fetchedNotes[indexToUpdate].isBookmarked = isBookmarked
         
         Just<Bool>(isBookmarked)
-            .setFailureType(to: NoteError.self)
+            .setFailureType(to: CommunityError.self)
             .map { [unowned self] isBookmarked in
                 return self.setBookmarkUseCase.execute(
                     isBookmarked: isBookmarked,
                     noteID: noteID
                 )
+                .mapError(CommunityError.init)
             }
             .switchToLatest()
             .mapToResult()
@@ -201,7 +223,7 @@ extension CommunityMainViewModel {
                     }
                     
                     self?.fetchedNotes[updatedIndexToUpdate].isBookmarked = !isBookmarked
-                    self?.error = .noteError(error)
+                    self?.error = error
                 }
             }
             .store(in: &cancellables)
@@ -213,6 +235,7 @@ extension CommunityMainViewModel {
 extension CommunityMainViewModel {
     func deleteNote(id: Int) {
         self.deleteNoteUseCase.execute(noteID: id)
+            .mapError(CommunityError.init)
             .mapToResult()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] result in
@@ -220,8 +243,8 @@ extension CommunityMainViewModel {
                 case .success:
                     self?.fetchedNotes.removeAll(where: { $0.id == id })
                     
-                case .failure(let noteError):
-                    self?.error = .noteError(noteError)
+                case .failure(let error):
+                    self?.error = error
                 }
             }
             .store(in: &cancellables)

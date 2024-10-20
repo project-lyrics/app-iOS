@@ -16,6 +16,7 @@ public protocol NoteDetailViewControllerDelegate: AnyObject {
     func presentEditNoteViewController(note: Note)
     func popViewController()
     func pushNoteCommentsViewController(noteID: Int)
+    func didFinish()
 }
 
 public final class NoteDetailViewController: UIViewController, NoteMenuHandling, NoteMusicHandling {
@@ -27,6 +28,10 @@ public final class NoteDetailViewController: UIViewController, NoteMenuHandling,
     
     @KeychainWrapper<UserInformation>(.userInfo)
     public var userInfo
+    
+    private var isLoggedIn: Bool {
+        return self.userInfo?.userID != nil
+    }
     
     // MARK: - NoteMenu Subjects
     
@@ -283,11 +288,42 @@ private extension NoteDetailViewController {
         viewModel.$error
             .compactMap { $0 }
             .sink { [weak self] error in
-                self?.showAlert(
-                    title: error.errorMessageWithCode,
-                    message: nil,
-                    singleActionTitle: "확인"
-                )
+                if case let .feelinAPIError(feelinAPIError) = error,
+                   case .tokenNotFound = feelinAPIError {
+                    self?.showAlert(
+                        title: "로그인 후 이용할 수 있어요.",
+                        message: nil,
+                        rightActionTitle: "로그인",
+                        rightActionCompletion: {
+                            self?.viewModel.logout()
+                        }
+                    )
+                } else {
+                    self?.showAlert(
+                        title: error.errorMessageWithCode,
+                        message: nil,
+                        singleActionTitle: "확인"
+                    )
+                }
+            }
+            .store(in: &cancellables)
+        
+        viewModel.$logoutResult
+            .sink { [weak self] result in
+                switch result {
+                case .success:
+                    self?.coordinator?.didFinish()
+                    
+                case .failure(let error):
+                    self?.showAlert(
+                        title: error.errorMessageWithCode,
+                        message: nil,
+                        singleActionTitle: "확인"
+                    )
+                    
+                default:
+                    break
+                }
             }
             .store(in: &cancellables)
     }

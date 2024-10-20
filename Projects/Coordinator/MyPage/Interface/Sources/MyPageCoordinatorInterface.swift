@@ -211,6 +211,7 @@ private extension MyPageCoordinator {
     func noteCommentsDependencies(noteID: Int) -> NoteCommentsViewModel {
         @Injected(.noteAPIService) var noteAPIService: NoteAPIServiceInterface
         @Injected(.commentAPIService) var commentAPIService: CommentAPIServiceInterface
+        let tokenStorage = TokenStorage()
 
         let setNoteLikeUseCase = SetNoteLikeUseCase(noteAPIService: noteAPIService)
         let setBookmarkUseCase = SetBookmarkUseCase(noteAPIService: noteAPIService)
@@ -218,6 +219,7 @@ private extension MyPageCoordinator {
         let getNoteWithCommentsUseCase = GetNoteWithCommentsUseCase(commentAPIService: commentAPIService)
         let writeCommentUseCase = WriteCommentUseCase(commentAPIService: commentAPIService)
         let deleteCommentUseCase = DeleteCommentUseCase(commentAPIService: commentAPIService)
+        let logoutUseCase = LogoutUseCase(tokenStorage: tokenStorage)
 
         let viewModel = NoteCommentsViewModel(
             noteID: noteID,
@@ -226,7 +228,8 @@ private extension MyPageCoordinator {
             deleteNoteUseCase: deleteNoteUseCase,
             getNoteWithCommentsUseCase: getNoteWithCommentsUseCase,
             writeCommentUseCase: writeCommentUseCase,
-            deleteCommentUseCase: deleteCommentUseCase
+            deleteCommentUseCase: deleteCommentUseCase, 
+            logoutUseCase: logoutUseCase
         )
 
         return viewModel

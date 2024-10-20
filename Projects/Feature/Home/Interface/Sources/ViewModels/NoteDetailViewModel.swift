@@ -15,6 +15,7 @@ final public class NoteDetailViewModel {
     @Published private (set) var fetchedNotes: [Note] = []
     @Published var mustHaveLyrics: Bool = false
     @Published private (set) var error: NoteError?
+    @Published private (set) var logoutResult: LogoutResult = .none
     
     private var cancellables: Set<AnyCancellable> = .init()
     
@@ -24,19 +25,22 @@ final public class NoteDetailViewModel {
     private let setNoteLikeUseCase: SetNoteLikeUseCaseInterface
     private let setBookmarkUseCase: SetBookmarkUseCaseInterface
     private let deleteNoteUseCase: DeleteNoteUseCaseInterface
+    private let logoutUseCase: LogoutUseCaseInterface
     
     public init(
         selectedNote: SearchedNote,
         getSongNotesUseCase: GetSongNotesUseCaseInterface,
         setNoteLikeUseCase: SetNoteLikeUseCaseInterface,
         setBookmarkUseCase: SetBookmarkUseCaseInterface,
-        deleteNoteUseCase: DeleteNoteUseCaseInterface
+        deleteNoteUseCase: DeleteNoteUseCaseInterface,
+        logoutUseCase: LogoutUseCaseInterface
     ) {
         self.selectedNote = selectedNote
         self.getSongNotesUseCase = getSongNotesUseCase
         self.setNoteLikeUseCase = setNoteLikeUseCase
         self.setBookmarkUseCase = setBookmarkUseCase
         self.deleteNoteUseCase = deleteNoteUseCase
+        self.logoutUseCase = logoutUseCase
         
         
         // mustHaveLyrics가 변경될 때 데이터를 새로 가져오는 로직
@@ -79,7 +83,21 @@ final public class NoteDetailViewModel {
             }
         }
         .store(in: &cancellables)
-        
+    }
+    
+    func logout() {
+        self.logoutUseCase.execute()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] result in
+                switch result {
+                case .success:
+                    self?.logoutResult = .success
+                    
+                case .failure(let error):
+                    self?.logoutResult = .failure(error)
+                }
+            }
+            .store(in: &cancellables)
     }
 }
 

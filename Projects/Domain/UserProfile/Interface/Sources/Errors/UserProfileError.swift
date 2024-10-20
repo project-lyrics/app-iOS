@@ -10,7 +10,7 @@ import Foundation
 import Core
 import Shared
 
-public enum UserProfileError: LocalizedError {
+public enum UserProfileError: LocalizedError, Equatable {
     case networkError(NetworkError)
     case feelinAPIError(FeelinAPIError)
     case keychainError(KeychainError)
