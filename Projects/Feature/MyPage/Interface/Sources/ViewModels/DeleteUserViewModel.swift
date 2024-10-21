@@ -12,7 +12,7 @@ import Shared
 import Domain
 
 public final class DeleteUserViewModel {
-    @Published private (set) var error: UserProfileError?
+    @Published private (set) var deleteUserResult: DeleteUserResult = .none
 
     @KeychainWrapper<UserInformation>(.userInfo)
     public var userInfo
@@ -26,19 +26,16 @@ public final class DeleteUserViewModel {
 
     public func deleteUserInfo() {
         deleteUserUseCase.execute()
+            .receive(on: DispatchQueue.main)
             .mapToResult()
             .sink { [weak self] result in
                 switch result {
                 case .success:
-                    self?.removeUser()
+                    self?.deleteUserResult = .success
                 case .failure(let error):
-                    self?.error = error
+                    self?.deleteUserResult = .failure(error)
                 }
             }
             .store(in: &cancellables)
-    }
-
-    public func removeUser() {
-        userInfo = nil
     }
 }

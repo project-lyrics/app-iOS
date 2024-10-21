@@ -44,6 +44,7 @@ public final class DeleteUserViewController: UIViewController {
 
         setUpDefault()
         bindAction()
+        bindUI()
     }
 
     private func setUpDefault() {
@@ -65,11 +66,35 @@ public final class DeleteUserViewController: UIViewController {
 
         deleteUserButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in
-                self?.showAlert(title: "탈퇴가 완료되었어요.", message: nil, singleActionTitle: "확인", actionCompletion: {
-                    self?.viewModel.deleteUserInfo()
-                    self?.coordinator?.popViewController()
-                    self?.coordinator?.didFinish()
-                })
+                self?.viewModel.deleteUserInfo()
+                
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func bindUI() {
+        viewModel.$deleteUserResult
+            .sink { [weak self] result in
+                switch result {
+                case .success:
+                    self?.showAlert(
+                        title: "탈퇴가 완료되었어요.",
+                        message: nil,
+                        singleActionTitle: "확인",
+                        actionCompletion: {
+                            self?.coordinator?.didFinish()
+                    })
+                    
+                case .failure(let error):
+                    self?.showAlert(
+                        title: error.errorMessageWithCode,
+                        message: nil,
+                        singleActionTitle: "확인"
+                    )
+                    
+                default:
+                    break
+                }
             }
             .store(in: &cancellables)
     }
