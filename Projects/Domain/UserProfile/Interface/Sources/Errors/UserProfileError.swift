@@ -41,12 +41,16 @@ public enum UserProfileError: LocalizedError, Equatable {
     }
 
     public var errorCode: String? {
-        guard case .networkError(let networkError) = self,
-              case .feelinAPIError(let feelinAPIError) = networkError else {
+        switch self {
+        case .networkError(let networkError):
+            return networkError.errorCode
+            
+        case .feelinAPIError(let feelinAPIError):
+            return feelinAPIError.errorCode
+            
+        default:
             return nil
         }
-
-        return feelinAPIError.errorCode
     }
     
     public var errorMessageWithCode: String {
