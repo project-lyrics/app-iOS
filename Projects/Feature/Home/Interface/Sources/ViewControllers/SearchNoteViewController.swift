@@ -81,11 +81,18 @@ public final class SearchNoteViewController: UIViewController {
         self.searchNoteTableView.delegate = self
     }
 
-    private func updateSearchNoteCollectionView(with searchedNotes: [SearchedNote]) {
-        var snapshot = NoteListSnapshot()
-        snapshot.appendSections([.main])
+    private func updateSearchNoteTableView(with searchedNotes: [SearchedNote]) {
+        var snapshot = noteListDataSource.snapshot()
+        
+        if !snapshot.sectionIdentifiers.contains(.main) {
+            snapshot.appendSections([.main])
+        }
+        let currentItem = snapshot.itemIdentifiers(inSection: .main)
+        
+        snapshot.deleteItems(currentItem)
         snapshot.appendItems(searchedNotes, toSection: .main)
-        noteListDataSource.applySnapshotUsingReloadData(snapshot)
+        
+        noteListDataSource.apply(snapshot, animatingDifferences: false)
     }
 
     private func fetchInitialSearchedNotes() {
@@ -127,8 +134,28 @@ private extension SearchNoteViewController {
 
         viewModel.$searchedNotes
             .sink { [unowned self] searchedNotes in
-                self.updateSearchNoteCollectionView(with: searchedNotes)
+                self.updateSearchNoteTableView(with: searchedNotes)
             }
+            .store(in: &cancellables)
+        
+        viewModel.$refreshState
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] refreshState in
+                switch refreshState {
+                case .failed(let error):
+                    self?.showAlert(
+                        title: error.errorMessageWithCode,
+                        message: nil,
+                        singleActionTitle: "확인"
+                    )
+
+                case .completed:
+                    self?.searchNoteTableView.refreshControl?.endRefreshing()
+
+                default:
+                    return
+                }
+            })
             .store(in: &cancellables)
     }
 
@@ -142,6 +169,17 @@ private extension SearchNoteViewController {
                     searchText: currentKeyword ?? ""
                 )
             }
+            .store(in: &cancellables)
+        
+        self.searchNoteTableView.refreshControl?.isRefreshingPublisher
+            .filter { $0 }
+            .sink(receiveValue: { [unowned self] _ in
+                let currentKeyword = self.noteSearchBar.searchTextField.text
+                self.viewModel.searchNotes(
+                    isInitialFetch: true,
+                    searchText: currentKeyword ?? ""
+                )
+            })
             .store(in: &cancellables)
 
         self.noteSearchBar.searchTextField.textPublisher

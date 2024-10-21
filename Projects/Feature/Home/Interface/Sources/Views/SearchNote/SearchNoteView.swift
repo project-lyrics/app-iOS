@@ -27,6 +27,7 @@ final class SearchNoteView: UIView {
     
     private (set) var searchNoteTableView: UITableView = {
         let tableView = UITableView()
+        tableView.refreshControl = .init()
         tableView.showsVerticalScrollIndicator = false
         tableView.separatorStyle = .none
         tableView.rowHeight = 64
