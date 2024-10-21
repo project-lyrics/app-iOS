@@ -126,6 +126,8 @@ private extension SearchNoteCoordinator {
     func noteDetailDependencies(selectedNote: SearchedNote) -> NoteDetailViewModel {
         @Injected(.noteAPIService) var noteAPIService: NoteAPIServiceInterface
         let tokenStorage = TokenStorage()
+        
+        let getSongDetailUseCase = GetSongDetailUseCase(noteAPIService: noteAPIService)
 
         let getSongNotesUseCase = GetSongNotesUseCase(
             noteAPIService: noteAPIService,
@@ -141,7 +143,8 @@ private extension SearchNoteCoordinator {
         let logoutUseCase = LogoutUseCase(tokenStorage: tokenStorage)
 
         let viewModel = NoteDetailViewModel(
-            selectedNote: selectedNote,
+            songID: selectedNote.songID,
+            getSongDetailUseCase: getSongDetailUseCase,
             getSongNotesUseCase: getSongNotesUseCase,
             setNoteLikeUseCase: setNoteLikeUseCase,
             setBookmarkUseCase: setBookmarkUseCase,

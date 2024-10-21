@@ -47,7 +47,7 @@ public final class NoteDetailViewController: UIViewController, NoteMenuHandling,
     }
     
     enum Row: Hashable {
-        case song(SearchedNote)
+        case song(SongDetail)
         case emptyNote
         case note(Note)
     }
@@ -56,11 +56,11 @@ public final class NoteDetailViewController: UIViewController, NoteMenuHandling,
     private typealias NoteDetailSnapshot = NSDiffableDataSourceSnapshot<Section, Row>
     
     private lazy var noteDetailDataSource: NoteDetailDataSource = {
-        let songCellRegistration = UICollectionView.CellRegistration<SongCell, SearchedNote> { [weak self] cell, index, searchedNote in
+        let songCellRegistration = UICollectionView.CellRegistration<SongCell, SongDetail> { [weak self] cell, index, songDetail in
             cell.configure(
-                albumImageURL: try? searchedNote.albumImageUrl.asURL(),
-                songName: searchedNote.songName,
-                artistName: searchedNote.artistName
+                albumImageURL: try? songDetail.imageURL?.asURL(),
+                songName: songDetail.name,
+                artistName: songDetail.artist.name
             )
         }
         
@@ -130,7 +130,12 @@ public final class NoteDetailViewController: UIViewController, NoteMenuHandling,
             
             guard let viewModel = viewModel else { return }
             
-            noteDetailHeaderView.configureNoteCount(viewModel.selectedNote.noteCount)
+            viewModel.$songDetail
+                .map(\.?.noteCount)
+                .sink { fetchedNoteCount in
+                    noteDetailHeaderView.configureNoteCount(fetchedNoteCount ?? 0)
+                }
+                .store(in: &noteDetailHeaderView.cancellables)
             
             noteDetailHeaderView.includeNoteButton.publisher(for: .touchUpInside)
                 .map(\.isSelected)
@@ -200,14 +205,15 @@ public final class NoteDetailViewController: UIViewController, NoteMenuHandling,
     override public func viewDidLoad() {
         super.viewDidLoad()
         
-        self.setUpSongSection()
-        self.fetchSongNotes(
-            isInitial: true,
-            mustHaveLyrics: false
-        )
+        
+        self.fetchSongDetailThenNotes()
         self.bindUI()
         self.bindData()
         self.bindAction()
+    }
+    
+    private func fetchSongDetailThenNotes() {
+        self.viewModel.getSongDetailThenNotes()
     }
     
     private func fetchSongNotes(
@@ -217,11 +223,15 @@ public final class NoteDetailViewController: UIViewController, NoteMenuHandling,
         self.viewModel.getSongNotes(isInitial: isInitial)
     }
     
-    private func setUpSongSection() {
+    private func setUpSongSection(with songDetail: SongDetail) {
         var snapshot = noteDetailDataSource.snapshot()
-        snapshot.appendSections([.song])
         
-        snapshot.appendItems([.song(viewModel.selectedNote)], toSection: .song)
+        if !snapshot.sectionIdentifiers.contains(.song) {
+            snapshot.appendSections([.song])
+        }
+        let currentItem = snapshot.itemIdentifiers(inSection: .song)
+        snapshot.deleteItems(currentItem)
+        snapshot.appendItems([.song(songDetail)], toSection: .song)
         
         noteDetailDataSource.applySnapshotUsingReloadData(snapshot)
     }
@@ -326,6 +336,26 @@ private extension NoteDetailViewController {
                 }
             }
             .store(in: &cancellables)
+        
+        viewModel.$refreshState
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] refreshState in
+                switch refreshState {
+                case .failed(let error):
+                    self?.showAlert(
+                        title: error.errorMessageWithCode,
+                        message: nil,
+                        singleActionTitle: "확인"
+                    )
+
+                case .completed:
+                    self?.noteDetailCollectionView.refreshControl?.endRefreshing()
+
+                default:
+                    return
+                }
+            })
+            .store(in: &cancellables)
     }
     
     func bindAction() {
@@ -380,10 +410,27 @@ private extension NoteDetailViewController {
                     })
             }
             .store(in: &cancellables)
+        
+        noteDetailCollectionView.refreshControl?.isRefreshingPublisher
+            .filter { $0 }
+            .sink(receiveValue: { [weak self] _ in
+                self?.fetchSongDetailThenNotes()
+            })
+            .store(in: &cancellables)
     }
     
     func bindData() {
+        self.viewModel.$songDetail
+            .compactMap { $0 }
+            .sink { [weak self] songDetail in
+                self?.setUpSongSection(with: songDetail)
+            }
+            .store(in: &cancellables)
+        
         self.viewModel.$fetchedNotes
+            // songDetail초기 값이 nil이기 때문에 snapshot적용이 안됨.
+            // 이와 snapshot타이밍을 맞추기 위해 .dropFirst로 초기값을 drop
+            .dropFirst()
             .sink { [weak self] fetchedNotes in
                 self?.updateSnapshot(notes: fetchedNotes)
             }
@@ -404,17 +451,17 @@ private extension NoteDetailViewController {
 private extension NoteDetailViewController.Row {
     func dequeueConfiguredReusableCell(
         collectionView: UICollectionView,
-        songCellRegistration: UICollectionView.CellRegistration<SongCell, SearchedNote>,
+        songCellRegistration: UICollectionView.CellRegistration<SongCell, SongDetail>,
         emptyNoteCellRegistration: UICollectionView.CellRegistration<EmptyNoteCell, Void>,
         noteCellRegistration: UICollectionView.CellRegistration<NoteCell, Note>,
         indexPath: IndexPath
     ) -> UICollectionViewCell {
         switch self {
-        case .song(let searchedNote):
+        case .song(let songDetail):
             return collectionView.dequeueConfiguredReusableCell(
                 using: songCellRegistration,
                 for: indexPath,
-                item: searchedNote
+                item: songDetail
             )
         case .note(let note):
             return collectionView.dequeueConfiguredReusableCell(

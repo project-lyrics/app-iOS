@@ -35,6 +35,7 @@ public enum FeelinAPI<R> {
     case patchNote(noteID: Int, request: PatchNoteRequest)
     case searchSongs(cursor: Int, size: Int, query: String, artistID: Int)
     case getSearchedNotes(pageNumber: Int, pageSize: Int, query: String)
+    case getSongDetail(songID: Int)
     case getSongNotes(cursor: Int?, size: Int, hasLyrics: Bool, songID: Int)
     case getArtistNotes(cursor: Int?, size: Int, hasLyrics: Bool, artistID: Int)
     case getNoteWithComments(noteID: Int)
@@ -299,6 +300,9 @@ extension FeelinAPI: HTTPNetworking {
         case .getSearchedNotes:
             return "/api/v1/songs/search"
             
+        case .getSongDetail(let songID):
+            return "/api/v1/songs/\(songID)"
+            
         case .getSongNotes:
             return "/api/v1/notes/songs"
             
@@ -359,6 +363,7 @@ extension FeelinAPI: HTTPNetworking {
              .getFavoriteArtistsHavingNotes,
              .searchSongs,
              .getSearchedNotes,
+             .getSongDetail,
              .getSongNotes,
              .getNoteWithComments,
              .getPersonalNotifications,
