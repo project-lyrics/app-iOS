@@ -60,7 +60,8 @@ public final class DeleteUserViewController: UIViewController {
 
         infoConfirmationButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in
-                self?.deleteUserButton.isEnabled = true
+                guard let self = self else { return }
+                self.deleteUserButton.isEnabled = !self.deleteUserButton.isEnabled
             }
             .store(in: &cancellables)
 

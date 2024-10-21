@@ -296,10 +296,11 @@ private extension MyPageCoordinator {
 
     func deleteUserDependencies() -> DeleteUserViewModel {
         @Injected(.userProfileAPIService) var userProfileAPIService: UserProfileAPIServiceInterface
+        let tokenStorage = TokenStorage()
 
         let deleteUserUseCase: DeleteUserUseCaseInterface = DeleteUserUseCase(
             userProfileAPIService: userProfileAPIService,
-            tokenStorage: TokenStorage()
+            tokenStorage: tokenStorage
         )
         let viewModel = DeleteUserViewModel(
             deleteUserUseCase: deleteUserUseCase
