@@ -162,6 +162,14 @@ public struct NoteAPIService: NoteAPIServiceInterface {
             .eraseToAnyPublisher()
     }
     
+    public func getSongDetail(songID: Int) -> AnyPublisher<GetSongDetailResponse, NoteError> {
+        let endpoint = FeelinAPI<GetSongDetailResponse>.getSongDetail(songID: songID)
+        
+        return networkProvider.request(endpoint)
+            .mapError(NoteError.init)
+            .eraseToAnyPublisher()
+    }
+    
     public func getSongNotes(
         currentPage: Int?,
         numberOfNotes: Int,

@@ -99,13 +99,16 @@ public final class LoginViewController: UIViewController {
 
                 case .failure(let error):
                     switch error {
-                    case let .feelinError(.userNotFound((accessToken, oAuthType))):
+                    case let .userNotFound(userNotFoundModel):
                         let model = UserSignUpEntity(
-                            socialAccessToken: accessToken,
-                            oAuthType: oAuthType
+                            socialAccessToken: userNotFoundModel.accessToken,
+                            oAuthType: userNotFoundModel.oAuthType
                         )
                         
                         self?.coordinator?.pushUseAgreementViewController(model: model)
+                    
+                    case let .feelinAPIError(feelinAPIError):
+                        self?.showAlert(title: "로그인에 실패했어요.네트워크 환경을 점검해 주세요.[\(feelinAPIError.errorCode)]", message: "", singleActionTitle: "확인")
                         
                     case let .networkError(error):
                         self?.showAlert(title: "로그인에 실패했어요.네트워크 환경을 점검해 주세요.[\(error.errorCode)]", message: "", singleActionTitle: "확인")

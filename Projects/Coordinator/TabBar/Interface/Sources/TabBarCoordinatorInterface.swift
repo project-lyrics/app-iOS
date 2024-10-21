@@ -37,7 +37,7 @@ public final class TabBarCoordinator: Coordinator {
 
 extension TabBarCoordinator: CoordinatorDelegate {
     public func didFinish(childCoordinator: Coordinator) {
-        self.navigationController.popToRootViewController(animated: false)
+        self.navigationController.popToRootViewController(animated: true)
         self.finish()
     }
 }

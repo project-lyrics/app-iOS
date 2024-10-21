@@ -1,6 +1,6 @@
 //
 //  Publisher+.swift
-//  CoreNetworkInterface
+//  CoreNetwork
 //
 //  Created by Derrick kim on 4/7/24.
 //
@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 import CoreNetworkInterface
+import Shared
 
 public extension Publisher where Output == DataTaskResult {
     func validateResponse(_ decoder: JSONDecoder = JSONDecoder()) -> AnyPublisher<DataTaskResult, NetworkError> {

@@ -10,8 +10,9 @@ import Foundation
 import Core
 import Shared
 
-public enum UserProfileError: LocalizedError {
+public enum UserProfileError: LocalizedError, Equatable {
     case networkError(NetworkError)
+    case feelinAPIError(FeelinAPIError)
     case keychainError(KeychainError)
     case bundleError(BundleError)
     case unknown(errorDescription: String)
@@ -19,6 +20,9 @@ public enum UserProfileError: LocalizedError {
     public var errorDescription: String {
         switch self {
         case .networkError(let error):
+            return error.errorMessage
+            
+        case .feelinAPIError(let error):
             return error.errorMessage
             
         case .bundleError(let error):
@@ -31,19 +35,35 @@ public enum UserProfileError: LocalizedError {
             return errorDescription
         }
     }
+    
+    public var errorMessage: String {
+        return errorDescription
+    }
 
     public var errorCode: String? {
-        guard case .networkError(let networkError) = self,
-              case .feelinAPIError(let feelinAPIError) = networkError else {
+        switch self {
+        case .networkError(let networkError):
+            return networkError.errorCode
+            
+        case .feelinAPIError(let feelinAPIError):
+            return feelinAPIError.errorCode
+            
+        default:
             return nil
         }
-
-        return feelinAPIError.errorCode
+    }
+    
+    public var errorMessageWithCode: String {
+        return errorMessage + "\n에러코드(\(errorCode ?? "nil"))"
     }
 
     public init(error: Error) {
         if let networkError = error as? NetworkError {
-            self = .networkError(networkError)
+            if case .feelinAPIError(let feelinAPIError) = networkError {
+                self = .feelinAPIError(feelinAPIError)
+            } else {
+                self = .networkError(networkError)
+            }
         } else if let keychainError = error as? KeychainError {
             self = .keychainError(keychainError)
         } else if let bundleError = error as? BundleError {

@@ -59,6 +59,14 @@ extension SearchNoteCoordinator: SearchNoteViewControllerDelegate,
                                  NoteCommentsViewControllerDelegate,
                                  EditNoteViewControllerDelegate,
                                  UserLinkedWebViewControllerDelegate {
+    public func didFinish() {
+        didFinish(childCoordinator: self)
+    }
+    
+    public func didFinish(childCoordinator: Coordinator) {
+        delegate?.didFinish(childCoordinator: self)
+    }
+    
     public func pushNoteDetailViewController(selectedNote: SearchedNote) {
         let viewModel = noteDetailDependencies(selectedNote: selectedNote)
         let viewController = NoteDetailViewController(viewModel: viewModel)
@@ -117,6 +125,9 @@ private extension SearchNoteCoordinator {
 
     func noteDetailDependencies(selectedNote: SearchedNote) -> NoteDetailViewModel {
         @Injected(.noteAPIService) var noteAPIService: NoteAPIServiceInterface
+        let tokenStorage = TokenStorage()
+        
+        let getSongDetailUseCase = GetSongDetailUseCase(noteAPIService: noteAPIService)
 
         let getSongNotesUseCase = GetSongNotesUseCase(
             noteAPIService: noteAPIService,
@@ -128,13 +139,17 @@ private extension SearchNoteCoordinator {
         let setBookmarkUseCase = SetBookmarkUseCase(noteAPIService: noteAPIService)
 
         let deleteNoteUseCase = DeleteNoteUseCase(noteAPIService: noteAPIService)
+        
+        let logoutUseCase = LogoutUseCase(tokenStorage: tokenStorage)
 
         let viewModel = NoteDetailViewModel(
-            selectedNote: selectedNote,
+            songID: selectedNote.songID,
+            getSongDetailUseCase: getSongDetailUseCase,
             getSongNotesUseCase: getSongNotesUseCase,
             setNoteLikeUseCase: setNoteLikeUseCase,
             setBookmarkUseCase: setBookmarkUseCase,
-            deleteNoteUseCase: deleteNoteUseCase
+            deleteNoteUseCase: deleteNoteUseCase,
+            logoutUseCase: logoutUseCase
         )
 
         return viewModel
@@ -161,6 +176,7 @@ private extension SearchNoteCoordinator {
 
         @Injected(.noteAPIService) var noteAPIService: NoteAPIServiceInterface
         @Injected(.commentAPIService) var commentAPIService: CommentAPIServiceInterface
+        let tokenStorage = TokenStorage()
 
         let setNoteLikeUseCase = SetNoteLikeUseCase(noteAPIService: noteAPIService)
         let setBookmarkUseCase = SetBookmarkUseCase(noteAPIService: noteAPIService)
@@ -168,6 +184,7 @@ private extension SearchNoteCoordinator {
         let getNoteWithCommentsUseCase = GetNoteWithCommentsUseCase(commentAPIService: commentAPIService)
         let writeCommentUseCase = WriteCommentUseCase(commentAPIService: commentAPIService)
         let deleteCommentUseCase = DeleteCommentUseCase(commentAPIService: commentAPIService)
+        let logoutUseCase = LogoutUseCase(tokenStorage: tokenStorage)
 
         let viewModel = NoteCommentsViewModel(
             noteID: noteID,
@@ -176,7 +193,8 @@ private extension SearchNoteCoordinator {
             deleteNoteUseCase: deleteNoteUseCase,
             getNoteWithCommentsUseCase: getNoteWithCommentsUseCase,
             writeCommentUseCase: writeCommentUseCase,
-            deleteCommentUseCase: deleteCommentUseCase
+            deleteCommentUseCase: deleteCommentUseCase, 
+            logoutUseCase: logoutUseCase
         )
 
         return viewModel

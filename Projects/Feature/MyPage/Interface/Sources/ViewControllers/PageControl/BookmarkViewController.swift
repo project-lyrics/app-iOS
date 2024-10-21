@@ -33,6 +33,10 @@ public final class BookmarkViewController: UIViewController,
 
     @KeychainWrapper<UserInformation>(.userInfo)
     public var userInfo
+    
+    private var isLoggedIn: Bool {
+        return self.userInfo?.userID != nil
+    }
 
     // MARK: - NoteMenu Subjects
 
@@ -93,8 +97,10 @@ public final class BookmarkViewController: UIViewController,
     private func setUpDefault() {
         view.backgroundColor = Colors.background
         
-        if userInfo != nil {
+        if self.isLoggedIn {
             viewModel.getFavoriteArtists()
+        } else {
+            self.noteDetailCollectionView.refreshControl = nil
         }
     }
 
@@ -102,7 +108,9 @@ public final class BookmarkViewController: UIViewController,
         viewModel.$error
             .compactMap { $0 }
             .sink { [weak self] error in
-                self?.coordinator?.presentErrorAlert(message: error.errorDescription)
+                self?.coordinator?.presentErrorAlert(
+                    message: error.errorMessageWithCode
+                )
             }
             .store(in: &cancellables)
 
@@ -111,7 +119,9 @@ public final class BookmarkViewController: UIViewController,
             .sink(receiveValue: { [weak self] refreshState in
                 switch refreshState {
                 case .failed(let error):
-                    self?.coordinator?.presentErrorAlert(message: error.errorDescription)
+                    self?.coordinator?.presentErrorAlert(
+                        message: error.errorMessageWithCode
+                    )
 
                 case .completed:
                     self?.noteDetailCollectionView.refreshControl?.endRefreshing()
@@ -145,8 +155,13 @@ public final class BookmarkViewController: UIViewController,
             .store(in: &cancellables)
 
         noteDetailCollectionView.didScrollToBottomPublisher()
-            .sink { [weak viewModel] in
-                viewModel?.getMoreMyNotesByBookmark()
+            .sink { [weak self] in
+                guard let self = self else { return }
+                
+                if self.isLoggedIn {
+                    self.viewModel.getMoreMyNotesByBookmark()
+                }
+                
             }
             .store(in: &cancellables)
 
@@ -213,7 +228,9 @@ public final class BookmarkViewController: UIViewController,
 
         let noteCellRegistration = UICollectionView.CellRegistration<NoteCell, Note> { [weak self] cell, indexPath, note in
 
-            cell.configure(with: note)
+            cell.configure(
+                with: note
+            )
 
             cell.likeNoteButton.publisher(for: .touchUpInside)
                 .sink { control in

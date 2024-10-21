@@ -1,8 +1,8 @@
 //
 //  FeelinAPIError.swift
-//  CoreNetworkInterface
+//  SharedUtil
 //
-//  Created by 황인우 on 7/6/24.
+//  Created by 황인우 on 10/19/24.
 //
 
 import Foundation

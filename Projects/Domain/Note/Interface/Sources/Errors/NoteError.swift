@@ -10,37 +10,51 @@ import Foundation
 import Core
 import Shared
 
-public enum NoteError: LocalizedError {
+public enum NoteError: LocalizedError, Equatable {
+    case feelinAPIError(FeelinAPIError)
     case networkError(NetworkError)
     case keychainError(KeychainError)
     case unknown(errorDescription: String)
     
-    public var errorDescription: String {
+    public var errorMessage: String {
         switch self {
         case .networkError(let error):
             return error.errorMessage
             
         case .keychainError(let error):
-            return error.errorDescription
+            return error.errorMessage
             
         case .unknown(let errorDescription):
             return errorDescription
+            
+        case .feelinAPIError(let error):
+            return error.errorMessage
         }
     }
     
     public var errorCode: String? {
-        guard case .networkError(let networkError) = self,
-              case .feelinAPIError(let feelinAPIError) = networkError else {
+        switch self {
+        case .feelinAPIError(let feelinAPIError):
+            return feelinAPIError.errorCode
+        case .networkError(let networkError):
+            return networkError.errorCode
+        default:
             return nil
         }
-        
-        return feelinAPIError.errorCode
+    }
+    
+    public var errorMessageWithCode: String {
+        return errorMessage + "\n에러코드(\(errorCode ?? "nil"))"
     }
     
     
     public init(error: Error) {
         if let networkError = error as? NetworkError {
-            self = .networkError(networkError)
+            if case .feelinAPIError(let feelinAPIError) = networkError {
+                self = .feelinAPIError(feelinAPIError)
+            } else {
+                self = .networkError(networkError)
+            }
         } else if let keychainError = error as? KeychainError {
             self = .keychainError(keychainError)
         } else {

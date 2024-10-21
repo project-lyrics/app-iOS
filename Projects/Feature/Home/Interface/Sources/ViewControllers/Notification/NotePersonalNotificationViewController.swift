@@ -25,6 +25,15 @@ public final class NotePersonalNotificationViewController: UIViewController {
     private let noteNotificationView = NoteNotificationView()
     private var cancellables: Set<AnyCancellable> = .init()
     
+    // MARK: - Keychain
+
+    @KeychainWrapper<UserInformation>(.userInfo)
+    public var userInfo
+    
+    private var isLoggedIn: Bool {
+        return self.userInfo?.userID != nil
+    }
+    
     // MARK: - Diffable DataSource
     
     private typealias NoteNotificationDataSource = UICollectionViewDiffableDataSource<NotificationListSection, NotificationListRow>
@@ -68,7 +77,6 @@ public final class NotePersonalNotificationViewController: UIViewController {
     
     public init(viewModel: NotePersonalNotificationViewModel) {
         self.viewModel = viewModel
-        
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -92,7 +100,10 @@ public final class NotePersonalNotificationViewController: UIViewController {
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        viewModel.getNotifications(isInitial: true)
+        
+        if self.isLoggedIn {
+            viewModel.getNotifications(isInitial: true)
+        }
     }
 
     // MARK: - UI Settings
@@ -100,6 +111,10 @@ public final class NotePersonalNotificationViewController: UIViewController {
     private func setUpDefault() {
         self.view.backgroundColor = Colors.background
         self.noteNotificationCollectionView.delegate = self
+        
+        if !self.isLoggedIn {
+            self.noteNotificationCollectionView.refreshControl = nil
+        }
     }
     
     private func updateNotificationCollectionView(with noteNotifications: [NoteNotification]) {
@@ -171,7 +186,7 @@ private extension NotePersonalNotificationViewController {
             .sink { [weak self] refreshState in
                 switch refreshState {
                 case .failed(let error):
-                    self?.coordinator?.presentErrorAlert(message: error.errorDescription)
+                    self?.coordinator?.presentErrorAlert(message: error.errorMessageWithCode)
 
                 case .completed:
                     self?.noteNotificationCollectionView.refreshControl?.endRefreshing()
@@ -183,9 +198,10 @@ private extension NotePersonalNotificationViewController {
             .store(in: &cancellables)
         
         viewModel.$error
+            .receive(on: DispatchQueue.main)
             .compactMap { $0 }
             .sink { [weak self] error in
-                self?.coordinator?.presentErrorAlert(message: error.errorDescription)
+                self?.coordinator?.presentErrorAlert(message: error.errorMessageWithCode)
             }
             .store(in: &cancellables)
     }
@@ -193,8 +209,12 @@ private extension NotePersonalNotificationViewController {
     func bindAction() {
         noteNotificationCollectionView
             .didScrollToBottomPublisher()
-            .sink { [weak viewModel] in
-                viewModel?.getNotifications(isInitial: false)
+            .sink { [weak self] in
+                guard let self = self else { return }
+                if self.isLoggedIn {
+                    self.viewModel.getNotifications(isInitial: false)
+                    
+                }
             }
             .store(in: &cancellables)
         

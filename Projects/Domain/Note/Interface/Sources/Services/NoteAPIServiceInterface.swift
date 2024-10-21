@@ -57,6 +57,8 @@ public protocol NoteAPIServiceInterface {
         songID: Int
     ) -> AnyPublisher<GetNotesResponse, NoteError>
     
+    func getSongDetail(songID: Int) -> AnyPublisher<GetSongDetailResponse, NoteError>
+    
     func getArtistNotes(
         currentPage: Int?,
         numberOfNotes: Int,

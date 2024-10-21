@@ -5,6 +5,8 @@
 //  Created by Derrick kim on 4/7/24.
 //
 
+import Shared
+
 import Foundation
 
 public enum NetworkError: Error, Equatable {
@@ -35,6 +37,8 @@ public enum NetworkError: Error, Equatable {
     public var errorCode: String {
         switch self {
         case let .feelinAPIError(feelinAPiError):       return feelinAPiError.errorCode
+        case let .clientError(clientError):             return "\(clientError.errorCode)"
+        case let .serverError(serverError):             return "\(serverError.errorCode)"
         default:                                        return ""
         }
     }
@@ -115,6 +119,10 @@ public enum NetworkError: Error, Equatable {
             case .unavailableForLegalReasons:               return "Unavailable For Legal Reasons"
             }
         }
+        
+        public var errorCode: Int {
+            return self.rawValue
+        }
     }
 
     public enum ServerError: Int, Error {
@@ -144,6 +152,10 @@ public enum NetworkError: Error, Equatable {
             case .notExtended:                              return "Not Extended"
             case .networkAuthenticationRequired:            return "Network Authentication Required"
             }
+        }
+        
+        public var errorCode: Int {
+            return self.rawValue
         }
     }
 

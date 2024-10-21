@@ -11,12 +11,6 @@ import Combine
 import Shared
 import Domain
 
-enum LogoutResult {
-    case none
-    case success
-    case failure(UserProfileError)
-}
-
 public final class SettingViewModel {
     private var cancellables: Set<AnyCancellable> = .init()
     

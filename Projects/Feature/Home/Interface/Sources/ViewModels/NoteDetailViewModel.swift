@@ -11,32 +11,40 @@ import Combine
 import Foundation
 
 final public class NoteDetailViewModel {
-    
+    @Published private (set) var songDetail: SongDetail?
     @Published private (set) var fetchedNotes: [Note] = []
     @Published var mustHaveLyrics: Bool = false
     @Published private (set) var error: NoteError?
+    @Published private (set) var logoutResult: LogoutResult = .none
+    @Published private (set) var refreshState: RefreshState<NoteError> = .idle
     
     private var cancellables: Set<AnyCancellable> = .init()
     
-    let selectedNote: SearchedNote
+    private let songID: Int
     
+    private let getSongDetailUseCase: GetSongDetailUseCaseInterface
     private let getSongNotesUseCase: GetSongNotesUseCaseInterface
     private let setNoteLikeUseCase: SetNoteLikeUseCaseInterface
     private let setBookmarkUseCase: SetBookmarkUseCaseInterface
     private let deleteNoteUseCase: DeleteNoteUseCaseInterface
+    private let logoutUseCase: LogoutUseCaseInterface
     
     public init(
-        selectedNote: SearchedNote,
+        songID: Int,
+        getSongDetailUseCase: GetSongDetailUseCaseInterface,
         getSongNotesUseCase: GetSongNotesUseCaseInterface,
         setNoteLikeUseCase: SetNoteLikeUseCaseInterface,
         setBookmarkUseCase: SetBookmarkUseCaseInterface,
-        deleteNoteUseCase: DeleteNoteUseCaseInterface
+        deleteNoteUseCase: DeleteNoteUseCaseInterface,
+        logoutUseCase: LogoutUseCaseInterface
     ) {
-        self.selectedNote = selectedNote
+        self.songID = songID
+        self.getSongDetailUseCase = getSongDetailUseCase
         self.getSongNotesUseCase = getSongNotesUseCase
         self.setNoteLikeUseCase = setNoteLikeUseCase
         self.setBookmarkUseCase = setBookmarkUseCase
         self.deleteNoteUseCase = deleteNoteUseCase
+        self.logoutUseCase = logoutUseCase
         
         
         // mustHaveLyrics가 변경될 때 데이터를 새로 가져오는 로직
@@ -51,12 +59,60 @@ final public class NoteDetailViewModel {
             .store(in: &cancellables)
     }
     
+    func getSongDetail() {
+        self.getSongDetailUseCase.execute(songID: songID)
+            .receive(on: DispatchQueue.main)
+            .mapToResult()
+            .sink { [weak self] result in
+                switch result {
+                case .success(let songDetail):
+                    self?.songDetail = songDetail
+                    
+                case .failure(let error):
+                    self?.error = error
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    func getSongDetailThenNotes() {
+        self.refreshState = .refreshing
+        
+        self.getSongDetailUseCase.execute(songID: songID)
+            .receive(on: DispatchQueue.main)
+            .flatMap { [weak self] fetchedSongDetail -> AnyPublisher<[Note], NoteError> in
+                guard let self = self else {
+                    return Empty().eraseToAnyPublisher()
+                }
+                self.songDetail = fetchedSongDetail
+                
+                return self.getSongNotesUseCase.execute(
+                    isInitial: true,
+                    perPage: 10,
+                    mustHaveLyrics: self.mustHaveLyrics,
+                    songID: self.songID
+                )
+            }
+            .mapToResult()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] result in
+                switch result {
+                case .success(let fetchedNotes):
+                    self?.fetchedNotes = fetchedNotes
+                    self?.refreshState = .completed
+                case .failure(let error):
+                    self?.error = error
+                    self?.refreshState = .failed(error)
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
     func getSongNotes(
         isInitial: Bool,
         mustHaveLyrics: Bool? = nil,
         perPage: Int = 10
     ) {
-        let songID = self.selectedNote.songID
         
         self.getSongNotesUseCase.execute(
             isInitial: isInitial,
@@ -79,7 +135,21 @@ final public class NoteDetailViewModel {
             }
         }
         .store(in: &cancellables)
-        
+    }
+    
+    func logout() {
+        self.logoutUseCase.execute()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] result in
+                switch result {
+                case .success:
+                    self?.logoutResult = .success
+                    
+                case .failure(let error):
+                    self?.logoutResult = .failure(error)
+                }
+            }
+            .store(in: &cancellables)
     }
 }
 

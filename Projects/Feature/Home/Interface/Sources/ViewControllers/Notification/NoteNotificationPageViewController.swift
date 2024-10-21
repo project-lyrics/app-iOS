@@ -24,6 +24,7 @@ public final class NoteNotificationPageViewController: ButtonBarPagerTabStripVie
         settings.style.buttonBarBackgroundColor = Colors.background
         settings.style.buttonBarItemTitleColor = Colors.gray03
         settings.style.selectedBarHeight = 2
+        settings.style.selectedBarItemTitleColor = Colors.primary
         settings.style.selectedBarBackgroundColor = Colors.primary
         settings.style.buttonBarItemFont = SharedDesignSystemFontFamily.Pretendard.semiBold.font(size: 16)
 

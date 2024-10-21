@@ -50,6 +50,7 @@ final class NoteDetailView: UIView {
             frame: .zero,
             collectionViewLayout: compositionalLayout
         )
+        collectionView.refreshControl = .init()
         
         collectionView.backgroundColor = Colors.background
         collectionView.showsVerticalScrollIndicator = false

@@ -16,6 +16,7 @@ public final class NoteCommentsViewModel {
     @Published private (set) var error: NoteError?
     @Published private (set) var refreshState: RefreshState<NoteError> = .idle
     @Published private (set) var commentsCount = 0
+    @Published private (set) var logoutResult: LogoutResult = .none
     
     private var cancellables: Set<AnyCancellable> = .init()
     private let noteID: Int
@@ -25,6 +26,7 @@ public final class NoteCommentsViewModel {
     private let getNoteWithCommentsUseCase: GetNoteWithCommentsUseCaseInterface
     private let writeCommentUseCase: WriteCommentUseCaseInterface
     private let deleteCommentUseCase: DeleteCommentUseCaseInterface
+    private let logoutUseCase: LogoutUseCaseInterface
     
     public init(
         noteID: Int,
@@ -33,7 +35,8 @@ public final class NoteCommentsViewModel {
         deleteNoteUseCase: DeleteNoteUseCaseInterface,
         getNoteWithCommentsUseCase: GetNoteWithCommentsUseCaseInterface,
         writeCommentUseCase: WriteCommentUseCaseInterface,
-        deleteCommentUseCase: DeleteCommentUseCaseInterface
+        deleteCommentUseCase: DeleteCommentUseCaseInterface,
+        logoutUseCase: LogoutUseCaseInterface
     ) {
         self.noteID = noteID
         self.setNoteLikeUseCase = setNoteLikeUseCase
@@ -42,6 +45,7 @@ public final class NoteCommentsViewModel {
         self.getNoteWithCommentsUseCase = getNoteWithCommentsUseCase
         self.writeCommentUseCase = writeCommentUseCase
         self.deleteCommentUseCase = deleteCommentUseCase
+        self.logoutUseCase = logoutUseCase
     }
     
     func fetchNoteWithComments() {
@@ -104,6 +108,21 @@ public final class NoteCommentsViewModel {
             }
         }
         .store(in: &cancellables)
+    }
+    
+    func logout() {
+        self.logoutUseCase.execute()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] result in
+                switch result {
+                case .success:
+                    self?.logoutResult = .success
+                    
+                case .failure(let error):
+                    self?.logoutResult = .failure(error)
+                }
+            }
+            .store(in: &cancellables)
     }
 }
 

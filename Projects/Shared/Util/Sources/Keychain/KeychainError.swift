@@ -72,4 +72,8 @@ public enum KeychainError: LocalizedError, Equatable {
             }
         }
     }
+    
+    public var errorMessage: String {
+        return errorDescription
+    }
 }

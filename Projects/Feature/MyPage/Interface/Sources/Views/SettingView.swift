@@ -32,6 +32,7 @@ final class SettingView: UIView {
 
     lazy var tableView: UITableView = {
         let tableView = UITableView()
+        tableView.backgroundColor = Colors.background
         tableView.showsVerticalScrollIndicator = false
         tableView.isScrollEnabled = false
         tableView.separatorStyle = .none

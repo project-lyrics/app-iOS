@@ -36,7 +36,6 @@ public struct GetFavoriteArtistsHavingNotesUseCase: GetFavoriteArtistsHavingNote
 
                 return entity
             }
-            .mapError(NoteError.init)
             .eraseToAnyPublisher()
     }
 }

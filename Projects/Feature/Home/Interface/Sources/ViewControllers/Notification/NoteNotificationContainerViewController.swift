@@ -21,8 +21,10 @@ public protocol NoteNotificationContainerViewControllerDelegate: AnyObject {
 public final class NoteNotificationContainerViewController: UIViewController {
     public weak var coordinator: NoteNotificationContainerViewControllerDelegate?
     private var cancellables: Set<AnyCancellable> = .init()
+    
+    private let errorAlertSubject: PassthroughSubject<NotificationError, Never> = .init()
 
-    private let noteNotificationPageViewController = NoteNotificationPageViewController()
+    private let noteNotificationPageViewController: NoteNotificationPageViewController = .init()
 
     // MARK: - UI
 
@@ -73,6 +75,7 @@ public final class NoteNotificationContainerViewController: UIViewController {
     override public func viewDidLoad() {
         super.viewDidLoad()
         self.setUpDefault()
+        self.bindUI()
         self.bindAction()
     }
 
@@ -91,6 +94,18 @@ public final class NoteNotificationContainerViewController: UIViewController {
 
             flex.addItem(noteNotificationPageViewController.view)
         }
+    }
+    
+    private func bindUI() {
+        self.errorAlertSubject.eraseToAnyPublisher()
+            .sink { [weak self] error in
+                self?.showAlert(
+                    title: error.errorMessageWithCode,
+                    message: nil,
+                    singleActionTitle: "확인"
+                )
+            }
+            .store(in: &cancellables)
     }
 
     private func bindAction() {

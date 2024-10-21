@@ -13,6 +13,7 @@ import Foundation
 final public class SearchNoteViewModel {
     @Published private (set) var searchedNotes: [SearchedNote] = []
     @Published private (set) var error: NoteError?
+    @Published private (set) var refreshState: RefreshState<NoteError> = .idle
     
     private var cancellables: Set<AnyCancellable> = .init()
     private let getSearchedNotesUseCase: GetSearchedNotesUseCaseInterface
@@ -26,6 +27,8 @@ final public class SearchNoteViewModel {
         perPage: Int = 10,
         searchText: String = ""
     ) {
+        self.refreshState = .refreshing
+        
         self.getSearchedNotesUseCase.execute(
             isInitial: isInitialFetch,
             perPage: perPage,
@@ -41,9 +44,11 @@ final public class SearchNoteViewModel {
                 } else {
                     self?.searchedNotes.append(contentsOf: searchedNotes)
                 }
+                self?.refreshState = .completed
                 
             case .failure(let error):
                 self?.error = error
+                self?.refreshState = .failed(error)
             }
         }
         .store(in: &cancellables)

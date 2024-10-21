@@ -136,7 +136,7 @@ private extension ArtistSelectViewController {
             .compactMap { $0 }
             .sink { [weak self] error in
                 self?.showAlert(
-                    title: error.localizedDescription,
+                    title: error.errorMessage,
                     message: nil,
                     singleActionTitle: "확인"
                 )
@@ -207,13 +207,12 @@ private extension ArtistSelectViewController {
             .sink(receiveValue: { [weak self] result in
                 switch result {
                 case .success:
-                    self?.userInfo?.didEnterFirstFavoriteArtistsListPage = true
                     self?.coordinator?.didFinishSelectingInitialFavoriteArtists()
                     self?.coordinator?.dismissViewController()
                     
                 case .failure(let error):
                     self?.showAlert(
-                        title: error.localizedDescription,
+                        title: error.errorMessage,
                         message: nil,
                         singleActionTitle: "확인"
                     )
@@ -229,7 +228,6 @@ private extension ArtistSelectViewController {
                     leftActionTitle: "취소",
                     rightActionTitle: "나가기",
                     rightActionCompletion: {
-                        self.userInfo?.didEnterFirstFavoriteArtistsListPage = true
                         self.coordinator?.dismissViewController()
                     }
                 )
