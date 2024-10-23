@@ -33,7 +33,7 @@ public final class BookmarkViewController: UIViewController,
 
     @KeychainWrapper<UserInformation>(.userInfo)
     public var userInfo
-    
+
     private var isLoggedIn: Bool {
         return self.userInfo?.userID != nil
     }
@@ -90,18 +90,21 @@ public final class BookmarkViewController: UIViewController,
         bindAction()
     }
 
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if self.isLoggedIn {
+            viewModel.getFavoriteArtists()
+        } else {
+            self.noteDetailCollectionView.refreshControl = nil
+        }
+    }
+
     public func indicatorInfo(for pagerTabStripController: FeelinPagerTabViewController) -> IndicatorInfo {
         return IndicatorInfo(title: "북마크")
     }
 
     private func setUpDefault() {
         view.backgroundColor = Colors.background
-        
-        if self.isLoggedIn {
-            viewModel.getFavoriteArtists()
-        } else {
-            self.noteDetailCollectionView.refreshControl = nil
-        }
     }
 
     private func bindUI() {
@@ -157,11 +160,11 @@ public final class BookmarkViewController: UIViewController,
         noteDetailCollectionView.didScrollToBottomPublisher()
             .sink { [weak self] in
                 guard let self = self else { return }
-                
+
                 if self.isLoggedIn {
                     self.viewModel.getMoreMyNotesByBookmark()
                 }
-                
+
             }
             .store(in: &cancellables)
 
@@ -179,7 +182,7 @@ public final class BookmarkViewController: UIViewController,
 
                 case .note(let note):
                     coordinator?.pushNoteCommentsViewController(noteID: note.id)
-                
+
                 case .emptyNote:
                     break
                 case .requiredLogin:
@@ -240,7 +243,7 @@ public final class BookmarkViewController: UIViewController,
                     )
                 }
                 .store(in: &cell.cancellables)
-            
+
             cell.commentButton.publisher(for: .touchUpInside)
                 .sink { [weak self] _ in
                     self?.coordinator?.pushNoteCommentsViewController(noteID: note.id)

@@ -90,18 +90,22 @@ public final class MyNoteViewController: UIViewController,
         bindAction()
     }
 
-    public func indicatorInfo(for pagerTabStripController: FeelinPagerTabViewController) -> IndicatorInfo {
-        return IndicatorInfo(title: "작성글")
-    }
-
-    private func setUpDefault() {
-        view.backgroundColor = Colors.background
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
 
         if self.isLoggedIn {
             viewModel.getFavoriteArtists()
         } else {
             self.noteDetailCollectionView.refreshControl = nil
         }
+    }
+
+    public func indicatorInfo(for pagerTabStripController: FeelinPagerTabViewController) -> IndicatorInfo {
+        return IndicatorInfo(title: "작성글")
+    }
+
+    private func setUpDefault() {
+        view.backgroundColor = Colors.background
     }
 
     private func bindUI() {
