@@ -21,15 +21,19 @@ final class SongCollectionViewCell: UICollectionViewCell, Reusable {
     private let songIconImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = 4
 
         return imageView
     }()
 
-    private let songLabel = {
+    private let songNameLabel = {
         let label = UILabel()
         label.font = SharedDesignSystemFontFamily.Pretendard.medium.font(size: 14)
         label.textColor = Colors.gray08
         label.textAlignment = .left
+        label.lineBreakMode = .byTruncatingTail
+        label.numberOfLines = 1
 
         return label
     }()
@@ -38,7 +42,8 @@ final class SongCollectionViewCell: UICollectionViewCell, Reusable {
         let label = UILabel()
         label.font = SharedDesignSystemFontFamily.Pretendard.medium.font(size: 12)
         label.textColor = Colors.gray04
-        label.textAlignment = .left
+        label.numberOfLines = 1
+        label.lineBreakMode = .byTruncatingTail
 
         return label
     }()
@@ -53,6 +58,7 @@ final class SongCollectionViewCell: UICollectionViewCell, Reusable {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+        self.setUpColor()
         self.setUpLayout()
     }
 
@@ -68,28 +74,43 @@ final class SongCollectionViewCell: UICollectionViewCell, Reusable {
         flexContainer.flex.layout()
     }
 
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        if traitCollection.userInterfaceStyle != previousTraitCollection?.userInterfaceStyle {
+            self.selectedBackgroundView = UIImageView(image: Colors.gray01.image())
+        }
+    }
+
+    private func setUpColor() {
+        self.selectedBackgroundView = UIImageView(image: Colors.gray01.image())
+    }
+
     private func setUpLayout() {
         self.addSubview(flexContainer)
 
         flexContainer
             .flex
             .direction(.row)
-            .justifyContent(.center)
-            .marginVertical(12)
+            .justifyContent(.spaceBetween)
+            .padding(12, 20)
             .define { flex in
-                flex.addItem(songIconImageView)
-                    .size(40)
-                    .cornerRadius(4)
-
                 flex.addItem()
-                    .direction(.column)
-                    .marginVertical(2)
-                    .marginLeft(10)
-                    .grow(1)
-                    .define { flexLabel in
-                        flexLabel.addItem(songLabel)
+                    .direction(.row)
+                    .maxWidth(65%)
+                    .define { flex in
+                        flex.addItem(songIconImageView)
+                            .size(40)
+                            .cornerRadius(4)
 
-                        flexLabel.addItem(artistNameLabel)
+                        flex.addItem()
+                            .direction(.column)
+                            .justifyContent(.center)
+                            .define { flex in
+                                flex.addItem(songNameLabel)
+                                flex.addItem(artistNameLabel)
+                            }
+                            .marginLeft(10)
                     }
 
                 flex.addItem(playButton)
@@ -101,8 +122,12 @@ final class SongCollectionViewCell: UICollectionViewCell, Reusable {
         let imageUrl = URL(string: model.imageUrl)
         songIconImageView.kf.setImage(with: imageUrl)
 
-        songLabel.text = model.name
+        songNameLabel.text = model.name
         artistNameLabel.text = model.artist.name
+
+        songIconImageView.flex.markDirty()
+        songNameLabel.flex.markDirty()
+        artistNameLabel.flex.markDirty()
     }
 }
 

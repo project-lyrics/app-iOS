@@ -93,7 +93,6 @@ final class SearchSongView: UIView {
                     .marginTop(16)
                 
                 flex.addItem(collectionView)
-                    .marginHorizontal(20)
                     .marginTop(16)
                     .grow(1)
             }
