@@ -98,6 +98,7 @@ public final class ProfileViewController: UIViewController {
                 switch result {
                 case .success:
                     self?.coordinator?.pushWelcomeViewController()
+
                 case .failure(let error):
                     self?.showAlert(
                         shouldIgnoreDarkMode: true,
