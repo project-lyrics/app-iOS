@@ -141,7 +141,6 @@ private extension PostNoteViewModel {
         return self.postNoteUseCase
             .execute(value: requestValue)
             .receive(on: DispatchQueue.main)
-            .mapError(NoteError.init)
             .mapToResult()
     }
 }
