@@ -59,7 +59,6 @@ public final class WritingNoteView: UIView {
 
     private let addTrackLabel: UILabel = {
         let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "곡을 추가해주세요."
         label.font = SharedDesignSystemFontFamily.Pretendard.medium.font(size: 14)
         label.textColor = Colors.gray04
@@ -231,32 +230,11 @@ public final class WritingNoteView: UIView {
                                 contentFlex.addItem(noteTextView)
                                     .width(100%)
                                     .marginTop(24)
+                                contentFlex.addItem(noteCharCountLabel)
+                                    .markDirty()
                             }
                     }
             }
-
-        contentView.addSubview(addTrackLabel)
-        addSubview(noteCharCountLabel)
-
-        NSLayoutConstraint.activate([
-            addTrackLabel.centerYAnchor.constraint(
-                equalTo: iconImageView.centerYAnchor
-            ),
-            addTrackLabel.leadingAnchor.constraint(
-                equalTo: iconImageView.trailingAnchor,
-                constant: 10
-            )
-        ])
-
-        keyboardHeightConstraint = noteCharCountLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -33)
-        keyboardHeightConstraint?.isActive = true
-
-        NSLayoutConstraint.activate([
-            noteCharCountLabel.trailingAnchor.constraint(
-                equalTo: trailingAnchor,
-                constant: -20
-            )
-        ])
     }
 
     private func artistInfoHeaderView(_ flex: Flex) {
@@ -273,14 +251,27 @@ public final class WritingNoteView: UIView {
                     .size(40)
 
                 flex.addItem()
-                    .direction(.column)
                     .marginLeft(10)
                     .grow(1)
                     .define { flex in
-                        flex.addItem(titleOfSongLabel)
-                            .view?.isHidden = true
-                        flex.addItem(artistNameLabel)
-                            .view?.isHidden = true
+                        flex.addItem(addTrackLabel)
+                            .width(100%)
+                            .height(100%)
+
+                        flex.addItem()
+                            .direction(.column)
+                            .position(.absolute)
+                            .top(2)
+                            .bottom(2)
+                            .left(0)
+                            .width(100%)
+                            .define { flex in
+                                flex.addItem(titleOfSongLabel)
+                                    .view?.isHidden = true
+                                flex.addItem(artistNameLabel)
+                                    .marginTop(4)
+                                    .view?.isHidden = true
+                            }
                     }
 
                 flex.addItem(addToPlayButton)
@@ -390,6 +381,7 @@ public final class WritingNoteView: UIView {
         titleOfSongLabel.isHidden = false
         artistNameLabel.isHidden = false
 
+        addTrackLabel.flex.markDirty()
         titleOfSongLabel.flex.markDirty()
         artistNameLabel.flex.markDirty()
     }
