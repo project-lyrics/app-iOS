@@ -226,7 +226,6 @@ public final class PostNoteViewController: UIViewController {
             .sink { [weak self] keyboardHeight in
                 self?.rootScrollView.contentInset.bottom = keyboardHeight
                 self?.rootScrollView.verticalScrollIndicatorInsets.bottom = keyboardHeight
-                self?.rootFlexContainer.flex.layout()
             }
             .store(in: &cancellables)
     }
