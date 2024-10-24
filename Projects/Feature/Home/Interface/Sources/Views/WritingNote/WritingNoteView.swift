@@ -15,7 +15,7 @@ import PinLayout
 
 public final class WritingNoteView: UIView {
 
-    private let rootFlexContainer = UIView()
+    let rootFlexContainer = UIView()
     private let navigationBar = NavigationBar()
 
     public lazy var closeButton: UIButton = {
@@ -323,7 +323,6 @@ public final class WritingNoteView: UIView {
         titleOfSongLabel.isHidden = false
         artistNameLabel.isHidden = false
 
-        addTrackLabel.flex.markDirty()
         titleOfSongLabel.flex.markDirty()
         artistNameLabel.flex.markDirty()
     }

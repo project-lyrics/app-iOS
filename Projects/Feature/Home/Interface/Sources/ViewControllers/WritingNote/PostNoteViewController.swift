@@ -215,7 +215,11 @@ public final class PostNoteViewController: UIViewController {
                 case .success:
                     self?.coordinator?.dismissViewController()
                 case .failure(let error):
-                    self?.showAlert(title: "노트 작성에 실패했어요. \n\(error.localizedDescription)", message: nil, singleActionTitle: "확인")
+                    self?.showAlert(
+                        title: "노트 작성에 실패했어요. \n\(error.localizedDescription)",
+                        message: nil,
+                        singleActionTitle: "확인"
+                    )
                 }
             }
             .store(in: &cancellables)
@@ -419,6 +423,10 @@ extension PostNoteViewController: UITextViewDelegate {
 }
 
 extension PostNoteViewController {
+    var rootFlexContainer: UIView {
+        return postNoteView.rootFlexContainer
+    }
+
     var rootScrollView: UIScrollView {
         return postNoteView.rootScrollView
     }

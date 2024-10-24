@@ -356,13 +356,13 @@ public final class EditNoteViewController: UIViewController {
     }
 
     private func configure(_ model: Note) {
-        guard let lyricsBackgroundImage = model.lyrics?.background.image,
+        guard let lyricsBackground = model.lyrics?.background,
               let lyricsContent = model.lyrics?.content
         else { return }
 
         selectedSongPublisher.send(model.song)
         lyricsTextView.setUpTextView(text: lyricsContent, textColor: Colors.gray08)
-        lyricsTextView.backgroundColor = UIColor(patternImage: lyricsBackgroundImage)
+        lyricsBackgroundViewController.backgroundPublisher.send(lyricsBackground)
         noteTextView.setUpTextView(text: model.content, textColor: Colors.gray08)
 
         updateCharacterCountForLyrics()
@@ -422,6 +422,10 @@ extension EditNoteViewController: UITextViewDelegate {
 }
 
 extension EditNoteViewController {
+    var rootFlexContainer: UIView {
+        return editNoteView.rootFlexContainer
+    }
+
     var rootScrollView: UIScrollView {
         return editNoteView.rootScrollView
     }
