@@ -216,6 +216,13 @@ public final class EditNoteViewController: UIViewController {
             .store(in: &cancellables)
 
         lyricsTextView.setAllowEditingPublisher(output.isSelectedSong)
+
+        CombineKeyboard.keyboardHeightPublisher
+            .sink { [weak self] keyboardHeight in
+                self?.rootScrollView.contentInset.bottom = keyboardHeight
+                self?.rootScrollView.verticalScrollIndicatorInsets.bottom = keyboardHeight
+            }
+            .store(in: &cancellables)
     }
 
     private func setUpTextView() {

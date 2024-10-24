@@ -140,7 +140,6 @@ public final class WritingNoteView: UIView {
 
     public let noteCharCountLabel: UILabel = {
         let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .right
         label.textColor = Colors.gray04
         label.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 14)
@@ -162,10 +161,6 @@ public final class WritingNoteView: UIView {
     public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
         endEditing(true)
-    }
-
-    deinit {
-        removeKeyboardObservers()
     }
 
     @available(*, unavailable)
@@ -195,8 +190,6 @@ public final class WritingNoteView: UIView {
 
         selectLyricsBackgroundButton.configure(title: "가사 배경", image: FeelinImages.gallery)
         searchLyricsButton.configure(title: "가사 검색", image: FeelinImages.search)
-
-        setUpKeyboardEvent()
     }
 
     private func setUpLayout() {
@@ -315,57 +308,6 @@ public final class WritingNoteView: UIView {
                         flex.addItem(searchLyricsButton)
                     }
             }
-    }
-
-    private func setUpKeyboardEvent() {
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(keyboardWillShow),
-            name: UIResponder.keyboardWillShowNotification,
-            object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(keyboardWillHide),
-            name: UIResponder.keyboardWillHideNotification,
-            object: nil
-        )
-    }
-
-    private func removeKeyboardObservers() {
-        NotificationCenter.default.removeObserver(
-            self,
-            name: UIResponder.keyboardWillShowNotification,
-            object: nil
-        )
-        NotificationCenter.default.removeObserver(
-            self,
-            name: UIResponder.keyboardWillHideNotification,
-            object: nil
-        )
-    }
-
-    @objc private func keyboardWillShow(notification: NSNotification) {
-        if let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
-            let keyboardHeight = keyboardFrame.height
-            rootScrollView.contentInset.bottom = keyboardHeight
-            rootScrollView.verticalScrollIndicatorInsets.bottom = keyboardHeight
-
-            keyboardHeightConstraint?.constant = -keyboardHeight - 12
-            UIView.animate(withDuration: 0.3) {
-                self.layoutIfNeeded()
-            }
-        }
-    }
-
-    @objc private func keyboardWillHide(notification: NSNotification) {
-        rootScrollView.contentInset.bottom = 0
-        rootScrollView.verticalScrollIndicatorInsets.bottom = 0
-
-        keyboardHeightConstraint?.constant = -33
-        UIView.animate(withDuration: 0.3) {
-            self.layoutIfNeeded()
-        }
     }
 
     public func configure(_ item: Song) {
