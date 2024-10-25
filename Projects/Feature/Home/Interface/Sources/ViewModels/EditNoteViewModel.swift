@@ -147,7 +147,6 @@ private extension EditNoteViewModel {
         return self.editNoteUseCase
             .execute(noteID: noteID, value: requestValue)
             .receive(on: DispatchQueue.main)
-            .mapError(NoteError.init)
             .mapToResult()
     }
 }
