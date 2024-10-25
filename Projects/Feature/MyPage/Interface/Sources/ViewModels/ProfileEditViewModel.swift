@@ -53,15 +53,16 @@ public final class ProfileEditViewModel {
 }
 
 private extension ProfileEditViewModel {
-    func isEnabledSaveButton(_ nickname: String?) -> Bool {
+    func isEnabledSaveButton(_ nickname: String?, _ profileCharacter: String) -> Bool {
         let count = nickname?.count ?? 0
-        return nickname?.isEmpty == false && count < 10
+        return nickname?.isEmpty == false && count < 10 || !profileCharacter.isEmpty
     }
 
     func checkSaveButtonIsEnabled(input: Input) -> AnyPublisher<Bool, Never> {
-        return input.nicknameTextPublisher
-            .map { nickname in
-                return self.isEnabledSaveButton(nickname)
+        return Publishers
+            .CombineLatest(input.nicknameTextPublisher, input.profileImagePublisher)
+            .map { nickname, profileCharacter in
+                return self.isEnabledSaveButton(nickname, profileCharacter)
             }
             .eraseToAnyPublisher()
     }
@@ -76,17 +77,16 @@ private extension ProfileEditViewModel {
     }
 
     func patchUserInfo(input: Input) -> AnyPublisher<PatchUserProfileResult, Never> {
-        let validNicknamePublisher = input.nicknameTextPublisher
-            .filter { nickname in return self.isEnabledSaveButton(nickname) }
+        let validUserProfilePublisher = Publishers
+            .CombineLatest(input.nicknameTextPublisher, input.profileImagePublisher)
+            .filter { (nickname, profileCharacter) in
+                return self.isEnabledSaveButton(nickname, profileCharacter)
+            }
             .compactMap { $0 }
             .eraseToAnyPublisher()
 
         // 데이터 변경이 없는 경우, 기존 데이터를 보내면 API 에러가 발생함
-        let combinedUserProfileModelPublisher = Publishers
-            .CombineLatest(
-                validNicknamePublisher,
-                input.profileImagePublisher
-            )
+        let combinedUserProfileModelPublisher = validUserProfilePublisher
             .map { [weak self] (nickname, profileCharacter) -> UserProfileRequestValue in
                 let type = ProfileCharacterType(rawValue: profileCharacter) ?? .braidedHair
                 return UserProfileRequestValue(

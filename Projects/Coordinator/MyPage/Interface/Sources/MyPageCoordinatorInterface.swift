@@ -130,7 +130,7 @@ extension MyPageCoordinator: MyPageViewControllerDelegate,
         navigationController.present(navController, animated: true)
     }
 
-    public func pushEditProfileViewController(userProfile: UserProfile) {
+    public func pushProfileEditViewController(userProfile: UserProfile) {
         let viewModel = profileEditDependencies(userProfile: userProfile)
         let reportViewController = ProfileEditViewController(viewModel: viewModel)
         reportViewController.coordinator = self

@@ -14,7 +14,7 @@ import Domain
 public protocol MyPageViewControllerDelegate: AnyObject {
     func pushSettingViewController()
     func pushNoteNotificationViewController()
-    func pushEditProfileViewController(userProfile: UserProfile)
+    func pushProfileEditViewController(userProfile: UserProfile)
     func pushReportViewController(noteID: Int?, commentID: Int?)
     func presentEditNoteViewController(note: Note)
     func popViewController()
@@ -109,18 +109,14 @@ public final class MyPageViewController: UIViewController {
             .sink { [weak self] _ in
                 guard let self = self, let userProfile = viewModel.fetchedUserProfile
                 else { return }
-                coordinator?.pushEditProfileViewController(userProfile: userProfile)
+                coordinator?.pushProfileEditViewController(userProfile: userProfile)
             }
             .store(in: &cancellables)
 
         viewModel.$fetchedUserProfile
             .receive(on: DispatchQueue.main)
             .sink { [weak self] fetchedUserProfile in
-                if let nickname = fetchedUserProfile?.nickname {
-                    self?.userNicknameLabel.flex.markDirty()
-                    self?.userNicknameLabel.text = nickname
-                    self?.rootFlexContainer.flex.layout()
-                }
+                self?.myPageView.configure(fetchedUserProfile)
             }
             .store(in: &cancellables)
 
@@ -182,9 +178,5 @@ extension MyPageViewController {
 
     var userNicknameLabel: UILabel {
         return myPageView.userNicknameLabel
-    } 
-
-    var rootFlexContainer: UIView {
-        return myPageView.rootFlexContainer
     }
 }
