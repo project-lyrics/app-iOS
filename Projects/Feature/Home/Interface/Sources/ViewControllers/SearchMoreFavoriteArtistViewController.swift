@@ -89,10 +89,18 @@ public class SearchMoreFavoriteArtistViewController: UIViewController {
     }
     
     private func updateArtistCollectionView(with artists: [Artist]) {
-        var snapshot = ArtistListSnapshot()
-        snapshot.appendSections([.main])
+        var snapshot = artistListDataSource.snapshot()
+        
+        if !snapshot.sectionIdentifiers.contains(.main) {
+            snapshot.appendSections([.main])
+        }
+        
+        let currentItem = snapshot.itemIdentifiers(inSection: .main)
+        
+        snapshot.deleteItems(currentItem)
         snapshot.appendItems(artists, toSection: .main)
-        artistListDataSource.applySnapshotUsingReloadData(snapshot)
+        
+        artistListDataSource.apply(snapshot, animatingDifferences: false)
     }
     
     private func updateOnKeyboardHeightChange(_ height: CGFloat) {

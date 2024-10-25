@@ -47,6 +47,7 @@ final class SearchSongView: UIView {
 
     lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
+        collectionView.keyboardDismissMode = .onDrag
         collectionView.backgroundColor = .clear
         collectionView.register(cellType: SongCollectionViewCell.self)
         collectionView.allowsMultipleSelection = false
