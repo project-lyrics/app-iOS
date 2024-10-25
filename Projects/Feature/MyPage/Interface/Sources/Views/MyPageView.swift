@@ -97,7 +97,7 @@ final class MyPageView: UIView {
             .define { flex in
                 flex.addItem(navigationBar)
                     .height(44)
-                    .marginHorizontal(10)
+                    .marginHorizontal(20)
 
                 flex.addItem()
                     .direction(.column)
