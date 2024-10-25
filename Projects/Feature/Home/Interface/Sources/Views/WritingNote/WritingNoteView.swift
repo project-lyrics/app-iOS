@@ -16,6 +16,8 @@ import PinLayout
 public final class WritingNoteView: UIView {
 
     let rootFlexContainer = UIView()
+    let artistInfoHeaderView = UIView()
+
     private let navigationBar = NavigationBar()
 
     public lazy var closeButton: UIButton = {
@@ -82,7 +84,7 @@ public final class WritingNoteView: UIView {
         return label
     }()
 
-    public let addToPlayButton: UIButton = {
+    private let addToPlayButton: UIButton = {
         let button = UIButton()
         button.setImage(FeelinImages.add, for: .normal)
 
@@ -270,6 +272,15 @@ public final class WritingNoteView: UIView {
                 flex.addItem(addToPlayButton)
                     .size(40)
             }
+
+        flex.addItem(artistInfoHeaderView)
+            .position(.absolute)
+            .top(12)
+            .bottom(12)
+            .left(20)
+            .right(20)
+            .height(40) // 적절한 높이 설정
+            .backgroundColor(.clear)
 
         flex.addItem(bottomDivider)
             .height(1)

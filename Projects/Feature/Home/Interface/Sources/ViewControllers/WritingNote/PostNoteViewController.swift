@@ -77,7 +77,15 @@ public final class PostNoteViewController: UIViewController {
     }
 
     private func bind() {
-        addToPlayButton.publisher(for: .touchUpInside)
+        rootScrollView.tapPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.lyricsTextView.resignFirstResponder()
+                self?.noteTextView.resignFirstResponder()
+            }
+            .store(in: &cancellables)
+
+       artistInfoHeaderView.tapPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 guard let self = self else { return }
@@ -106,7 +114,14 @@ public final class PostNoteViewController: UIViewController {
                 guard let self = self else { return Empty().eraseToAnyPublisher() }
 
                 if !self.searchLyricsButton.isEnabled {
-                    self.showAlert(title: "곡을 추가한 후,\n가사를 검색할 수 있어요.", message: nil, singleActionTitle: "확인")
+                    lyricsTextView.resignFirstResponder()
+                    noteTextView.resignFirstResponder()
+
+                    self.showAlert(
+                        title: "곡을 추가한 후,\n가사를 검색할 수 있어요.",
+                        message: nil,
+                        singleActionTitle: "확인"
+                    )
                     return Empty().eraseToAnyPublisher()
                 }
 
@@ -131,6 +146,9 @@ public final class PostNoteViewController: UIViewController {
                 guard let self = self else { return Empty().eraseToAnyPublisher() }
 
                 if !self.selectLyricsBackgroundButton.isEnabled {
+                    lyricsTextView.resignFirstResponder()
+                    noteTextView.resignFirstResponder()
+
                     self.showAlert(
                         title: "곡을 추가한 후,\n가사배경을 추가할 수 있어요.",
                         message: nil,
@@ -211,6 +229,9 @@ public final class PostNoteViewController: UIViewController {
         output.postNoteResult
             .receive(on: DispatchQueue.main)
             .sink { [weak self] result in
+                self?.lyricsTextView.resignFirstResponder()
+                self?.noteTextView.resignFirstResponder()
+
                 switch result {
                 case .success:
                     self?.coordinator?.dismissViewController()
@@ -340,6 +361,7 @@ public final class PostNoteViewController: UIViewController {
                         singleActionTitle: "확인",
                         actionCompletion: {
                             self?.lyricsTextView.resignFirstResponder()
+                            self?.noteTextView.resignFirstResponder()
                         }
                     )
                 } else {
@@ -435,8 +457,8 @@ extension PostNoteViewController {
         return postNoteView.contentView
     }
 
-    var addToPlayButton: UIButton {
-        return postNoteView.addToPlayButton
+    var artistInfoHeaderView: UIView {
+        return postNoteView.artistInfoHeaderView
     }
 
     var lyricsTextView: UITextView {

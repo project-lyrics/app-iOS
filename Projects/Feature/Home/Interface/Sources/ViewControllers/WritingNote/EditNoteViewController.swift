@@ -76,6 +76,14 @@ public final class EditNoteViewController: UIViewController {
     }
 
     private func bind() {
+        rootScrollView.tapPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.lyricsTextView.resignFirstResponder()
+                self?.noteTextView.resignFirstResponder()
+            }
+            .store(in: &cancellables)
+
         closeButton.publisher(for: .touchUpInside)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
@@ -97,7 +105,14 @@ public final class EditNoteViewController: UIViewController {
                 guard let self = self else { return Empty().eraseToAnyPublisher() }
 
                 if !self.searchLyricsButton.isEnabled {
-                    self.showAlert(title: "곡을 추가한 후,\n가사를 검색할 수 있어요.", message: nil, singleActionTitle: "확인")
+                    lyricsTextView.resignFirstResponder()
+                    noteTextView.resignFirstResponder()
+
+                    self.showAlert(
+                        title: "곡을 추가한 후,\n가사를 검색할 수 있어요.",
+                        message: nil,
+                        singleActionTitle: "확인"
+                    )
                     return Empty().eraseToAnyPublisher()
                 }
 
@@ -122,6 +137,9 @@ public final class EditNoteViewController: UIViewController {
                 guard let self = self else { return Empty().eraseToAnyPublisher() }
 
                 if !self.selectLyricsBackgroundButton.isEnabled {
+                    lyricsTextView.resignFirstResponder()
+                    noteTextView.resignFirstResponder()
+
                     self.showAlert(
                         title: "곡을 추가한 후,\n가사배경을 추가할 수 있어요.",
                         message: nil,
@@ -202,6 +220,9 @@ public final class EditNoteViewController: UIViewController {
         output.editNoteResult
             .receive(on: DispatchQueue.main)
             .sink { [weak self] result in
+                self?.lyricsTextView.resignFirstResponder()
+                self?.noteTextView.resignFirstResponder()
+
                 switch result {
                 case .success:
                     self?.coordinator?.dismissViewController()
@@ -325,6 +346,7 @@ public final class EditNoteViewController: UIViewController {
                         singleActionTitle: "확인",
                         actionCompletion: {
                             self?.lyricsTextView.resignFirstResponder()
+                            self?.noteTextView.resignFirstResponder()
                         }
                     )
                 } else {
@@ -432,10 +454,6 @@ extension EditNoteViewController {
 
     var contentView: UIView {
         return editNoteView.contentView
-    }
-
-    var addToPlayButton: UIButton {
-        return editNoteView.addToPlayButton
     }
 
     var lyricsTextView: UITextView {
