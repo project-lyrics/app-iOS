@@ -542,7 +542,8 @@ private extension CommunityMainViewController {
     }
 
     private func navigationBarOnScroll(yOffset: CGFloat) {
-        let artistSectionMaxYOffset = CommunityMainView.artistSectionHeight - UIApplication.shared.safeAreaInsets.top
+        let artistSectionHeight = self.communityMainCollectionView.frame.height * CommunityMainView.artistSectionFraction
+        let artistSectionMaxYOffset = artistSectionHeight - UIApplication.shared.safeAreaInsets.top
 
         // 아티스트 섹션보다 더 스크롤 할 경우
         if yOffset >= artistSectionMaxYOffset {

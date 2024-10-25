@@ -15,9 +15,10 @@ class CommunityMainView: UIView {
     
     private (set) var communityMainCollectionView: UICollectionView = {
         let compositionalLayout = UICollectionViewCompositionalLayout { (sectionIndex, environment) -> NSCollectionLayoutSection? in
+            let artistSectionHeight = environment.container.effectiveContentSize.height * CommunityMainView.artistSectionFraction
             switch sectionIndex {
             case CommunityMainView.artistSectionIndex:
-                return CommunityMainView.createArtistSection()
+                return CommunityMainView.createArtistSection(height: artistSectionHeight)
                 
             case CommunityMainView.noteSectionIndex:
                 return CommunityMainView.createNotesSection()
@@ -36,6 +37,7 @@ class CommunityMainView: UIView {
         collectionView.backgroundColor = Colors.background
 
         collectionView.showsVerticalScrollIndicator = false
+        collectionView.clipsToBounds = true
         
         return collectionView
     }()
@@ -74,19 +76,19 @@ class CommunityMainView: UIView {
 extension CommunityMainView {
     static let artistSectionIndex = 0
     static let noteSectionIndex = 1
-    static let artistSectionHeight: CGFloat = 390
+    static let artistSectionFraction: CGFloat = 0.37
     
-    static func createArtistSection() -> NSCollectionLayoutSection {
+    static func createArtistSection(height: CGFloat) -> NSCollectionLayoutSection {
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0),
-            heightDimension: .absolute(Self.artistSectionHeight)
+            heightDimension: .absolute(height)
         )
         
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         
         let groupSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0),
-            heightDimension: .absolute(Self.artistSectionHeight)
+            heightDimension: .absolute(height)
         )
         
         let group = NSCollectionLayoutGroup.horizontal(

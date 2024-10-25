@@ -99,6 +99,7 @@ class FavoriteArtistSelectButton: UIButton {
     private func updateButtonImage() {
         let image = isSelected ? selectedImage : unSelectedImage
         heartImageView.image = image
+        heartImageView.overrideUserInterfaceStyle = .light
     }
 }
 
