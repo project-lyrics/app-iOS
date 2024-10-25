@@ -442,7 +442,7 @@ private extension HomeViewController {
 
                 switch item {
                 case .banner:
-                    self.openWebBrowser(urlStr: "https://docs.google.com/forms/d/1ottTpPuoiDfQnZaMYwwi75WXdEInq6KHN8jY4L9Qc00/edit")
+                    self.openWebBrowser(urlStr: "https://docs.google.com/forms/d/1eoPqnYLfwlgmOeCSKrPWUb7qCPnX6QrLJx8r34WAUwk/edit")
 
                 case .searchArtist:
                     coordinator?.presentSearchMoreFavoriteArtistViewController()
