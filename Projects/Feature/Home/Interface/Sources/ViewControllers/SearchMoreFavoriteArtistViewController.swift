@@ -25,14 +25,27 @@ public class SearchMoreFavoriteArtistViewController: UIViewController {
     
     // MARK: - Diffable DataSource
     
-    private typealias ArtistListDataSource = UICollectionViewDiffableDataSource<ArtistListSection, Artist>
-    private typealias ArtistListSnapshot = NSDiffableDataSourceSnapshot<ArtistListSection, Artist>
+    private typealias ArtistListDataSource = UICollectionViewDiffableDataSource<ArtistListSection, ArtistListRow>
     
     private enum ArtistListSection: CaseIterable {
         case main
     }
     
+    private enum ArtistListRow: Hashable {
+        case emptyArtist
+        case artist(Artist)
+    }
+    
     private lazy var artistListDataSource: ArtistListDataSource = {
+        let emptyArtistCellRegistration = UICollectionView.CellRegistration<EmptyArtistCell, Void> { cell, indexPath, _ in
+            
+            cell.requestArtistButton.publisher(for: .touchUpInside)
+                .sink { _ in
+                    // TODO: - 추후 open url(링크 추가시)
+                }
+                .store(in: &cell.cancellables)
+        }
+        
         let artistCellRegistration = UICollectionView.CellRegistration<FeelinArtistCell, Artist> { cell, indexPath, artist in
             
             cell.configure(
@@ -43,12 +56,21 @@ public class SearchMoreFavoriteArtistViewController: UIViewController {
         
         return ArtistListDataSource(
             collectionView: self.artistCollectionView,
-            cellProvider: { collectionView, indexPath, artist -> FeelinArtistCell in
-                return collectionView.dequeueConfiguredReusableCell(
-                    using: artistCellRegistration,
-                    for: indexPath,
-                    item: artist
-                )
+            cellProvider: { collectionView, indexPath, row in
+                switch row {
+                case .artist(let artist):
+                    return collectionView.dequeueConfiguredReusableCell(
+                        using: artistCellRegistration,
+                        for: indexPath,
+                        item: artist
+                    )
+                case .emptyArtist:
+                    return collectionView.dequeueConfiguredReusableCell(
+                        using: emptyArtistCellRegistration,
+                        for: indexPath,
+                        item: ()
+                    )
+                }
             })
     }()
     
@@ -94,11 +116,16 @@ public class SearchMoreFavoriteArtistViewController: UIViewController {
         if !snapshot.sectionIdentifiers.contains(.main) {
             snapshot.appendSections([.main])
         }
+        let newItems = artists.map { ArtistListRow.artist($0) }
+        let currentItems = snapshot.itemIdentifiers(inSection: .main)
         
-        let currentItem = snapshot.itemIdentifiers(inSection: .main)
-        
-        snapshot.deleteItems(currentItem)
-        snapshot.appendItems(artists, toSection: .main)
+        if newItems.isEmpty {
+            snapshot.deleteItems(currentItems)
+            snapshot.appendItems([.emptyArtist])
+        } else {
+            snapshot.deleteItems(currentItems)
+            snapshot.appendItems(newItems, toSection: .main)
+        }
         
         artistListDataSource.apply(snapshot, animatingDifferences: false)
     }
@@ -190,6 +217,35 @@ private extension SearchMoreFavoriteArtistViewController {
     }
 }
 
+// MARK: - UICollectionViewDelegateFlowLayout
+
+extension SearchMoreFavoriteArtistViewController: UICollectionViewDelegateFlowLayout {
+    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        guard let item = artistListDataSource.itemIdentifier(for: indexPath) else {
+            return .zero
+        }
+        
+        switch item {
+        case .artist:
+            let totalHorizontalSpacing = searchMoreFavoriteArtistView.flowLayout.minimumInteritemSpacing * 2 + 27 * 2
+            let cellWidth: CGFloat = (self.view.frame.width - totalHorizontalSpacing) / 3
+            let cellHeight: CGFloat = 146
+            
+            return CGSize(
+                width: cellWidth,
+                height: cellHeight
+            )
+            
+        case .emptyArtist:
+            return CGSize(
+                width: collectionView.frame.width,
+                height: collectionView.frame.height
+            )
+        }
+    }
+}
+
+
 // MARK: - UICollectionViewDelegate
 
 extension SearchMoreFavoriteArtistViewController: UICollectionViewDelegate {
@@ -197,10 +253,11 @@ extension SearchMoreFavoriteArtistViewController: UICollectionViewDelegate {
         // 키보드가 올라와 있다면 일단 resign
         self.artistSearchBar.searchTextField.resignFirstResponder()
         
-        let selectedArtist = self.viewModel.fetchedArtists[indexPath.item]
-        
-        self.coordinator?.dismissViewController()
-        self.coordinator?.pushCommunityMainViewController(artist: selectedArtist)
+        if let selectedArtist = self.viewModel.fetchedArtists[safe: indexPath.item] {
+            self.coordinator?.dismissViewController()
+            self.coordinator?.pushCommunityMainViewController(artist: selectedArtist)
+            
+        }
     }
 }
 
