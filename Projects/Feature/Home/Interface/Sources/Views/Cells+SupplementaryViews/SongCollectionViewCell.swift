@@ -32,7 +32,6 @@ final class SongCollectionViewCell: UICollectionViewCell, Reusable {
         label.font = SharedDesignSystemFontFamily.Pretendard.medium.font(size: 14)
         label.textColor = Colors.gray08
         label.textAlignment = .left
-        label.lineBreakMode = .byTruncatingTail
         label.numberOfLines = 1
 
         return label
@@ -43,7 +42,6 @@ final class SongCollectionViewCell: UICollectionViewCell, Reusable {
         label.font = SharedDesignSystemFontFamily.Pretendard.medium.font(size: 12)
         label.textColor = Colors.gray04
         label.numberOfLines = 1
-        label.lineBreakMode = .byTruncatingTail
 
         return label
     }()

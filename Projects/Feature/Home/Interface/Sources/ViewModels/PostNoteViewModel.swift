@@ -93,17 +93,19 @@ private extension PostNoteViewModel {
     }
 
     func postNote(_ input: Input) -> AnyPublisher<PostNoteResult, Never> {
-        let requiredFieldsPublisher = Publishers.CombineLatest3(
-            input.songTapPublisher,
-            input.noteTextViewTypePublisher,
-            input.postNoteStatusPublisher
-        )
+        let requiredFieldsPublisher = Publishers
+            .CombineLatest3(
+                input.songTapPublisher,
+                input.noteTextViewTypePublisher,
+                input.postNoteStatusPublisher
+            )
             .eraseToAnyPublisher()
 
-        let optionalFieldsPublisher = Publishers.CombineLatest(
-            input.lyricsTextViewTypePublisher,
-            input.lyricsBackgroundSelectPublisher
-        )
+        let optionalFieldsPublisher = Publishers
+            .CombineLatest(
+                input.lyricsTextViewTypePublisher,
+                input.lyricsBackgroundSelectPublisher
+            )
             .map { (lyrics, background) -> (String?, LyricsBackground?) in
                 return (lyrics, background)
             }

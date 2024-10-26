@@ -19,6 +19,7 @@ public class LyricsContentsView: UIView {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
+
         return imageView
     }()
     
@@ -49,31 +50,30 @@ public class LyricsContentsView: UIView {
     
     private func setUpLayout() {
         self.addSubview(flexContainer)
+
+        flexContainer.flex.define { flex in
+            flex.addItem(backgroundImageView)
+                .define { flex in
+                    flex.addItem(lyricsLabel)
+                        .marginVertical(36)
+                        .marginHorizontal(52)
+                        .shrink(1)
+                        .grow(1)
+                }
+                .height(132)
+        }
     }
     
     public func configureView(with lyrics: Lyrics?) {
         self.lyricsLabel.text = lyrics?.content
         self.backgroundImageView.image = lyrics?.background.image
-        
+
         switch lyrics?.background {
         case .black, .red:
             self.lyricsLabel.textColor = .white
             
         default:
             self.lyricsLabel.textColor = Colors.fixedGray08
-        }
-        
-        
-        flexContainer.flex.define { flex in
-            flex.addItem(backgroundImageView)
-                .justifyContent(.center)
-                .alignItems(.center)
-                .define { flex in
-                    flex.addItem(lyricsLabel)
-                        .height(60)
-                        .width(240)
-                }
-                .height(132)
         }
     }
 }

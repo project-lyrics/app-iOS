@@ -54,6 +54,9 @@ public final class WritingNoteView: UIView {
 
     private let iconImageView: UIImageView = {
         let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = 4
         imageView.image = FeelinImages.album
 
         return imageView
@@ -120,7 +123,6 @@ public final class WritingNoteView: UIView {
         label.textColor = Colors.gray02.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
         label.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 14)
         label.text = "0/50"
-        label.lineBreakMode = .byClipping
 
         return label
     }()
@@ -146,7 +148,6 @@ public final class WritingNoteView: UIView {
         label.textColor = Colors.gray04
         label.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 14)
         label.text = "0/1000"
-        label.lineBreakMode = .byClipping
 
         return label
     }()
