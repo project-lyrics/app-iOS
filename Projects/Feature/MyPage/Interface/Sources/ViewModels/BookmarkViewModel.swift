@@ -121,7 +121,6 @@ extension BookmarkViewModel {
                     guard let updatedIndexToUpdate = self?.fetchedNotes.firstIndex(where: { $0.id == noteID }) else {
                         return
                     }
-                    // TODO: - 북마크에서 제거될 경우 해당 노트데이터를 삭제하거나 filter처리가 필요하다.
                     self?.fetchedNotes[updatedIndexToUpdate].isBookmarked = !isBookmarked
                     self?.error = error
                 }
