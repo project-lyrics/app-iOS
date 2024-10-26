@@ -56,7 +56,6 @@ public final class PostNoteViewController: UIViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        setUpDefaults()
         bind()
         setUpTextView()
     }
@@ -69,11 +68,6 @@ public final class PostNoteViewController: UIViewController {
 
     public func addSelectedSong(_ item: Song) {
         selectedSongPublisher.send(item)
-    }
-
-    private func setUpDefaults() {
-        noteTextView.delegate = self
-        lyricsTextView.delegate = self
     }
 
     private func bind() {
@@ -337,18 +331,23 @@ public final class PostNoteViewController: UIViewController {
 
         lyricsTextView.textPublisher(for: [.didChange])
             .sink { [weak self] text in
-                guard let self = self else { return }
+                guard let self = self, let text = text else { return }
 
-                setupLyricsTextviewTextCenterVertically(lyricsTextView)
-                updateCharacterCountForLyrics()
+                let maxLineCount = 3
+                let lines = text.components(separatedBy: .newlines)
+                let numberOfLines = lines.count
 
-                // 텍스트 길이 초과 방지
-                if lyricsTextView.text.count > Const.lyricsMaxTextLength {
-                    lyricsTextView.text = String(lyricsTextView.text.prefix(Const.lyricsMaxTextLength))
+                if (text.count == 0 || text.count < Const.lyricsMaxTextLength) && numberOfLines > maxLineCount {
+                    let truncatedText = lines.dropLast().joined(separator: "\n")
+                    lyricsTextView.text = truncatedText
+                } else if text.count > Const.lyricsMaxTextLength {
+                    lyricsTextView.text = String(text.prefix(Const.lyricsMaxTextLength))
+                } else if lyricsTextView.isThirdLineExceedingWidth() {
+                    lyricsTextView.text = String(text.dropLast(2))
+                } else {
+                    setupLyricsTextviewTextCenterVertically(lyricsTextView)
+                    updateCharacterCountForLyrics()
                 }
-
-                let contentHeight = lyricsTextView.contentSize.height
-                lyricsTextView.isScrollEnabled = contentHeight > Const.maxTextViewHeight
             }
             .store(in: &cancellables)
 
@@ -391,54 +390,27 @@ public final class PostNoteViewController: UIViewController {
         lyricsTextView.setUpTextView(text: text, textColor: textViewTextColor)
         lyricsCharCountLabel.textColor = labelTextColor
     }
-}
-
-// MARK: - UITextViewDelegate
-
-extension PostNoteViewController: UITextViewDelegate {
-    public func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        let currentText = textView.text ?? ""
-        let prospectiveText = (currentText as NSString).replacingCharacters(in: range, with: text)
-
-        if textView == noteTextView {
-            return prospectiveText.count <= Const.noteMaxTextLength
-        } else { // lyrics TextView의 길이
-            let maxLineCount = 3
-            let numberOfLines = prospectiveText.components(separatedBy: .newlines).count
-            let numberOfLineBreaks = currentText.components(separatedBy: "\n").count - 1
-
-            if textView.text.count == 0 && numberOfLines > 2 {
-                return false
-            } else if prospectiveText.count > Const.lyricsMaxTextLength || numberOfLines > maxLineCount {
-                return false
-            } else if text == "\n" && numberOfLineBreaks > maxLineCount {
-                return false
-            }
-
-            return true
-        }
-    }
 
     private func setupLyricsTextviewTextCenterVertically(_ textView: UITextView) {
         let textSize = textView.sizeThatFits(CGSize(width: textView.frame.width, height: CGFloat.greatestFiniteMagnitude))
         let topCorrection = (textView.frame.size.height - textSize.height * textView.zoomScale) / 2.0
         let topInset = max(0, topCorrection)
 
-        let lineCount = lyricsTextView.numberOfLine()
+        let lineCount = textView.numberOfLine()
 
-        if lineCount <= 1 || lyricsTextView.text.isEmpty {
+        if lineCount <= 1 || textView.text.isEmpty {
             textView.textContainerInset = UIEdgeInsets(
                 top: 56,
-                left: 20,
+                left: 52,
                 bottom: 0,
-                right: 20
+                right: 52
             )
         } else {
             textView.textContainerInset = UIEdgeInsets(
                 top: topInset + 30,
-                left: 20,
+                left: 52,
                 bottom: 0,
-                right: 20
+                right: 52
             )
         }
     }
