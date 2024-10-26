@@ -23,20 +23,20 @@ public final class BookmarkViewModel {
     private let setNoteLikeUseCase: SetNoteLikeUseCaseInterface
     private let setBookmarkUseCase: SetBookmarkUseCaseInterface
     private let deleteNoteUseCase: DeleteNoteUseCaseInterface
-    private let getFavoriteArtistsHavingNotesUseCase: GetFavoriteArtistsHavingNotesUseCaseInterface
+    private let getFavoriteArtistsBookmarkedUseCase: GetFavoriteArtistsBookmarkedUseCaseInterface
     private let getMyNotesByBookmarkUseCase: GetMyNotesByBookmarkUseCaseInterface
 
     public init(
         setNoteLikeUseCase: SetNoteLikeUseCaseInterface,
         setBookmarkUseCase: SetBookmarkUseCaseInterface,
         deleteNoteUseCase: DeleteNoteUseCaseInterface,
-        getFavoriteArtistsHavingNotesUseCase: GetFavoriteArtistsHavingNotesUseCaseInterface,
+        getFavoriteArtistsBookmarkedUseCase: GetFavoriteArtistsBookmarkedUseCaseInterface,
         getMyNotesByBookmarkUseCase: GetMyNotesByBookmarkUseCaseInterface
     ) {
         self.setNoteLikeUseCase = setNoteLikeUseCase
         self.setBookmarkUseCase = setBookmarkUseCase
         self.deleteNoteUseCase = deleteNoteUseCase
-        self.getFavoriteArtistsHavingNotesUseCase = getFavoriteArtistsHavingNotesUseCase
+        self.getFavoriteArtistsBookmarkedUseCase = getFavoriteArtistsBookmarkedUseCase
         self.getMyNotesByBookmarkUseCase = getMyNotesByBookmarkUseCase
     }
 }
@@ -153,7 +153,7 @@ extension BookmarkViewModel {
 
 extension BookmarkViewModel {
     func getFavoriteArtists() {
-        self.getFavoriteArtistsHavingNotesUseCase.execute()
+        self.getFavoriteArtistsBookmarkedUseCase.execute()
             .mapToResult()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] result in

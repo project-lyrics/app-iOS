@@ -18,6 +18,7 @@ public protocol NoteAPIServiceInterface {
     ) -> AnyPublisher<GetNotesResponse, NoteError>
     
     func getFavoriteArtistHavingNotes() -> AnyPublisher<[GetFavoriteArtistHavingNoteResponse], NoteError>
+    func getFavoriteArtistsBookmarked() -> AnyPublisher<[GetFavoriteArtistHavingNoteResponse], NoteError>
     func getMyNotes(cursor: Int?, size: Int, hasLyrics: Bool, artistID: Int?) -> AnyPublisher<GetMyNotesResponse, NoteError>
     func getMyNotesByBookmark(cursor: Int?, size: Int, hasLyrics: Bool, artistID: Int?) -> AnyPublisher<GetMyNotesResponse, NoteError>
     func postLike(noteID: Int) -> AnyPublisher<NoteLikeResponse, NoteError>

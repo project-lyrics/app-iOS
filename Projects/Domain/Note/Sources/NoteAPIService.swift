@@ -19,8 +19,16 @@ public struct NoteAPIService: NoteAPIServiceInterface {
         self.networkProvider = networkProvider
     }
 
-    public func getFavoriteArtistHavingNotes() -> AnyPublisher<[GetFavoriteArtistHavingNoteResponse], DomainNoteInterface.NoteError> {
+    public func getFavoriteArtistHavingNotes() -> AnyPublisher<[GetFavoriteArtistHavingNoteResponse], NoteError> {
         let endpoint = FeelinAPI<[GetFavoriteArtistHavingNoteResponse]>.getFavoriteArtistsHavingNotes
+
+        return networkProvider.request(endpoint)
+            .mapError(NoteError.init)
+            .eraseToAnyPublisher()
+    }
+
+    public func getFavoriteArtistsBookmarked() -> AnyPublisher<[GetFavoriteArtistHavingNoteResponse], NoteError> {
+        let endpoint = FeelinAPI<[GetFavoriteArtistHavingNoteResponse]>.getFavoriteArtistsBookmarked
 
         return networkProvider.request(endpoint)
             .mapError(NoteError.init)
