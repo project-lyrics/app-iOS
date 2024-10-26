@@ -40,7 +40,7 @@ public final class ProfileEditViewModel {
     }
 
     func transform(_ input: Input) -> Output {
-        let isSaveButtonEnabled = checkSaveButtonIsEnabled(input: input)
+        let isSaveButtonEnabled = isEnabledSaveButton(input: input)
         let profileImage = convertProfileImage(input: input)
         let patchUserInfoResult = patchUserInfo(input: input)
 
@@ -58,9 +58,12 @@ private extension ProfileEditViewModel {
         return nickname?.isEmpty == false && count < 10 || !profileCharacter.isEmpty
     }
 
-    func checkSaveButtonIsEnabled(input: Input) -> AnyPublisher<Bool, Never> {
+    func isEnabledSaveButton(input: Input) -> AnyPublisher<Bool, Never> {
         return Publishers
-            .CombineLatest(input.nicknameTextPublisher, input.profileImagePublisher)
+            .CombineLatest(
+                input.nicknameTextPublisher,
+                input.profileImagePublisher
+            )
             .map { nickname, profileCharacter in
                 return self.isEnabledSaveButton(nickname, profileCharacter)
             }
@@ -78,7 +81,10 @@ private extension ProfileEditViewModel {
 
     func patchUserInfo(input: Input) -> AnyPublisher<PatchUserProfileResult, Never> {
         let validUserProfilePublisher = Publishers
-            .CombineLatest(input.nicknameTextPublisher, input.profileImagePublisher)
+            .CombineLatest(
+                input.nicknameTextPublisher,
+                input.profileImagePublisher
+            )
             .filter { (nickname, profileCharacter) in
                 return self.isEnabledSaveButton(nickname, profileCharacter)
             }
