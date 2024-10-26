@@ -101,55 +101,21 @@ public final class EditNoteViewController: UIViewController {
 
         searchLyricsButton.tapPublisher
             .receive(on: DispatchQueue.main)
-            .flatMap { [weak self] _ -> AnyPublisher<Void, Never> in
-                guard let self = self else { return Empty().eraseToAnyPublisher() }
-
-                if !self.searchLyricsButton.isEnabled {
-                    lyricsTextView.resignFirstResponder()
-                    noteTextView.resignFirstResponder()
-
-                    self.showAlert(
-                        title: "곡을 추가한 후,\n가사를 검색할 수 있어요.",
-                        message: nil,
-                        singleActionTitle: "확인"
-                    )
-                    return Empty().eraseToAnyPublisher()
-                }
-
-                return Just(()).eraseToAnyPublisher()
-            }
             .sink { _ in
                 self.searchSongWebViewController.modalPresentationStyle = .overFullScreen
                 self.present(self.searchSongWebViewController, animated: false)
             }
             .store(in: &cancellables)
 
-        let lyricsTextViewTypePublisher = lyricsTextView.textPublisher(for: [ .didChange])
-            .map { [weak self] _ in self?.lyricsTextView.text }
-            .prepend(viewModel.note.lyrics?.content)
+        let lyricsTextViewTypePublisher = lyricsTextView.textPublisher(for: [.didBeginEditing, .didChange])
+            .compactMap { [weak self] _ in self?.lyricsTextView.text }
+            .prepend(viewModel.note.lyrics?.content ?? "")
             .eraseToAnyPublisher()
 
-        let lyricsBackgroundSelectPublisher = lyricsBackgroundViewController.backgroundPublisher.eraseToAnyPublisher()
+        let lyricsBackgroundSelectPublisher = lyricsBackgroundViewController.backgroundPublisher.prepend(viewModel.note.lyrics?.background).eraseToAnyPublisher()
 
         selectLyricsBackgroundButton.tapPublisher
             .receive(on: DispatchQueue.main)
-            .flatMap { [weak self] _ -> AnyPublisher<Void, Never> in
-                guard let self = self else { return Empty().eraseToAnyPublisher() }
-
-                if !self.selectLyricsBackgroundButton.isEnabled {
-                    lyricsTextView.resignFirstResponder()
-                    noteTextView.resignFirstResponder()
-
-                    self.showAlert(
-                        title: "곡을 추가한 후,\n가사배경을 추가할 수 있어요.",
-                        message: nil,
-                        singleActionTitle: "확인"
-                    )
-                    return Empty().eraseToAnyPublisher()
-                }
-
-                return Just(()).eraseToAnyPublisher()
-            }
             .sink { [weak self] _ in
                 guard let self = self else { return }
                 self.lyricsBackgroundViewController.modalPresentationStyle = .overFullScreen
@@ -157,8 +123,9 @@ public final class EditNoteViewController: UIViewController {
             }
             .store(in: &cancellables)
 
-        let noteTextViewTypePublisher = noteTextView.textPublisher(for: [.didChange])
+        let noteTextViewTypePublisher = noteTextView.textPublisher(for: [.didBeginEditing, .didChange])
             .compactMap { [weak self] _ in self?.noteTextView.text }
+            .prepend(viewModel.note.content)
             .eraseToAnyPublisher()
 
         let completeButtonTapPublisher = completeButton.publisher(for: .touchUpInside)
@@ -168,7 +135,6 @@ public final class EditNoteViewController: UIViewController {
             .eraseToAnyPublisher()
 
         let input = EditNoteViewModel.Input(
-            songTapPublisher: selectedSongPublisher.eraseToAnyPublisher(),
             lyricsTextViewTypePublisher: lyricsTextViewTypePublisher,
             lyricsBackgroundSelectPublisher: lyricsBackgroundSelectPublisher,
             noteTextViewTypePublisher: noteTextViewTypePublisher,
@@ -181,10 +147,6 @@ public final class EditNoteViewController: UIViewController {
         // 완료 버튼 활성화 상태 바인딩
         output.isEnabledCompleteButton
             .assign(to: \.isEnabled, on: completeButton)
-            .store(in: &cancellables)
-
-        output.isSelectedSong
-            .assign(to: \.isEnabled, on: searchLyricsButton)
             .store(in: &cancellables)
 
         output.isEnabledLyricsBackgroundButton
@@ -235,8 +197,6 @@ public final class EditNoteViewController: UIViewController {
                 }
             }
             .store(in: &cancellables)
-
-        lyricsTextView.setAllowEditingPublisher(output.isSelectedSong)
 
         CombineKeyboard.keyboardHeightPublisher
             .sink { [weak self] keyboardHeight in
@@ -336,24 +296,6 @@ public final class EditNoteViewController: UIViewController {
                 lyricsTextView.isScrollEnabled = contentHeight > Const.maxTextViewHeight
             }
             .store(in: &cancellables)
-
-        lyricsTextView.shouldBeginEditingPublisher
-            .sink { [weak self] _ in
-                if self?.searchLyricsButton.isEnabled == false {
-                    self?.showAlert(
-                        title: "곡을 추가한 후,\n가사를 작성하실 수 있어요.",
-                        message: nil,
-                        singleActionTitle: "확인",
-                        actionCompletion: {
-                            self?.lyricsTextView.resignFirstResponder()
-                            self?.noteTextView.resignFirstResponder()
-                        }
-                    )
-                } else {
-                    /// 가사 작성 가능
-                }
-            }
-            .store(in: &cancellables)
     }
 
     private func updateCharacterCountForLyrics() {
@@ -386,7 +328,8 @@ public final class EditNoteViewController: UIViewController {
         lyricsTextView.setUpTextView(text: lyricsContent, textColor: Colors.gray08)
         lyricsBackgroundViewController.backgroundPublisher.send(lyricsBackground)
         noteTextView.setUpTextView(text: model.content, textColor: Colors.gray08)
-
+        searchLyricsButton.isEnabled = true
+        
         updateCharacterCountForLyrics()
         updateCharacterCountForNote()
     }

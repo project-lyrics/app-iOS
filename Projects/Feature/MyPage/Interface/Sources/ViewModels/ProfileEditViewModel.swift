@@ -88,11 +88,6 @@ private extension ProfileEditViewModel {
             .filter { (nickname, profileCharacter) in
                 return self.isEnabledSaveButton(nickname, profileCharacter)
             }
-            .compactMap { $0 }
-            .eraseToAnyPublisher()
-
-        // 데이터 변경이 없는 경우, 기존 데이터를 보내면 API 에러가 발생함
-        let combinedUserProfileModelPublisher = validUserProfilePublisher
             .map { [weak self] (nickname, profileCharacter) -> UserProfileRequestValue in
                 let type = ProfileCharacterType(rawValue: profileCharacter) ?? .braidedHair
                 return UserProfileRequestValue(
@@ -103,7 +98,7 @@ private extension ProfileEditViewModel {
             .eraseToAnyPublisher()
 
         return input.saveButtonTapPublisher
-            .combineLatest(combinedUserProfileModelPublisher)
+            .combineLatest(validUserProfilePublisher)
             .flatMap { [weak self]  (_, value) -> AnyPublisher<PatchUserProfileResult, Never> in
                 guard let self = self else {
                     return Empty().eraseToAnyPublisher()

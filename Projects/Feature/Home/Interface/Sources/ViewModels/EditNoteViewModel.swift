@@ -15,8 +15,7 @@ public final class EditNoteViewModel {
     typealias EditNoteResult = Result<FeelinSuccessResponse, NoteError>
 
     struct Input {
-        let songTapPublisher: AnyPublisher<Song, Never>
-        let lyricsTextViewTypePublisher: AnyPublisher<String?, Never>
+        let lyricsTextViewTypePublisher: AnyPublisher<String, Never>
         let lyricsBackgroundSelectPublisher: AnyPublisher<LyricsBackground?, Never>
         let noteTextViewTypePublisher: AnyPublisher<String, Never>
         let completeButtonTapPublisher: AnyPublisher<UIControl, Never>
@@ -26,7 +25,6 @@ public final class EditNoteViewModel {
     struct Output {
         let isEnabledCompleteButton: AnyPublisher<Bool, Never>
         let isEnabledLyricsBackgroundButton: AnyPublisher<Bool, Never>
-        let isSelectedSong: AnyPublisher<Bool, Never>
         let isSelectedLyricsBackground: AnyPublisher<LyricsBackground?, Never>
         let editNoteResult: AnyPublisher<EditNoteResult, Never>
     }
@@ -49,7 +47,7 @@ public final class EditNoteViewModel {
         return Output(
             isEnabledCompleteButton: self.isEnabledCompleteButton(input),
             isEnabledLyricsBackgroundButton: self.checkLyricsText(input),
-            isSelectedSong: self.isSelectedSong(input), isSelectedLyricsBackground: self.isSelectLyricsBackground(input),
+            isSelectedLyricsBackground: self.isSelectLyricsBackground(input),
             editNoteResult: self.editNote(input)
         )
     }
@@ -57,23 +55,37 @@ public final class EditNoteViewModel {
 
 private extension EditNoteViewModel {
     func isEnabledCompleteButton(_ input: Input) -> AnyPublisher<Bool, Never> {
-        return Publishers.CombineLatest3(
-            input.songTapPublisher,
-            input.noteTextViewTypePublisher,
-            input.editNoteStatusPublisher
-        )
-        .map { song, noteContent, status in
-            return !noteContent.isEmpty && status == .draft
-        }
-        .eraseToAnyPublisher()
-    }
+        let hasWrittenNotePublisher = input.noteTextViewTypePublisher
+            .map { noteContent in
+                return self.note.content != noteContent
+            }
 
-    func isSelectedSong(_ input: Input) -> AnyPublisher<Bool, Never> {
-        return input.songTapPublisher
-            .map { song in
-                return song.name.isEmpty == false
+        let hasWrittenLyricsNotePublisher = input.lyricsTextViewTypePublisher
+            .map { lyricsContent in
+                return self.note.lyrics?.content != lyricsContent
+            }
+
+        let hasSelectedLyricsBackgroundPublisher = input.lyricsBackgroundSelectPublisher
+            .map { lyricsBackground in
+                return self.note.lyrics?.background != lyricsBackground
+            }
+
+        return Publishers
+            .Merge3(
+                hasWrittenNotePublisher,
+                hasWrittenLyricsNotePublisher,
+                hasSelectedLyricsBackgroundPublisher
+            )
+            .map { isEnable in
+                return isEnable
             }
             .eraseToAnyPublisher()
+    }
+
+    func isEnabledCompleteButton(lyricsContent: String, background: LyricsBackground?, noteContent: String) -> Bool {
+        return self.note.lyrics?.content != lyricsContent 
+        || self.note.lyrics?.background != background
+        || self.note.content != noteContent
     }
 
     func isSelectLyricsBackground(_ input: Input) -> AnyPublisher<LyricsBackground?, Never> {
@@ -87,53 +99,40 @@ private extension EditNoteViewModel {
     func checkLyricsText(_ input: Input) -> AnyPublisher<Bool, Never> {
         return input.lyricsTextViewTypePublisher
             .map { text in
-                return text?.isEmpty == false
+                return text.isEmpty == false
             }
             .eraseToAnyPublisher()
     }
 
     func editNote(_ input: Input) -> AnyPublisher<EditNoteResult, Never> {
-        let requiredFieldsPublisher = Publishers.CombineLatest3(
-            input.songTapPublisher,
-            input.noteTextViewTypePublisher,
-            input.editNoteStatusPublisher
-        )
-            .eraseToAnyPublisher()
-
-        let optionalFieldsPublisher = Publishers.CombineLatest(
-            input.lyricsTextViewTypePublisher,
-            input.lyricsBackgroundSelectPublisher
-        )
-            .map { (lyrics, background) -> (String?, LyricsBackground?) in
-                return (lyrics, background)
+        let validNotePublisher = Publishers
+            .CombineLatest3(
+                input.lyricsTextViewTypePublisher,
+                input.lyricsBackgroundSelectPublisher,
+                input.noteTextViewTypePublisher
+            )
+            .filter { (lyricsContent, background, noteContent) in
+                return self.isEnabledCompleteButton(lyricsContent: lyricsContent, background: background, noteContent: noteContent)
             }
-            .eraseToAnyPublisher()
-
-        // 필수 필드와 선택 필드를 결합
-        let combinedPublisher = requiredFieldsPublisher
-            .combineLatest(optionalFieldsPublisher)
-            .map { (requiredFields, optionalFields) -> PatchNoteValue in
-                let (_, noteContent, status) = requiredFields
-                let (lyrics, lyricsBackground) = optionalFields
-
-                return PatchNoteValue(
+            .map { (lyrics, background, noteContent) in
+                PatchNoteValue(
                     lyrics: lyrics,
-                    background: lyricsBackground,
+                    background: background,
                     content: noteContent,
-                    status: status
+                    status: self.note.status
                 )
             }
             .eraseToAnyPublisher()
 
         return input.completeButtonTapPublisher
-            .combineLatest(combinedPublisher)
+            .combineLatest(validNotePublisher)
             .flatMap { [weak self] (_, value) -> AnyPublisher<EditNoteResult, Never> in
                 guard let self = self else {
                     return Empty().eraseToAnyPublisher()
                 }
 
                 return self.editNote(
-                    noteID: note.id,
+                    noteID: self.note.id,
                     with: value
                 )
             }
