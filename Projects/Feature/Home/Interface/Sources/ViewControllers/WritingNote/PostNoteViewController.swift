@@ -23,7 +23,7 @@ public final class PostNoteViewController: UIViewController {
         static let lyricsPlaceholder = "좋아하는 가사를 적어주세요 (선택)"
         static let notePlaceholder = "생각을 남겨보세요."
     }
-
+    private var keyboardHeight = 0.0
     private let lyricsBackgroundViewController = LyricsBackgroundViewController(
         bottomSheetHeight: UIScreen.main.bounds.height * 0.77
     )
@@ -64,6 +64,11 @@ public final class PostNoteViewController: UIViewController {
         super.viewWillAppear(animated)
 
         setupLyricsTextviewTextCenterVertically(lyricsTextView)
+    }
+
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        updateNoteSpacerView(text: noteTextView.text)
     }
 
     public func addSelectedSong(_ item: Song) {
@@ -243,8 +248,17 @@ public final class PostNoteViewController: UIViewController {
 
         CombineKeyboard.keyboardHeightPublisher
             .sink { [weak self] keyboardHeight in
-                self?.rootScrollView.contentInset.bottom = keyboardHeight
-                self?.rootScrollView.verticalScrollIndicatorInsets.bottom = keyboardHeight
+                guard let self = self else { return }
+                self.keyboardHeight = keyboardHeight
+
+                if keyboardHeight > 0 {
+                    rootScrollView.contentInset.bottom = keyboardHeight + 24
+                    rootScrollView.verticalScrollIndicatorInsets.bottom = keyboardHeight + 24
+                } else {
+                    rootScrollView.contentInset.bottom = 0
+                    rootScrollView.verticalScrollIndicatorInsets.bottom = 0
+                }
+                updateNoteSpacerView(text: noteTextView.text)
             }
             .store(in: &cancellables)
     }
@@ -257,6 +271,7 @@ public final class PostNoteViewController: UIViewController {
                 if text?.isEmpty == true {
                     noteTextView.setUpTextView(text: Const.notePlaceholder, textColor: Colors.gray04)
                     noteCharCountLabel.textColor = Colors.gray04
+                    updateNoteSpacerView(text: Const.notePlaceholder)
                 } else if text == Const.notePlaceholder {
                     noteTextView.setUpTextView(text: "", textColor: Colors.gray08)
                 } else {
@@ -267,26 +282,21 @@ public final class PostNoteViewController: UIViewController {
 
         noteTextView.textPublisher(for: [.didChange])
             .sink { [weak self] text in
-                guard let self = self else { return }
+                guard let self = self, let text = text else { return }
 
-                // 텍스트가 변경될 때마다 FlexLayout을 사용해 높이를 재조정
-                noteTextView.flex.markDirty()
-                contentView.flex.layout(mode: .adjustHeight)
+                self.noteTextView.flex.markDirty()
 
-                // ScrollView의 contentSize를 업데이트하여 스크롤 가능하게 만듦
-                rootScrollView.contentSize = contentView.frame.size
+                // contentView 레이아웃 재배치
+                self.contentView.flex.layout(mode: .adjustHeight)
+                self.rootScrollView.contentSize = self.contentView.frame.size
 
                 // 텍스트 뷰가 키보드에 의해 가려지는 경우를 방지하기 위해 스크롤 위치를 조정
                 guard let end = noteTextView.selectedTextRange?.end else { return }
                 let caretRect = noteTextView.caretRect(for: end)
                 rootScrollView.scrollRectToVisible(caretRect, animated: true)
 
-                // 텍스트 길이 초과 방지
-                if self.noteTextView.text.count > Const.noteMaxTextLength {
-                    self.noteTextView.text = String(self.noteTextView.text.prefix(Const.noteMaxTextLength))
-                }
-
-                updateCharacterCountForNote()
+                self.updateCharacterCountForNote()
+                self.updateNoteSpacerView(text: text)
             }
             .store(in: &cancellables)
 
@@ -376,6 +386,66 @@ public final class PostNoteViewController: UIViewController {
         lyricsCharCountLabel.textColor = Colors.gray06.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
     }
 
+    private func updateNoteSpacerView(text: String) {
+        let lines = text.components(separatedBy: .newlines)
+        let numberOfLines = lines.count
+        let screenHeight = UIScreen.main.bounds.height
+        let spacerHeight = screenHeight > 667 ? screenHeight * 0.43 : contentView.frame.height * 0.60
+
+        if numberOfLines == 1 {
+            if text != Const.notePlaceholder {
+                if keyboardHeight > 0 {
+                    noteSpacerView
+                        .pin
+                        .below(of: noteTextView)
+                        .height(screenHeight > 667 ? 66 : 0)
+                } else {
+                    noteSpacerView
+                        .pin
+                        .below(of: noteTextView)
+                        .height(spacerHeight)
+                }
+            } else {
+                noteSpacerView
+                    .pin
+                    .below(of: noteTextView)
+                    .height(spacerHeight)
+            }
+        } else if numberOfLines == 2 && screenHeight > 667 {
+            noteSpacerView
+                .pin
+                .below(of: noteTextView)
+                .height(33.33)
+        } else if numberOfLines > 2 && keyboardHeight > 0 {
+            if screenHeight > 667 {
+                noteSpacerView
+                    .pin
+                    .below(of: noteTextView)
+                    .height(24)
+            } else {
+                noteSpacerView
+                    .pin
+                    .below(of: noteTextView)
+                    .height(0)
+                    .bottom(12)
+            }
+
+        } else if numberOfLines > 2 {
+            let ratio = screenHeight > 667 ? 0.43 : 0.60
+
+            noteSpacerView
+                .pin
+                .below(of: noteTextView)
+                .height(spacerHeight - (CGFloat(numberOfLines) * 33.33) * ratio)
+        }
+        
+        noteCharCountLabel
+            .pin
+            .below(of: noteSpacerView)
+            .height(20)
+    }
+
+
     private func updateCharacterCountForNote() {
         let count = noteTextView.text.count <= 1000 ? noteTextView.text.count : 1000
         noteCharCountLabel.text = "\(count)/\(Const.noteMaxTextLength)"
@@ -451,6 +521,10 @@ extension PostNoteViewController {
 
     var noteTextView: UITextView {
         return postNoteView.noteTextView
+    }
+    
+    var noteSpacerView: UIView {
+        return postNoteView.noteSpacerView
     }
 
     var noteCharCountLabel: UILabel {

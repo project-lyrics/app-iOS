@@ -17,6 +17,7 @@ public final class WritingNoteView: UIView {
 
     let rootFlexContainer = UIView()
     let artistInfoHeaderView = UIView()
+    let noteSpacerView = UIView()
 
     private let navigationBar = NavigationBar()
 
@@ -183,7 +184,7 @@ public final class WritingNoteView: UIView {
             .right()
             .bottom()
 
-        contentView.pin.top().left().right()
+        contentView.pin.top().left().right().bottom()
         contentView.flex.layout(mode: .adjustHeight)
         rootScrollView.contentSize = contentView.frame.size
     }
@@ -204,7 +205,6 @@ public final class WritingNoteView: UIView {
 
         rootFlexContainer
             .flex
-            .direction(.column)
             .define { rootFlex in
                 rootFlex.addItem(navigationBar)
                     .height(44)
@@ -213,20 +213,29 @@ public final class WritingNoteView: UIView {
 
                 rootFlex.addItem(rootScrollView)
                     .paddingHorizontal(20)
-                    .direction(.column)
                     .marginTop(16)
                     .define { rootScrollFlex in
                         rootScrollFlex.addItem(contentView)
                             .paddingHorizontal(20)
-                            .direction(.column)
                             .define { contentFlex in
                                 artistInfoHeaderView(contentFlex)
                                 lyricsTextBodyView(contentFlex)
 
                                 contentFlex.addItem(noteTextView)
-                                    .width(100%)
                                     .marginTop(24)
+                                    .width(100%)
+                                    .backgroundColor(.clear)
+
+                                contentFlex.addItem(noteSpacerView)
+                                    .minHeight(24)
+                                    .maxHeight(UIScreen.main.bounds.height * 0.43)
+                                    .backgroundColor(.clear)
+                                    .grow(1)
+
                                 contentFlex.addItem(noteCharCountLabel)
+                                    .marginBottom(12)
+                                    .height(20)
+                                    .shrink(0)
                                     .markDirty()
                             }
                     }
@@ -255,7 +264,6 @@ public final class WritingNoteView: UIView {
                             .height(100%)
 
                         flex.addItem()
-                            .direction(.column)
                             .position(.absolute)
                             .top(2)
                             .bottom(2)
@@ -290,10 +298,8 @@ public final class WritingNoteView: UIView {
 
     private func lyricsTextBodyView(_ flex: Flex) {
         flex.addItem()
-            .direction(.column)
             .define { flex in
                 flex.addItem()
-                    .direction(.column)
                     .marginTop(20)
                     .define { flex in
                         flex.addItem(lyricsTextView)
