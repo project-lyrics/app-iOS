@@ -63,7 +63,6 @@ class FavoriteArtistSelectButton: UIButton {
     private func setUpButton() {
         updateButtonImage()
         setupLayout()
-        addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
     }
     
     private func setupLayout() {
@@ -89,11 +88,6 @@ class FavoriteArtistSelectButton: UIButton {
         
         flexContainer.pin.all()
         flexContainer.flex.layout()
-    }
-    
-    @objc private func buttonTapped() {
-        isSelected.toggle()
-        updateButtonImage()
     }
     
     private func updateButtonImage() {

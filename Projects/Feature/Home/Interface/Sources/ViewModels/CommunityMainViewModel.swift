@@ -10,17 +10,27 @@ import Domain
 import Combine
 import Foundation
 
+enum FavoriteArtistAlertState {
+    case initial
+    case isFavorite
+    case isRemoved
+}
+
 public final class CommunityMainViewModel {
     @Published private (set) var fetchedNotes: [Note] = []
-    @Published private (set) var artist: Artist
+    @Published private (set) var fetchedArtist: Artist?
     @Published var mustHaveLyrics: Bool = false
     @Published private (set) var hasUncheckedNotification: Bool = false
 
     @Published private (set) var error: CommunityError?
     @Published private (set) var refreshState: RefreshState<CommunityError> = .idle
     @Published private (set) var logoutResult: LogoutResult = .none
+    @Published private (set) var favoriteArtistAlertState: FavoriteArtistAlertState = .initial
     
     private var cancellables: Set<AnyCancellable> = .init()
+    
+    private (set) var artistID: Int
+    private let getArtistUseCase: GetArtistUseCaseInterface
     private let getArtistNotesUseCase: GetArtistNotesUseCaseInterface
     private let setNoteLikeUseCase: SetNoteLikeUseCaseInterface
     private let setBookmarkUseCase: SetBookmarkUseCaseInterface
@@ -30,7 +40,8 @@ public final class CommunityMainViewModel {
     private let logoutUseCase: LogoutUseCaseInterface
 
     public init(
-        artist: Artist,
+        artistID: Int,
+        getArtistUseCase: GetArtistUseCase,
         getArtistNotesUseCase: GetArtistNotesUseCaseInterface,
         setNoteLikeUseCase: SetNoteLikeUseCaseInterface,
         setBookmarkUseCase: SetBookmarkUseCaseInterface,
@@ -39,7 +50,8 @@ public final class CommunityMainViewModel {
         getHasUncheckedNotificationUseCase: GetHasUncheckedNotificationUseCaseInterface,
         logoutUseCase: LogoutUseCaseInterface
     ) {
-        self._artist = .init(initialValue: artist)
+        self.artistID = artistID
+        self.getArtistUseCase = getArtistUseCase
         self.getArtistNotesUseCase = getArtistNotesUseCase
         self.setNoteLikeUseCase = setNoteLikeUseCase
         self.setBookmarkUseCase = setBookmarkUseCase
@@ -47,15 +59,40 @@ public final class CommunityMainViewModel {
         self.setFavoriteArtistUseCase = setFavoriteArtistUseCase
         self.getHasUncheckedNotificationUseCase = getHasUncheckedNotificationUseCase
         self.logoutUseCase = logoutUseCase
-
-        // mustHaveLyrics가 변경될 때 데이터를 새로 가져오는 로직
-        $mustHaveLyrics
-            .sink { [weak self] mustHaveLyrics in
-                self?.getArtistNotes(
-                    isInitial: true,
-                    mustHaveLyrics: mustHaveLyrics
-                )
-            }
+        
+    }
+    
+    func getArtistAndNotes() {
+        self.refreshState = .refreshing
+        
+        let getArtist = self.getArtistUseCase.execute(artistID: self.artistID)
+            .mapError(CommunityError.init)
+            .eraseToAnyPublisher()
+        
+        let getNotes = self.getArtistNotesUseCase.execute(
+            isInitial: true,
+            artistID: self.artistID,
+            perPage: 10,
+            mustHaveLyrics: self.mustHaveLyrics
+        )
+        .mapError(CommunityError.init)
+        .eraseToAnyPublisher()
+        
+        Publishers.Zip(getArtist, getNotes)
+            .receive(on: DispatchQueue.main)
+            .mapToResult()
+            .sink(receiveValue: { [weak self] result in
+                switch result {
+                case .success(let (fetchedArtist, fetchedNotes)):
+                    self?.fetchedArtist = fetchedArtist
+                    self?.fetchedNotes = fetchedNotes
+                    self?.refreshState = .completed
+                    
+                case .failure(let error):
+                    self?.error = error
+                    self?.refreshState = .failed(error)
+                }
+            })
             .store(in: &cancellables)
     }
     
@@ -65,7 +102,6 @@ public final class CommunityMainViewModel {
         perPage: Int = 10
     ) {
         self.refreshState = .refreshing
-        let artistID = self.artist.id
         
         self.getArtistNotesUseCase.execute(
             isInitial: isInitial,
@@ -117,7 +153,7 @@ extension CommunityMainViewModel {
             .setFailureType(to: CommunityError.self)
             .map { [unowned self] isFavorite in
                 return self.setFavoriteArtistUseCase.execute(
-                    artistID: self.artist.id,
+                    artistID: self.artistID,
                     isFavorite: isFavorite
                 )
                 .mapError(CommunityError.init)
@@ -128,10 +164,16 @@ extension CommunityMainViewModel {
             .sink { [weak self] result in
                 switch result {
                 case .success:
-                    self?.artist.isFavorite = isFavorite
+                    self?.fetchedArtist?.isFavorite = isFavorite
+                    
+                    if isFavorite {
+                        self?.favoriteArtistAlertState = .isFavorite
+                    } else {
+                        self?.favoriteArtistAlertState = .isRemoved
+                    }
                     
                 case .failure(let error):
-                    self?.artist.isFavorite = !isFavorite
+                    self?.fetchedArtist?.isFavorite = !isFavorite
                     self?.error = error
                 }
             }

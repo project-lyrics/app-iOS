@@ -13,7 +13,7 @@ import Shared
 
 public protocol SearchMoreFavoriteArtistDelegate: AnyObject {
     func dismissViewController()
-    func pushCommunityMainViewController(artist: Artist)
+    func pushCommunityMainViewController(artistID: Int)
 }
 
 public class SearchMoreFavoriteArtistViewController: UIViewController {
@@ -41,7 +41,12 @@ public class SearchMoreFavoriteArtistViewController: UIViewController {
             
             cell.requestArtistButton.publisher(for: .touchUpInside)
                 .sink { _ in
-                    // TODO: - 추후 open url(링크 추가시)
+                    guard let url = URL(string: "https://forms.gle/nvxuLVfr1WuvFqrq8") else {
+                        return
+                    }
+                    if UIApplication.shared.canOpenURL(url) {
+                        UIApplication.shared.open(url)
+                    }
                 }
                 .store(in: &cell.cancellables)
         }
@@ -255,7 +260,7 @@ extension SearchMoreFavoriteArtistViewController: UICollectionViewDelegate {
         
         if let selectedArtist = self.viewModel.fetchedArtists[safe: indexPath.item] {
             self.coordinator?.dismissViewController()
-            self.coordinator?.pushCommunityMainViewController(artist: selectedArtist)
+            self.coordinator?.pushCommunityMainViewController(artistID: selectedArtist.id)
             
         }
     }

@@ -13,6 +13,18 @@ import DomainArtistInterface
 import DomainSharedInterface
 
 public struct MockArtistAPIService: ArtistAPIServiceInterface {
+    public func getArtist(artistID: Int) -> AnyPublisher<CoreNetworkInterface.ArtistResponse, ArtistError> {
+        return Empty()
+            .setFailureType(to: ArtistError.self)
+            .eraseToAnyPublisher()
+    }
+    
+    public func getIsFavoriteArtist(artistID: Int) -> AnyPublisher<CoreNetworkInterface.IsFavoriteArtistResponse, ArtistError> {
+        return Empty()
+            .setFailureType(to: ArtistError.self)
+            .eraseToAnyPublisher()
+    }
+    
     private let scenario: DomainTestScenario<ArtistError>
     
     public init(scenario: DomainTestScenario<ArtistError>) {

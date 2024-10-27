@@ -49,39 +49,38 @@ final public class HomeViewModel {
         self.checkFirstVisitorUseCase = checkFirstVisitorUseCase
     }
     
-    func fetchArtistsThenNotes(
+    func fetchArtistsAndNotes(
         notesPerPage: Int = 10,
         artistsPerPage: Int = 30
     ) {
-        self.getFavoriteArtistsUseCase.execute(
+        let getFavoriteArtists = self.getFavoriteArtistsUseCase.execute(
             isInitial: true,
             perPage: artistsPerPage
         )
         .mapError(HomeError.init)
-        .receive(on: DispatchQueue.main)
-        .flatMap { [weak self] fetchedFavoriteArtists -> AnyPublisher<[Note], HomeError> in
-            self?.fetchedFavoriteArtists = fetchedFavoriteArtists
-            
-            return self?.getNotesUseCase.execute(
-                isInitial: true,
-                perPage: notesPerPage,
-                mustHaveLyrics: false
-            )
-            .mapError(HomeError.init)
-            .eraseToAnyPublisher() ?? Empty().eraseToAnyPublisher()
-        }
-        .mapToResult()
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] result in
-            switch result {
-            case .success(let fetchedNotes):
-                self?.fetchedNotes = fetchedNotes
-                
-            case .failure(let error):
-                self?.error = error
+        .eraseToAnyPublisher()
+        
+        let getRelatedNotes = self.getNotesUseCase.execute(
+            isInitial: true,
+            perPage: notesPerPage,
+            mustHaveLyrics: false
+        )
+        .mapError(HomeError.init)
+        .eraseToAnyPublisher()
+        
+        Publishers.Zip(getFavoriteArtists, getRelatedNotes)
+            .receive(on: DispatchQueue.main)
+            .mapToResult()
+            .sink { [weak self] result in
+                switch result {
+                case .success(let (favoriteArtists, relatedNotes)):
+                    self?.fetchedFavoriteArtists = favoriteArtists
+                    self?.fetchedNotes = relatedNotes
+                case .failure(let error):
+                    self?.error = error
+                }
             }
-        }
-        .store(in: &cancellables)
+            .store(in: &cancellables)
     }
     
     func fetchNotes(

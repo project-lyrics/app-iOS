@@ -16,7 +16,7 @@ public protocol HomeViewControllerDelegate: AnyObject {
     func presentEditNoteViewController(note: Note)
     func pushNoteNotificationViewController()
     func pushMyFavoriteArtistsViewController(artists: [Artist])
-    func pushCommunityMainViewController(artist: Artist)
+    func pushCommunityMainViewController(artistID: Int)
     func pushNoteCommentsViewController(noteID: Int)
     func presentInitialArtistSelectViewController()
     func presentSearchMoreFavoriteArtistViewController()
@@ -336,7 +336,7 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
     // MARK: - Favorite Artists
     
     public func updateInitialHomeData() {
-        self.viewModel.fetchArtistsThenNotes()
+        self.viewModel.fetchArtistsAndNotes()
     }
     
     private func showSelectArtistListIfNeeded() {
@@ -448,7 +448,7 @@ private extension HomeViewController {
                     coordinator?.presentSearchMoreFavoriteArtistViewController()
 
                 case .favoriteArtist(let artist):
-                    coordinator?.pushCommunityMainViewController(artist: artist)
+                    coordinator?.pushCommunityMainViewController(artistID: artist.id)
 
                 case .note(let note):
                     coordinator?.pushNoteCommentsViewController(noteID: note.id)

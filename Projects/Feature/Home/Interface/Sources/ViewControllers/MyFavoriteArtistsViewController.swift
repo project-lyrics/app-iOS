@@ -13,7 +13,7 @@ import Shared
 
 public protocol MyFavoriteArtistsViewControllerDelegate: AnyObject {
     func dismissViewController()
-    func pushCommunityMainViewController(artist: Artist)
+    func pushCommunityMainViewController(artistID: Int)
 }
 
 public final class MyFavoriteArtistsViewController: UIViewController {
@@ -70,7 +70,7 @@ extension MyFavoriteArtistsViewController: UICollectionViewDelegate {
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let selectedArtist = artists[indexPath.row]
         coordinator?.dismissViewController()
-        coordinator?.pushCommunityMainViewController(artist: selectedArtist)
+        coordinator?.pushCommunityMainViewController(artistID: selectedArtist.id)
     }
 }
 
