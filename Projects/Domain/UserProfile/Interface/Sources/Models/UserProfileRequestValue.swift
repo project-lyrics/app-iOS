@@ -33,7 +33,7 @@ public struct UserProfileRequestValue {
         return UserProfileRequest(
             nickname: nickname,
             profileCharacter: profileCharacter?.rawValue,
-            gender: gender?.toDTO,
+            gender: gender?.toDTO.rawValue,
             birthYear: birthYear
         )
     }

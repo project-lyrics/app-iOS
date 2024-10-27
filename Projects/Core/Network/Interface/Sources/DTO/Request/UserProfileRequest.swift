@@ -10,13 +10,13 @@ import Foundation
 public struct UserProfileRequest: Encodable {
     public let nickname: String?
     public let profileCharacter: String?
-    public var gender: Gender?
+    public var gender: String?
     public var birthYear: Int?
 
     public init(
         nickname: String? = nil,
         profileCharacter: String? = nil,
-        gender: Gender? = nil,
+        gender: String? = nil,
         birthYear: Int? = nil
     ) {
         self.nickname = nickname
