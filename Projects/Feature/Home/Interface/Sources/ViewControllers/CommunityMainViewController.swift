@@ -516,7 +516,7 @@ private extension CommunityMainViewController {
                 case .isFavorite:
                     self?.showAlert(
                         title: "관심 아티스트에 추가되었어요.",
-                        message: nil,
+                        message: "해당 레코드에서 노트를 작성할 수 있어요.",
                         singleActionTitle: "확인"
                     )
                     
