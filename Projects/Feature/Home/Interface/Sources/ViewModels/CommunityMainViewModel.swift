@@ -60,6 +60,16 @@ public final class CommunityMainViewModel {
         self.getHasUncheckedNotificationUseCase = getHasUncheckedNotificationUseCase
         self.logoutUseCase = logoutUseCase
         
+        $mustHaveLyrics
+            .dropFirst()
+            .sink { [weak self] mustHaveLyrics in
+                self?.getArtistNotes(
+                    isInitial: true,
+                    mustHaveLyrics: mustHaveLyrics
+                )
+            }
+            .store(in: &cancellables)
+        
     }
     
     func getArtistAndNotes() {
