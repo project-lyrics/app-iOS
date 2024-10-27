@@ -23,7 +23,6 @@ public final class EditUserInfoViewController: UIViewController {
         baseYear: 2000
     )
     private let genderPublisher = PassthroughSubject<String, Never>()
-    private let genderSelectionPublisher = PassthroughSubject<Bool, Never>()
     private var cancellables = Set<AnyCancellable>()
 
     public weak var coordinator: EditUserInfoViewControllerDelegate?
@@ -49,6 +48,7 @@ public final class EditUserInfoViewController: UIViewController {
         super.viewDidLoad()
         
         bind()
+        genderCollectionView.delegate = self
         genderCollectionView.dataSource = self
         configure(model: viewModel.userProfile)
     }
@@ -68,19 +68,6 @@ public final class EditUserInfoViewController: UIViewController {
             }
             .store(in: &cancellables)
 
-        genderCollectionView.publisher(for: [.didSelectItem, .didDeselectItem])
-            .sink { [weak self] indexPath in
-                guard let self = self else { return }
-
-                if let cell = genderCollectionView.cellForItem(at: indexPath) as? GenderCell {
-                    let isSelected = genderCollectionView.indexPathsForSelectedItems?.contains(indexPath) ?? false
-                    cell.setSelected(isSelected)
-                    genderSelectionPublisher.send(true)
-                    genderPublisher.send(GenderEntity.allCases[indexPath.row].rawValue)
-                }
-            }
-            .store(in: &cancellables)
-
         birthYearDropDownButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in
                 guard let self = self else { return }
@@ -96,14 +83,6 @@ public final class EditUserInfoViewController: UIViewController {
             }
             .store(in: &cancellables)
 
-        Publishers.CombineLatest(genderSelectionPublisher, birthYearDropDownButtonPublisher)
-            .map { isGenderSelected, birthYear in
-                return isGenderSelected && !"\(birthYear)".isEmpty
-            }
-            .sink { [weak self] isEnabled in
-                self?.saveProfileButton.isEnabled = isEnabled
-            }
-            .store(in: &cancellables)
         let saveButtonTapPublisher = saveProfileButton.publisher(for: .touchUpInside)
             .eraseToAnyPublisher()
       
@@ -137,13 +116,33 @@ public final class EditUserInfoViewController: UIViewController {
     }
 
     private func configure(model: UserProfile) {
+        if let gender = model.gender {
+            genderPublisher.send(gender.rawValue)
+        }
+
         if let birthYear = model.birthYear {
             birthYearDropDownButtonPublisher.send(birthYear)
         }
     }
 }
 
-extension EditUserInfoViewController: UICollectionViewDataSource {
+extension EditUserInfoViewController: UICollectionViewDataSource, UICollectionViewDelegate {
+    public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+
+        if let cell = genderCollectionView.cellForItem(at: indexPath) as? GenderCell {
+            let isSelected = genderCollectionView.indexPathsForSelectedItems?.contains(indexPath) ?? false
+            cell.setSelected(isSelected)
+            genderPublisher.send(GenderEntity.allCases[indexPath.row].rawValue)
+        }
+    }
+
+    public func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        if let cell = genderCollectionView.cellForItem(at: indexPath) as? GenderCell {
+            let isSelected = genderCollectionView.indexPathsForSelectedItems?.contains(indexPath) ?? false
+            cell.setSelected(isSelected)
+        }
+    }
+
     public func collectionView(
         _ collectionView: UICollectionView,
         numberOfItemsInSection section: Int
@@ -155,8 +154,9 @@ extension EditUserInfoViewController: UICollectionViewDataSource {
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
+        let model = GenderEntity.allCases[indexPath.row]
         let cell = collectionView.dequeueReusableCell(for: indexPath, cellType: GenderCell.self)
-        cell.configure(with: GenderEntity.allCases[indexPath.row])
+        cell.configure(with: model)
 
         if let gender = viewModel.userProfile.gender,
            indexPath.row == gender.index {
