@@ -63,7 +63,7 @@ public final class FeelinDropDownButton: UIButton {
             flex.addItem(descriptionLabel)
                 .position(.absolute)
                 .alignSelf(.center)
-            
+
             flex.addItem(dropDownImageView)
                 .position(.absolute)
                 .right(20)
@@ -92,5 +92,7 @@ public final class FeelinDropDownButton: UIButton {
         }
         isInitialAppearance = false
         descriptionLabel.text = description
+        descriptionLabel.flex.markDirty()
+        flexContainer.flex.layout()
     }
 }

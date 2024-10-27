@@ -49,7 +49,7 @@ final class EditUserInfoView: UIView {
         return label
     }()
 
-    let birthYearDropDownButton = FeelinDropDownButton(description: "")
+    let birthYearDropDownButton = FeelinDropDownButton(description: "출생 연도를 입력해주세요")
 
     let saveProfileButton = FeelinConfirmButton(title: "회원 정보 저장")
 
