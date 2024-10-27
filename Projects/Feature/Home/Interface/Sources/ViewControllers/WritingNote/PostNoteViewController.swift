@@ -13,6 +13,7 @@ import Domain
 public protocol PostNoteViewControllerDelegate: AnyObject {
     func dismissViewController()
     func pushSearchSongViewController(artistID: Int)
+    func didFinishForPresentingViewController()
 }
 
 public final class PostNoteViewController: UIViewController {
@@ -233,7 +234,7 @@ public final class PostNoteViewController: UIViewController {
 
                 switch result {
                 case .success:
-                    self?.coordinator?.dismissViewController()
+                    self?.coordinator?.didFinishForPresentingViewController()
                 case .failure(let error):
                     self?.showAlert(
                         title: "노트 작성에 실패했어요. \n\(error.localizedDescription)",

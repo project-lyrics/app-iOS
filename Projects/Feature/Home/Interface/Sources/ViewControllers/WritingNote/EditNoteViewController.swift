@@ -12,6 +12,7 @@ import Domain
 
 public protocol EditNoteViewControllerDelegate: AnyObject {
     func dismissViewController()
+    func didFinishForPresentingViewController()
 }
 
 public final class EditNoteViewController: UIViewController {
@@ -186,7 +187,7 @@ public final class EditNoteViewController: UIViewController {
 
                 switch result {
                 case .success:
-                    self?.coordinator?.dismissViewController()
+                    self?.coordinator?.didFinishForPresentingViewController()
                 case .failure(let error):
                     self?.showAlert(
                         title: "노트 수정에 실패했어요. \n\(error.localizedDescription)",
