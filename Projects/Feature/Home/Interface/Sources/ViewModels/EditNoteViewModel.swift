@@ -116,7 +116,7 @@ private extension EditNoteViewModel {
             }
             .map { (lyrics, background, noteContent) in
                 PatchNoteValue(
-                    lyrics: lyrics,
+                    lyrics: lyrics != "좋아하는 가사를 적어주세요 (선택)" ? lyrics : nil,
                     background: background,
                     content: noteContent,
                     status: self.note.status

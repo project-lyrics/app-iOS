@@ -120,7 +120,7 @@ private extension PostNoteViewModel {
 
                 return PostNoteValue(
                     id: song.id,
-                    lyrics: lyrics,
+                    lyrics: lyrics != "좋아하는 가사를 적어주세요 (선택)" ? lyrics : nil,
                     background: lyricsBackground,
                     content: noteContent,
                     status: status
