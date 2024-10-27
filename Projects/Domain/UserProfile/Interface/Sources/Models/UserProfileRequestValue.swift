@@ -11,7 +11,7 @@ import Shared
 import Foundation
 import DomainOAuthInterface
 
-public struct UserProfileRequestValue {
+public struct UserProfileRequestValue: Equatable {
     public let nickname: String?
     public let profileCharacter: ProfileCharacterType?
     public var gender: GenderEntity?

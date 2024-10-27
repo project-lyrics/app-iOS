@@ -40,46 +40,89 @@ public final class EditUserInfoViewModel {
     }
 
     func transform(_ input: Input) -> Output {
-        let isSaveButtonEnabled = checkSaveButtonIsEnabled(input: input)
+        let isEnabledSaveButton = isEnabledSaveButton(input: input)
         let patchUserInfoResult = patchUserInfo(input: input)
 
         return Output(
-            isSaveButtonEnabled: isSaveButtonEnabled,
+            isSaveButtonEnabled: isEnabledSaveButton,
             patchUserProfileResult: patchUserInfoResult
         )
     }
+}
 
-    func checkSaveButtonIsEnabled(input: Input) -> AnyPublisher<Bool, Never> {
-        return input.birthYearPublisher
-            .map { [weak self] birthYear in
-                return self?.userProfile.birthYear != birthYear
+private extension EditUserInfoViewModel {
+    func isEnabledSaveButton(_ birthYear: Int?, _ genderType: String?) -> Bool {
+        return (birthYear?.description.isEmpty == false && birthYear != self.userProfile.birthYear) || (genderType?.isEmpty == false && genderType != self.userProfile.gender?.rawValue)
+    }
+
+    func isEnabledSaveButton(input: Input) -> AnyPublisher<Bool, Never> {
+        let birthYearStream = input.birthYearPublisher
+            .map { birthYear in
+                return self.isEnabledSaveButton(birthYear, self.userProfile.gender?.rawValue)
             }
+
+        let genderStream = input.genderPublisher
+            .map { gender in
+                return self.isEnabledSaveButton(self.userProfile.birthYear, gender)
+            }
+
+        return Publishers.Merge(birthYearStream, genderStream)
             .eraseToAnyPublisher()
     }
 
     func patchUserInfo(input: Input) -> AnyPublisher<PatchUserProfileResult, Never> {
-        let combinedUserProfilePublisher = Publishers
-            .CombineLatest(
-                input.genderPublisher,
-                input.birthYearPublisher
-            )
-            .map { [weak self] (gender, birthYear) -> UserProfileRequestValue in
-                let gender = GenderEntity(rawValue: gender)
+        let initialValue = UserProfileRequestValue(gender: nil, birthYear: nil)
 
-                return UserProfileRequestValue(
-                    gender: gender != self?.userProfile.gender ? gender : nil,
-                    birthYear: birthYear != self?.userProfile.birthYear ? birthYear : nil
+        let birthYearStream = input.birthYearPublisher
+            .map { birthYear -> UserProfileRequestValue in
+                UserProfileRequestValue(
+                    gender: nil,
+                    birthYear: birthYear != self.userProfile.birthYear ? birthYear : nil
                 )
             }
+
+        let genderStream = input.genderPublisher
+            .map { gender -> UserProfileRequestValue in
+                let genderEntity = GenderEntity(rawValue: gender)
+                return UserProfileRequestValue(
+                    gender: genderEntity != self.userProfile.gender ? genderEntity : nil,
+                    birthYear: nil
+                )
+            }
+
+        let combinedUserProfilePublisher = Publishers
+            .Merge(birthYearStream, genderStream)
+            .scan(initialValue) { accumulated, new in
+                UserProfileRequestValue(
+                    gender: new.gender ?? accumulated.gender,
+                    birthYear: new.birthYear ?? accumulated.birthYear
+                )
+            }
+            .filter { requestValue in
+                return requestValue.gender != nil || requestValue.birthYear != nil
+            }
+            .removeDuplicates()
             .eraseToAnyPublisher()
 
         return input.saveButtonTapPublisher
             .combineLatest(combinedUserProfilePublisher)
-            .flatMap { [weak self]  (_, value) -> AnyPublisher<PatchUserProfileResult, Never> in
+            .flatMap { [weak self] (_, value) -> AnyPublisher<PatchUserProfileResult, Never> in
                 guard let self = self else {
                     return Empty().eraseToAnyPublisher()
                 }
+
                 return self.patchUserInfo(value)
+                    .handleEvents(receiveOutput: { result in
+                        if case .success = result {
+                            // 성공한 경우엔 초기화 없이 그대로 둡니다.
+                        }
+                    })
+                    .mapError { _ in UserProfileError.unknown(errorDescription: "") }
+                    .catch { error -> AnyPublisher<PatchUserProfileResult, Never> in
+                        // 실패한 경우에만 유지하여 재시도 가능하게
+                        return Just(.failure(error)).eraseToAnyPublisher()
+                    }
+                    .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
     }

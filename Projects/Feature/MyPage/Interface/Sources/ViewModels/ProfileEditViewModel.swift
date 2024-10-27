@@ -40,12 +40,12 @@ public final class ProfileEditViewModel {
     }
 
     func transform(_ input: Input) -> Output {
-        let isSaveButtonEnabled = isEnabledSaveButton(input: input)
+        let isEnabledSaveButton = isEnabledSaveButton(input: input)
         let profileImage = convertProfileImage(input: input)
         let patchUserInfoResult = patchUserInfo(input: input)
 
         return Output(
-            isSaveButtonEnabled: isSaveButtonEnabled,
+            isSaveButtonEnabled: isEnabledSaveButton,
             profileImage: profileImage,
             patchUserProfileResult: patchUserInfoResult
         )
