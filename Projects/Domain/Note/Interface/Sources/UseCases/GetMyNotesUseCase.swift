@@ -42,7 +42,7 @@ public struct GetMyNotesUseCase: GetMyNotesUseCaseInterface {
 
         if isInitial {
             self.notePaginationService.update(
-                currentPage: nil,
+                currentPage: 0,
                 hasNextPage: true
             )
         }

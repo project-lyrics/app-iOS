@@ -378,7 +378,7 @@ public final class BookmarkViewController: UIViewController,
                 guard let self = self else { return }
 
                 selectFirstArtistCategory()
-                viewModel.getMyNotesByBookmark(isInitialFetch: true, artistID: nil)
+                viewModel.getMyNotesByBookmark(isInitialFetch: true)
             }
         } else {
             // 그 외에는 cell 갯수는 변화가 없으나 컨텐츠에 변화가 있다고 판단. reloadData 수행

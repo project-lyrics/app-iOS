@@ -111,7 +111,7 @@ extension MyPageTabViewController: MyNoteViewControllerDelegate,
 private extension MyPageTabViewController {
     func myNoteDependencies() -> MyNoteViewModel {
         @Injected(.noteAPIService) var noteAPIService: NoteAPIServiceInterface
-        @Injected(.notePaginationService) var notePaginationService: NotePaginationServiceInterface
+        let notePaginationService: NotePaginationServiceInterface = NotePaginationService()
 
         let setNoteLikeUseCase = SetNoteLikeUseCase(noteAPIService: noteAPIService)
         let setBookmarkUseCase = SetBookmarkUseCase(noteAPIService: noteAPIService)
@@ -134,7 +134,7 @@ private extension MyPageTabViewController {
 
     func bookmarkDependencies() -> BookmarkViewModel {
         @Injected(.noteAPIService) var noteAPIService: NoteAPIServiceInterface
-        @Injected(.notePaginationService) var notePaginationService: NotePaginationServiceInterface
+        let notePaginationService: NotePaginationServiceInterface = NotePaginationService()
 
         let setNoteLikeUseCase = SetNoteLikeUseCase(noteAPIService: noteAPIService)
         let setBookmarkUseCase = SetBookmarkUseCase(noteAPIService: noteAPIService)
