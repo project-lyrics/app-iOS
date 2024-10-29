@@ -45,7 +45,7 @@ public struct GetPublicNotificationUseCase: GetNotificationUseCaseInterface {
 
         notificationPaginationService.setLoading(true)
 
-        return notificationAPIService.getPersonalNotifications(
+        return notificationAPIService.getPublicNotifications(
             currentPage: notificationPaginationService.currentPage,
             numberOfNotifications: perPage
         )
