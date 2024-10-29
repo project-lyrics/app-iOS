@@ -72,7 +72,10 @@ public final class CommunityMainViewController: UIViewController, NoteMenuHandli
 
     private let postNoteButton: UIButton = {
         let button = UIButton()
-        button.setImage(FeelinImages.writingInactive, for: .normal)
+        let imageSize = CGSize(width: 56, height: 56)
+        let resizedImage = FeelinImages.writingInactive.resize(targetSize: imageSize)
+        button.setImage(resizedImage, for: .normal)
+        button.imageView?.contentMode = .scaleToFill
 
         return button
     }()
