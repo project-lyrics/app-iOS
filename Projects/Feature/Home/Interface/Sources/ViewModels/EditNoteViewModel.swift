@@ -99,7 +99,7 @@ private extension EditNoteViewModel {
     func checkLyricsText(_ input: Input) -> AnyPublisher<Bool, Never> {
         return input.lyricsTextViewTypePublisher
             .map { text in
-                return text.isEmpty == false
+                return text.isEmpty == false && text != "좋아하는 가사를 적어주세요 (선택)"
             }
             .eraseToAnyPublisher()
     }
