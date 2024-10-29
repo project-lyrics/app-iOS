@@ -77,6 +77,13 @@ public final class PostNoteViewController: UIViewController {
     }
 
     private func bind() {
+        noteCharCountContainerView.tapPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.noteTextView.becomeFirstResponder()
+            }
+            .store(in: &cancellables)
+
         rootScrollView.tapPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
@@ -253,8 +260,11 @@ public final class PostNoteViewController: UIViewController {
                 self.keyboardHeight = keyboardHeight
 
                 if keyboardHeight > 0 {
-                    rootScrollView.contentInset.bottom = keyboardHeight + 24
-                    rootScrollView.verticalScrollIndicatorInsets.bottom = keyboardHeight + 24
+                    let noSafeArea = safeAreaBottomInset == 0
+                    let additionalBottomInset: CGFloat = noSafeArea ? 33 : 0
+
+                    rootScrollView.contentInset.bottom = keyboardHeight + additionalBottomInset
+                    rootScrollView.verticalScrollIndicatorInsets.bottom = noSafeArea ? keyboardHeight + additionalBottomInset : keyboardHeight
                 } else {
                     rootScrollView.contentInset.bottom = 0
                     rootScrollView.verticalScrollIndicatorInsets.bottom = 0
@@ -391,61 +401,37 @@ public final class PostNoteViewController: UIViewController {
         let lines = text.components(separatedBy: .newlines)
         let numberOfLines = lines.count
         let screenHeight = UIScreen.main.bounds.height
-        let spacerHeight = screenHeight > 667 ? screenHeight * 0.43 : contentView.frame.height * 0.60
+        let noSafeArea = safeAreaBottomInset == 0
+        let ratio = noSafeArea ? 0.38 : 0.435
+        let spacerHeight = (screenHeight * ratio) + 17
+
+        let keyboardScreenRatio = keyboardHeight / screenHeight
 
         if numberOfLines == 1 {
             if text != Const.notePlaceholder {
                 if keyboardHeight > 0 {
-                    noteSpacerView
-                        .pin
-                        .below(of: noteTextView)
-                        .height(screenHeight > 667 ? 66 : 0)
+                    if keyboardScreenRatio >= 0.392 {
+                        noteCharCountContainerView.flex.height(66).markDirty()
+                    } else {
+                        noteCharCountContainerView.flex.height(33).markDirty()
+                    }
                 } else {
-                    noteSpacerView
-                        .pin
-                        .below(of: noteTextView)
-                        .height(spacerHeight)
+                    noteCharCountContainerView.flex.height(spacerHeight).markDirty()
                 }
             } else {
-                noteSpacerView
-                    .pin
-                    .below(of: noteTextView)
-                    .height(spacerHeight)
+                noteCharCountContainerView.flex.height(spacerHeight).markDirty()
             }
-        } else if numberOfLines == 2 && screenHeight > 667 {
-            noteSpacerView
-                .pin
-                .below(of: noteTextView)
-                .height(33.33)
+        } else if numberOfLines == 2 {
+            noteCharCountContainerView.flex.height(33.33).markDirty()
         } else if numberOfLines > 2 && keyboardHeight > 0 {
-            if screenHeight > 667 {
-                noteSpacerView
-                    .pin
-                    .below(of: noteTextView)
-                    .height(24)
-            } else {
-                noteSpacerView
-                    .pin
-                    .below(of: noteTextView)
-                    .height(0)
-                    .bottom(12)
-            }
-
+            noteCharCountContainerView.flex.height(24).markDirty()
         } else if numberOfLines > 2 {
-            let ratio = screenHeight > 667 ? 0.43 : 0.60
-
-            noteSpacerView
-                .pin
-                .below(of: noteTextView)
-                .height(spacerHeight - (CGFloat(numberOfLines) * 33.33) * ratio)
+            noteCharCountContainerView.flex.height(spacerHeight - ((CGFloat(numberOfLines) * 33.33) * ratio) + 17).markDirty()
         }
-        
-        noteCharCountLabel
-            .pin
-            .below(of: noteSpacerView)
-            .height(20)
-    }
 
+        contentView.flex.layout(mode: .adjustHeight)
+        rootScrollView.contentSize = contentView.frame.size
+    }
 
     private func updateCharacterCountForNote() {
         let count = noteTextView.text.count <= 1000 ? noteTextView.text.count : 1000
@@ -524,8 +510,8 @@ extension PostNoteViewController {
         return postNoteView.noteTextView
     }
     
-    var noteSpacerView: UIView {
-        return postNoteView.noteSpacerView
+    var noteCharCountContainerView: UIView {
+        return postNoteView.noteCharCountContainerView
     }
 
     var noteCharCountLabel: UILabel {

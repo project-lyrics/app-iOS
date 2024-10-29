@@ -17,7 +17,7 @@ public final class WritingNoteView: UIView {
 
     let rootFlexContainer = UIView()
     let artistInfoHeaderView = UIView()
-    let noteSpacerView = UIView()
+    let noteCharCountContainerView = UIView()
 
     private let navigationBar = NavigationBar()
 
@@ -139,6 +139,7 @@ public final class WritingNoteView: UIView {
         textView.tintColor = Colors.gray08
         textView.textColor = Colors.gray04
         textView.isScrollEnabled = false
+        textView.backgroundColor = .clear
 
         return textView
     }()
@@ -175,7 +176,12 @@ public final class WritingNoteView: UIView {
     public override func layoutSubviews() {
         super.layoutSubviews()
 
-        rootFlexContainer.pin.all(pin.safeArea)
+        rootFlexContainer.pin
+            .top(pin.safeArea.top)
+            .left(pin.safeArea.left)
+            .right(pin.safeArea.right)
+            .bottom(pin.safeArea.bottom + 12)
+
         rootFlexContainer.flex.layout()
 
         rootScrollView.pin
@@ -184,7 +190,8 @@ public final class WritingNoteView: UIView {
             .right()
             .bottom()
 
-        contentView.pin.top().left().right().bottom()
+        contentView.pin.top().left().right()
+
         contentView.flex.layout(mode: .adjustHeight)
         rootScrollView.contentSize = contentView.frame.size
     }
@@ -224,19 +231,19 @@ public final class WritingNoteView: UIView {
                                 contentFlex.addItem(noteTextView)
                                     .marginTop(24)
                                     .width(100%)
-                                    .backgroundColor(.clear)
 
-                                contentFlex.addItem(noteSpacerView)
-                                    .minHeight(24)
-                                    .maxHeight(UIScreen.main.bounds.height * 0.43)
-                                    .backgroundColor(.clear)
+                                contentFlex.addItem(noteCharCountContainerView)
+                                    .maxHeight((UIScreen.main.bounds.height * 0.435) + 17)
                                     .grow(1)
-
-                                contentFlex.addItem(noteCharCountLabel)
-                                    .marginBottom(12)
-                                    .height(20)
-                                    .shrink(0)
-                                    .markDirty()
+                                    .define { flex in
+                                        flex.addItem(noteCharCountLabel)
+                                            .position(.absolute)
+                                            .bottom(0)
+                                            .right(0)
+                                            .shrink(0)
+                                            .grow(0)
+                                            .width(70)
+                                    }
                             }
                     }
             }

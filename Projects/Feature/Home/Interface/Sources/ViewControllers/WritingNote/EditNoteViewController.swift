@@ -76,6 +76,13 @@ public final class EditNoteViewController: UIViewController {
     }
 
     private func bind() {
+        noteCharCountContainerView.tapPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.noteTextView.becomeFirstResponder()
+            }
+            .store(in: &cancellables)
+
         rootScrollView.tapPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
@@ -204,8 +211,11 @@ public final class EditNoteViewController: UIViewController {
                 self.keyboardHeight = keyboardHeight
 
                 if keyboardHeight > 0 {
-                    rootScrollView.contentInset.bottom = keyboardHeight + 24
-                    rootScrollView.verticalScrollIndicatorInsets.bottom = keyboardHeight + 24
+                    let noSafeArea = safeAreaBottomInset == 0
+                    let additionalBottomInset: CGFloat = noSafeArea ? 33 : 0
+
+                    rootScrollView.contentInset.bottom = keyboardHeight + additionalBottomInset
+                    rootScrollView.verticalScrollIndicatorInsets.bottom = noSafeArea ? keyboardHeight + additionalBottomInset : keyboardHeight
                 } else {
                     rootScrollView.contentInset.bottom = 0
                     rootScrollView.verticalScrollIndicatorInsets.bottom = 0
@@ -325,51 +335,37 @@ public final class EditNoteViewController: UIViewController {
     private func updateNoteSpacerView(text: String) {
         let lines = text.components(separatedBy: .newlines)
         let numberOfLines = lines.count
-        let height = noteTextView.frame.height
-
         let screenHeight = UIScreen.main.bounds.height
-        let spacerHeight = screenHeight * 0.43
-        let thresholdHeight = height * 0.71
+        let noSafeArea = safeAreaBottomInset == 0
+        let ratio = noSafeArea ? 0.38 : 0.435
+        let spacerHeight = (screenHeight * ratio) + 17
+
+        let keyboardScreenRatio = keyboardHeight / screenHeight
 
         if numberOfLines == 1 {
             if text != Const.notePlaceholder {
                 if keyboardHeight > 0 {
-                    noteSpacerView
-                        .pin
-                        .below(of: noteTextView)
-                        .height(66)
+                    if keyboardScreenRatio >= 0.392 {
+                        noteCharCountContainerView.flex.height(66).markDirty()
+                    } else {
+                        noteCharCountContainerView.flex.height(33).markDirty()
+                    }
                 } else {
-                    noteSpacerView
-                        .pin
-                        .below(of: noteTextView)
-                        .height(UIScreen.main.bounds.height * 0.43)
+                    noteCharCountContainerView.flex.height(spacerHeight).markDirty()
                 }
             } else {
-                noteSpacerView
-                    .pin
-                    .below(of: noteTextView)
-                    .height(UIScreen.main.bounds.height * 0.43)
+                noteCharCountContainerView.flex.height(spacerHeight).markDirty()
             }
         } else if numberOfLines == 2 {
-            noteSpacerView
-                .pin
-                .below(of: noteTextView)
-                .height(33.33)
+            noteCharCountContainerView.flex.height(33.33).markDirty()
         } else if numberOfLines > 2 && keyboardHeight > 0 {
-            noteSpacerView
-                .pin
-                .below(of: noteTextView)
-                .height(24)
+            noteCharCountContainerView.flex.height(24).markDirty()
         } else if numberOfLines > 2 {
-            noteSpacerView
-                .pin
-                .below(of: noteTextView)
-                .height(UIScreen.main.bounds.height * 0.43 - (CGFloat(numberOfLines) * 33.33) * 0.43)
+            noteCharCountContainerView.flex.height(spacerHeight - ((CGFloat(numberOfLines) * 33.33) * ratio) + 17).markDirty()
         }
 
-        noteCharCountLabel
-            .pin
-            .below(of: noteSpacerView)
+        contentView.flex.layout(mode: .adjustHeight)
+        rootScrollView.contentSize = contentView.frame.size
     }
 
     private func updateCharacterCountForNote() {
@@ -460,8 +456,8 @@ extension EditNoteViewController {
         return editNoteView.noteTextView
     }
 
-    var noteSpacerView: UIView {
-        return editNoteView.noteSpacerView
+    var noteCharCountContainerView: UIView {
+        return editNoteView.noteCharCountContainerView
     }
 
     var noteCharCountLabel: UILabel {
