@@ -72,10 +72,7 @@ public final class CommunityMainViewController: UIViewController, NoteMenuHandli
 
     private let postNoteButton: UIButton = {
         let button = UIButton()
-        let imageSize = CGSize(width: 56, height: 56)
-        let resizedImage = FeelinImages.writingInactive.resize(targetSize: imageSize)
-        button.setImage(resizedImage, for: .normal)
-        button.imageView?.contentMode = .scaleToFill
+        button.setImage(FeelinImages.writingInactive, for: .normal)
 
         return button
     }()
@@ -257,7 +254,7 @@ public final class CommunityMainViewController: UIViewController, NoteMenuHandli
         self.view.backgroundColor = Colors.background
         self.view.addSubview(flexContainer)
         let tabBarHeight = self.tabBarController?.tabBar.frame.height ?? 0
-        let postNoteButtonHeight: CGFloat = 56
+        let postNoteButtonHeight: CGFloat = 72
         
         flexContainer.flex.define { flex in
             flex.addItem(communityMainView)
