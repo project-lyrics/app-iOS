@@ -125,8 +125,9 @@ final class MyPageView: UIView {
     }
 
     func configure(_ model: UserProfile?) {
-        userNicknameLabel.text = model?.nickname
-        myIconImageView.image = model?.profileCharacterType.image
+        guard let model = model else { return }
+        userNicknameLabel.text = model.nickname
+        myIconImageView.image = model.profileCharacterType.image
 
         userNicknameLabel.flex.markDirty()
         myIconImageView.flex.markDirty()
