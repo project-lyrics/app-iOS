@@ -84,4 +84,5 @@ public struct FeelinImages {
     public static let kakaoBadge = SharedDesignSystemAsset.Images.kakaoBadge.image
     public static let appleBadge = SharedDesignSystemAsset.Images.appleBadge.image
     public static let refresh = SharedDesignSystemAsset.Images.refresh.image
+    public static let selectedSongActive = SharedDesignSystemAsset.Images.selectedSongActive.image
 }

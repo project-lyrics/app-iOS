@@ -342,7 +342,7 @@ public final class WritingNoteView: UIView {
         titleOfSongLabel.text = item.name
         artistNameLabel.text = item.artist.name
 
-        addToPlayButton.setImage(FeelinImages.play, for: .normal)
+        addToPlayButton.setImage(FeelinImages.selectedSongActive, for: .normal)
 
         addTrackLabel.isHidden = true
         titleOfSongLabel.isHidden = false
