@@ -68,7 +68,7 @@ public final class EditNoteViewController: UIViewController {
 
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        updateNoteSpacerView(text: noteTextView.text)
+        updateNoteSpacerView()
     }
 
     public func addSelectedSong(_ item: Song) {
@@ -220,7 +220,7 @@ public final class EditNoteViewController: UIViewController {
                     rootScrollView.contentInset.bottom = 0
                     rootScrollView.verticalScrollIndicatorInsets.bottom = 0
                 }
-                updateNoteSpacerView(text: noteTextView.text)
+                updateNoteSpacerView()
             }
             .store(in: &cancellables)
     }
@@ -233,7 +233,7 @@ public final class EditNoteViewController: UIViewController {
                 if text?.isEmpty == true {
                     noteTextView.setUpTextView(text: Const.notePlaceholder, textColor: Colors.gray04)
                     noteCharCountLabel.textColor = Colors.gray04
-                    updateNoteSpacerView(text: Const.notePlaceholder)
+                    updateNoteSpacerView()
                 } else if text == Const.notePlaceholder {
                     noteTextView.setUpTextView(text: "", textColor: Colors.gray08)
                 } else {
@@ -257,8 +257,10 @@ public final class EditNoteViewController: UIViewController {
                 let caretRect = self.noteTextView.caretRect(for: end)
                 self.rootScrollView.scrollRectToVisible(caretRect, animated: true)
 
-                self.updateCharacterCountForNote()
-                self.updateNoteSpacerView(text: text)
+                if text != Const.notePlaceholder {
+                    self.updateCharacterCountForNote()
+                }
+                self.updateNoteSpacerView()
             }
             .store(in: &cancellables)
 
@@ -332,39 +334,17 @@ public final class EditNoteViewController: UIViewController {
         lyricsCharCountLabel.textColor = Colors.gray06.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
     }
 
-    private func updateNoteSpacerView(text: String) {
-        let lines = text.components(separatedBy: .newlines)
-        let numberOfLines = lines.count
+    private func updateNoteSpacerView() {
         let screenHeight = UIScreen.main.bounds.height
-        let noSafeArea = safeAreaBottomInset == 0
-        let ratio = noSafeArea ? 0.38 : 0.435
-        let spacerHeight = (screenHeight * ratio) + 17
 
-        let keyboardScreenRatio = keyboardHeight / screenHeight
-
-        if numberOfLines == 1 {
-            if text != Const.notePlaceholder {
-                if keyboardHeight > 0 {
-                    if keyboardScreenRatio >= 0.392 {
-                        noteCharCountContainerView.flex.height(66).markDirty()
-                    } else {
-                        noteCharCountContainerView.flex.height(33).markDirty()
-                    }
-                } else {
-                    noteCharCountContainerView.flex.height(spacerHeight).markDirty()
-                }
-            } else {
-                noteCharCountContainerView.flex.height(spacerHeight).markDirty()
-            }
-        } else if numberOfLines == 2 {
-            noteCharCountContainerView.flex.height(33.33).markDirty()
-        } else if numberOfLines > 2 && keyboardHeight > 0 {
-            noteCharCountContainerView.flex.height(24).markDirty()
-        } else if numberOfLines > 2 {
-            noteCharCountContainerView.flex.height(spacerHeight - ((CGFloat(numberOfLines) * 33.33) * ratio) + 17).markDirty()
-        }
-
+        let requiredHeight = editNoteView.calculateNoteCharCountContainerHeight(
+            screenHeight: screenHeight,
+            keyboardHeight: keyboardHeight
+        )
+        noteCharCountContainerView.flex.height(requiredHeight).markDirty()
         contentView.flex.layout(mode: .adjustHeight)
+        contentView.layoutIfNeeded()
+
         rootScrollView.contentSize = contentView.frame.size
     }
 
