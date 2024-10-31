@@ -147,4 +147,15 @@ extension UIViewController {
                 feelinToastView.removeFromSuperview()
             }
     }
+
+    public var safeAreaBottomInset: CGFloat {
+        if #available(iOS 13.0, *) {
+            let window = UIApplication.shared.connectedScenes
+                .compactMap { $0 as? UIWindowScene }
+                .first?.windows.first(where: { $0.isKeyWindow })
+            return window?.safeAreaInsets.bottom ?? 0.0
+        } else {
+            return UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0.0
+        }
+    }
 }

@@ -24,6 +24,7 @@ public struct Colors {
     public static let fixedGray09 = SharedDesignSystemAsset.Colors.fixedGray09.color
     public static let fixedModal = SharedDesignSystemAsset.Colors.fixedModal.color
     public static let fixedPrimary = SharedDesignSystemAsset.Colors.fixedPrimary.color
+    public static let gray00 = SharedDesignSystemAsset.Colors.gray00.color
     public static let gray01 = SharedDesignSystemAsset.Colors.gray01.color
     public static let gray02 = SharedDesignSystemAsset.Colors.gray02.color
     public static let gray03 = SharedDesignSystemAsset.Colors.gray03.color

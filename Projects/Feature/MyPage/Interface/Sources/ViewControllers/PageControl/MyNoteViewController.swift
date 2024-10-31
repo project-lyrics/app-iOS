@@ -90,18 +90,22 @@ public final class MyNoteViewController: UIViewController,
         bindAction()
     }
 
-    public func indicatorInfo(for pagerTabStripController: FeelinPagerTabViewController) -> IndicatorInfo {
-        return IndicatorInfo(title: "작성글")
-    }
-
-    private func setUpDefault() {
-        view.backgroundColor = Colors.background
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
 
         if self.isLoggedIn {
             viewModel.getFavoriteArtists()
         } else {
             self.noteDetailCollectionView.refreshControl = nil
         }
+    }
+
+    public func indicatorInfo(for pagerTabStripController: FeelinPagerTabViewController) -> IndicatorInfo {
+        return IndicatorInfo(title: "작성글")
+    }
+
+    private func setUpDefault() {
+        view.backgroundColor = Colors.background
     }
 
     private func bindUI() {
@@ -236,7 +240,7 @@ public final class MyNoteViewController: UIViewController,
                     )
                 }
                 .store(in: &cell.cancellables)
-            
+
             cell.commentButton.publisher(for: .touchUpInside)
                 .sink { [weak self] _ in
                     self?.coordinator?.pushNoteCommentsViewController(noteID: note.id)
@@ -274,7 +278,6 @@ public final class MyNoteViewController: UIViewController,
                 .store(in: &cell.cancellables)
         }
 
-
         let dataSource = MyNoteDataSource(collectionView: self.noteDetailCollectionView) {
             collectionView, indexPath, item in
             return item.dequeueConfiguredReusableCell(
@@ -287,34 +290,6 @@ public final class MyNoteViewController: UIViewController,
             )
         }
         return dataSource
-    }
-
-    private func updateArtistNameSnapshot(notes: [Note]) {
-        var snapshot = noteDetailDataSource.snapshot()
-
-        // 섹션이 없을 경우 추가
-        if !snapshot.sectionIdentifiers.contains(.notes) {
-            snapshot.appendSections([.notes])
-        }
-
-        // 기존 섹션의 아이템을 가져오기
-        let currentItems = snapshot.itemIdentifiers(inSection: .notes)
-        let noteRows = notes.map { Row.note($0) }
-
-        // 새로운 데이터와 기존 데이터를 비교하여 다른 경우에만 업데이트
-        if currentItems != noteRows {
-            // 기존 아이템 삭제
-            snapshot.deleteItems(currentItems)
-
-            // 새로운 데이터 추가
-            snapshot.appendItems(noteRows, toSection: .notes)
-
-            // 스냅샷을 적용
-            noteDetailDataSource.apply(snapshot, animatingDifferences: true)
-        } else {
-            // 그 외에는 cell 갯수는 변화가 없으나 컨텐츠에 변화가 있다고 판단. reloadData 수행
-            noteDetailDataSource.applySnapshotUsingReloadData(snapshot)
-        }
     }
 
     private func updateNotesUI(notes: [Note]) {
@@ -398,6 +373,7 @@ public final class MyNoteViewController: UIViewController,
             noteDetailDataSource.apply(snapshot, animatingDifferences: true) { [weak self] in
                 // 스냅샷 적용 후 첫 번째 아이템을 자동으로 선택
                 guard let self = self else { return }
+
                 selectFirstArtistCategory()
                 viewModel.getMyNotes(isInitialFetch: true)
             }

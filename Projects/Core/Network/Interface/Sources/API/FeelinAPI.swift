@@ -24,6 +24,7 @@ public enum FeelinAPI<R> {
     case getFavoriteArtists(cursor: Int?, size: Int)
     case getFavoriteArtistsRelatedNotes(cursor: Int?, size: Int, hasLyrics: Bool)
     case getFavoriteArtistsHavingNotes
+    case getFavoriteArtistsBookmarked
     case postLikes(noteID: Int)
     case deleteLikes(noteID: Int)
     case postBookmarks(noteID: Int)
@@ -274,6 +275,9 @@ extension FeelinAPI: HTTPNetworking {
         case .getFavoriteArtistsHavingNotes:
             return "/api/v1/favorite-artists/having-notes"
 
+        case .getFavoriteArtistsBookmarked:
+            return "/api/v1/favorite-artists/bookmarked"
+
         case .postLikes,
              .deleteLikes:
             return "/api/v1/likes"
@@ -361,6 +365,7 @@ extension FeelinAPI: HTTPNetworking {
              .getFavoriteArtists,
              .getFavoriteArtistsRelatedNotes,
              .getFavoriteArtistsHavingNotes,
+             .getFavoriteArtistsBookmarked,
              .searchSongs,
              .getSearchedNotes,
              .getSongDetail,

@@ -12,7 +12,7 @@ import Combine
 import Shared
 
 public protocol DeleteUserUseCaseInterface {
-    func execute() -> AnyPublisher<FeelinSuccessResponse, UserProfileError>
+    func execute() -> AnyPublisher<FeelinDefaultResponse, UserProfileError>
 }
 
 public struct DeleteUserUseCase: DeleteUserUseCaseInterface {
@@ -27,7 +27,7 @@ public struct DeleteUserUseCase: DeleteUserUseCaseInterface {
         self.tokenStorage = tokenStorage
     }
 
-    public func execute() -> AnyPublisher<FeelinSuccessResponse, UserProfileError> {
+    public func execute() -> AnyPublisher<FeelinDefaultResponse, UserProfileError> {
         return userProfileAPIService.deleteUser()
             .flatMap { response in
                 return self.deleteTokens().map { _ in response }

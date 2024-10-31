@@ -254,7 +254,7 @@ public final class CommunityMainViewController: UIViewController, NoteMenuHandli
         self.view.backgroundColor = Colors.background
         self.view.addSubview(flexContainer)
         let tabBarHeight = self.tabBarController?.tabBar.frame.height ?? 0
-        let postNoteButtonHeight: CGFloat = 56
+        let postNoteButtonHeight: CGFloat = 72
         
         flexContainer.flex.define { flex in
             flex.addItem(communityMainView)

@@ -111,7 +111,7 @@ extension MyPageTabViewController: MyNoteViewControllerDelegate,
 private extension MyPageTabViewController {
     func myNoteDependencies() -> MyNoteViewModel {
         @Injected(.noteAPIService) var noteAPIService: NoteAPIServiceInterface
-        @Injected(.notePaginationService) var notePaginationService: NotePaginationServiceInterface
+        let notePaginationService: NotePaginationServiceInterface = NotePaginationService()
 
         let setNoteLikeUseCase = SetNoteLikeUseCase(noteAPIService: noteAPIService)
         let setBookmarkUseCase = SetBookmarkUseCase(noteAPIService: noteAPIService)
@@ -134,12 +134,12 @@ private extension MyPageTabViewController {
 
     func bookmarkDependencies() -> BookmarkViewModel {
         @Injected(.noteAPIService) var noteAPIService: NoteAPIServiceInterface
-        @Injected(.notePaginationService) var notePaginationService: NotePaginationServiceInterface
+        let notePaginationService: NotePaginationServiceInterface = NotePaginationService()
 
         let setNoteLikeUseCase = SetNoteLikeUseCase(noteAPIService: noteAPIService)
         let setBookmarkUseCase = SetBookmarkUseCase(noteAPIService: noteAPIService)
         let deleteNoteUseCase = DeleteNoteUseCase(noteAPIService: noteAPIService)
-        let getFavoriteArtistsHavingNotesUseCase = GetFavoriteArtistsHavingNotesUseCase(noteAPIService: noteAPIService)
+        let getFavoriteArtistsBookmarkedUseCase = GetFavoriteArtistsBookmarkedUseCase(noteAPIService: noteAPIService)
         let getMyNotesByBookmarkUseCase = GetMyNotesByBookmarkUseCase(
             noteAPIService: noteAPIService,
             notePaginationService: notePaginationService
@@ -149,7 +149,7 @@ private extension MyPageTabViewController {
             setNoteLikeUseCase: setNoteLikeUseCase,
             setBookmarkUseCase: setBookmarkUseCase,
             deleteNoteUseCase: deleteNoteUseCase,
-            getFavoriteArtistsHavingNotesUseCase: getFavoriteArtistsHavingNotesUseCase,
+            getFavoriteArtistsBookmarkedUseCase: getFavoriteArtistsBookmarkedUseCase,
             getMyNotesByBookmarkUseCase: getMyNotesByBookmarkUseCase
         )
         return viewModel

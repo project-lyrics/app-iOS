@@ -8,5 +8,5 @@
 import Foundation
 
 public struct FeelinDefaultResponse: Decodable {
-    let status: Bool
+    public let status: Bool
 }

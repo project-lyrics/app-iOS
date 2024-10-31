@@ -46,12 +46,15 @@ extension SignUpService: SignUpServiceInterface {
 
                 case let error as NetworkError:
                     return SignUpError.networkError(error)
+                
+                case let error as FeelinAPIError:
+                    return SignUpError.feelinAPIError(error)
 
                 case let error as JWTError:
                     return SignUpError.jwtParsingError(error)
 
                 default:
-                    return SignUpError.unExpectedError
+                    return SignUpError.unExpectedError(error)
                 }
             })
             .eraseToAnyPublisher()

@@ -71,6 +71,7 @@ public final class ProfileViewController: UIViewController {
             .eraseToAnyPublisher()
 
         let nextButtonPublisher = nextButton.publisher(for: .touchUpInside)
+            .throttle(for: .seconds(2), scheduler: RunLoop.main, latest: false)
             .eraseToAnyPublisher()
 
         let input = ProfileViewModel.Input(
@@ -97,11 +98,12 @@ public final class ProfileViewController: UIViewController {
                 switch result {
                 case .success:
                     self?.coordinator?.pushWelcomeViewController()
+
                 case .failure(let error):
                     self?.showAlert(
                         shouldIgnoreDarkMode: true,
                         title: "알림",
-                        message: error.localizedDescription
+                        message: error.errorMessageWithCode
                     )
                 }
             }

@@ -63,6 +63,13 @@ public final class ReportViewController: UIViewController {
     }
 
     private func bind() {
+        rootScrollView.didScrollToBottomPublisher()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.selectedReportReasonView?.reasonTextView.resignFirstResponder()
+            }
+            .store(in: &cancellables)
+
         backButton.publisher(for: .touchUpInside)
             .receive(on: DispatchQueue.main)
             .sink { _ in

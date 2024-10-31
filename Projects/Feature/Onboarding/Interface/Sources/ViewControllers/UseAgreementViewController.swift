@@ -163,10 +163,18 @@ public final class UseAgreementViewController: UIViewController {
 
     private func allAgreeButtonTapped() {
         let isSelected = allAgreeButton.isSelected
-        ageAgreeButton.isSelected = isSelected
-        serviceUsageAgreeButton.isSelected = isSelected
-        personalInfoAgreeButton.isSelected = isSelected
         startButton.isEnabled = isSelected
+        if !ageAgreeButton.isSelected,
+            !serviceUsageAgreeButton.isSelected,
+            !personalInfoAgreeButton.isSelected {
+            ageAgreeButton.sendActions(for: .touchUpInside)
+            serviceUsageAgreeButton.sendActions(for: .touchUpInside)
+            personalInfoAgreeButton.sendActions(for: .touchUpInside)
+        } else {
+            ageAgreeButton.isSelected = isSelected
+            serviceUsageAgreeButton.isSelected = isSelected
+            personalInfoAgreeButton.isSelected = isSelected
+        }
     }
 }
 

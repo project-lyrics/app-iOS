@@ -81,6 +81,11 @@ extension MyPageCoordinator: MyPageViewControllerDelegate,
                              DeleteUserViewControllerDelegate,
                              UserProfileViewControllerDelegate,
                              UserLinkedWebViewControllerDelegate {
+    public func didFinishForPresentingViewController() {
+        dismissViewController()
+        // TODO: 노트 작성 완료 후 업데이트 메서드 호출
+    }
+
     public func didFinish() {
         didFinish(childCoordinator: self)
     }
@@ -130,7 +135,7 @@ extension MyPageCoordinator: MyPageViewControllerDelegate,
         navigationController.present(navController, animated: true)
     }
 
-    public func pushEditProfileViewController(userProfile: UserProfile) {
+    public func pushProfileEditViewController(userProfile: UserProfile) {
         let viewModel = profileEditDependencies(userProfile: userProfile)
         let reportViewController = ProfileEditViewController(viewModel: viewModel)
         reportViewController.coordinator = self

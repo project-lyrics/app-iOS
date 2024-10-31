@@ -24,6 +24,26 @@ public final class LyricsBackgroundViewController: BottomSheetViewController<Lyr
     }
 
     private func bind() {
+        // 외부에서 전달된 backgroundPublisher 값을 기반으로 초기 설정
+          backgroundPublisher
+              .receive(on: DispatchQueue.main)
+              .sink { [weak self] selectedBackground in
+                  guard let self = self, let selectedBackground = selectedBackground else { return }
+
+                  if let selectedIndex = LyricsBackground.allCases.firstIndex(of: selectedBackground) {
+                      self.selectedBackgroundIndex = selectedIndex
+                      let indexPath = IndexPath(item: selectedIndex, section: 0)
+
+                      // 선택된 항목을 collectionView에서 미리 선택 상태로 설정
+                      self.lyricsBackgroundCollectionView.selectItem(at: indexPath, animated: false, scrollPosition: .top)
+
+                      if let cell = self.lyricsBackgroundCollectionView.cellForItem(at: indexPath) as? LyricsBackgroundCollectionViewCell {
+                          cell.setSelected(true)
+                      }
+                  }
+              }
+              .store(in: &cancellables)
+
         cancelButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in
                 self?.dismiss(animated: true)

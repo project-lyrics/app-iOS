@@ -40,12 +40,12 @@ public final class ProfileEditViewModel {
     }
 
     func transform(_ input: Input) -> Output {
-        let isSaveButtonEnabled = checkSaveButtonIsEnabled(input: input)
+        let isEnabledSaveButton = isEnabledSaveButton(input: input)
         let profileImage = convertProfileImage(input: input)
         let patchUserInfoResult = patchUserInfo(input: input)
 
         return Output(
-            isSaveButtonEnabled: isSaveButtonEnabled,
+            isSaveButtonEnabled: isEnabledSaveButton,
             profileImage: profileImage,
             patchUserProfileResult: patchUserInfoResult
         )
@@ -53,15 +53,19 @@ public final class ProfileEditViewModel {
 }
 
 private extension ProfileEditViewModel {
-    func isEnabledSaveButton(_ nickname: String?) -> Bool {
+    func isEnabledSaveButton(_ nickname: String?, _ profileCharacter: String) -> Bool {
         let count = nickname?.count ?? 0
-        return nickname?.isEmpty == false && count < 10
+        return nickname?.isEmpty == false && count < 10 || !profileCharacter.isEmpty
     }
 
-    func checkSaveButtonIsEnabled(input: Input) -> AnyPublisher<Bool, Never> {
-        return input.nicknameTextPublisher
-            .map { nickname in
-                return self.isEnabledSaveButton(nickname)
+    func isEnabledSaveButton(input: Input) -> AnyPublisher<Bool, Never> {
+        return Publishers
+            .CombineLatest(
+                input.nicknameTextPublisher,
+                input.profileImagePublisher
+            )
+            .map { nickname, profileCharacter in
+                return self.isEnabledSaveButton(nickname, profileCharacter)
             }
             .eraseToAnyPublisher()
     }
@@ -76,17 +80,14 @@ private extension ProfileEditViewModel {
     }
 
     func patchUserInfo(input: Input) -> AnyPublisher<PatchUserProfileResult, Never> {
-        let validNicknamePublisher = input.nicknameTextPublisher
-            .filter { nickname in return self.isEnabledSaveButton(nickname) }
-            .compactMap { $0 }
-            .eraseToAnyPublisher()
-
-        // 데이터 변경이 없는 경우, 기존 데이터를 보내면 API 에러가 발생함
-        let combinedUserProfileModelPublisher = Publishers
+        let validUserProfilePublisher = Publishers
             .CombineLatest(
-                validNicknamePublisher,
+                input.nicknameTextPublisher,
                 input.profileImagePublisher
             )
+            .filter { (nickname, profileCharacter) in
+                return self.isEnabledSaveButton(nickname, profileCharacter)
+            }
             .map { [weak self] (nickname, profileCharacter) -> UserProfileRequestValue in
                 let type = ProfileCharacterType(rawValue: profileCharacter) ?? .braidedHair
                 return UserProfileRequestValue(
@@ -97,7 +98,7 @@ private extension ProfileEditViewModel {
             .eraseToAnyPublisher()
 
         return input.saveButtonTapPublisher
-            .combineLatest(combinedUserProfileModelPublisher)
+            .combineLatest(validUserProfilePublisher)
             .flatMap { [weak self]  (_, value) -> AnyPublisher<PatchUserProfileResult, Never> in
                 guard let self = self else {
                     return Empty().eraseToAnyPublisher()

@@ -45,9 +45,8 @@ extension TabBarCoordinator: CoordinatorDelegate {
 private extension TabBarCoordinator {
     func configureTabBarController(with viewControllers: [UIViewController]) {
         tabBarController.selectedIndex = TabBarPageType.home.index
-        tabBarController.view.backgroundColor = .white
-        tabBarController.tabBar.backgroundColor = Colors.background
-        tabBarController.tabBar.tintColor = Colors.gray08
+        tabBarController.tabBar.tintColor = Colors.gray09
+        tabBarController.tabBar.backgroundColor = Colors.gray00
 
         tabBarController.setViewControllers(viewControllers, animated: false)
         navigationController.setNavigationBarHidden(true, animated: false)

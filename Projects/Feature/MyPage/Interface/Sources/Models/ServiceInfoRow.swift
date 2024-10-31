@@ -41,7 +41,7 @@ public enum ServiceInfoRow: CaseIterable, Hashable {
             return "https://www.notion.so/Feelin-2f586ef1b7c947d89ad8cac8a83b61d1?pvs=4"
 
         case .serviceInquiry:
-            return "https://www.notion.so/Feelin-2f586ef1b7c947d89ad8cac8a83b61d1?pvs=4"
+            return "https://docs.google.com/forms/d/1ottTpPuoiDfQnZaMYwwi75WXdEInq6KHN8jY4L9Qc00/edit"
         }
     }
 }

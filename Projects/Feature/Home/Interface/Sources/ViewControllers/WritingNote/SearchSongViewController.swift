@@ -46,11 +46,6 @@ public final class SearchSongViewController: UIViewController {
 
         setUpDefault()
         bind()
-    }
-
-    public override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
         viewModel.searchSongs()
     }
 

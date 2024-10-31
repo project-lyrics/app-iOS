@@ -87,23 +87,25 @@ private extension PostNoteViewModel {
     func checkLyricsText(_ input: Input) -> AnyPublisher<Bool, Never> {
         return input.lyricsTextViewTypePublisher
             .map { text in
-                return text?.isEmpty == false
+                return text?.isEmpty == false && text != "좋아하는 가사를 적어주세요 (선택)"
             }
             .eraseToAnyPublisher()
     }
 
     func postNote(_ input: Input) -> AnyPublisher<PostNoteResult, Never> {
-        let requiredFieldsPublisher = Publishers.CombineLatest3(
-            input.songTapPublisher,
-            input.noteTextViewTypePublisher,
-            input.postNoteStatusPublisher
-        )
+        let requiredFieldsPublisher = Publishers
+            .CombineLatest3(
+                input.songTapPublisher,
+                input.noteTextViewTypePublisher,
+                input.postNoteStatusPublisher
+            )
             .eraseToAnyPublisher()
 
-        let optionalFieldsPublisher = Publishers.CombineLatest(
-            input.lyricsTextViewTypePublisher,
-            input.lyricsBackgroundSelectPublisher
-        )
+        let optionalFieldsPublisher = Publishers
+            .CombineLatest(
+                input.lyricsTextViewTypePublisher,
+                input.lyricsBackgroundSelectPublisher
+            )
             .map { (lyrics, background) -> (String?, LyricsBackground?) in
                 return (lyrics, background)
             }
@@ -118,7 +120,7 @@ private extension PostNoteViewModel {
 
                 return PostNoteValue(
                     id: song.id,
-                    lyrics: lyrics,
+                    lyrics: lyrics != "좋아하는 가사를 적어주세요 (선택)" ? lyrics : nil,
                     background: lyricsBackground,
                     content: noteContent,
                     status: status
@@ -141,7 +143,6 @@ private extension PostNoteViewModel {
         return self.postNoteUseCase
             .execute(value: requestValue)
             .receive(on: DispatchQueue.main)
-            .mapError(NoteError.init)
             .mapToResult()
     }
 }

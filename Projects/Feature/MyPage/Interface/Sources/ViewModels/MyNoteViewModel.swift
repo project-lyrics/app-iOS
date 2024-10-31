@@ -179,7 +179,7 @@ extension MyNoteViewModel {
         self.getMyNotesUseCase.execute(
             isInitial: isInitialFetch,
             perPage: perPage,
-            artistID: selectedArtistID
+            artistID: artistID
         )
         .receive(on: DispatchQueue.main)
         .mapToResult()

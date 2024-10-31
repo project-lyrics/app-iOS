@@ -104,13 +104,13 @@ public final class LyricsBackgroundView: UIView {
                     }
 
                 flex.addItem(backgroundCollectionView)
-                    .height(514)
+                    .height(UIScreen.main.bounds.height * 0.56)
 
                 flex.addItem(confirmButton)
                     .height(56)
                     .cornerRadius(8)
                     .marginHorizontal(20)
-                    .marginBottom(23)
+                    .bottom(pin.safeArea.bottom)
             }
     }
 }

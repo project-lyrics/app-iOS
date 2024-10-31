@@ -7,6 +7,7 @@
 
 import UIKit
 
+import Domain
 import Shared
 
 final class MyPageView: UIView {
@@ -34,7 +35,7 @@ final class MyPageView: UIView {
         return button
     }()
 
-    private let myIconImageView: UIImageView = {
+    let myIconImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.image = ProfileCharacterType.defaultImage
@@ -96,7 +97,7 @@ final class MyPageView: UIView {
             .define { flex in
                 flex.addItem(navigationBar)
                     .height(44)
-                    .marginHorizontal(10)
+                    .marginHorizontal(20)
 
                 flex.addItem()
                     .direction(.column)
@@ -121,5 +122,16 @@ final class MyPageView: UIView {
                             }
                     }
             }
+    }
+
+    func configure(_ model: UserProfile?) {
+        guard let model = model else { return }
+        userNicknameLabel.text = model.nickname
+        myIconImageView.image = model.profileCharacterType.image
+
+        userNicknameLabel.flex.markDirty()
+        myIconImageView.flex.markDirty()
+
+        rootFlexContainer.flex.layout()
     }
 }

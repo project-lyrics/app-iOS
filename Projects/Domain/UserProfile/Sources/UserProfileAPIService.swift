@@ -35,8 +35,8 @@ public struct UserProfileAPIService: UserProfileAPIServiceInterface {
             .eraseToAnyPublisher()
     }
 
-    public func deleteUser() -> AnyPublisher<FeelinSuccessResponse, UserProfileError> {
-        let endpoint = FeelinAPI<FeelinSuccessResponse>.deleteUser
+    public func deleteUser() -> AnyPublisher<FeelinDefaultResponse, UserProfileError> {
+        let endpoint = FeelinAPI<FeelinDefaultResponse>.deleteUser
 
         return networkProvider.request(endpoint)
             .mapError(UserProfileError.init)
@@ -49,6 +49,5 @@ public struct UserProfileAPIService: UserProfileAPIServiceInterface {
         return networkProvider.request(endpoint)
             .mapError(UserProfileError.init)
             .eraseToAnyPublisher()
-
     }
 }

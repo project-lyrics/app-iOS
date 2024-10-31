@@ -11,10 +11,10 @@ import UIKit
 import Domain
 
 public final class SearchSongViewModel {
-    typealias SongFetchResult = Result<[Song], SongsError>
+    typealias SongFetchResult = Result<[Song], NoteError>
 
     @Published private (set) var fetchedSongs: [Song] = []
-    @Published private (set) var songError: SongsError?
+    @Published private (set) var songError: NoteError?
 
     private let searchSongUseCase: SearchSongUseCaseInterface
 
@@ -67,7 +67,7 @@ private extension SearchSongViewModel {
             numberOfSongs: perPage,
             artistID: artistID
         )
-        .mapError(SongsError.init)
+        .receive(on: DispatchQueue.main)
         .mapToResult()
     }
 

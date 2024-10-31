@@ -77,6 +77,7 @@ public extension UITextView {
     func setUpTextView(text: String, textColor: UIColor) {
         self.text = text
         self.textColor = textColor
+        NotificationCenter.default.post(name: UITextView.textDidChangeNotification, object: self)
     }
 
     func setAllowEditingPublisher(_ publisher: AnyPublisher<Bool, Never>) {

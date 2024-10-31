@@ -15,7 +15,10 @@ import PinLayout
 
 public final class WritingNoteView: UIView {
 
-    private let rootFlexContainer = UIView()
+    let rootFlexContainer = UIView()
+    let artistInfoHeaderView = UIView()
+    let noteCharCountContainerView = UIView()
+
     private let navigationBar = NavigationBar()
 
     public lazy var closeButton: UIButton = {
@@ -52,6 +55,9 @@ public final class WritingNoteView: UIView {
 
     private let iconImageView: UIImageView = {
         let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = 4
         imageView.image = FeelinImages.album
 
         return imageView
@@ -59,7 +65,6 @@ public final class WritingNoteView: UIView {
 
     private let addTrackLabel: UILabel = {
         let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "곡을 추가해주세요."
         label.font = SharedDesignSystemFontFamily.Pretendard.medium.font(size: 14)
         label.textColor = Colors.gray04
@@ -83,7 +88,7 @@ public final class WritingNoteView: UIView {
         return label
     }()
 
-    public let addToPlayButton: UIButton = {
+    private let addToPlayButton: UIButton = {
         let button = UIButton()
         button.setImage(FeelinImages.add, for: .normal)
 
@@ -119,7 +124,6 @@ public final class WritingNoteView: UIView {
         label.textColor = Colors.gray02.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
         label.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 14)
         label.text = "0/50"
-        label.lineBreakMode = .byClipping
 
         return label
     }()
@@ -135,18 +139,17 @@ public final class WritingNoteView: UIView {
         textView.tintColor = Colors.gray08
         textView.textColor = Colors.gray04
         textView.isScrollEnabled = false
+        textView.backgroundColor = .clear
 
         return textView
     }()
 
     public let noteCharCountLabel: UILabel = {
         let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .right
         label.textColor = Colors.gray04
         label.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 14)
         label.text = "0/1000"
-        label.lineBreakMode = .byClipping
 
         return label
     }()
@@ -165,10 +168,6 @@ public final class WritingNoteView: UIView {
         endEditing(true)
     }
 
-    deinit {
-        removeKeyboardObservers()
-    }
-
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError()
@@ -177,7 +176,12 @@ public final class WritingNoteView: UIView {
     public override func layoutSubviews() {
         super.layoutSubviews()
 
-        rootFlexContainer.pin.all(pin.safeArea)
+        rootFlexContainer.pin
+            .top(pin.safeArea.top)
+            .left(pin.safeArea.left)
+            .right(pin.safeArea.right)
+            .bottom(pin.safeArea.bottom + 12)
+
         rootFlexContainer.flex.layout()
 
         rootScrollView.pin
@@ -187,6 +191,7 @@ public final class WritingNoteView: UIView {
             .bottom()
 
         contentView.pin.top().left().right()
+
         contentView.flex.layout(mode: .adjustHeight)
         rootScrollView.contentSize = contentView.frame.size
     }
@@ -196,8 +201,6 @@ public final class WritingNoteView: UIView {
 
         selectLyricsBackgroundButton.configure(title: "가사 배경", image: FeelinImages.gallery)
         searchLyricsButton.configure(title: "가사 검색", image: FeelinImages.search)
-
-        setUpKeyboardEvent()
     }
 
     private func setUpLayout() {
@@ -209,7 +212,6 @@ public final class WritingNoteView: UIView {
 
         rootFlexContainer
             .flex
-            .direction(.column)
             .define { rootFlex in
                 rootFlex.addItem(navigationBar)
                     .height(44)
@@ -218,45 +220,33 @@ public final class WritingNoteView: UIView {
 
                 rootFlex.addItem(rootScrollView)
                     .paddingHorizontal(20)
-                    .direction(.column)
                     .marginTop(16)
                     .define { rootScrollFlex in
                         rootScrollFlex.addItem(contentView)
                             .paddingHorizontal(20)
-                            .direction(.column)
                             .define { contentFlex in
                                 artistInfoHeaderView(contentFlex)
                                 lyricsTextBodyView(contentFlex)
 
                                 contentFlex.addItem(noteTextView)
-                                    .width(100%)
                                     .marginTop(24)
+                                    .width(100%)
+
+                                contentFlex.addItem(noteCharCountContainerView)
+                                    .maxHeight((UIScreen.main.bounds.height * 0.435) + 17)
+                                    .grow(1)
+                                    .define { flex in
+                                        flex.addItem(noteCharCountLabel)
+                                            .position(.absolute)
+                                            .bottom(0)
+                                            .right(0)
+                                            .shrink(0)
+                                            .grow(0)
+                                            .width(70)
+                                    }
                             }
                     }
             }
-
-        contentView.addSubview(addTrackLabel)
-        addSubview(noteCharCountLabel)
-
-        NSLayoutConstraint.activate([
-            addTrackLabel.centerYAnchor.constraint(
-                equalTo: iconImageView.centerYAnchor
-            ),
-            addTrackLabel.leadingAnchor.constraint(
-                equalTo: iconImageView.trailingAnchor,
-                constant: 10
-            )
-        ])
-
-        keyboardHeightConstraint = noteCharCountLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -33)
-        keyboardHeightConstraint?.isActive = true
-
-        NSLayoutConstraint.activate([
-            noteCharCountLabel.trailingAnchor.constraint(
-                equalTo: trailingAnchor,
-                constant: -20
-            )
-        ])
     }
 
     private func artistInfoHeaderView(_ flex: Flex) {
@@ -273,19 +263,40 @@ public final class WritingNoteView: UIView {
                     .size(40)
 
                 flex.addItem()
-                    .direction(.column)
                     .marginLeft(10)
                     .grow(1)
                     .define { flex in
-                        flex.addItem(titleOfSongLabel)
-                            .view?.isHidden = true
-                        flex.addItem(artistNameLabel)
-                            .view?.isHidden = true
+                        flex.addItem(addTrackLabel)
+                            .width(100%)
+                            .height(100%)
+
+                        flex.addItem()
+                            .position(.absolute)
+                            .top(2)
+                            .bottom(2)
+                            .left(0)
+                            .width(100%)
+                            .define { flex in
+                                flex.addItem(titleOfSongLabel)
+                                    .view?.isHidden = true
+                                flex.addItem(artistNameLabel)
+                                    .marginTop(4)
+                                    .view?.isHidden = true
+                            }
                     }
 
                 flex.addItem(addToPlayButton)
                     .size(40)
             }
+
+        flex.addItem(artistInfoHeaderView)
+            .position(.absolute)
+            .top(12)
+            .bottom(12)
+            .left(20)
+            .right(20)
+            .height(40) // 적절한 높이 설정
+            .backgroundColor(.clear)
 
         flex.addItem(bottomDivider)
             .height(1)
@@ -294,10 +305,8 @@ public final class WritingNoteView: UIView {
 
     private func lyricsTextBodyView(_ flex: Flex) {
         flex.addItem()
-            .direction(.column)
             .define { flex in
                 flex.addItem()
-                    .direction(.column)
                     .marginTop(20)
                     .define { flex in
                         flex.addItem(lyricsTextView)
@@ -326,57 +335,6 @@ public final class WritingNoteView: UIView {
             }
     }
 
-    private func setUpKeyboardEvent() {
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(keyboardWillShow),
-            name: UIResponder.keyboardWillShowNotification,
-            object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(keyboardWillHide),
-            name: UIResponder.keyboardWillHideNotification,
-            object: nil
-        )
-    }
-
-    private func removeKeyboardObservers() {
-        NotificationCenter.default.removeObserver(
-            self,
-            name: UIResponder.keyboardWillShowNotification,
-            object: nil
-        )
-        NotificationCenter.default.removeObserver(
-            self,
-            name: UIResponder.keyboardWillHideNotification,
-            object: nil
-        )
-    }
-
-    @objc private func keyboardWillShow(notification: NSNotification) {
-        if let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
-            let keyboardHeight = keyboardFrame.height
-            rootScrollView.contentInset.bottom = keyboardHeight
-            rootScrollView.verticalScrollIndicatorInsets.bottom = keyboardHeight
-
-            keyboardHeightConstraint?.constant = -keyboardHeight - 12
-            UIView.animate(withDuration: 0.3) {
-                self.layoutIfNeeded()
-            }
-        }
-    }
-
-    @objc private func keyboardWillHide(notification: NSNotification) {
-        rootScrollView.contentInset.bottom = 0
-        rootScrollView.verticalScrollIndicatorInsets.bottom = 0
-
-        keyboardHeightConstraint?.constant = -33
-        UIView.animate(withDuration: 0.3) {
-            self.layoutIfNeeded()
-        }
-    }
-
     public func configure(_ item: Song) {
         let imageUrl = URL(string: item.imageUrl)
         iconImageView.kf.setImage(with: imageUrl)
@@ -384,7 +342,7 @@ public final class WritingNoteView: UIView {
         titleOfSongLabel.text = item.name
         artistNameLabel.text = item.artist.name
 
-        addToPlayButton.setImage(FeelinImages.play, for: .normal)
+        addToPlayButton.setImage(FeelinImages.selectedSongActive, for: .normal)
 
         addTrackLabel.isHidden = true
         titleOfSongLabel.isHidden = false
@@ -392,5 +350,26 @@ public final class WritingNoteView: UIView {
 
         titleOfSongLabel.flex.markDirty()
         artistNameLabel.flex.markDirty()
+    }
+
+    public func calculateNoteCharCountContainerHeight(
+        screenHeight: CGFloat,
+        keyboardHeight: CGFloat
+    ) -> CGFloat {
+        let navigationHeight: CGFloat = 44
+        let bottom: CGFloat = 12
+        let safeAreaBottom: CGFloat = 21
+
+        let contentHeight = screenHeight - pin.safeArea.top - navigationHeight - safeAreaBottom - bottom
+        let rootScrollViewMargin: CGFloat = 16.0
+        let artistInfoHeaderViewHeight: CGFloat = 40 + 24 + 2 + 16
+        let lyricsTextBodyViewHeight: CGFloat = 132 + 20 + 12 + 32
+        let noteTextViewContainerHeight: CGFloat = 24 - noteTextView.frame.height
+        let minimumHeight: CGFloat = 24
+
+        // 모든 값을 제외하고 55가 모잘라서 넣음
+        let remainingHeight: CGFloat = contentHeight - rootScrollViewMargin - artistInfoHeaderViewHeight - lyricsTextBodyViewHeight - noteTextViewContainerHeight - minimumHeight - keyboardHeight + 55
+
+        return max(remainingHeight, minimumHeight)
     }
 }

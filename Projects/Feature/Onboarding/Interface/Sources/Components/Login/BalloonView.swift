@@ -100,7 +100,7 @@ final class BalloonView: UIView {
         tipBorderPath.addLine(to: CGPoint(x: tipStartX + tipWidth, y: balloonHeight))
         tipBorderShape.path = tipBorderPath.cgPath
         tipBorderShape.fillColor = UIColor.clear.cgColor
-        tipBorderShape.strokeColor = Colors.gray02.cgColor
+        tipBorderShape.strokeColor =  Colors.gray02.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)).cgColor
         tipBorderShape.lineWidth = 1.0
 
         layer.insertSublayer(tipFillShape, at: 1)

@@ -41,13 +41,18 @@ public final class ProfileEditViewController: UIViewController {
 
     public override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        setUpDefault()
         bind()
         setUpProfilePlaceHolder()
     }
 
     public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         view.endEditing(true)
+    }
+
+    private func setUpDefault() {
+        nicknameTextField.textField.delegate = self
     }
 
     private func bind() {
@@ -100,7 +105,7 @@ public final class ProfileEditViewController: UIViewController {
                     self?.coordinator?.popViewController()
                 case .failure(let error):
                     self?.showAlert(
-                        title: error.localizedDescription,
+                        title: error.errorMessageWithCode,
                         message: nil,
                         singleActionTitle: "확인"
                     )
@@ -111,8 +116,17 @@ public final class ProfileEditViewController: UIViewController {
 
     private func setUpProfilePlaceHolder() {
         nicknameTextField.textField.placeholder = viewModel.userProfile.nickname
+        profileEditButton.setProfileImage(with: viewModel.userProfile.profileCharacterType.image)
     }
 }
+
+extension ProfileEditViewController: UITextFieldDelegate {
+    public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        nicknameTextField.textField.resignFirstResponder()
+        return true
+    }
+}
+
 
 private extension ProfileEditViewController {
     var backButton: UIButton {

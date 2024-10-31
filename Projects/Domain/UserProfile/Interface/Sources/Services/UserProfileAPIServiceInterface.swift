@@ -13,6 +13,6 @@ import Foundation
 public protocol UserProfileAPIServiceInterface {
     func getUserProfile() -> AnyPublisher<UserProfileResponse, UserProfileError>
     func patchUserProfile(requestValue: UserProfileRequestValue) -> AnyPublisher<FeelinSuccessResponse, UserProfileError>
-    func deleteUser() -> AnyPublisher<FeelinSuccessResponse, UserProfileError>
+    func deleteUser() -> AnyPublisher<FeelinDefaultResponse, UserProfileError>
     func checkFirstVisitor() -> AnyPublisher<FirstVisitorResponse, UserProfileError>
 }
