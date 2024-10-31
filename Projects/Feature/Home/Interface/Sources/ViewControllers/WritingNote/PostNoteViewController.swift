@@ -307,10 +307,12 @@ public final class PostNoteViewController: UIViewController {
                 let caretRect = noteTextView.caretRect(for: end)
                 rootScrollView.scrollRectToVisible(caretRect, animated: true)
 
-                if text != Const.notePlaceholder {
+                if text.count > Const.noteMaxTextLength {
+                    noteTextView.text = String(text.prefix(Const.noteMaxTextLength))
+                } else if text != Const.notePlaceholder {
                     updateCharacterCountForNote()
+                    updateNoteSpacerView()
                 }
-                updateNoteSpacerView()
             }
             .store(in: &cancellables)
 
