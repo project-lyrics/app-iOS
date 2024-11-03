@@ -28,7 +28,7 @@ public final class WritingNoteView: UIView {
         return button
     }()
 
-    private let naviTitleLabel: UILabel = {
+    let naviTitleLabel: UILabel = {
         let label = UILabel()
         label.text = "노트 작성"
         label.font = SharedDesignSystemFontFamily.Pretendard.bold.font(size: 18)
