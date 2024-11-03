@@ -359,17 +359,13 @@ public final class WritingNoteView: UIView {
         let navigationHeight: CGFloat = 44
         let bottom: CGFloat = 12
         let safeAreaBottom: CGFloat = 21
-
         let contentHeight = screenHeight - pin.safeArea.top - navigationHeight - safeAreaBottom - bottom
         let rootScrollViewMargin: CGFloat = 16.0
         let artistInfoHeaderViewHeight: CGFloat = 40 + 24 + 2 + 16
         let lyricsTextBodyViewHeight: CGFloat = 132 + 20 + 12 + 32
-        let noteTextViewContainerHeight: CGFloat = 24 - noteTextView.frame.height
         let minimumHeight: CGFloat = 24
-
         // 모든 값을 제외하고 55가 모잘라서 넣음
-        let remainingHeight: CGFloat = contentHeight - rootScrollViewMargin - artistInfoHeaderViewHeight - lyricsTextBodyViewHeight - noteTextViewContainerHeight - minimumHeight - keyboardHeight + 55
-
+        let remainingHeight: CGFloat = contentHeight - artistInfoHeaderViewHeight - lyricsTextBodyViewHeight - 24 - noteTextView.frame.height - minimumHeight - rootScrollViewMargin - keyboardHeight + 55
         return max(remainingHeight, minimumHeight)
     }
 }
