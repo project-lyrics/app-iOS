@@ -67,8 +67,9 @@ public final class PostNoteViewController: UIViewController {
         setupLyricsTextviewTextCenterVertically(lyricsTextView)
     }
 
-    public override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+    public override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
         updateNoteSpacerView()
     }
 
@@ -307,10 +308,12 @@ public final class PostNoteViewController: UIViewController {
                 let caretRect = noteTextView.caretRect(for: end)
                 rootScrollView.scrollRectToVisible(caretRect, animated: true)
 
-                if text != Const.notePlaceholder {
+                if text.count > Const.noteMaxTextLength {
+                    noteTextView.text = String(text.prefix(Const.noteMaxTextLength))
+                } else if text != Const.notePlaceholder {
                     updateCharacterCountForNote()
+                    updateNoteSpacerView()
                 }
-                updateNoteSpacerView()
             }
             .store(in: &cancellables)
 
@@ -354,26 +357,39 @@ public final class PostNoteViewController: UIViewController {
             .store(in: &cancellables)
 
         lyricsTextView.textPublisher(for: [.didChange])
-            .sink { [weak self] text in
-                guard let self = self, let text = text else { return }
-
+              .receive(on: DispatchQueue.main)
+              .sink { [weak self] text in
+                guard let self = self,
+                   let text = text,
+                   searchLyricsButton.isEnabled == true else {
+                     let defaultCountLabelTextColor = Colors.gray02.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
+                     let textViewColor = Colors.gray02.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
+                     self?.updateTextViewAndCountLabelTextColor(
+                       text: Const.lyricsPlaceholder,
+                       textViewTextColor: textViewColor,
+                       labelTextColor: defaultCountLabelTextColor
+                     )
+                     self?.lyricsTextView.resignFirstResponder()
+                  return
+                }
                 let maxLineCount = 3
                 let lines = text.components(separatedBy: .newlines)
                 let numberOfLines = lines.count
-
                 if (text.count == 0 || text.count < Const.lyricsMaxTextLength) && numberOfLines > maxLineCount {
-                    let truncatedText = lines.dropLast().joined(separator: "\n")
-                    lyricsTextView.text = truncatedText
+                  let truncatedText = lines.dropLast().joined(separator: "\n")
+                  lyricsTextView.text = truncatedText
                 } else if text.count > Const.lyricsMaxTextLength {
-                    lyricsTextView.text = String(text.prefix(Const.lyricsMaxTextLength))
+                  lyricsTextView.text = String(text.prefix(Const.lyricsMaxTextLength))
                 } else if lyricsTextView.isThirdLineExceedingWidth() {
-                    lyricsTextView.text = String(text.dropLast(2))
+                  lyricsTextView.text = String(text.dropLast(2))
                 } else {
-                    setupLyricsTextviewTextCenterVertically(lyricsTextView)
+                  setupLyricsTextviewTextCenterVertically(lyricsTextView)
+                  if text != Const.lyricsPlaceholder {
                     updateCharacterCountForLyrics()
+                  }
                 }
-            }
-            .store(in: &cancellables)
+              }
+              .store(in: &cancellables)
 
         lyricsTextView.shouldBeginEditingPublisher
             .sink { [weak self] _ in

@@ -61,9 +61,8 @@ public final class CommunityMainViewController: UIViewController, NoteMenuHandli
         return button
     }()
 
-    private lazy var titleLabel: UILabel = { [unowned self] in
+    private lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "\(self.viewModel.artist.name) 레코드"
         label.font = SharedDesignSystemFontFamily.Pretendard.bold.font(size: 18)
         label.textColor = Colors.gray09
 
@@ -94,19 +93,38 @@ public final class CommunityMainViewController: UIViewController, NoteMenuHandli
 
     enum Row: Hashable {
         case artist(Artist)
+        case emptyArtist
         case note(Note)
         case emptyNote
     }
 
     private lazy var communityMainDataSource: CommunityMainDataSource = {
+        let communityEmptyArtistCellRegistration = UICollectionView.CellRegistration<CommunityEmptyArtistCell, Void> { cell, index, _ in
+            
+        }
+        
         let communityArtistCellRegistration = UICollectionView.CellRegistration<CommunityArtistCell, Artist> { [weak self] cell, index, artist in
-            guard let self = self else { return }
             
             cell.configure(artist)
 
             cell.favoriteArtistSelectButton.publisher(for: .touchUpInside)
                 .sink { control in
-                    self.viewModel.setFavoriteArtist(control.isSelected)
+                    guard let self = self else { return }
+                    
+                    let isFavorite = !control.isSelected
+                    
+                    if isFavorite {
+                        self.viewModel.setFavoriteArtist(true)
+                    } else {
+                        self.showAlert(
+                            title: "관심 아티스트에서 해제할까요?",
+                            message: "해제하면 이 레코드에서\n노트를 작성할 수 없어요.",
+                            // 확인
+                            rightActionCompletion: {
+                                self.viewModel.setFavoriteArtist(false)
+                            }
+                        )
+                    }
                 }
                 .store(in: &cell.cancellables)
             
@@ -171,6 +189,7 @@ public final class CommunityMainViewController: UIViewController, NoteMenuHandli
 
             return item.dequeueConfiguredReusableCell(
                 collectionView: collectionView,
+                communityEmptyArtistCellRegistration: communityEmptyArtistCellRegistration,
                 communityArtistCellRegistration: communityArtistCellRegistration,
                 emptyNoteCellRegistration: emptyNoteCellRegistration,
                 noteCellRegistration: noteCellRegistration,
@@ -223,8 +242,10 @@ public final class CommunityMainViewController: UIViewController, NoteMenuHandli
 
     override public func viewDidLoad() {
         super.viewDidLoad()
+        
         self.setUpNavigationBar()
         self.setUpLayout()
+        self.fetchInitialArtistAndNotes()
         self.bindUI()
         self.bindAction()
     }
@@ -238,6 +259,12 @@ public final class CommunityMainViewController: UIViewController, NoteMenuHandli
 
         flexContainer.pin.all()
         flexContainer.flex.layout()
+    }
+    
+    // MARK: - Fetch Data
+    
+    func fetchInitialArtistAndNotes() {
+        self.viewModel.getArtistAndNotes()
     }
 
     // MARK: - SetUp
@@ -284,22 +311,49 @@ public final class CommunityMainViewController: UIViewController, NoteMenuHandli
 
     // MARK: - CollectionView Snapshot
 
-    private func updateArtistUI(_ artist: Artist) {
+    private func updateArtistUI(_ artist: Artist?) {
         var snapshot = communityMainDataSource.snapshot()
+        
+        guard let existingArtist = artist else {
+            snapshot.appendSections([.artist])
+            let currentItems = snapshot.itemIdentifiers(inSection: .artist)
+            snapshot.deleteItems(currentItems)
+            snapshot.appendItems([.emptyArtist])
+            communityMainDataSource.apply(snapshot)
+            return
+        }
 
         if !snapshot.sectionIdentifiers.contains(.artist) {
             snapshot.appendSections([.artist])
             snapshot.appendItems(
-                [.artist(artist)],
+                [.artist(existingArtist)],
                 toSection: .artist
             )
 
         } else {
             let currentItems = snapshot.itemIdentifiers(inSection: .artist)
             snapshot.deleteItems(currentItems)
-            snapshot.appendItems([.artist(artist)], toSection: .artist)
+            snapshot.appendItems([.artist(existingArtist)], toSection: .artist)
         }
-        communityMainDataSource.applySnapshotUsingReloadData(snapshot)
+        
+        guard let refreshControl = self.communityMainCollectionView.refreshControl else {
+            communityMainDataSource.apply(
+                snapshot,
+                animatingDifferences: false
+            )
+            return
+        }
+        
+        // pull-to-refresh 중일 경우 reloadData를 활용하여 apply snapshot에 의해서 생기는 bounce 방지
+        if refreshControl.isRefreshing {
+            communityMainDataSource.applySnapshotUsingReloadData(snapshot)
+        } else {
+            communityMainDataSource.apply(
+                snapshot,
+                animatingDifferences: false
+            )
+        }
+        
     }
 
     private var shouldUpdate: Bool = true
@@ -363,18 +417,18 @@ public final class CommunityMainViewController: UIViewController, NoteMenuHandli
 
 private extension CommunityMainViewController {
     func bindUI() {
-        self.viewModel.$artist
+        self.viewModel.$fetchedArtist
             .sink { [weak self] updatedArtist in
                 self?.updateArtistUI(updatedArtist)
             }
             .store(in: &cancellables)
-
+        
         self.viewModel.$fetchedNotes
             .sink { [weak self] updatedNotes in
                 self?.updateNotesUI(updatedNotes)
             }
             .store(in: &cancellables)
-
+        
         viewModel.$error
             .compactMap { $0 }
             .sink { [weak self] error in
@@ -430,33 +484,73 @@ private extension CommunityMainViewController {
                     
                 case .completed:
                     self?.communityMainCollectionView.refreshControl?.endRefreshing()
-
+                    
                 default:
                     return
                 }
             })
             .store(in: &cancellables)
         
-        viewModel.$artist
-            .map(\.isFavorite)
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] isFavorite in
-                guard let self = self else { return }
-                postNoteButton.isEnabled = isFavorite
-
-                let image = isFavorite ? FeelinImages.writingActive : FeelinImages.writingInactive
-
-                postNoteButton.setImage(image, for: .normal)
+        viewModel.$fetchedArtist
+            .compactMap { $0 }
+            .sink { [weak self] artist in
+                let isArtistFavorite = artist.isFavorite
+                
+                self?.bindNavigationTitle(artistName: artist.name)
+                self?.bindPostNoteButton(isArtistFavorite: isArtistFavorite)
             }
             .store(in: &cancellables)
-
+        
         viewModel.$hasUncheckedNotification
             .sink { [weak self] hasUncheckedNotification in
-                hasUncheckedNotification
-                ? self?.notificationButton.setImage(FeelinImages.notificationOn, for: .normal)
-                : self?.notificationButton.setImage(FeelinImages.notificationOff, for: .normal)
+                self?.bindNotificationImage(hasUncheckedNotification: hasUncheckedNotification)
             }
             .store(in: &cancellables)
+        
+        viewModel.$favoriteArtistAlertState
+            .sink { [weak self] state in
+                switch state {
+                case .initial:
+                    break
+                    
+                case .isFavorite:
+                    self?.showAlert(
+                        title: "관심 아티스트에 추가되었어요.",
+                        message: "해당 레코드에서 노트를 작성할 수 있어요.",
+                        singleActionTitle: "확인"
+                    )
+                    
+                case .isRemoved:
+                    self?.showAlert(
+                        title: "관심 아티스트에서 해제되었어요.",
+                        message: "기존에 작성한 노트는 유지돼요.",
+                        singleActionTitle: "확인"
+                    )
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func bindPostNoteButton(isArtistFavorite: Bool) {
+        self.postNoteButton.isEnabled = isArtistFavorite
+        
+        let image = isArtistFavorite
+        ? FeelinImages.writingActive
+        : FeelinImages.writingInactive
+        
+        self.postNoteButton.setImage(image, for: .normal)
+    }
+    
+    private func bindNavigationTitle(artistName: String) {
+        self.titleLabel.text = "\(artistName) 레코드"
+        self.titleLabel.flex.markDirty()
+        self.flexContainer.flex.layout()
+    }
+    
+    private func bindNotificationImage(hasUncheckedNotification: Bool) {
+        hasUncheckedNotification
+        ? self.notificationButton.setImage(FeelinImages.notificationOn, for: .normal)
+        : self.notificationButton.setImage(FeelinImages.notificationOff, for: .normal)
     }
 
     func bindAction() {
@@ -493,7 +587,7 @@ private extension CommunityMainViewController {
         communityMainCollectionView.refreshControl?.isRefreshingPublisher
             .filter { $0 }
             .sink(receiveValue: { [weak viewModel] _ in
-                viewModel?.getArtistNotes(isInitial: true)
+                viewModel?.getArtistAndNotes()
             })
             .store(in: &cancellables)
 
@@ -512,7 +606,7 @@ private extension CommunityMainViewController {
         postNoteButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in
                 guard let self = self else { return }
-                coordinator?.presentPostNoteViewController(artistID: viewModel.artist.id)
+                coordinator?.presentPostNoteViewController(artistID: viewModel.artistID)
             }
             .store(in: &cancellables)
 
@@ -542,7 +636,8 @@ private extension CommunityMainViewController {
     }
 
     private func navigationBarOnScroll(yOffset: CGFloat) {
-        let artistSectionMaxYOffset = CommunityMainView.artistSectionHeight - UIApplication.shared.safeAreaInsets.top
+        let artistSectionHeight = self.communityMainCollectionView.frame.height * CommunityMainView.artistSectionFraction
+        let artistSectionMaxYOffset = artistSectionHeight - UIApplication.shared.safeAreaInsets.top
 
         // 아티스트 섹션보다 더 스크롤 할 경우
         if yOffset >= artistSectionMaxYOffset {
@@ -568,6 +663,7 @@ private extension CommunityMainViewController {
 private extension CommunityMainViewController.Row {
     func dequeueConfiguredReusableCell(
         collectionView: UICollectionView,
+        communityEmptyArtistCellRegistration: UICollectionView.CellRegistration<CommunityEmptyArtistCell, Void>,
         communityArtistCellRegistration: UICollectionView.CellRegistration<CommunityArtistCell, Artist>,
         emptyNoteCellRegistration: UICollectionView.CellRegistration<EmptyNoteCell, Void>,
         noteCellRegistration: UICollectionView.CellRegistration<NoteCell, Note>,
@@ -580,6 +676,13 @@ private extension CommunityMainViewController.Row {
                 for: indexPath,
                 item: artist
             )
+        case .emptyArtist:
+            return collectionView.dequeueConfiguredReusableCell(
+                using: communityEmptyArtistCellRegistration,
+                for: indexPath,
+                item: ()
+            )
+            
         case .note(let note):
             return collectionView.dequeueConfiguredReusableCell(
                 using: noteCellRegistration,

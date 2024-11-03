@@ -18,6 +18,7 @@ class CommunityArtistCell: UICollectionViewCell, Reusable {
     
     private let artistImageView: UIImageView = {
         let imageView = UIImageView()
+        imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFill
         imageView.isUserInteractionEnabled = true
         
@@ -28,6 +29,12 @@ class CommunityArtistCell: UICollectionViewCell, Reusable {
         let label = UILabel()
         label.font = SharedDesignSystemFontFamily.Pretendard.bold.font(size: 24)
         label.textColor = .white
+        label.layer.shadowColor = UIColor.black.cgColor
+        label.layer.shadowOpacity = 0.8
+        label.layer.shadowOffset = CGSize(
+            width: 0,
+            height: 2
+        )
         
         return label
     }()
@@ -57,8 +64,22 @@ class CommunityArtistCell: UICollectionViewCell, Reusable {
 
     private func setUpDefaults() {
         backgroundColor = Colors.background
+        
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.frame = self.contentView.bounds
+        
+        // 그라데이션 색상 설정 (예: 위에서 아래로 투명 -> 검정)
+        gradientLayer.colors = [
+            UIColor.clear.cgColor,
+            UIColor.black.withAlphaComponent(0.8).cgColor
+        ]
+        
+        gradientLayer.startPoint = CGPoint(x: 0.5, y: 0.6)
+        gradientLayer.endPoint = CGPoint(x: 0.5, y: 1.0)
+        
+        artistImageView.layer.addSublayer(gradientLayer)
     }
-
+    
     private func setUpLayout() {
         self.addSubview(artistImageView)
         
@@ -69,6 +90,7 @@ class CommunityArtistCell: UICollectionViewCell, Reusable {
             .paddingBottom(28)
             .define { flex in
                 flex.addItem(recordLabel)
+                    .maxWidth(self.contentView.frame.width - 20)
                     .marginBottom(20)
                 
                 flex.addItem(favoriteArtistSelectButton)

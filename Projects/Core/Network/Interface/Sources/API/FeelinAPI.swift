@@ -17,6 +17,8 @@ public enum FeelinAPI<R> {
     case checkUserValidity(accessToken: String)
     case reissueAccessToken(refreshToken: String)
     case getArtists(pageNumber: Int, pageSize: Int)
+    case getArtist(artistID: Int)
+    case getIsFavoriteArtist(artistID: Int)
     case searchArtists(pageNumber: Int, pageSize: Int, query: String)
     case postFavoriteArtists(ids: [Int])
     case postFavoriteArtist(id: Int)
@@ -88,6 +90,11 @@ extension FeelinAPI: HTTPNetworking {
 
             return [
                 "size": size
+            ]
+            
+        case .getIsFavoriteArtist(let artistID):
+            return [
+                "artistId": artistID
             ]
         
         case .getFavoriteArtistsRelatedNotes(let cursor, let size, let hasLyrics):
@@ -257,9 +264,15 @@ extension FeelinAPI: HTTPNetworking {
 
         case .getArtists:
             return "/api/v1/artists"
+            
+        case .getArtist(let artistID):
+            return "/api/v1/artists/\(artistID)"
 
         case .searchArtists:
             return "/api/v1/artists/search"
+            
+        case .getIsFavoriteArtist:
+            return "/api/v1/favorite-artists/exists"
 
         case .postFavoriteArtists:
             return "/api/v1/favorite-artists/batch"
@@ -361,7 +374,9 @@ extension FeelinAPI: HTTPNetworking {
 
         case .checkUserValidity, 
              .getArtists,
+             .getArtist,
              .searchArtists,
+             .getIsFavoriteArtist,
              .getFavoriteArtists,
              .getFavoriteArtistsRelatedNotes,
              .getFavoriteArtistsHavingNotes,

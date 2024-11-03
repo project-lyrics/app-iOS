@@ -11,6 +11,7 @@ import Combine
 import Foundation
 
 public protocol ArtistAPIServiceInterface {
+    func getArtist(artistID: Int) -> AnyPublisher<ArtistResponse, ArtistError>
     func getArtists(
         currentPage: Int?,
         numberOfArtists: Int
@@ -20,6 +21,7 @@ public protocol ArtistAPIServiceInterface {
         currentPage: Int?,
         numberOfArtists: Int
     ) -> AnyPublisher<GetArtistsResponse, ArtistError>
+    func getIsFavoriteArtist(artistID: Int) -> AnyPublisher<IsFavoriteArtistResponse, ArtistError>
     func postFavoriteArtists(ids: [Int]) -> AnyPublisher<FeelinSuccessResponse, ArtistError>
     func getFavoriteArtists(currentPage: Int?, numberOfArtists: Int) -> AnyPublisher<GetFavoriteArtistsResponse, ArtistError>
     func postFavoriteArtist(id: Int) -> AnyPublisher<FeelinSuccessResponse, ArtistError>
@@ -31,6 +33,14 @@ public struct ArtistAPIService: ArtistAPIServiceInterface {
     
     public init(networkProvider: NetworkProviderInterface) {
         self.networkProvider = networkProvider
+    }
+    
+    public func getArtist(artistID: Int) -> AnyPublisher<ArtistResponse, ArtistError> {
+        let endpoint = FeelinAPI<ArtistResponse>.getArtist(artistID: artistID)
+        
+        return networkProvider.request(endpoint)
+            .mapError(ArtistError.init)
+            .eraseToAnyPublisher()
     }
     
     public func getArtists(
@@ -56,6 +66,14 @@ public struct ArtistAPIService: ArtistAPIServiceInterface {
             pageSize: numberOfArtists,
             query: keyword
         )
+        return networkProvider.request(endpoint)
+            .mapError(ArtistError.init)
+            .eraseToAnyPublisher()
+    }
+    
+    public func getIsFavoriteArtist(artistID: Int) -> AnyPublisher<IsFavoriteArtistResponse, ArtistError> {
+        let endpoint = FeelinAPI<IsFavoriteArtistResponse>.getIsFavoriteArtist(artistID: artistID)
+        
         return networkProvider.request(endpoint)
             .mapError(ArtistError.init)
             .eraseToAnyPublisher()

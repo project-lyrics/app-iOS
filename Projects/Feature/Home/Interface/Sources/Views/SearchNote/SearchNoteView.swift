@@ -27,6 +27,7 @@ final class SearchNoteView: UIView {
     
     private (set) var searchNoteTableView: UITableView = {
         let tableView = UITableView()
+        tableView.keyboardDismissMode = .onDrag
         tableView.refreshControl = .init()
         tableView.showsVerticalScrollIndicator = false
         tableView.separatorStyle = .none

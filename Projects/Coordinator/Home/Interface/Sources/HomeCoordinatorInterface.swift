@@ -133,8 +133,8 @@ extension HomeCoordinator: HomeViewControllerDelegate,
         navigationController.present(myFavoriteArtistsViewController, animated: true)
     }
 
-    public func pushCommunityMainViewController(artist: Artist) {
-        let viewModel = communityMainDependencies(artist: artist)
+    public func pushCommunityMainViewController(artistID: Int) {
+        let viewModel = communityMainDependencies(artistID: artistID)
         let viewController = CommunityMainViewController(viewModel: viewModel)
         viewController.coordinator = self
         navigationController.pushViewController(viewController, animated: true)
@@ -375,13 +375,14 @@ extension HomeCoordinator {
         return viewModel
     }
 
-    func communityMainDependencies(artist: Artist) -> CommunityMainViewModel {
+    func communityMainDependencies(artistID: Int) -> CommunityMainViewModel {
         @Injected(.noteAPIService) var noteAPIService: NoteAPIServiceInterface
         @Injected(.notePaginationService) var notePaginationService: NotePaginationServiceInterface
         @Injected(.artistAPIService) var artistAPIService: ArtistAPIServiceInterface
         @Injected(.notificationAPIService) var notificationAPIService: NotificationAPIServiceInterface
         let tokenStorage = TokenStorage()
-
+        
+        let getArtistUseCase = GetArtistUseCase(artistAPIService: artistAPIService)
         let getArtistNotesUseCase = GetArtistNotesUseCase(
             noteAPIService: noteAPIService,
             notePaginationService: notePaginationService
@@ -394,7 +395,8 @@ extension HomeCoordinator {
         let logoutUseCase = LogoutUseCase(tokenStorage: tokenStorage)
 
         let viewModel = CommunityMainViewModel(
-            artist: artist,
+            artistID: artistID,
+            getArtistUseCase: getArtistUseCase,
             getArtistNotesUseCase: getArtistNotesUseCase,
             setNoteLikeUseCase: setNoteLikeUseCase,
             setBookmarkUseCase: setBookmarkUseCase,

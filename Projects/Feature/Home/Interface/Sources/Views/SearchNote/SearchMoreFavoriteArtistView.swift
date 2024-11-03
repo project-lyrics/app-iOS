@@ -24,7 +24,9 @@ class SearchMoreFavoriteArtistView: UIView {
     
     lazy var artistCollectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: self.flowLayout)
+        collectionView.keyboardDismissMode = .onDrag
         collectionView.showsVerticalScrollIndicator = false
+        collectionView.backgroundColor = Colors.background
         return collectionView
     }()
     
@@ -71,7 +73,7 @@ class SearchMoreFavoriteArtistView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        self.setUpArtistCollectionViewLayout()
+        self.setUpArtistCollectionViewInset()
         
         rootFlexContainer.pin
             .top(self.pin.safeArea)
@@ -116,16 +118,7 @@ class SearchMoreFavoriteArtistView: UIView {
         }
     }
     
-    private func setUpArtistCollectionViewLayout() {
-        let totalHorizontalSpacing = flowLayout.minimumInteritemSpacing * 2 + 27 * 2
-        let cellWidth: CGFloat = (self.frame.width - totalHorizontalSpacing) / 3
-        let cellHeight: CGFloat = 146
-        
-        flowLayout.itemSize = CGSize(
-            width: cellWidth,
-            height: cellHeight
-        )
-        
+    private func setUpArtistCollectionViewInset() {
         artistCollectionView.contentInset = .init(
             top: 0,
             left: 0,

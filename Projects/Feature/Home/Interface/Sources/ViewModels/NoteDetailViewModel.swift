@@ -51,71 +51,49 @@ final public class NoteDetailViewModel {
         $mustHaveLyrics
             .dropFirst()
             .sink { [weak self] mustHaveLyrics in
-                self?.getSongNotes(
-                    isInitial: true,
-                    mustHaveLyrics: mustHaveLyrics
-                )
+                self?.getSongDetailAndNotes(mustHaveLyrics: mustHaveLyrics)
             }
             .store(in: &cancellables)
     }
     
-    func getSongDetail() {
-        self.getSongDetailUseCase.execute(songID: songID)
-            .receive(on: DispatchQueue.main)
-            .mapToResult()
-            .sink { [weak self] result in
-                switch result {
-                case .success(let songDetail):
-                    self?.songDetail = songDetail
-                    
-                case .failure(let error):
-                    self?.error = error
-                }
-            }
-            .store(in: &cancellables)
-    }
-    
-    func getSongDetailThenNotes() {
+    func getSongDetailAndNotes(mustHaveLyrics: Bool? = nil) {
         self.refreshState = .refreshing
         
-        self.getSongDetailUseCase.execute(songID: songID)
+        let getSongDetail = self.getSongDetailUseCase.execute(songID: songID)
+        
+        let getSongNotes = self.getSongNotesUseCase.execute(
+            isInitial: true,
+            perPage: 10,
+            mustHaveLyrics: mustHaveLyrics ?? self.mustHaveLyrics,
+            songID: songID
+        )
+        
+        Publishers.Zip(getSongDetail, getSongNotes)
             .receive(on: DispatchQueue.main)
-            .flatMap { [weak self] fetchedSongDetail -> AnyPublisher<[Note], NoteError> in
-                guard let self = self else {
-                    return Empty().eraseToAnyPublisher()
-                }
-                self.songDetail = fetchedSongDetail
-                
-                return self.getSongNotesUseCase.execute(
-                    isInitial: true,
-                    perPage: 10,
-                    mustHaveLyrics: self.mustHaveLyrics,
-                    songID: self.songID
-                )
-            }
             .mapToResult()
-            .receive(on: DispatchQueue.main)
             .sink { [weak self] result in
                 switch result {
-                case .success(let fetchedNotes):
+                case .success(let (songDetail, fetchedNotes)):
+                    self?.songDetail = songDetail
                     self?.fetchedNotes = fetchedNotes
                     self?.refreshState = .completed
-                case .failure(let error):
-                    self?.error = error
-                    self?.refreshState = .failed(error)
+                    
+                case .failure(let noteError):
+                    self?.error = noteError
+                    self?.refreshState = .failed(noteError)
+                    
                 }
             }
             .store(in: &cancellables)
     }
     
-    func getSongNotes(
-        isInitial: Bool,
+    func getMoreSongNotes(
         mustHaveLyrics: Bool? = nil,
         perPage: Int = 10
     ) {
         
         self.getSongNotesUseCase.execute(
-            isInitial: isInitial,
+            isInitial: false,
             perPage: perPage,
             mustHaveLyrics: mustHaveLyrics ?? self.mustHaveLyrics,
             songID: songID
@@ -125,11 +103,7 @@ final public class NoteDetailViewModel {
         .sink { [weak self] result in
             switch result {
             case .success(let fetchedNotes):
-                if isInitial {
-                    self?.fetchedNotes = fetchedNotes
-                } else {
-                    self?.fetchedNotes.append(contentsOf: fetchedNotes)
-                }
+                self?.fetchedNotes.append(contentsOf: fetchedNotes)
             case .failure(let error):
                 self?.error = error
             }

@@ -294,6 +294,8 @@ public final class NoteCell: UICollectionViewCell, Reusable {
         self.noteContentTextView.isUserInteractionEnabled = isHyperLinkTouchable
         self.noteContentTextView.attributedText = attributedText
         
+        self.authorNameLabel.flex.markDirty()
+        self.noteWrittenTimeLabel.flex.markDirty()
         self.noteContentTextView.flex.markDirty()
         self.likeAmountLabel.flex.markDirty()
         self.commentAmountLabel.flex.markDirty()
