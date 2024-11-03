@@ -138,6 +138,7 @@ private extension PostNoteViewModel {
 
         return input.completeButtonTapPublisher
               .combineLatest(combinedPublisher)
+              .throttle(for: .seconds(2), scheduler: RunLoop.main, latest: false)
               .flatMap { [weak self] (_, value) -> AnyPublisher<PostNoteResult, Never> in
                   guard let self = self else {
                       return Empty().eraseToAnyPublisher()
