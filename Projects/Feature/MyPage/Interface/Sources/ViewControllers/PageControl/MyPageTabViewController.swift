@@ -58,6 +58,7 @@ public final class MyPageTabViewController: ButtonBarPagerTabStripViewController
     }
 
     private func setUpDefault() {
+        settings.style.defaultBarBackgroundColor = Colors.gray01
         settings.style.selectedBarHeight = 2.0
         settings.style.buttonBarMinimumLineSpacing = 0
         settings.style.buttonBarItemFont = SharedDesignSystemFontFamily.Pretendard.semiBold.font(size: 16)
