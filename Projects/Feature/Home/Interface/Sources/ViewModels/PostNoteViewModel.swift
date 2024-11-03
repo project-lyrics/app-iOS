@@ -14,6 +14,11 @@ import Core
 public final class PostNoteViewModel {
     typealias PostNoteResult = Result<FeelinSuccessResponse, NoteError>
 
+    private enum Const {
+        static let lyricsPlaceholder = "좋아하는 가사를 적어주세요 (선택)"
+        static let notePlaceholder = "생각을 남겨보세요."
+    }
+
     struct Input {
         let songTapPublisher: AnyPublisher<Song, Never>
         let lyricsTextViewTypePublisher: AnyPublisher<String?, Never>
@@ -63,7 +68,7 @@ private extension PostNoteViewModel {
             input.postNoteStatusPublisher
         )
         .map { song, noteContent, status in
-            return !noteContent.isEmpty && status == .draft
+            return !noteContent.isEmpty && noteContent != Const.notePlaceholder && status == .draft
         }
         .eraseToAnyPublisher()
     }
@@ -87,7 +92,7 @@ private extension PostNoteViewModel {
     func checkLyricsText(_ input: Input) -> AnyPublisher<Bool, Never> {
         return input.lyricsTextViewTypePublisher
             .map { text in
-                return text?.isEmpty == false && text != "좋아하는 가사를 적어주세요 (선택)"
+                return text?.isEmpty == false && text != Const.lyricsPlaceholder
             }
             .eraseToAnyPublisher()
     }
@@ -99,6 +104,9 @@ private extension PostNoteViewModel {
                 input.noteTextViewTypePublisher,
                 input.postNoteStatusPublisher
             )
+            .filter({ (song, noteContent, status) in
+                return !noteContent.isEmpty && noteContent != Const.notePlaceholder
+            })
             .eraseToAnyPublisher()
 
         let optionalFieldsPublisher = Publishers
@@ -120,7 +128,7 @@ private extension PostNoteViewModel {
 
                 return PostNoteValue(
                     id: song.id,
-                    lyrics: lyrics != "좋아하는 가사를 적어주세요 (선택)" ? lyrics : nil,
+                    lyrics: lyrics != Const.lyricsPlaceholder ? lyrics : nil,
                     background: lyricsBackground,
                     content: noteContent,
                     status: status
