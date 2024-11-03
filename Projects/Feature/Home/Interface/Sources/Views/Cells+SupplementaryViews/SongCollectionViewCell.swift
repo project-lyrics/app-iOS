@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Combine
 
 import Domain
 import FlexLayout
@@ -51,6 +52,8 @@ final class SongCollectionViewCell: UICollectionViewCell, Reusable {
         button.setImage(FeelinImages.play, for: .normal)
         return button
     }()
+
+    var cancellables = Set<AnyCancellable>()
 
     // MARK: - Init
 
