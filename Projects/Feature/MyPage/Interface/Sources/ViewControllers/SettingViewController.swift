@@ -51,7 +51,7 @@ public final class SettingViewController: UIViewController {
 
     public init(viewModel: SettingViewModel) {
         self.viewModel = viewModel
-        
+
         super.init(nibName: nil, bundle: .main)
     }
 
@@ -81,21 +81,21 @@ public final class SettingViewController: UIViewController {
         logoutButton.isHidden = userInfo == nil
         deleteUserButton.isHidden = userInfo == nil
     }
-    
+
     private func bindUI() {
         self.viewModel.$logoutResult
             .sink { [weak self] logoutResult in
                 switch logoutResult {
                 case .success:
                     self?.coordinator?.didFinish()
-                    
+
                 case .failure(let error):
                     self?.showAlert(
                         title: error.errorDescription,
                         message: nil,
                         singleActionTitle: "확인"
                     )
-                    
+
                 default:
                     break
                 }
@@ -226,9 +226,10 @@ extension SettingViewController: UITableViewDelegate {
             }
 
         case .serviceUsage,
-                .personalInfo,
-                .serviceInquiry:
+                .personalInfo:
             coordinator?.presentInternalWebViewController(url: item.url)
+        case .serviceInquiry:
+            openWebBrowser(urlStr: item.url)
         }
     }
 }

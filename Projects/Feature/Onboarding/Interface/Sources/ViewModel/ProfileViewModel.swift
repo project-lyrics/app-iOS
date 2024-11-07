@@ -46,7 +46,7 @@ public final class ProfileViewModel {
 private extension ProfileViewModel {
     func isEnabledNextButton(_ nickname: String?) -> Bool {
         let count = nickname?.count ?? 0
-        return nickname?.isEmpty == false && count < 10
+        return nickname?.isEmpty == false && count <= 10 && nickname?.containsOnlyAllowedCharacters == true
     }
 
     func checkNextButtonIsEnabled(input: Input) -> AnyPublisher<Bool, Never> {

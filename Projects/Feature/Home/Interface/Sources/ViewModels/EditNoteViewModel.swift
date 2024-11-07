@@ -13,6 +13,11 @@ import Core
 
 public final class EditNoteViewModel {
     typealias EditNoteResult = Result<FeelinSuccessResponse, NoteError>
+    
+    private enum Const {
+        static let lyricsPlaceholder = "좋아하는 가사를 적어주세요 (선택)"
+        static let notePlaceholder = "생각을 남겨보세요."
+    }
 
     struct Input {
         let lyricsTextViewTypePublisher: AnyPublisher<String, Never>
@@ -57,12 +62,12 @@ private extension EditNoteViewModel {
     func isEnabledCompleteButton(_ input: Input) -> AnyPublisher<Bool, Never> {
         let hasWrittenNotePublisher = input.noteTextViewTypePublisher
             .map { noteContent in
-                return self.note.content != noteContent
+                return self.note.content != noteContent && noteContent != Const.notePlaceholder
             }
 
         let hasWrittenLyricsNotePublisher = input.lyricsTextViewTypePublisher
             .map { lyricsContent in
-                return self.note.lyrics?.content != lyricsContent
+                return self.note.lyrics?.content != lyricsContent && lyricsContent != Const.lyricsPlaceholder
             }
 
         let hasSelectedLyricsBackgroundPublisher = input.lyricsBackgroundSelectPublisher
@@ -83,9 +88,9 @@ private extension EditNoteViewModel {
     }
 
     func isEnabledCompleteButton(lyricsContent: String, background: LyricsBackground?, noteContent: String) -> Bool {
-        return self.note.lyrics?.content != lyricsContent 
+        return (self.note.lyrics?.content != lyricsContent && lyricsContent != Const.lyricsPlaceholder)
         || self.note.lyrics?.background != background
-        || self.note.content != noteContent
+        || (self.note.content != noteContent && noteContent != Const.notePlaceholder)
     }
 
     func isSelectLyricsBackground(_ input: Input) -> AnyPublisher<LyricsBackground?, Never> {
@@ -99,7 +104,7 @@ private extension EditNoteViewModel {
     func checkLyricsText(_ input: Input) -> AnyPublisher<Bool, Never> {
         return input.lyricsTextViewTypePublisher
             .map { text in
-                return text.isEmpty == false && text != "좋아하는 가사를 적어주세요 (선택)"
+                return text.isEmpty == false && text != Const.lyricsPlaceholder
             }
             .eraseToAnyPublisher()
     }
@@ -116,7 +121,7 @@ private extension EditNoteViewModel {
             }
             .map { (lyrics, background, noteContent) in
                 PatchNoteValue(
-                    lyrics: lyrics != "좋아하는 가사를 적어주세요 (선택)" ? lyrics : nil,
+                    lyrics: lyrics != Const.lyricsPlaceholder ? lyrics : nil,
                     background: background,
                     content: noteContent,
                     status: self.note.status
@@ -126,6 +131,7 @@ private extension EditNoteViewModel {
 
         return input.completeButtonTapPublisher
             .combineLatest(validNotePublisher)
+            .throttle(for: .seconds(2), scheduler: RunLoop.main, latest: false)
             .flatMap { [weak self] (_, value) -> AnyPublisher<EditNoteResult, Never> in
                 guard let self = self else {
                     return Empty().eraseToAnyPublisher()

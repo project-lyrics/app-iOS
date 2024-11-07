@@ -57,6 +57,7 @@ public final class PostNoteViewController: UIViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
+        postNoteView.naviTitleLabel.text = "노트 작성"
         bind()
         setUpTextView()
     }

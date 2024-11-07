@@ -55,6 +55,7 @@ public final class EditNoteViewController: UIViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
+        editNoteView.naviTitleLabel.text = "노트 수정"
         bind()
         setUpTextView()
         configure(viewModel.note)

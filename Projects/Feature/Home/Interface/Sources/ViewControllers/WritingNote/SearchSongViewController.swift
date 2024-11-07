@@ -16,7 +16,7 @@ public protocol SearchSongViewControllerDelegate: AnyObject {
     func popRootViewController()
 }
 
-public final class SearchSongViewController: UIViewController {
+public final class SearchSongViewController: UIViewController, NoteMusicHandling {
 
     private var cancellables = Set<AnyCancellable>()
 
@@ -163,7 +163,17 @@ extension SearchSongViewController: UICollectionViewDataSource {
     ) -> UICollectionViewCell {
 
         let cell = collectionView.dequeueReusableCell(for: indexPath, cellType: SongCollectionViewCell.self)
-        cell.configure(model: viewModel.fetchedSongs[indexPath.row])
+        let model = viewModel.fetchedSongs[indexPath.row]
+        cell.configure(model: model)
+
+        cell.playButton.tapPublisher
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                print(model.artist.name)
+                print(model.name)
+                openYouTube(query: "\(model.artist.name) \(model.name)")
+            }
+            .store(in: &cell.cancellables)
 
         return cell
     }
