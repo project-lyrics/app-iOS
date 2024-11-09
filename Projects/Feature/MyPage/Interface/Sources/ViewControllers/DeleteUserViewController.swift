@@ -88,7 +88,7 @@ public final class DeleteUserViewController: UIViewController {
                     
                 case .failure(let error):
                     self?.showAlert(
-                        title: error.errorMessageWithCode,
+                        title: error.userMessage,
                         message: nil,
                         singleActionTitle: "확인"
                     )

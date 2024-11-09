@@ -10,12 +10,18 @@ import FeatureOnboardingInterface
 import FeatureMyPageInterface
 
 public final class OnboardingCoordinator: Coordinator {
+    public var authErrorHandler: AuthErrorHandler
+    
     public weak var delegate: CoordinatorDelegate?
     public var navigationController: UINavigationController
     public var childCoordinators: [Coordinator]
 
-    public init(navigationController: UINavigationController) {
+    public init(
+        navigationController: UINavigationController,
+        authErrorHandler: AuthErrorHandler = .init()
+    ) {
         self.navigationController = navigationController
+        self.authErrorHandler = authErrorHandler
         self.childCoordinators = []
     }
 

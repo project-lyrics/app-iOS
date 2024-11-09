@@ -9,6 +9,7 @@ import UIKit
 import FlexLayout
 import Combine
 import Domain
+import Shared
 
 public protocol LoginViewControllerDelegate: AnyObject {
     func didFinish()
@@ -20,6 +21,15 @@ public final class LoginViewController: UIViewController {
     private let loginView = LoginView()
     private let viewModel: LoginViewModel
     private var cancellables = Set<AnyCancellable>()
+    
+    @KeychainWrapper<UserInformation>(.userInfo)
+    public var userInfo
+    
+    @KeychainWrapper<AccessToken>(.accessToken)
+    public var accessToken
+    
+    @KeychainWrapper<RefreshToken>(.refreshToken)
+    public var refreshToken
 
     private var loginButtonTapped: PassthroughSubject<OAuthType, Never> = .init()
     private var recentLoginLoaded: PassthroughSubject<Void, Never> = .init()
@@ -108,10 +118,18 @@ public final class LoginViewController: UIViewController {
                         self?.coordinator?.pushUseAgreementViewController(model: model)
                     
                     case let .feelinAPIError(feelinAPIError):
-                        self?.showAlert(title: "로그인에 실패했어요.네트워크 환경을 점검해 주세요.[\(feelinAPIError.errorCode)]", message: "", singleActionTitle: "확인")
+                        self?.showAlert(
+                            title: "로그인에 실패했어요.네트워크 환경을 점검해 주세요.(\(feelinAPIError.errorCode))",
+                            message: "",
+                            singleActionTitle: "확인"
+                        )
                         
                     case let .networkError(error):
-                        self?.showAlert(title: "로그인에 실패했어요.네트워크 환경을 점검해 주세요.[\(error.errorCode)]", message: "", singleActionTitle: "확인")
+                        self?.showAlert(
+                            title: "로그인에 실패했어요.네트워크 환경을 점검해 주세요.(\(error.errorCode))",
+                            message: "",
+                            singleActionTitle: "확인"
+                        )
 
                     default:
                         break

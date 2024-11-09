@@ -28,7 +28,7 @@ public struct GetArtistUseCase: GetArtistUseCaseInterface {
             let isFavoritePublisher = artistAPIService.getIsFavoriteArtist(artistID: artistID)
             .tryCatch({ artistError in
                 if case .feelinAPIError(let feelinAPIError) = artistError,
-                   case .tokenNotFound = feelinAPIError {
+                   feelinAPIError.type == .tokenIsExpired {
                     // 비회원인 경우 즐겨찾기 정보를 가져올 수 없다. 하지만 이 부분은 에러를 발생시키기 보다는
                     // false값을 리턴하여야 한다. 유저가 커뮤니티 메인 화면을 확인은 할 수 있어야 하니
                     return Just(IsFavoriteArtistResponse(exists: false))

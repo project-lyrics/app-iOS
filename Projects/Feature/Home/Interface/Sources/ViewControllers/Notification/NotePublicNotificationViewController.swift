@@ -13,7 +13,11 @@ import Shared
 
 public protocol NotePublicNotificationViewControllerDelegate: AnyObject {
     func pushNoteCommentsViewController(noteID: Int)
-    func presentErrorAlert(message: String)
+    func handleError(
+        errorCode: String?,
+        errorMessage: String
+    )
+    func didFinish()
 }
 
 public final class NotePublicNotificationViewController: UIViewController {
@@ -187,7 +191,10 @@ private extension NotePublicNotificationViewController {
             .sink { [weak self] refreshState in
                 switch refreshState {
                 case .failed(let error):
-                    self?.coordinator?.presentErrorAlert(message: error.errorMessageWithCode)
+                    self?.coordinator?.handleError(
+                        errorCode: error.errorCode,
+                        errorMessage: error.userMessage
+                    )
 
                 case .completed:
                     self?.noteNotificationCollectionView.refreshControl?.endRefreshing()
@@ -201,7 +208,10 @@ private extension NotePublicNotificationViewController {
         viewModel.$error
             .compactMap { $0 }
             .sink { [weak self] error in
-                self?.coordinator?.presentErrorAlert(message: error.errorMessageWithCode)
+                self?.coordinator?.handleError(
+                    errorCode: error.errorCode,
+                    errorMessage: error.userMessage
+                )
             }
             .store(in: &cancellables)
     }

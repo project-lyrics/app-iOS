@@ -13,6 +13,10 @@ import Shared
 
 public protocol SearchNoteViewControllerDelegate: AnyObject {
     func pushNoteDetailViewController(selectedNote: SearchedNote)
+    func handleError(
+        errorCode: String?,
+        errorMessage: String
+    )
 }
 
 public final class SearchNoteViewController: UIViewController {
@@ -124,10 +128,9 @@ private extension SearchNoteViewController {
         viewModel.$error
             .compactMap { $0 }
             .sink { [weak self] error in
-                self?.showAlert(
-                    title: error.errorMessageWithCode,
-                    message: nil,
-                    singleActionTitle: "확인"
+                self?.coordinator?.handleError(
+                    errorCode: error.errorCode,
+                    errorMessage: error.userMessage
                 )
             }
             .store(in: &cancellables)
@@ -143,10 +146,9 @@ private extension SearchNoteViewController {
             .sink(receiveValue: { [weak self] refreshState in
                 switch refreshState {
                 case .failed(let error):
-                    self?.showAlert(
-                        title: error.errorMessageWithCode,
-                        message: nil,
-                        singleActionTitle: "확인"
+                    self?.coordinator?.handleError(
+                        errorCode: error.errorCode,
+                        errorMessage: error.userMessage
                     )
 
                 case .completed:

@@ -59,7 +59,7 @@ extension UserVerifiable {
                 case let error as NetworkError:
                     switch error {
                     case .feelinAPIError(let feelinAPIError):
-                        if case .userDataNotFound = feelinAPIError {
+                        if feelinAPIError.type == .userDataNotFound {
                             return AuthError.userNotFound(.init(accessToken: oAuthToken, oAuthType: type))
                         } else {
                             return AuthError.feelinAPIError(feelinAPIError)

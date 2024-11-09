@@ -1,8 +1,8 @@
 //
-//  Token.swift
-//  CoreLocalStorageInterface
+//  TokenType.swift
+//  SharedUtil
 //
-//  Created by 황인우 on 5/15/24.
+//  Created by 황인우 on 10/31/24.
 //
 
 import Foundation

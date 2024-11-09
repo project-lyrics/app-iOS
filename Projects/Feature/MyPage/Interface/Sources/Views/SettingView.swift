@@ -167,8 +167,7 @@ final class SettingView: UIView {
     }
 
     private func configure() {
-        guard let dictionary = Bundle.main.infoDictionary,
-              let version = dictionary["CFBundleShortVersionString"] as? String
+        guard let version = Bundle.main.appVersion
         else {
             return
         }

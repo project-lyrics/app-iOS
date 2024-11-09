@@ -16,9 +16,20 @@ import UIKit
 public protocol NoteNotificationContainerViewControllerDelegate: AnyObject {
     func popViewController()
     func pushNoteCommentsViewController(noteID: Int)
+    func didFinish()
+    func handleError(errorCode: String?, errorMessage: String)
 }
 
 public final class NoteNotificationContainerViewController: UIViewController {
+    @KeychainWrapper<UserInformation>(.userInfo)
+    private var userInfo
+    
+    @KeychainWrapper<AccessToken>(.accessToken)
+    private var accessToken
+    
+    @KeychainWrapper<RefreshToken>(.refreshToken)
+    private var refreshToken
+    
     public weak var coordinator: NoteNotificationContainerViewControllerDelegate?
     private var cancellables: Set<AnyCancellable> = .init()
     
@@ -99,10 +110,9 @@ public final class NoteNotificationContainerViewController: UIViewController {
     private func bindUI() {
         self.errorAlertSubject.eraseToAnyPublisher()
             .sink { [weak self] error in
-                self?.showAlert(
-                    title: error.errorMessageWithCode,
-                    message: nil,
-                    singleActionTitle: "확인"
+                self?.coordinator?.handleError(
+                    errorCode: error.errorCode,
+                    errorMessage: error.userMessage
                 )
             }
             .store(in: &cancellables)
@@ -118,15 +128,19 @@ public final class NoteNotificationContainerViewController: UIViewController {
 }
 
 extension NoteNotificationContainerViewController: NoteNotificationPageViewControllerDelegate {
-    public func presentErrorAlert(message: String) {
-        showAlert(
-            title: message,
-            message: nil,
-            singleActionTitle: "확인"
-        )
+    public func didFinish() {
+        coordinator?.didFinish()
     }
+    
     
     public func pushNoteCommentsViewController(noteID: Int) {
         coordinator?.pushNoteCommentsViewController(noteID: noteID)
+    }
+    
+    public func handleError(
+        errorCode: String?,
+        errorMessage: String
+    ) {
+        coordinator?.handleError(errorCode: errorCode, errorMessage: errorMessage)
     }
 }

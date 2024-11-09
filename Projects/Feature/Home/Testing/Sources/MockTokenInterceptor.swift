@@ -31,7 +31,6 @@ final public class MockTokenInterceptor: URLRequestInterceptor {
     
     public func retry(
         with session: URLSession,
-        _ request: URLRequest,
         dueTo error: NetworkError
     ) -> AnyPublisher<RetryResult, Never> {
         return Just(RetryResult.doNotRetry)

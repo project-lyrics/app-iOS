@@ -106,7 +106,7 @@ public final class EditUserInfoViewController: UIViewController {
                     self?.coordinator?.popViewController()
                 case .failure(let error):
                     self?.showAlert(
-                        title: error.errorMessageWithCode,
+                        title: error.userMessage,
                         message: nil,
                         singleActionTitle: "확인"
                     )

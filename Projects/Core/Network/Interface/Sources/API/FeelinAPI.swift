@@ -206,6 +206,11 @@ extension FeelinAPI: HTTPNetworking {
                 "socialAccessToken": oAuthAccessToken,
                 "authProvider": oAuthProvider.rawValue
             ]
+            
+        case .reissueAccessToken(refreshToken: let refreshToken):
+            return [
+                "refreshToken": refreshToken
+            ]
 
         case .postFavoriteArtists(let ids):
             return [

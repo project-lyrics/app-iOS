@@ -9,6 +9,7 @@ import Combine
 import Core
 import Foundation
 import DomainOAuthInterface
+import Shared
 
 extension UserValidityService: UserValidityServiceInterface {
     public func isUserValid() -> AnyPublisher<Void, AuthError> {

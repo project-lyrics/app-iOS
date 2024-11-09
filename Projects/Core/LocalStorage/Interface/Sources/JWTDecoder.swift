@@ -5,6 +5,8 @@
 //  Created by 황인우 on 8/31/24.
 //
 
+import SharedUtil
+
 import Foundation
 
 public struct JWTDecoder {

@@ -14,12 +14,17 @@ import DependencyInjection
 import DomainOAuthInterface
 
 final class AppCoordinator: Coordinator {
+    var authErrorHandler: AuthErrorHandler
     var delegate: CoordinatorDelegate?
     var navigationController: UINavigationController
     var childCoordinators: [Coordinator]
 
-    init(rootViewController: UINavigationController) {
+    init(
+        rootViewController: UINavigationController,
+        authErrorHandler: AuthErrorHandler = .init()
+    ) {
         self.navigationController = rootViewController
+        self.authErrorHandler = authErrorHandler
         self.childCoordinators = []
 
         registerDependencies()

@@ -17,6 +17,10 @@ public protocol NoteDetailViewControllerDelegate: AnyObject {
     func popViewController()
     func pushNoteCommentsViewController(noteID: Int)
     func didFinish()
+    func handleError(
+        errorCode: String?,
+        errorMessage: String
+    )
 }
 
 public final class NoteDetailViewController: UIViewController, NoteMenuHandling, NoteMusicHandling {
@@ -323,7 +327,7 @@ private extension NoteDetailViewController {
             .compactMap { $0 }
             .sink { [weak self] error in
                 if case let .feelinAPIError(feelinAPIError) = error,
-                   case .tokenNotFound = feelinAPIError {
+                   feelinAPIError.type == .tokenNotFound {
                     self?.showAlert(
                         title: "로그인 후 이용할 수 있어요.",
                         message: nil,
@@ -333,10 +337,9 @@ private extension NoteDetailViewController {
                         }
                     )
                 } else {
-                    self?.showAlert(
-                        title: error.errorMessageWithCode,
-                        message: nil,
-                        singleActionTitle: "확인"
+                    self?.coordinator?.handleError(
+                        errorCode: error.errorCode,
+                        errorMessage: error.userMessage
                     )
                 }
             }
@@ -350,7 +353,7 @@ private extension NoteDetailViewController {
                     
                 case .failure(let error):
                     self?.showAlert(
-                        title: error.errorMessageWithCode,
+                        title: error.userMessage,
                         message: nil,
                         singleActionTitle: "확인"
                     )
@@ -366,10 +369,9 @@ private extension NoteDetailViewController {
             .sink(receiveValue: { [weak self] refreshState in
                 switch refreshState {
                 case .failed(let error):
-                    self?.showAlert(
-                        title: error.errorMessageWithCode,
-                        message: nil,
-                        singleActionTitle: "확인"
+                    self?.coordinator?.handleError(
+                        errorCode: error.errorCode,
+                        errorMessage: error.userMessage
                     )
 
                 case .completed:

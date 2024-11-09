@@ -14,6 +14,10 @@ import Shared
 public protocol ArtistSelectViewControllerDelegate: AnyObject {
     func didFinishSelectingInitialFavoriteArtists()
     func dismissViewController()
+    func handleError(
+        errorCode: String?,
+        errorMessage: String
+    )
 }
 
 public final class ArtistSelectViewController: UIViewController {
@@ -143,10 +147,9 @@ private extension ArtistSelectViewController {
         viewModel.$error
             .compactMap { $0 }
             .sink { [weak self] error in
-                self?.showAlert(
-                    title: error.errorMessage,
-                    message: nil,
-                    singleActionTitle: "확인"
+                self?.coordinator?.handleError(
+                    errorCode: error.errorCode,
+                    errorMessage: error.userMessage
                 )
             }
             .store(in: &cancellables)
@@ -219,10 +222,9 @@ private extension ArtistSelectViewController {
                     self?.coordinator?.dismissViewController()
                     
                 case .failure(let error):
-                    self?.showAlert(
-                        title: error.errorMessage,
-                        message: nil,
-                        singleActionTitle: "확인"
+                    self?.coordinator?.handleError(
+                        errorCode: error.errorCode,
+                        errorMessage: error.userMessage
                     )
                 }
             })

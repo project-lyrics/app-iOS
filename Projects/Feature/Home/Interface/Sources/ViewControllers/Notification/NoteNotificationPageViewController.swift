@@ -13,7 +13,11 @@ import UIKit
 
 public protocol NoteNotificationPageViewControllerDelegate: AnyObject {
     func pushNoteCommentsViewController(noteID: Int)
-    func presentErrorAlert(message: String)
+    func didFinish()
+    func handleError(
+        errorCode: String?,
+        errorMessage: String
+    )
 }
 
 public final class NoteNotificationPageViewController: ButtonBarPagerTabStripViewController {
@@ -108,11 +112,18 @@ public final class NoteNotificationPageViewController: ButtonBarPagerTabStripVie
 
 extension NoteNotificationPageViewController: NotePersonalNotificationViewControllerDelegate,
                                               NotePublicNotificationViewControllerDelegate {
+    public func didFinish() {
+        coordinator?.didFinish()
+    }
+    
     public func pushNoteCommentsViewController(noteID: Int) {
         coordinator?.pushNoteCommentsViewController(noteID: noteID)
     }
-
-    public func presentErrorAlert(message: String) {
-        coordinator?.presentErrorAlert(message: message)
+    
+    public func handleError(
+        errorCode: String?,
+        errorMessage: String
+    ) {
+        coordinator?.handleError(errorCode: errorCode, errorMessage: errorMessage)
     }
 }

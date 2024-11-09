@@ -96,7 +96,6 @@ extension Publisher where Output == DataTaskResult, Failure == NetworkError {
             
             return interceptor.retry(
                 with: session.urlSession,
-                request,
                 dueTo: networkError
             )
             .flatMap { result -> AnyPublisher<Output, NetworkError> in
