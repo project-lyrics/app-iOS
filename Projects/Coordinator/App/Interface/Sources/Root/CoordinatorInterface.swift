@@ -61,6 +61,14 @@ public extension Coordinator {
                         self?.finish()
                     }
                 
+            case FeelinAPIError.ErrorType.updateRequired.errorCode:
+                self.navigationController.topViewController?.showAlert(
+                    title: errorMessage,
+                    message: "원활한 서비스 이용을 위해 업데이트가 필요해요.",
+                    singleActionTitle: "확인") { [weak self] in
+                        self?.appErrorHandler.goToUpdate(data: errorData)
+                    }
+                
             default:
                 self.navigationController.topViewController?.showAlert(
                     title: errorMessage,
