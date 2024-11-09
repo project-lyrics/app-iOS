@@ -85,6 +85,8 @@ extension UIViewController {
             onTapCompletion: actionCompletion
         )
         
+        guard !isFeelinAlertAlreadyPresented else { return }
+        
         present(alertViewController, animated: false, completion: nil)
     }
     
@@ -103,8 +105,29 @@ extension UIViewController {
                 onTapCompletion: rightActionCompletion
             )
             
+            guard !isFeelinAlertAlreadyPresented else { return }
+            
             present(alertViewController, animated: false, completion: nil)
         }
+    
+    private func getTopMostViewController() -> UIViewController? {
+        let keyWindow = UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap { $0.windows }
+            .first { $0.isKeyWindow }
+        
+        var topMostViewController = keyWindow?.rootViewController
+
+        while let presentedViewController = topMostViewController?.presentedViewController {
+            topMostViewController = presentedViewController
+        }
+
+        return topMostViewController
+    }
+
+    private var isFeelinAlertAlreadyPresented: Bool {
+        return getTopMostViewController() is FeelinAlertViewController
+    }
 }
 
 // MARK: - Toast
