@@ -1,5 +1,5 @@
 //
-//  AuthErrorHandler.swift
+//  AppErrorHandler.swift
 //  CoordinatorAppInterface
 //
 //  Created by 황인우 on 10/31/24.
@@ -9,7 +9,11 @@ import Shared
 
 import UIKit
 
-public class AuthErrorHandler {
+public protocol AppErrorHandlerInterface: AnyObject {
+    func deleteUserData()
+}
+
+public class AppErrorHandler: AppErrorHandlerInterface {
     @KeychainWrapper<UserInformation>(.userInfo)
     private var userInfo
     
@@ -21,7 +25,7 @@ public class AuthErrorHandler {
     
     public init() { }
     
-    func deleteUserData() {
+    public func deleteUserData() {
         self.userInfo = nil
         self.accessToken = nil
         self.refreshToken = nil

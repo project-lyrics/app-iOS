@@ -16,6 +16,11 @@ public protocol SettingViewControllerDelegate: AnyObject {
     func presentInternalWebViewController(url: String)
     func pushDeleteUserViewController()
     func didFinish()
+    func handleError(
+        errorCode: String?,
+        errorMessage: String,
+        errorData: AnyType?
+    )
 }
 
 public final class SettingViewController: UIViewController {
@@ -90,10 +95,10 @@ public final class SettingViewController: UIViewController {
                     self?.coordinator?.didFinish()
 
                 case .failure(let error):
-                    self?.showAlert(
-                        title: error.errorDescription,
-                        message: nil,
-                        singleActionTitle: "확인"
+                    self?.coordinator?.handleError(
+                        errorCode: error.errorCode,
+                        errorMessage: error.userMessage,
+                        errorData: error.data
                     )
 
                 default:

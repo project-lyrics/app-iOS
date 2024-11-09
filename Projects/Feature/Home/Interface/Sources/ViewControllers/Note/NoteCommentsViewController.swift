@@ -20,7 +20,8 @@ public protocol NoteCommentsViewControllerDelegate: AnyObject {
     func didFinish()
     func handleError(
         errorCode: String?,
-        errorMessage: String
+        errorMessage: String,
+        errorData: AnyType?
     )
 }
 
@@ -337,7 +338,8 @@ private extension NoteCommentsViewController {
                 } else {
                     self?.coordinator?.handleError(
                         errorCode: error.errorCode,
-                        errorMessage: error.userMessage
+                        errorMessage: error.userMessage,
+                        errorData: error.data
                     )
                 }
             }
@@ -350,10 +352,10 @@ private extension NoteCommentsViewController {
                     self?.coordinator?.didFinish()
                     
                 case .failure(let error):
-                    self?.showAlert(
-                        title: error.userMessage,
-                        message: nil,
-                        singleActionTitle: "확인"
+                    self?.coordinator?.handleError(
+                        errorCode: error.errorCode,
+                        errorMessage: error.userMessage,
+                        errorData: error.data
                     )
                     
                 default:
@@ -381,7 +383,8 @@ private extension NoteCommentsViewController {
                 case .failed(let error):
                     self?.coordinator?.handleError(
                         errorCode: error.errorCode,
-                        errorMessage: error.userMessage
+                        errorMessage: error.userMessage,
+                        errorData: error.data
                     )
                     
                 case .completed:

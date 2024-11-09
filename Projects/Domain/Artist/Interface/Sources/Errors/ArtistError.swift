@@ -57,6 +57,15 @@ public enum ArtistError: LocalizedError, Equatable {
         }
     }
     
+    public var data: AnyType? {
+        switch self {
+        case .feelinAPIError(let feelinAPIError):
+            return feelinAPIError.data
+            
+        default:
+            return nil
+        }
+    }
     
     public init(error: Error) {
         if let networkError = error as? NetworkError {

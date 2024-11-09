@@ -77,6 +77,16 @@ public enum CommunityError: LocalizedError, Equatable {
         }
     }
     
+    public var data: AnyType? {
+        switch self {
+        case .feelinAPIError(let feelinAPIError):
+            return feelinAPIError.data
+            
+        default:
+            return nil
+        }
+    }
+    
     public var errorMessageWithCode: String {
         return errorMessage + "\n에러코드(\(errorCode ?? "nil"))"
     }

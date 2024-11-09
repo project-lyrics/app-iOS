@@ -16,7 +16,8 @@ public protocol NoteNotificationPageViewControllerDelegate: AnyObject {
     func didFinish()
     func handleError(
         errorCode: String?,
-        errorMessage: String
+        errorMessage: String,
+        errorData: AnyType?
     )
 }
 
@@ -122,8 +123,13 @@ extension NoteNotificationPageViewController: NotePersonalNotificationViewContro
     
     public func handleError(
         errorCode: String?,
-        errorMessage: String
+        errorMessage: String,
+        errorData: AnyType?
     ) {
-        coordinator?.handleError(errorCode: errorCode, errorMessage: errorMessage)
+        coordinator?.handleError(
+            errorCode: errorCode,
+            errorMessage: errorMessage,
+            errorData: errorData
+        )
     }
 }

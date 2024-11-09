@@ -16,7 +16,8 @@ public protocol SearchMoreFavoriteArtistDelegate: AnyObject {
     func pushCommunityMainViewController(artistID: Int)
     func handleError(
         errorCode: String?,
-        errorMessage: String
+        errorMessage: String,
+        errorData: AnyType?
     )
 }
 
@@ -164,7 +165,8 @@ private extension SearchMoreFavoriteArtistViewController {
             .sink { [weak self] error in
                 self?.coordinator?.handleError(
                     errorCode: error.errorCode,
-                    errorMessage: error.userMessage
+                    errorMessage: error.userMessage,
+                    errorData: error.data
                 )
             }
             .store(in: &cancellables)

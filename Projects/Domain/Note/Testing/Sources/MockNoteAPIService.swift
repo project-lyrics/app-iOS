@@ -97,4 +97,34 @@ public struct MockNoteAPIService: NoteAPIServiceInterface {
             .setFailureType(to: NoteError.self)
             .eraseToAnyPublisher()
     }
+    
+    // TODO: - 추후 구현 필요
+    
+    public func getFavoriteArtistHavingNotes() -> AnyPublisher<[CoreNetworkInterface.GetFavoriteArtistHavingNoteResponse], NoteError> {
+        return Empty().eraseToAnyPublisher()
+    }
+    
+    public func getFavoriteArtistsBookmarked() -> AnyPublisher<[CoreNetworkInterface.GetFavoriteArtistHavingNoteResponse], NoteError> {
+        return Empty().eraseToAnyPublisher()
+    }
+    
+    public func getMyNotes(cursor: Int?, size: Int, hasLyrics: Bool, artistID: Int?) -> AnyPublisher<GetMyNotesResponse, NoteError> {
+        return Empty().eraseToAnyPublisher()
+    }
+    
+    public func getMyNotesByBookmark(cursor: Int?, size: Int, hasLyrics: Bool, artistID: Int?) -> AnyPublisher<GetMyNotesResponse, NoteError> {
+        return Empty().eraseToAnyPublisher()
+    }
+    
+    public func patchNote(noteID: Int, value: DomainNoteInterface.PatchNoteValue) -> AnyPublisher<FeelinSuccessResponse, NoteError> {
+        return Empty().eraseToAnyPublisher()
+    }
+    
+    public func getSongDetail(songID: Int) -> AnyPublisher<GetSongDetailResponse, NoteError> {
+        return Empty().eraseToAnyPublisher()
+    }
+    
+    public func getArtistNotes(currentPage: Int?, numberOfNotes: Int, hasLyrics: Bool, artistID: Int) -> AnyPublisher<GetNotesResponse, NoteError> {
+        return Empty().eraseToAnyPublisher()
+    }
 }

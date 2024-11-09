@@ -55,6 +55,19 @@ public enum HomeError: LocalizedError {
         }
     }
     
+    public var data: AnyType? {
+        switch self {
+        case .noteError(let noteError):
+            return noteError.data
+        
+        case .artistError(let artistError):
+            return artistError.data
+        
+        default:
+            return nil
+        }
+    }
+    
     public var errorCode: String? {
         switch self {
         case .noteError(let noteError):

@@ -6,6 +6,7 @@
 //
 
 import Domain
+import Shared
 
 import Foundation
 
@@ -41,6 +42,21 @@ public enum ArtistSelectionError: LocalizedError {
             switch artistError {
             case .feelinAPIError(let feelinAPIError):
                 return feelinAPIError.errorCode
+                
+            default:
+                return nil
+            }
+        default:
+            return nil
+        }
+    }
+    
+    public var data: AnyType? {
+        switch self {
+        case .domainError(let artistError):
+            switch artistError {
+            case .feelinAPIError(let feelinAPIError):
+                return feelinAPIError.data
                 
             default:
                 return nil

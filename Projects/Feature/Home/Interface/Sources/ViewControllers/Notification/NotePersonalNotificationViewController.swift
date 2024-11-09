@@ -15,7 +15,8 @@ public protocol NotePersonalNotificationViewControllerDelegate: AnyObject {
     func pushNoteCommentsViewController(noteID: Int)
     func handleError(
         errorCode: String?,
-        errorMessage: String
+        errorMessage: String,
+        errorData: AnyType?
     )
     func didFinish()
 }
@@ -192,7 +193,8 @@ private extension NotePersonalNotificationViewController {
                 case .failed(let error):
                     self?.coordinator?.handleError(
                         errorCode: error.errorCode,
-                        errorMessage: error.userMessage
+                        errorMessage: error.userMessage,
+                        errorData: error.data
                     )
 
                 case .completed:
@@ -210,7 +212,8 @@ private extension NotePersonalNotificationViewController {
             .sink { [weak self] error in
                 self?.coordinator?.handleError(
                     errorCode: error.errorCode,
-                    errorMessage: error.userMessage
+                    errorMessage: error.userMessage,
+                    errorData: error.data
                 )
             }
             .store(in: &cancellables)

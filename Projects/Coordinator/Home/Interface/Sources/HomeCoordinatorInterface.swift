@@ -16,17 +16,17 @@ import Core
 
 public final class HomeCoordinator: Coordinator {
     
-    public var authErrorHandler: AuthErrorHandler
+    public var appErrorHandler: AppErrorHandlerInterface
     public weak var delegate: CoordinatorDelegate?
     public var navigationController: UINavigationController
     public var childCoordinators: [Coordinator]
 
     public init(
         navigationController: UINavigationController,
-        authErrorHandler: AuthErrorHandler = .init()
+        appErrorHandler: AppErrorHandlerInterface = AppErrorHandler()
     ) {
         self.navigationController = navigationController
-        self.authErrorHandler = authErrorHandler
+        self.appErrorHandler = appErrorHandler
         self.childCoordinators = []
     }
 

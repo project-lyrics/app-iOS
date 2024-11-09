@@ -22,7 +22,8 @@ public protocol MyPageViewControllerDelegate: AnyObject {
     func didFinish()
     func handleError(
         errorCode: String?,
-        errorMessage: String
+        errorMessage: String,
+        errorData: AnyType?
     )
 }
 
@@ -129,7 +130,8 @@ public final class MyPageViewController: UIViewController {
             .sink { [weak self] error in
                 self?.coordinator?.handleError(
                     errorCode: error.errorCode,
-                    errorMessage: error.userMessage
+                    errorMessage: error.userMessage,
+                    errorData: error.data
                 )
             }
             .store(in: &cancellables)
@@ -165,10 +167,15 @@ extension MyPageViewController: MyPageTabViewControllerDelegate {
         coordinator?.didFinish()
     }
     
-    public func handleError(errorCode: String?, errorMessage: String) {
+    public func handleError(
+        errorCode: String?,
+        errorMessage: String,
+        errorData: AnyType?
+    ) {
         coordinator?.handleError(
             errorCode: errorCode,
-            errorMessage: errorMessage
+            errorMessage: errorMessage,
+            errorData: errorData
         )
     }
 }

@@ -19,7 +19,8 @@ public protocol NoteDetailViewControllerDelegate: AnyObject {
     func didFinish()
     func handleError(
         errorCode: String?,
-        errorMessage: String
+        errorMessage: String,
+        errorData: AnyType?
     )
 }
 
@@ -339,7 +340,8 @@ private extension NoteDetailViewController {
                 } else {
                     self?.coordinator?.handleError(
                         errorCode: error.errorCode,
-                        errorMessage: error.userMessage
+                        errorMessage: error.userMessage,
+                        errorData: error.data
                     )
                 }
             }
@@ -352,10 +354,10 @@ private extension NoteDetailViewController {
                     self?.coordinator?.didFinish()
                     
                 case .failure(let error):
-                    self?.showAlert(
-                        title: error.userMessage,
-                        message: nil,
-                        singleActionTitle: "확인"
+                    self?.coordinator?.handleError(
+                        errorCode: error.errorCode,
+                        errorMessage: error.userMessage,
+                        errorData: error.data
                     )
                     
                 default:
@@ -371,7 +373,8 @@ private extension NoteDetailViewController {
                 case .failed(let error):
                     self?.coordinator?.handleError(
                         errorCode: error.errorCode,
-                        errorMessage: error.userMessage
+                        errorMessage: error.userMessage,
+                        errorData: error.data
                     )
 
                 case .completed:

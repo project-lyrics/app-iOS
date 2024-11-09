@@ -16,7 +16,8 @@ public protocol UserProfileViewControllerDelegate: AnyObject {
     func pushEditUserInfoViewController(model: UserProfile)
     func handleError(
         errorCode: String?,
-        errorMessage: String
+        errorMessage: String,
+        errorData: AnyType?
     )
 }
 
@@ -95,7 +96,8 @@ public final class UserProfileViewController: UIViewController {
             .sink { [weak self] error in
                 self?.coordinator?.handleError(
                     errorCode: error.errorCode,
-                    errorMessage: error.userMessage
+                    errorMessage: error.userMessage,
+                    errorData: error.data
                 )
             }
             .store(in: &cancellables)

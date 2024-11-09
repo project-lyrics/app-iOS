@@ -15,6 +15,11 @@ public protocol LoginViewControllerDelegate: AnyObject {
     func didFinish()
     func pushUseAgreementViewController(model: UserSignUpEntity)
     func connectTabBarFlow()
+    func handleError(
+        errorCode: String?,
+        errorMessage: String,
+        errorData: AnyType?
+    )
 }
 
 public final class LoginViewController: UIViewController {
@@ -118,10 +123,10 @@ public final class LoginViewController: UIViewController {
                         self?.coordinator?.pushUseAgreementViewController(model: model)
                     
                     case let .feelinAPIError(feelinAPIError):
-                        self?.showAlert(
-                            title: "로그인에 실패했어요.네트워크 환경을 점검해 주세요.(\(feelinAPIError.errorCode))",
-                            message: "",
-                            singleActionTitle: "확인"
+                        self?.coordinator?.handleError(
+                            errorCode: feelinAPIError.errorCode,
+                            errorMessage: feelinAPIError.userMessage,
+                            errorData: feelinAPIError.data
                         )
                         
                     case let .networkError(error):

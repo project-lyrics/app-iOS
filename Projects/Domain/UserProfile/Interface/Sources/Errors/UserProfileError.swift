@@ -66,6 +66,16 @@ public enum UserProfileError: LocalizedError, Equatable {
             return "클라이언트 오류입니다. \n잠시 후 다시 시도해 주세요."
         }
     }
+    
+    public var data: AnyType? {
+        switch self {
+        case .feelinAPIError(let feelinAPIError):
+            return feelinAPIError.data
+            
+        default:
+            return nil
+        }
+    }
 
     public init(error: Error) {
         if let networkError = error as? NetworkError {

@@ -17,7 +17,11 @@ public protocol NoteNotificationContainerViewControllerDelegate: AnyObject {
     func popViewController()
     func pushNoteCommentsViewController(noteID: Int)
     func didFinish()
-    func handleError(errorCode: String?, errorMessage: String)
+    func handleError(
+        errorCode: String?,
+        errorMessage: String,
+        errorData: AnyType?
+    )
 }
 
 public final class NoteNotificationContainerViewController: UIViewController {
@@ -112,7 +116,8 @@ public final class NoteNotificationContainerViewController: UIViewController {
             .sink { [weak self] error in
                 self?.coordinator?.handleError(
                     errorCode: error.errorCode,
-                    errorMessage: error.userMessage
+                    errorMessage: error.userMessage,
+                    errorData: error.data
                 )
             }
             .store(in: &cancellables)
@@ -139,8 +144,13 @@ extension NoteNotificationContainerViewController: NoteNotificationPageViewContr
     
     public func handleError(
         errorCode: String?,
-        errorMessage: String
+        errorMessage: String,
+        errorData: AnyType?
     ) {
-        coordinator?.handleError(errorCode: errorCode, errorMessage: errorMessage)
+        coordinator?.handleError(
+            errorCode: errorCode,
+            errorMessage: errorMessage,
+            errorData: errorData
+        )
     }
 }

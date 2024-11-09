@@ -156,7 +156,7 @@ public struct FeelinAPIError: LocalizedError, Equatable {
                 return "인증 정보를 찾을 수 없어요. 다시 시도해 주세요."
                 
             case .updateRequired:
-                return "새로운 앱 버전이 나왔습니다.\n앱스토어에서 업데이트를 진행해 주세요."
+                return "최신 버전의 앱이 있어요."
                 
             case .duplicatedLogin:
                 return "타 기기에서 로그인했거나\n 등록되지 않은 기기입니다."
@@ -227,15 +227,18 @@ public struct FeelinAPIError: LocalizedError, Equatable {
     
     public let type: ErrorType
     public let errorMessage: String
+    public let data: AnyType?
     public var errorCode: String { type.errorCode }
     public var userMessage: String { type.userMessage }
 
     public init(
         type: ErrorType,
-        errorMessage: String
+        errorMessage: String,
+        data: AnyType? = nil
     ) {
         self.type = type
         self.errorMessage = errorMessage
+        self.data = data
     }
     
     public init(apiFailResponse: APIFailResponse) {
@@ -243,11 +246,15 @@ public struct FeelinAPIError: LocalizedError, Equatable {
         let errorMessage = apiFailResponse.errorMessage
         self.type = ErrorType(errorCode: errorCode)
         self.errorMessage = errorMessage
+        self.data = apiFailResponse.data
     }
 }
 
 public extension FeelinAPIError.ErrorType {
-    init(errorCode: String) {
+    init(
+        errorCode: String, 
+        data: Any? = nil
+        ) {
         switch errorCode {
         case "00000":       self = .invalidRequest
         case "00001":       self = .invalidRequestInput
@@ -258,6 +265,8 @@ public extension FeelinAPIError.ErrorType {
         case "00006":       self = .invalidURLFormat
         case "00007":       self = .resourceNotFound
         case "00008":       self = .invalidEmail
+        case "00009":       self = .updateRequired
+        case "00010":       self = .appVersionMissing
         case "01000":       self = .restrictedUser
         case "01001":       self = .tokenIsExpired
         case "01002":       self = .wrongTokenTypePassed

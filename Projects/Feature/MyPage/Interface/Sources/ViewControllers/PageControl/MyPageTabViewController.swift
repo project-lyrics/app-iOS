@@ -20,7 +20,8 @@ public protocol MyPageTabViewControllerDelegate: AnyObject {
     func didFinish()
     func handleError(
         errorCode: String?,
-        errorMessage: String
+        errorMessage: String,
+        errorData: AnyType?
     )
 }
 
@@ -86,11 +87,13 @@ extension MyPageTabViewController: MyNoteViewControllerDelegate,
                                    BookmarkViewControllerDelegate{
     public func handleError(
         errorCode: String?,
-        errorMessage: String
+        errorMessage: String,
+        errorData: AnyType?
     ) {
         self.coordinator?.handleError(
             errorCode: errorCode,
-            errorMessage: errorMessage
+            errorMessage: errorMessage,
+            errorData: errorData
         )
     }
     

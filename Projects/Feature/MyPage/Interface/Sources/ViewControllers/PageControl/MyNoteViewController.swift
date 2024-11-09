@@ -22,7 +22,8 @@ public protocol MyNoteViewControllerDelegate: AnyObject {
     func presentDeleteNoteAlert(_ completionHandler: (() -> Void)?)
     func handleError(
         errorCode: String?,
-        errorMessage: String
+        errorMessage: String,
+        errorData: AnyType?
     )
 }
 
@@ -117,7 +118,8 @@ public final class MyNoteViewController: UIViewController,
             .sink { [weak self] error in
                 self?.coordinator?.handleError(
                     errorCode: error.errorCode,
-                    errorMessage: error.userMessage
+                    errorMessage: error.userMessage,
+                    errorData: error.data
                 )
             }
             .store(in: &cancellables)
@@ -129,7 +131,8 @@ public final class MyNoteViewController: UIViewController,
                 case .failed(let error):
                     self?.coordinator?.handleError(
                         errorCode: error.errorCode,
-                        errorMessage: error.userMessage
+                        errorMessage: error.userMessage,
+                        errorData: error.data
                     )
 
                 case .completed:

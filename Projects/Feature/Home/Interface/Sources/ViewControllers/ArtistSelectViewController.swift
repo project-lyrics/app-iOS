@@ -16,7 +16,8 @@ public protocol ArtistSelectViewControllerDelegate: AnyObject {
     func dismissViewController()
     func handleError(
         errorCode: String?,
-        errorMessage: String
+        errorMessage: String,
+        errorData: AnyType?
     )
 }
 
@@ -149,7 +150,8 @@ private extension ArtistSelectViewController {
             .sink { [weak self] error in
                 self?.coordinator?.handleError(
                     errorCode: error.errorCode,
-                    errorMessage: error.userMessage
+                    errorMessage: error.userMessage,
+                    errorData: error.data
                 )
             }
             .store(in: &cancellables)
@@ -224,7 +226,8 @@ private extension ArtistSelectViewController {
                 case .failure(let error):
                     self?.coordinator?.handleError(
                         errorCode: error.errorCode,
-                        errorMessage: error.userMessage
+                        errorMessage: error.userMessage,
+                        errorData: error.data
                     )
                 }
             })

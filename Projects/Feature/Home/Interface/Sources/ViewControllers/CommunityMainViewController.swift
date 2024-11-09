@@ -22,7 +22,8 @@ public protocol CommunityMainViewControllerDelegate: AnyObject {
     func didFinish()
     func handleError(
         errorCode: String?,
-        errorMessage: String
+        errorMessage: String,
+        errorData: AnyType?
     )
 }
 
@@ -449,7 +450,8 @@ private extension CommunityMainViewController {
                 } else {
                     self?.coordinator?.handleError(
                         errorCode: error.errorCode,
-                        errorMessage: error.userMessage
+                        errorMessage: error.userMessage,
+                        errorData: error.data
                     )
                 }
             }
@@ -464,7 +466,8 @@ private extension CommunityMainViewController {
                 case .failure(let error):
                     self?.coordinator?.handleError(
                         errorCode: error.errorCode,
-                        errorMessage: error.userMessage
+                        errorMessage: error.userMessage,
+                        errorData: error.data
                     )
                     
                 default:
@@ -480,7 +483,8 @@ private extension CommunityMainViewController {
                 case .failed(let error):
                     self?.coordinator?.handleError(
                         errorCode: error.errorCode,
-                        errorMessage: error.userMessage
+                        errorMessage: error.userMessage,
+                        errorData: error.data
                     )
                     
                 case .completed:

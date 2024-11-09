@@ -17,7 +17,7 @@ public protocol Coordinator: AnyObject {
     var delegate: CoordinatorDelegate? { get set }
     var navigationController: UINavigationController { get set }
     var childCoordinators: [Coordinator] { get set }
-    var authErrorHandler: AuthErrorHandler { get }
+    var appErrorHandler: AppErrorHandlerInterface { get }
 
     func start()
     func finish()
@@ -25,7 +25,8 @@ public protocol Coordinator: AnyObject {
     func dismissViewController()
     func handleError(
         errorCode: String?,
-        errorMessage: String
+        errorMessage: String,
+        errorData: AnyType?
     )
 }
 
@@ -45,7 +46,8 @@ public extension Coordinator {
     
     func handleError(
         errorCode: String?,
-        errorMessage: String
+        errorMessage: String,
+        errorData: AnyType?
     ) {
         if let errorCode = errorCode {
             switch errorCode {
@@ -55,14 +57,14 @@ public extension Coordinator {
                     title: errorMessage,
                     message: "에러코드(\(errorCode))",
                     singleActionTitle: "확인") { [weak self] in
-                        self?.authErrorHandler.deleteUserData()
+                        self?.appErrorHandler.deleteUserData()
                         self?.finish()
                     }
                 
             default:
                 self.navigationController.topViewController?.showAlert(
                     title: errorMessage,
-                    message: "에러코드(\(errorCode)",
+                    message: "에러코드(\(errorCode))",
                     singleActionTitle: "확인"
                 )
             }

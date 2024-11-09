@@ -13,6 +13,11 @@ import FeatureOnboardingInterface
 
 public protocol ProfileEditViewControllerDelegate: AnyObject {
     func popViewController()
+    func handleError(
+        errorCode: String?,
+        errorMessage: String,
+        errorData: AnyType?
+    )
 }
 
 public final class ProfileEditViewController: UIViewController {
@@ -104,10 +109,10 @@ public final class ProfileEditViewController: UIViewController {
                 case .success:
                     self?.coordinator?.popViewController()
                 case .failure(let error):
-                    self?.showAlert(
-                        title: error.userMessage,
-                        message: nil,
-                        singleActionTitle: "확인"
+                    self?.coordinator?.handleError(
+                        errorCode: error.errorCode,
+                        errorMessage: error.userMessage,
+                        errorData: error.data
                     )
                 }
             }

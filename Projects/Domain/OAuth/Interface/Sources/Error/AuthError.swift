@@ -71,4 +71,42 @@ public enum AuthError: LocalizedError, Equatable {
             
         }
     }
+    
+    public var userMessage: String {
+        switch self {
+        case .feelinAPIError(let feelinAPIError):
+            return feelinAPIError.userMessage
+            
+        default:
+            return "클라이언트 오류입니다. \n잠시 후 다시 시도해 주세요."
+        }
+    }
+    
+    public init(error: Error) {
+        switch error {
+        case let error as KakaoOAuthError:
+            self = AuthError.kakaoOAuthError(error)
+            
+        case let error as AppleOAuthError:
+            self = AuthError.appleOAuthError(error)
+
+        case let error as KeychainError:
+            self = AuthError.keychainError(error)
+
+        case let error as NetworkError:
+            switch error {
+            case .feelinAPIError(let feelinAPIError):
+                self = .feelinAPIError(feelinAPIError)
+                
+            default:
+                self = AuthError.networkError(error)
+            }
+
+        case let error as JWTError:
+            self = AuthError.jwtParsingError(error)
+
+        default:
+            self = AuthError.unExpectedError(error)
+        }
+    }
 }

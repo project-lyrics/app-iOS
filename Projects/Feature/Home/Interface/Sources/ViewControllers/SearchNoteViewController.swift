@@ -15,7 +15,8 @@ public protocol SearchNoteViewControllerDelegate: AnyObject {
     func pushNoteDetailViewController(selectedNote: SearchedNote)
     func handleError(
         errorCode: String?,
-        errorMessage: String
+        errorMessage: String,
+        errorData: AnyType?
     )
 }
 
@@ -130,7 +131,8 @@ private extension SearchNoteViewController {
             .sink { [weak self] error in
                 self?.coordinator?.handleError(
                     errorCode: error.errorCode,
-                    errorMessage: error.userMessage
+                    errorMessage: error.userMessage,
+                    errorData: error.data
                 )
             }
             .store(in: &cancellables)
@@ -148,7 +150,8 @@ private extension SearchNoteViewController {
                 case .failed(let error):
                     self?.coordinator?.handleError(
                         errorCode: error.errorCode,
-                        errorMessage: error.userMessage
+                        errorMessage: error.userMessage,
+                        errorData: error.data
                     )
 
                 case .completed:

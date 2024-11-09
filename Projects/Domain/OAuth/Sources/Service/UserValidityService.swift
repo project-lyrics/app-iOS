@@ -23,9 +23,7 @@ extension UserValidityService: UserValidityServiceInterface {
         return networkProvider
             .request(endpoint)
             .map { _ in () }
-            .mapError { error in
-                AuthError.networkError(error)
-            }
+            .mapError(AuthError.init)
             .eraseToAnyPublisher()
     }
 }

@@ -7,7 +7,7 @@
 
 import UIKit
 import Combine
-import SharedDesignSystem
+import Shared
 import CoordinatorAppInterface
 import PinLayout
 
@@ -16,7 +16,8 @@ protocol SplashViewControllerDelegate: AnyObject {
     func didFinish()
     func handleError(
         errorCode: String?,
-        errorMessage: String
+        errorMessage: String,
+        errorData: AnyType?
     )
 }
 
@@ -93,7 +94,8 @@ final class SplashViewController: UIViewController {
             .sink { [weak self] error in
                 self?.coordinator?.handleError(
                     errorCode: error.errorCode,
-                    errorMessage: error.userMessage
+                    errorMessage: error.userMessage,
+                    errorData: error.data
                 )
             }
             .store(in: &cancellables)
