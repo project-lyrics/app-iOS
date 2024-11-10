@@ -12,7 +12,11 @@ import DependencyPlugin
 let targets: [Target] = [
     .coordinator(
         interface: .App,
-        factory: .init()
+        factory: .init(
+            dependencies: [
+                .shared
+            ]
+        )
     ),
     .coordinator(
         implements: .App,

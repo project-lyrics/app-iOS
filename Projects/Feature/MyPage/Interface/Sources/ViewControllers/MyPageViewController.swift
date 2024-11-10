@@ -20,6 +20,11 @@ public protocol MyPageViewControllerDelegate: AnyObject {
     func popViewController()
     func pushNoteCommentsViewController(noteID: Int)
     func didFinish()
+    func handleError(
+        errorCode: String?,
+        errorMessage: String,
+        errorData: AnyType?
+    )
 }
 
 public final class MyPageViewController: UIViewController {
@@ -123,10 +128,10 @@ public final class MyPageViewController: UIViewController {
         viewModel.$error
             .compactMap { $0 }
             .sink { [weak self] error in
-                self?.showAlert(
-                    title: error.errorMessageWithCode,
-                    message: nil,
-                    singleActionTitle: "확인"
+                self?.coordinator?.handleError(
+                    errorCode: error.errorCode,
+                    errorMessage: error.userMessage,
+                    errorData: error.data
                 )
             }
             .store(in: &cancellables)
@@ -160,6 +165,18 @@ extension MyPageViewController: MyPageTabViewControllerDelegate {
 
     public func didFinish() {
         coordinator?.didFinish()
+    }
+    
+    public func handleError(
+        errorCode: String?,
+        errorMessage: String,
+        errorData: AnyType?
+    ) {
+        coordinator?.handleError(
+            errorCode: errorCode,
+            errorMessage: errorMessage,
+            errorData: errorData
+        )
     }
 }
 

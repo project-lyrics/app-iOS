@@ -39,6 +39,11 @@ public enum NetworkError: Error, Equatable {
         case let .feelinAPIError(feelinAPiError):       return feelinAPiError.errorCode
         case let .clientError(clientError):             return "\(clientError.errorCode)"
         case let .serverError(serverError):             return "\(serverError.errorCode)"
+        case let .urlError(urlError):                   return "\(urlError.errorCode)"
+        case let .urlRequestError(requestError):        return "-1"
+        case .noResponseError:                          return "-2"
+        case .decodingError:                            return "-3"
+        case .unknownError:                             return "-99"
         default:                                        return ""
         }
     }

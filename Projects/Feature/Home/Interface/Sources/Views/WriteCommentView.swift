@@ -92,10 +92,17 @@ final class WriteCommentView: UIView, UITextViewDelegate {
     private var maxTextViewHeight: CGFloat = 0
     private var originalTextViewHeight: CGFloat = 0
     private var originalViewHeight: CGFloat
+    private let characterLimit: Int
     
-    public override init(frame: CGRect) {
+    public init(
+        frame: CGRect = .zero,
+        characterLimit: Int = 255
+    ) {
         self.originalViewHeight = frame.height
+        self.characterLimit = characterLimit
+        
         super.init(frame: frame)
+        
         self.setUpLayout()
         self.setUpButton()
         self.setupTextView()
@@ -227,6 +234,31 @@ final class WriteCommentView: UIView, UITextViewDelegate {
         if textView.text.isEmpty {
             placeholderLabel.isHidden = false
         }
+    }
+    
+    func textView(
+        _ textView: UITextView,
+        shouldChangeTextIn range: NSRange,
+        replacementText text: String
+    ) -> Bool {
+        let currentText = textView.text as NSString
+        let updatedText = currentText.replacingCharacters(in: range, with: text)
+        
+        if updatedText.count <= characterLimit {
+            return true
+        }
+        
+        // 값이 바뀌는 글자가 한글자 이상이면 붙여넣기로 판단
+        if text.count > 1 {
+            let allowedText = String(text.prefix(characterLimit - currentText.length + range.length))
+            textView.text = currentText.replacingCharacters(in: range, with: allowedText)
+            textViewDidChange(textView)
+        } else {
+            // 한 글자씩 입력하는 경우는 그냥 막음
+            return false
+        }
+        
+        return false
     }
 }
 

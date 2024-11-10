@@ -13,6 +13,11 @@ import Shared
 public protocol DeleteUserViewControllerDelegate: AnyObject {
     func popViewController()
     func didFinish()
+    func handleError(
+        errorCode: String?,
+        errorMessage: String,
+        errorData: AnyType?
+    )
 }
 
 public final class DeleteUserViewController: UIViewController {
@@ -87,10 +92,10 @@ public final class DeleteUserViewController: UIViewController {
                     })
                     
                 case .failure(let error):
-                    self?.showAlert(
-                        title: error.errorMessageWithCode,
-                        message: nil,
-                        singleActionTitle: "확인"
+                    self?.coordinator?.handleError(
+                        errorCode: error.errorCode,
+                        errorMessage: error.userMessage,
+                        errorData: error.data
                     )
                     
                 default:

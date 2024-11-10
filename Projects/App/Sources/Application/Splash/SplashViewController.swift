@@ -7,13 +7,18 @@
 
 import UIKit
 import Combine
-import SharedDesignSystem
+import Shared
 import CoordinatorAppInterface
 import PinLayout
 
 protocol SplashViewControllerDelegate: AnyObject {
     func connectTabBarFlow()
     func didFinish()
+    func handleError(
+        errorCode: String?,
+        errorMessage: String,
+        errorData: AnyType?
+    )
 }
 
 final class SplashViewController: UIViewController {
@@ -81,6 +86,17 @@ final class SplashViewController: UIViewController {
                 } else {
                     self?.coordinator?.didFinish()
                 }
+            }
+            .store(in: &cancellables)
+        
+        viewModel.feelinAPIError
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] error in
+                self?.coordinator?.handleError(
+                    errorCode: error.errorCode,
+                    errorMessage: error.userMessage,
+                    errorData: error.data
+                )
             }
             .store(in: &cancellables)
     }

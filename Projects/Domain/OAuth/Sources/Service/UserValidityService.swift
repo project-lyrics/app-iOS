@@ -9,6 +9,7 @@ import Combine
 import Core
 import Foundation
 import DomainOAuthInterface
+import Shared
 
 extension UserValidityService: UserValidityServiceInterface {
     public func isUserValid() -> AnyPublisher<Void, AuthError> {
@@ -22,9 +23,7 @@ extension UserValidityService: UserValidityServiceInterface {
         return networkProvider
             .request(endpoint)
             .map { _ in () }
-            .mapError { error in
-                AuthError.networkError(error)
-            }
+            .mapError(AuthError.init)
             .eraseToAnyPublisher()
     }
 }

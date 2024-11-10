@@ -15,12 +15,17 @@ import Shared
 import Core
 
 public final class SearchNoteCoordinator: Coordinator {
+    public var appErrorHandler: AppErrorHandlerInterface
     public weak var delegate: CoordinatorDelegate?
     public var navigationController: UINavigationController
     public var childCoordinators: [Coordinator]
 
-    public init(navigationController: UINavigationController) {
+    public init(
+        navigationController: UINavigationController,
+        appErrorHandler: AppErrorHandlerInterface = AppErrorHandler()
+    ) {
         self.navigationController = navigationController
+        self.appErrorHandler = appErrorHandler
         self.childCoordinators = []
     }
 

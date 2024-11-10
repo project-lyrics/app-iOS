@@ -14,6 +14,11 @@ import Shared
 public protocol SearchMoreFavoriteArtistDelegate: AnyObject {
     func dismissViewController()
     func pushCommunityMainViewController(artistID: Int)
+    func handleError(
+        errorCode: String?,
+        errorMessage: String,
+        errorData: AnyType?
+    )
 }
 
 public class SearchMoreFavoriteArtistViewController: UIViewController {
@@ -158,10 +163,10 @@ private extension SearchMoreFavoriteArtistViewController {
         viewModel.$error
             .compactMap { $0 }
             .sink { [weak self] error in
-                self?.showAlert(
-                    title: error.errorMessageWithCode,
-                    message: nil,
-                    singleActionTitle: "확인"
+                self?.coordinator?.handleError(
+                    errorCode: error.errorCode,
+                    errorMessage: error.userMessage,
+                    errorData: error.data
                 )
             }
             .store(in: &cancellables)

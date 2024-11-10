@@ -37,11 +37,7 @@ public extension HTTPRequestConfiguring {
                 urlRequest.setValue(value, forHTTPHeaderField: key)
             }
         }
-
-        urlRequest.setValue(
-            "application/json",
-            forHTTPHeaderField: "Content-Type"
-        )
+        
         urlRequest.httpMethod = httpMethod.rawValue
 
         return urlRequest

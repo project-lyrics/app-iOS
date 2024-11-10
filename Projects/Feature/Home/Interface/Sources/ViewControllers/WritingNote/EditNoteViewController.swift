@@ -13,6 +13,11 @@ import Domain
 public protocol EditNoteViewControllerDelegate: AnyObject {
     func dismissViewController()
     func didFinishForPresentingViewController()
+    func handleError(
+        errorCode: String?,
+        errorMessage: String,
+        errorData: AnyType?
+    )
 }
 
 public final class EditNoteViewController: UIViewController {
@@ -198,10 +203,10 @@ public final class EditNoteViewController: UIViewController {
                 case .success:
                     self?.coordinator?.didFinishForPresentingViewController()
                 case .failure(let error):
-                    self?.showAlert(
-                        title: "노트 수정에 실패했어요. \n\(error.localizedDescription)",
-                        message: nil,
-                        singleActionTitle: "확인"
+                    self?.coordinator?.handleError(
+                        errorCode: error.errorCode,
+                        errorMessage: error.userMessage,
+                        errorData: error.data
                     )
                 }
             }

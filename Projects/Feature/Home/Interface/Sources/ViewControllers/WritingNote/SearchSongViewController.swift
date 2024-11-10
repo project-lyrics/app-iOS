@@ -169,8 +169,6 @@ extension SearchSongViewController: UICollectionViewDataSource {
         cell.playButton.tapPublisher
             .sink { [weak self] _ in
                 guard let self = self else { return }
-                print(model.artist.name)
-                print(model.name)
                 openYouTube(query: "\(model.artist.name) \(model.name)")
             }
             .store(in: &cell.cancellables)

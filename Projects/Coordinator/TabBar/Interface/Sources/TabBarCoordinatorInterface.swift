@@ -13,14 +13,20 @@ import CoordinatorMyPageInterface
 import Shared
 
 public final class TabBarCoordinator: Coordinator {
+    public var appErrorHandler: AppErrorHandlerInterface
+    
     public weak var delegate: CoordinatorDelegate?
     public var navigationController: UINavigationController
     public var tabBarController: UITabBarController
     public var childCoordinators: [Coordinator]
 
-    public init(navigationController: UINavigationController) {
+    public init(
+        navigationController: UINavigationController,
+        appErrorHandler: AppErrorHandlerInterface = AppErrorHandler()
+    ) {
         self.navigationController = navigationController
         self.tabBarController = UITabBarController()
+        self.appErrorHandler = appErrorHandler
         self.childCoordinators = []
     }
 

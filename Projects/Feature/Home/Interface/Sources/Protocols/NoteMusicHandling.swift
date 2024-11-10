@@ -12,7 +12,6 @@ public protocol NoteMusicHandling where Self: UIViewController {
 }
 
 public extension NoteMusicHandling {
-    
     func openYouTube(query: String) {
         let encodedQuery = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
         let youtubeMusicPath = "https://music.youtube.com/search?q=\(encodedQuery ?? query)"

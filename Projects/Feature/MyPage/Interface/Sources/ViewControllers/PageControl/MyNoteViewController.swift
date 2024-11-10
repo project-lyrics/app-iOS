@@ -19,8 +19,12 @@ public protocol MyNoteViewControllerDelegate: AnyObject {
     func popViewController()
     func pushNoteCommentsViewController(noteID: Int)
     func didFinish()
-    func presentErrorAlert(message: String)
     func presentDeleteNoteAlert(_ completionHandler: (() -> Void)?)
+    func handleError(
+        errorCode: String?,
+        errorMessage: String,
+        errorData: AnyType?
+    )
 }
 
 public final class MyNoteViewController: UIViewController,
@@ -112,7 +116,11 @@ public final class MyNoteViewController: UIViewController,
         viewModel.$error
             .compactMap { $0 }
             .sink { [weak self] error in
-                self?.coordinator?.presentErrorAlert(message: error.errorMessageWithCode)
+                self?.coordinator?.handleError(
+                    errorCode: error.errorCode,
+                    errorMessage: error.userMessage,
+                    errorData: error.data
+                )
             }
             .store(in: &cancellables)
 
@@ -121,7 +129,11 @@ public final class MyNoteViewController: UIViewController,
             .sink(receiveValue: { [weak self] refreshState in
                 switch refreshState {
                 case .failed(let error):
-                    self?.coordinator?.presentErrorAlert(message: error.errorMessageWithCode)
+                    self?.coordinator?.handleError(
+                        errorCode: error.errorCode,
+                        errorMessage: error.userMessage,
+                        errorData: error.data
+                    )
 
                 case .completed:
                     self?.noteDetailCollectionView.refreshControl?.endRefreshing()

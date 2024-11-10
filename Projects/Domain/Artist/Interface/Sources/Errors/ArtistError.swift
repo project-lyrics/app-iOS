@@ -47,6 +47,25 @@ public enum ArtistError: LocalizedError, Equatable {
         return errorMessage + "\n에러코드(\(errorCode ?? "nil"))"
     }
     
+    public var userMessage: String {
+        switch self {
+        case .feelinAPIError(let feelinAPIError):
+            return feelinAPIError.userMessage
+            
+        default:
+            return "클라이언트 오류입니다. \n잠시 후 다시 시도해 주세요."
+        }
+    }
+    
+    public var data: AnyType? {
+        switch self {
+        case .feelinAPIError(let feelinAPIError):
+            return feelinAPIError.data
+            
+        default:
+            return nil
+        }
+    }
     
     public init(error: Error) {
         if let networkError = error as? NetworkError {
@@ -57,6 +76,8 @@ public enum ArtistError: LocalizedError, Equatable {
             }
         } else if let keychainError = error as? KeychainError {
             self = .keychainError(keychainError)
+        } else if let artistError = error as? ArtistError {
+            self = artistError
         } else {
             self = .unknown(errorDescription: error.localizedDescription)
         }

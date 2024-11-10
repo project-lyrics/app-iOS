@@ -18,10 +18,24 @@ public protocol MyPageTabViewControllerDelegate: AnyObject {
     func popViewController()
     func pushNoteCommentsViewController(noteID: Int)
     func didFinish()
+    func handleError(
+        errorCode: String?,
+        errorMessage: String,
+        errorData: AnyType?
+    )
 }
 
 public final class MyPageTabViewController: ButtonBarPagerTabStripViewController {
     public weak var coordinator: MyPageTabViewControllerDelegate?
+    
+    @KeychainWrapper<UserInformation>(.userInfo)
+    private var userInfo
+    
+    @KeychainWrapper<AccessToken>(.accessToken)
+    private var accessToken
+    
+    @KeychainWrapper<RefreshToken>(.refreshToken)
+    private var refreshToken
 
     public override func viewDidLoad() {
         setUpDefault()
@@ -71,11 +85,15 @@ public final class MyPageTabViewController: ButtonBarPagerTabStripViewController
 
 extension MyPageTabViewController: MyNoteViewControllerDelegate,
                                    BookmarkViewControllerDelegate{
-    public func presentErrorAlert(message: String) {
-        showAlert(
-            title: message,
-            message: nil,
-            singleActionTitle: "확인"
+    public func handleError(
+        errorCode: String?,
+        errorMessage: String,
+        errorData: AnyType?
+    ) {
+        self.coordinator?.handleError(
+            errorCode: errorCode,
+            errorMessage: errorMessage,
+            errorData: errorData
         )
     }
     

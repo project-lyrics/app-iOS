@@ -14,6 +14,11 @@ public protocol PostNoteViewControllerDelegate: AnyObject {
     func dismissViewController()
     func pushSearchSongViewController(artistID: Int)
     func didFinishForPresentingViewController()
+    func handleError(
+        errorCode: String?,
+        errorMessage: String,
+        errorData: AnyType?
+    )
 }
 
 public final class PostNoteViewController: UIViewController {
@@ -245,10 +250,10 @@ public final class PostNoteViewController: UIViewController {
                 case .success:
                     self?.coordinator?.didFinishForPresentingViewController()
                 case .failure(let error):
-                    self?.showAlert(
-                        title: "노트 작성에 실패했어요. \n\(error.localizedDescription)",
-                        message: nil,
-                        singleActionTitle: "확인"
+                    self?.coordinator?.handleError(
+                        errorCode: error.errorCode,
+                        errorMessage: error.userMessage,
+                        errorData: error.data
                     )
                 }
             }

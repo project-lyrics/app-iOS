@@ -49,16 +49,13 @@ extension TokenInterceptor: URLRequestInterceptor {
     
     public func retry(
         with session: URLSession,
-        _ request: URLRequest,
         dueTo error: NetworkError
     ) -> AnyPublisher<RetryResult, Never> {
         guard case let .feelinAPIError(feelinAPIError) = error,
-              case .tokenIsExpired = feelinAPIError else {
+              feelinAPIError.type == .tokenIsExpired else {
             return Just(.doNotRetry)
                 .eraseToAnyPublisher()
         }
-        
-        var request = request
         
         do {
             let refreshTokenKey = try self.tokenKeyHolder.fetchRefreshTokenKey()
@@ -67,10 +64,6 @@ extension TokenInterceptor: URLRequestInterceptor {
                 return Just(.doNotRetryWithError(NetworkError.requestInterceptError("키체인에 저장되어있는 액세스 토큰이 없습니다.")))
                     .eraseToAnyPublisher()
             }
-            request.setValue(
-                "Bearer \(refreshToken.token)",
-                forHTTPHeaderField: "Authorization"
-            )
             
             let reissueEndpoint = FeelinAPI<UserAuthResponse>.reissueAccessToken(refreshToken: refreshToken.token)
             

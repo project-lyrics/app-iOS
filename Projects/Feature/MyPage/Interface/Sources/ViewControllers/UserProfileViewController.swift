@@ -14,6 +14,11 @@ import Domain
 public protocol UserProfileViewControllerDelegate: AnyObject {
     func popViewController()
     func pushEditUserInfoViewController(model: UserProfile)
+    func handleError(
+        errorCode: String?,
+        errorMessage: String,
+        errorData: AnyType?
+    )
 }
 
 public final class UserProfileViewController: UIViewController {
@@ -89,10 +94,10 @@ public final class UserProfileViewController: UIViewController {
         viewModel.$error
             .compactMap { $0 }
             .sink { [weak self] error in
-                self?.showAlert(
-                    title: error.errorMessageWithCode,
-                    message: nil,
-                    singleActionTitle: "확인"
+                self?.coordinator?.handleError(
+                    errorCode: error.errorCode,
+                    errorMessage: error.userMessage,
+                    errorData: error.data
                 )
             }
             .store(in: &cancellables)

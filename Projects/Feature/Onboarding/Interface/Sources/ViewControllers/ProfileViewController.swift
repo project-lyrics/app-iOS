@@ -103,7 +103,7 @@ public final class ProfileViewController: UIViewController {
                     self?.showAlert(
                         shouldIgnoreDarkMode: true,
                         title: "알림",
-                        message: error.errorMessageWithCode
+                        message: error.userMessage
                     )
                 }
             }

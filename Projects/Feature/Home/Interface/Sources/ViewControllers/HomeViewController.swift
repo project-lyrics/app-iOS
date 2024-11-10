@@ -20,6 +20,11 @@ public protocol HomeViewControllerDelegate: AnyObject {
     func pushNoteCommentsViewController(noteID: Int)
     func presentInitialArtistSelectViewController()
     func presentSearchMoreFavoriteArtistViewController()
+    func handleError(
+        errorCode: String?,
+        errorMessage: String,
+        errorData: AnyType?
+    )
 }
 
 public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHandling {
@@ -368,10 +373,10 @@ private extension HomeViewController {
         viewModel.$error
             .compactMap { $0 }
             .sink { [weak self] error in
-                self?.showAlert(
-                    title: error.errorMessage,
-                    message: nil,
-                    singleActionTitle: "확인"
+                self?.coordinator?.handleError(
+                    errorCode: error.errorCode,
+                    errorMessage: error.userMessage,
+                    errorData: error.data
                 )
             }
             .store(in: &cancellables)
@@ -381,10 +386,10 @@ private extension HomeViewController {
             .sink(receiveValue: { [weak self] refreshState in
                 switch refreshState {
                 case .failed(let error):
-                    self?.showAlert(
-                        title: error.errorMessage,
-                        message: nil,
-                        singleActionTitle: "확인"
+                    self?.coordinator?.handleError(
+                        errorCode: error.errorCode,
+                        errorMessage: error.userMessage,
+                        errorData: error.data
                     )
 
                 case .completed:

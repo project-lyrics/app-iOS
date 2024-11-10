@@ -18,7 +18,6 @@ public protocol URLRequestInterceptor: AnyObject {
     func adapt(_ urlRequest: URLRequest) -> AnyPublisher<URLRequest, Error>
     func retry(
         with session: URLSession,
-        _ request: URLRequest,
         dueTo error: NetworkError
     ) -> AnyPublisher<RetryResult, Never>
 }

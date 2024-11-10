@@ -6,6 +6,7 @@
 //
 
 import Domain
+import Shared
 
 import Foundation
 
@@ -39,6 +40,32 @@ public enum HomeError: LocalizedError {
     
     public var errorMessage: String {
         return self.errorDescription
+    }
+    
+    public var userMessage: String {
+        switch self {
+        case .noteError(let noteError):
+            return noteError.userMessage
+            
+        case .artistError(let artistError):
+            return artistError.userMessage
+            
+        case .unknownError(let unknownError):
+            return unknownError
+        }
+    }
+    
+    public var data: AnyType? {
+        switch self {
+        case .noteError(let noteError):
+            return noteError.data
+        
+        case .artistError(let artistError):
+            return artistError.data
+        
+        default:
+            return nil
+        }
     }
     
     public var errorCode: String? {

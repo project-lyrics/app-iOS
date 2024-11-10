@@ -16,7 +16,8 @@ OTHER_SWIFT_FLAGS[config=DEV][sdk=*] = $(inherited) -DDEV
 OTHER_SWIFT_FLAGS[config=QA][sdk=*] = $(inherited) -DQA
 OTHER_SWIFT_FLAGS[config=PROD][sdk=*] = $(inherited) -DPROD
 
+SIMPLE_SLASH=/
 
-BASE_SERVER_URL_DEV = www.example-dev.com
-BASE_SERVER_URL_QA = www.example-qa.com
-BASE_SERVER_URL_PROD = www.example-prod.com
+BASE_SERVER_URL_DEV = http:$(SIMPLE_SLASH)/dev.feelinapp.com
+BASE_SERVER_URL_QA = http:$(SIMPLE_SLASH)/dev.feelinapp.com
+BASE_SERVER_URL_PROD = http:$(SIMPLE_SLASH)/api.feelinapp.com

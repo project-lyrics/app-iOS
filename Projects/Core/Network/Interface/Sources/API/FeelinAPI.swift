@@ -5,8 +5,10 @@
 //  Created by Derrick kim on 4/3/24.
 //
 
+import Shared
 
 import Foundation
+import UIKit.UIDevice
 
 public enum FeelinAPI<R> {
     case login(
@@ -60,19 +62,21 @@ extension FeelinAPI: HTTPNetworking {
     public var headers: [String : String]? {
         var defaultHeader = ["Content-Type": "application/json"]
 
+        if let deviceID = UIDevice.current.identifierForVendor?.uuidString {
+            defaultHeader["Device-Id"] = deviceID
+        }
+        
+        if let appVersion = Bundle.main.appVersion {
+            defaultHeader["App-Version"] = appVersion
+        }
+        
         switch self {
         case .checkUserValidity(let accessToken):
-            return [
-                "Authorization" : "Bearer \(accessToken)"
-            ]
-
-        case .reissueAccessToken(refreshToken: let refreshToken):
-            defaultHeader["Authorization"] = "Bearer \(refreshToken)"
-
+            defaultHeader["Authorization"] = "Bearer \(accessToken)"
         default:
             return defaultHeader
         }
-
+        
         return defaultHeader
     }
 
@@ -206,6 +210,11 @@ extension FeelinAPI: HTTPNetworking {
                 "socialAccessToken": oAuthAccessToken,
                 "authProvider": oAuthProvider.rawValue
             ]
+            
+        case .reissueAccessToken(refreshToken: let refreshToken):
+            return [
+                "refreshToken": refreshToken
+            ]
 
         case .postFavoriteArtists(let ids):
             return [
@@ -241,8 +250,8 @@ extension FeelinAPI: HTTPNetworking {
     public typealias Response = R
 
     public var baseURL: String? {
-        guard let baseURL = Bundle.main.infoDictionary?["Feelin_URL"] as? String else {
-            return "http://api.feelinapp.com"
+        guard let baseURL = Bundle.main.baseServerURL else {
+            return nil
         }
 
         return baseURL

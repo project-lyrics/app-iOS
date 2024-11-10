@@ -8,6 +8,7 @@
 import Combine
 import Foundation
 import DomainOAuthInterface
+import Shared
 
 protocol SplashViewModelInputs {
     func autoLogin()
@@ -15,16 +16,23 @@ protocol SplashViewModelInputs {
 
 protocol SplashViewModelOutputs {
     var isSignIn: AnyPublisher<Bool, Never> { get }
+    var feelinAPIError: AnyPublisher<FeelinAPIError, Never> { get }
 }
 
 final class SplashViewModel: SplashViewModelInputs, SplashViewModelOutputs {
     private let autoLoginUseCase: AutoLoginUseCase
     private let isSignInSubject = PassthroughSubject<Bool, Never>()
+    private let feelinAPIErrorSubject: PassthroughSubject<FeelinAPIError, Never> = .init()
 
     private var cancellables = Set<AnyCancellable>()
 
     var isSignIn: AnyPublisher<Bool, Never> {
-        return isSignInSubject.eraseToAnyPublisher()
+        return isSignInSubject
+            .eraseToAnyPublisher()
+    }
+    
+    var feelinAPIError: AnyPublisher<FeelinAPIError, Never> {
+        return feelinAPIErrorSubject.eraseToAnyPublisher()
     }
 
     init(autoLoginUseCase: AutoLoginUseCase) {
@@ -38,8 +46,12 @@ final class SplashViewModel: SplashViewModelInputs, SplashViewModelOutputs {
                 switch completion {
                 case .finished:
                     break
-                case .failure(_):
-                    self?.isSignInSubject.send(false)
+                case .failure(let error):
+                    if case .feelinAPIError(let feelinAPIError) = error {
+                        self?.feelinAPIErrorSubject.send(feelinAPIError)
+                    } else {
+                        self?.isSignInSubject.send(false)
+                    }
                 }
             } receiveValue: { [weak self] result in
                 self?.isSignInSubject.send(true)
