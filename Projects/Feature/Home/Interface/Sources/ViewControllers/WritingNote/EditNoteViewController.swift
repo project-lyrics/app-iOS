@@ -12,7 +12,6 @@ import Domain
 
 public protocol EditNoteViewControllerDelegate: AnyObject {
     func dismissViewController()
-    func didFinishForPresentingViewController()
     func handleError(
         errorCode: String?,
         errorMessage: String,
@@ -201,7 +200,8 @@ public final class EditNoteViewController: UIViewController {
 
                 switch result {
                 case .success:
-                    self?.coordinator?.didFinishForPresentingViewController()
+                    self?.coordinator?.dismissViewController()
+
                 case .failure(let error):
                     self?.coordinator?.handleError(
                         errorCode: error.errorCode,

@@ -168,11 +168,6 @@ extension HomeCoordinator: CoordinatorDelegate,
                            PostNoteViewControllerDelegate,
                            EditNoteViewControllerDelegate,
                            SearchSongViewControllerDelegate {
-    public func didFinishForPresentingViewController() {
-        dismissViewController()
-        // TODO: 노트 작성 완료 후 업데이트 메서드 호출
-    }
-
     public func popRootViewController() {
         guard let topNavigationController = navigationController.presentedViewController as? UINavigationController
         else {
