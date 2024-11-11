@@ -220,6 +220,26 @@ public final class MyNoteViewController: UIViewController,
                 self?.updateNotesUI(notes: fetchedNotes)
             }
             .store(in: &cancellables)
+
+        self.viewModel.$deleteNoteResult
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] result in
+                switch result {
+                case .success:
+                    self?.viewModel.getMyNotes(isInitialFetch: false)
+
+                case .failure(let error):
+                    self?.coordinator?.handleError(
+                        errorCode: error.errorCode,
+                        errorMessage: error.userMessage,
+                        errorData: error.data
+                    )
+
+                default:
+                    return
+                }
+            }
+            .store(in: &cancellables)
     }
 
     private func createDataSource() -> MyNoteDataSource {

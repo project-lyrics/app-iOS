@@ -172,7 +172,6 @@ public final class BookmarkViewController: UIViewController,
                 if self.isLoggedIn {
                     self.viewModel.getMoreMyNotesByBookmark()
                 }
-
             }
             .store(in: &cancellables)
 
@@ -217,6 +216,26 @@ public final class BookmarkViewController: UIViewController,
         self.viewModel.$fetchedNotes
             .sink { [weak self] fetchedNotes in
                 self?.updateNotesUI(notes: fetchedNotes)
+            }
+            .store(in: &cancellables)
+
+        self.viewModel.$deleteNoteResult
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] result in
+                switch result {
+                case .success:
+                    self?.viewModel.getMyNotesByBookmark(isInitialFetch: false)
+
+                case .failure(let error):
+                    self?.coordinator?.handleError(
+                        errorCode: error.errorCode,
+                        errorMessage: error.userMessage,
+                        errorData: error.data
+                    )
+
+                default:
+                    return
+                }
             }
             .store(in: &cancellables)
     }

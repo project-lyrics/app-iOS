@@ -26,7 +26,8 @@ public final class CommunityMainViewModel {
     @Published private (set) var refreshState: RefreshState<CommunityError> = .idle
     @Published private (set) var logoutResult: LogoutResult = .none
     @Published private (set) var favoriteArtistAlertState: FavoriteArtistAlertState = .initial
-    
+    @Published private (set) var deleteNoteResult: DeleteNoteResult = .none
+
     private var cancellables: Set<AnyCancellable> = .init()
     
     private (set) var artistID: Int
@@ -287,16 +288,16 @@ extension CommunityMainViewModel {
 extension CommunityMainViewModel {
     func deleteNote(id: Int) {
         self.deleteNoteUseCase.execute(noteID: id)
-            .mapError(CommunityError.init)
             .mapToResult()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] result in
                 switch result {
                 case .success:
                     self?.fetchedNotes.removeAll(where: { $0.id == id })
-                    
+                    self?.deleteNoteResult = .success
+
                 case .failure(let error):
-                    self?.error = error
+                    self?.deleteNoteResult = .failure(error)
                 }
             }
             .store(in: &cancellables)
