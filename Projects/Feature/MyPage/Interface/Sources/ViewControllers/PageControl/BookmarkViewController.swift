@@ -409,7 +409,7 @@ public final class BookmarkViewController: UIViewController,
             }
         } else {
             // 그 외에는 cell 갯수는 변화가 없으나 컨텐츠에 변화가 있다고 판단. reloadData 수행
-            noteDetailDataSource.applySnapshotUsingReloadData(snapshot)
+            noteDetailDataSource.apply(snapshot)
         }
     }
 
