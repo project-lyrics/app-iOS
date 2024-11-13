@@ -441,10 +441,10 @@ private extension HomeViewController {
                     }
 
                 case .failure(let error):
-                    self?.showAlert(
-                        title: error.errorMessage,
-                        message: nil,
-                        singleActionTitle: "확인"
+                    self?.coordinator?.handleError(
+                        errorCode: error.errorCode,
+                        errorMessage: error.userMessage,
+                        errorData: error.data
                     )
 
                 default:
