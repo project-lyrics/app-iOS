@@ -27,7 +27,7 @@ public final class LyricsBackgroundCollectionViewCell: UICollectionViewCell, Reu
 
     private let lyricsDefaultTextLabel = {
         let label = UILabel()
-        label.text = "이야기로 음악을 느끼다\n이야기로 음악을 채우다"
+        label.text = "모두의 이야기로 채우는\n우리의 음악 공간"
         label.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 16)
         label.textColor = Colors.gray08.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
         label.textAlignment = .center
