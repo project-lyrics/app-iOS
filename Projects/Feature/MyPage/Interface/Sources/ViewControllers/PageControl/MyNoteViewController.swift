@@ -220,6 +220,26 @@ public final class MyNoteViewController: UIViewController,
                 self?.updateNotesUI(notes: fetchedNotes)
             }
             .store(in: &cancellables)
+
+        self.viewModel.$deleteNoteResult
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] result in
+                switch result {
+                case .success:
+                    self?.viewModel.getMyNotes(isInitialFetch: false)
+
+                case .failure(let error):
+                    self?.coordinator?.handleError(
+                        errorCode: error.errorCode,
+                        errorMessage: error.userMessage,
+                        errorData: error.data
+                    )
+
+                default:
+                    return
+                }
+            }
+            .store(in: &cancellables)
     }
 
     private func createDataSource() -> MyNoteDataSource {
@@ -391,7 +411,7 @@ public final class MyNoteViewController: UIViewController,
             }
         } else {
             // 그 외에는 cell 갯수는 변화가 없으나 컨텐츠에 변화가 있다고 판단. reloadData 수행
-            noteDetailDataSource.applySnapshotUsingReloadData(snapshot)
+            noteDetailDataSource.apply(snapshot)
         }
     }
 

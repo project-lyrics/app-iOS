@@ -17,7 +17,8 @@ public final class NoteCommentsViewModel {
     @Published private (set) var refreshState: RefreshState<NoteError> = .idle
     @Published private (set) var commentsCount = 0
     @Published private (set) var logoutResult: LogoutResult = .none
-    
+    @Published private (set) var deleteNoteResult: DeleteNoteResult = .none
+
     private var cancellables: Set<AnyCancellable> = .init()
     private let noteID: Int
     private let setNoteLikeUseCase: SetNoteLikeUseCaseInterface
@@ -225,11 +226,11 @@ extension NoteCommentsViewModel {
             .sink { [weak self] result in
                 switch result {
                 case .success:
-                    // TODO: - pop 해야 하나??
                     self?.fetchedNotes.removeAll(where: { $0.id == id })
-                    
+                    self?.deleteNoteResult = .success
+
                 case .failure(let noteError):
-                    self?.error = noteError
+                    self?.deleteNoteResult = .failure(noteError)
                 }
             }
             .store(in: &cancellables)

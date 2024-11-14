@@ -27,7 +27,7 @@ public protocol NoteCommentsViewControllerDelegate: AnyObject {
 
 public final class NoteCommentsViewController: UIViewController, CommentMenuHandling, NoteMenuHandling, NoteMusicHandling {
     private let viewModel: NoteCommentsViewModel
-    
+
     private var cancellables: Set<AnyCancellable> = .init()
     
     @KeychainWrapper(.userInfo)
@@ -173,7 +173,6 @@ public final class NoteCommentsViewController: UIViewController, CommentMenuHand
                     commentHeaderView.configureCommentCount(updatedCommentCount)
                 }
                 .store(in: &self.cancellables)
-            
         }
         
         dataSource.supplementaryViewProvider = { [weak self] (collectionView, kind, indexPath) in
@@ -394,6 +393,26 @@ private extension NoteCommentsViewController {
                     return
                 }
             })
+            .store(in: &cancellables)
+
+        viewModel.$deleteNoteResult
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] result in
+                switch result {
+                case .success:
+                    self?.coordinator?.popViewController()
+
+                case .failure(let error):
+                    self?.coordinator?.handleError(
+                        errorCode: error.errorCode,
+                        errorMessage: error.userMessage,
+                        errorData: error.data
+                    )
+
+                default:
+                    return
+                }
+            }
             .store(in: &cancellables)
     }
     

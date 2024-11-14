@@ -214,15 +214,18 @@ public final class NoteDetailViewController: UIViewController, NoteMenuHandling,
 
     override public func viewDidLoad() {
         super.viewDidLoad()
-        
-        
-        self.fetchSongDetailAndNotes()
+
         self.bindUI()
         self.bindData()
         self.bindAction()
     }
-    
-    private func fetchSongDetailAndNotes() {
+
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.fetchSongDetailAndNotes()
+    }
+
+    public func fetchSongDetailAndNotes() {
         self.viewModel.getSongDetailAndNotes()
     }
     
@@ -458,6 +461,26 @@ private extension NoteDetailViewController {
         self.viewModel.$fetchedNotes
             .sink { [weak self] fetchedNotes in
                 self?.updateSnapshot(notes: fetchedNotes)
+            }
+            .store(in: &cancellables)
+
+        self.viewModel.$deleteNoteResult
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] result in
+                switch result {
+                case .success:
+                    self?.fetchSongDetailAndNotes()
+
+                case .failure(let error):
+                    self?.coordinator?.handleError(
+                        errorCode: error.errorCode,
+                        errorMessage: error.userMessage,
+                        errorData: error.data
+                    )
+
+                default:
+                    return
+                }
             }
             .store(in: &cancellables)
     }

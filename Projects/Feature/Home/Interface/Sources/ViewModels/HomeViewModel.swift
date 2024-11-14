@@ -20,6 +20,7 @@ final public class HomeViewModel {
     @Published private (set) var refreshState: RefreshState<HomeError> = .idle
     @Published private (set) var hasUncheckedNotification: Bool = false
     @Published private (set) var isFirstVisitor: Bool = false
+    @Published private (set) var deleteNoteResult: DeleteNoteResult = .none
 
     private let getNotesUseCase: GetNotesUseCaseInterface
     private let getFavoriteArtistsUseCase: GetFavoriteArtistsUseCaseInterface
@@ -302,9 +303,11 @@ extension HomeViewModel {
                 switch result {
                 case .success:
                     self?.fetchedNotes.removeAll(where: { $0.id == id })
-                    
+
+                    self?.deleteNoteResult = .success
+
                 case .failure(let noteError):
-                    self?.error = .noteError(noteError)
+                    self?.deleteNoteResult = .failure(noteError)
                 }
             }
             .store(in: &cancellables)

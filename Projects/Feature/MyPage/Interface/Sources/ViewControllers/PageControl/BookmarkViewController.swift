@@ -172,7 +172,6 @@ public final class BookmarkViewController: UIViewController,
                 if self.isLoggedIn {
                     self.viewModel.getMoreMyNotesByBookmark()
                 }
-
             }
             .store(in: &cancellables)
 
@@ -217,6 +216,26 @@ public final class BookmarkViewController: UIViewController,
         self.viewModel.$fetchedNotes
             .sink { [weak self] fetchedNotes in
                 self?.updateNotesUI(notes: fetchedNotes)
+            }
+            .store(in: &cancellables)
+
+        self.viewModel.$deleteNoteResult
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] result in
+                switch result {
+                case .success:
+                    self?.viewModel.getMyNotesByBookmark(isInitialFetch: false)
+
+                case .failure(let error):
+                    self?.coordinator?.handleError(
+                        errorCode: error.errorCode,
+                        errorMessage: error.userMessage,
+                        errorData: error.data
+                    )
+
+                default:
+                    return
+                }
             }
             .store(in: &cancellables)
     }
@@ -390,7 +409,7 @@ public final class BookmarkViewController: UIViewController,
             }
         } else {
             // 그 외에는 cell 갯수는 변화가 없으나 컨텐츠에 변화가 있다고 판단. reloadData 수행
-            noteDetailDataSource.applySnapshotUsingReloadData(snapshot)
+            noteDetailDataSource.apply(snapshot)
         }
     }
 

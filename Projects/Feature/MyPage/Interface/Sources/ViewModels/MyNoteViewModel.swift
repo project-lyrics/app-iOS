@@ -16,6 +16,7 @@ public final class MyNoteViewModel {
     @Published private (set) var fetchedFavoriteArtistNotes: [FavoriteArtistHavingNote] = []
     @Published private (set) var error: NoteError?
     @Published private (set) var refreshState: RefreshState<NoteError> = .idle
+    @Published private (set) var deleteNoteResult: DeleteNoteResult = .none
 
     private var cancellables: Set<AnyCancellable> = .init()
     private var selectedArtistID: Int?
@@ -141,9 +142,10 @@ extension MyNoteViewModel {
                 switch result {
                 case .success:
                     self?.fetchedNotes.removeAll(where: { $0.id == id })
+                    self?.deleteNoteResult = .success
 
                 case .failure(let noteError):
-                    self?.error = noteError
+                    self?.deleteNoteResult = .failure(noteError)
                 }
             }
             .store(in: &cancellables)

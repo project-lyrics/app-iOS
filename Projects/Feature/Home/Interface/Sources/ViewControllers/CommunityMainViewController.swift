@@ -250,13 +250,13 @@ public final class CommunityMainViewController: UIViewController, NoteMenuHandli
         
         self.setUpNavigationBar()
         self.setUpLayout()
-        self.fetchInitialArtistAndNotes()
         self.bindUI()
         self.bindAction()
     }
 
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.fetchInitialArtistAndNotes()
     }
 
     public override func viewWillLayoutSubviews() {
@@ -268,7 +268,7 @@ public final class CommunityMainViewController: UIViewController, NoteMenuHandli
     
     // MARK: - Fetch Data
     
-    func fetchInitialArtistAndNotes() {
+    private func fetchInitialArtistAndNotes() {
         self.viewModel.getArtistAndNotes()
     }
 
@@ -531,6 +531,25 @@ private extension CommunityMainViewController {
                         message: "기존에 작성한 노트는 유지돼요.",
                         singleActionTitle: "확인"
                     )
+                }
+            }
+            .store(in: &cancellables)
+
+        viewModel.$deleteNoteResult
+            .sink { [weak self] result in
+                switch result {
+                case .success:
+                    self?.fetchInitialArtistAndNotes()
+
+                case .failure(let error):
+                    self?.coordinator?.handleError(
+                        errorCode: error.errorCode,
+                        errorMessage: error.userMessage,
+                        errorData: error.data
+                    )
+
+                default:
+                    break
                 }
             }
             .store(in: &cancellables)

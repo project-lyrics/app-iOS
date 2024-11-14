@@ -427,6 +427,31 @@ private extension HomeViewController {
                 self?.showSelectArtistListIfNeeded()
             }
             .store(in: &cancellables)
+
+        viewModel.$deleteNoteResult
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] result in
+                switch result {
+                case .success:
+                    if self?.isLoggedIn == true {
+                        self?.updateInitialHomeData()
+                        self?.checkForUnReadNotification()
+                    } else {
+                        // 로그아웃 된 상태에서는 올 수 없음
+                    }
+
+                case .failure(let error):
+                    self?.coordinator?.handleError(
+                        errorCode: error.errorCode,
+                        errorMessage: error.userMessage,
+                        errorData: error.data
+                    )
+
+                default:
+                    return
+                }
+            }
+            .store(in: &cancellables)
     }
 
     func bindAction() {
