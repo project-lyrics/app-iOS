@@ -67,7 +67,6 @@ public final class EditNoteViewController: UIViewController {
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        setupLyricsTextviewTextCenterVertically(lyricsTextView)
     }
 
     public override func viewDidLayoutSubviews() {
@@ -83,6 +82,7 @@ public final class EditNoteViewController: UIViewController {
     private func setUpDefault() {
         self.lyricsTextPlaceholder.isHidden = self.viewModel.note.lyrics?.content.isNotEmpty ?? false
         self.noteTextPlaceholder.isHidden = self.viewModel.note.content.isNotEmpty
+        self.setupLyricsTextviewTextCenterVertically(lyricsTextView)
     }
 
     private func bind() {
@@ -351,9 +351,10 @@ public final class EditNoteViewController: UIViewController {
                     lyricsTextView.text = String(text.dropLast(2))
                     
                 } else {
-                    setupLyricsTextviewTextCenterVertically(lyricsTextView)
                     updateCharacterCountForLyrics()
                 }
+                
+                setupLyricsTextviewTextCenterVertically(lyricsTextView)
             }
             .store(in: &cancellables)
         
