@@ -25,8 +25,6 @@ public final class PostNoteViewController: UIViewController {
         static let noteMaxTextLength = 1000
         static let lyricsMaxTextLength = 50
         static let maxTextViewHeight: CGFloat = 132
-        static let lyricsPlaceholder = "좋아하는 가사를 적어주세요 (선택)"
-        static let notePlaceholder = "생각을 남겨보세요."
     }
     private var keyboardHeight = 0.0
     private let lyricsBackgroundViewController = LyricsBackgroundViewController(
@@ -98,7 +96,7 @@ public final class PostNoteViewController: UIViewController {
             }
             .store(in: &cancellables)
 
-       artistInfoHeaderView.tapPublisher
+        artistInfoHeaderView.tapPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 guard let self = self else { return }
@@ -151,7 +149,7 @@ public final class PostNoteViewController: UIViewController {
             .prepend(nil)
             .eraseToAnyPublisher()
 
-        let lyricsBackgroundSelectPublisher = lyricsBackgroundViewController.backgroundPublisher.eraseToAnyPublisher()
+        let lyricsBackgroundSelectPublisher = lyricsBackgroundViewController.backgroundImageSubject.eraseToAnyPublisher()
 
         selectLyricsBackgroundButton.tapPublisher
             .receive(on: DispatchQueue.main)
@@ -208,7 +206,7 @@ public final class PostNoteViewController: UIViewController {
         output.isSelectedSong
             .assign(to: \.isEnabled, on: searchLyricsButton)
             .store(in: &cancellables)
-
+        
         output.isEnabledLyricsBackgroundButton
             .assign(to: \.isEnabled, on: selectLyricsBackgroundButton)
             .store(in: &cancellables)
@@ -219,7 +217,7 @@ public final class PostNoteViewController: UIViewController {
                 let backgroundImage = background?.image ?? LyricsBackground.default.image
                 self?.lyricsTextView.backgroundColor = UIColor(patternImage: backgroundImage)
 
-                guard let text = self?.lyricsTextView.text, !text.isEmpty, text != Const.lyricsPlaceholder else { return }
+                guard let text = self?.lyricsTextView.text, !text.isEmpty else { return }
 
                 var textViewColor: UIColor
 
@@ -283,18 +281,28 @@ public final class PostNoteViewController: UIViewController {
     }
 
     private func setUpTextView() {
-        noteTextView.textPublisher(for: [.didBeginEditing, .didEndEditing])
+        noteTextView.textPublisher(for: [.didBeginEditing])
             .sink { [weak self] text in
-                guard let self = self else { return }
-
-                if text?.isEmpty == true {
-                    noteTextView.setUpTextView(text: Const.notePlaceholder, textColor: Colors.gray04)
-                    noteCharCountLabel.textColor = Colors.gray04
-                    updateNoteSpacerView()
-                } else if text == Const.notePlaceholder {
-                    noteTextView.setUpTextView(text: "", textColor: Colors.gray08)
-                } else {
-                    // 텍스트 작성 중 상태
+                guard let text = text else {
+                    self?.updateNoteSpacerView()
+                    return
+                }
+                self?.noteTextPlaceholder.isHidden = true
+                if text.isEmpty {
+                    self?.updateNoteSpacerView()
+                }
+            }
+            .store(in: &cancellables)
+        
+        noteTextView.textPublisher(for: [.didEndEditing])
+            .sink { [weak self] text in
+                guard let text = text else {
+                    self?.updateNoteSpacerView()
+                    return
+                }
+                self?.noteTextPlaceholder.isHidden = !text.isEmpty
+                if text.isEmpty {
+                    self?.updateNoteSpacerView()
                 }
             }
             .store(in: &cancellables)
@@ -302,6 +310,8 @@ public final class PostNoteViewController: UIViewController {
         noteTextView.textPublisher(for: [.didChange])
             .sink { [weak self] text in
                 guard let self = self, let text = text else { return }
+                
+                self.noteTextPlaceholder.isHidden = true
 
                 self.noteTextView.flex.markDirty()
 
@@ -316,101 +326,98 @@ public final class PostNoteViewController: UIViewController {
 
                 if text.count > Const.noteMaxTextLength {
                     noteTextView.text = String(text.prefix(Const.noteMaxTextLength))
-                } else if text != Const.notePlaceholder {
+                } else {
                     updateCharacterCountForNote()
-                    updateNoteSpacerView()
                 }
+                
+                updateNoteSpacerView()
             }
             .store(in: &cancellables)
 
-        lyricsTextView.textPublisher(for: [.didBeginEditing, .didEndEditing])
+        lyricsTextView.textPublisher(for: [.didBeginEditing])
+            .combineLatest(lyricsBackgroundViewController.backgroundImageSubject)
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] text in
+            .sink { [weak self] (text, background) in
                 guard let self = self else {
                     return
                 }
-
-                let background = lyricsBackgroundViewController.backgroundPublisher.value
-
-                let defaultCountLabelTextColor = Colors.gray02.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
-
-                if text?.isEmpty == true {
-                    let textViewColor = Colors.gray02.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
-
-                    updateTextViewAndCountLabelTextColor(
-                        text: Const.lyricsPlaceholder,
-                        textViewTextColor: textViewColor,
-                        labelTextColor: defaultCountLabelTextColor
-                    )
-                } else if text == Const.lyricsPlaceholder {
-                    var textViewColor: UIColor
-
-                    switch background {
-                    case .red, .black:
-                        textViewColor = Colors.fixedModal.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
-                    default:
-                        textViewColor = Colors.gray08.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
-                    }
-                    let defaultCountLabelTextColor = Colors.gray06.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
-                    updateTextViewAndCountLabelTextColor(
-                        text: "",
-                        textViewTextColor: textViewColor,
-                        labelTextColor: defaultCountLabelTextColor
-                    )
+                
+                let defaultCountLabelTextColor = Colors.gray06.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
+                
+                lyricsTextPlaceholder.isHidden = true
+                var textViewColor: UIColor
+                
+                switch background {
+                case .red, .black:
+                    textViewColor = Colors.fixedModal.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
+                default:
+                    textViewColor = Colors.gray08.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
+                }
+                
+                lyricsTextView.textColor = textViewColor
+            }
+            .store(in: &cancellables)
+        
+        lyricsTextView.textPublisher(for: [.didEndEditing])
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] text in
+                guard let text = text else { return }
+                self?.lyricsTextPlaceholder.isHidden = !text.isEmpty
+            }
+            .store(in: &cancellables)
+        
+        lyricsTextView.textPublisher(for: [.didChange])
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] text in
+                guard let self = self,
+                      let text = text,
+                      searchLyricsButton.isEnabled else {
+                    self?.lyricsTextPlaceholder.isHidden = false
+                    self?.lyricsTextView.resignFirstResponder()
+                    return
+                }
+                
+                // 만약 가사값이 비어있는 경우 lyricsBackgroundImage .default세팅
+                if text.isEmpty {
+                    self.lyricsBackgroundViewController.backgroundImageSubject.send(.default)
+                }
+                
+                let maxLineCount = 3
+                let lines = text.components(separatedBy: .newlines)
+                let numberOfLines = lines.count
+                
+                if (text.count == 0 || text.count < Const.lyricsMaxTextLength) && numberOfLines > maxLineCount {
+                    let truncatedText = lines.dropLast().joined(separator: "\n")
+                    lyricsTextView.text = truncatedText
+                    updateCharacterCountForLyrics()
+                    
+                } else if text.count > Const.lyricsMaxTextLength {
+                    lyricsTextView.text = String(text.prefix(Const.lyricsMaxTextLength))
+                    
+                } else if lyricsTextView.isThirdLineExceedingWidth() {
+                    lyricsTextView.text = String(text.dropLast(2))
+                    
+                } else {
                     setupLyricsTextviewTextCenterVertically(lyricsTextView)
+                    updateCharacterCountForLyrics()
                 }
             }
             .store(in: &cancellables)
 
-        lyricsTextView.textPublisher(for: [.didChange])
-              .receive(on: DispatchQueue.main)
-              .sink { [weak self] text in
-                guard let self = self,
-                   let text = text,
-                   searchLyricsButton.isEnabled == true else {
-                     let defaultCountLabelTextColor = Colors.gray02.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
-                     let textViewColor = Colors.gray02.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
-                     self?.updateTextViewAndCountLabelTextColor(
-                       text: Const.lyricsPlaceholder,
-                       textViewTextColor: textViewColor,
-                       labelTextColor: defaultCountLabelTextColor
-                     )
-                     self?.lyricsTextView.resignFirstResponder()
-                  return
-                }
-                let maxLineCount = 3
-                let lines = text.components(separatedBy: .newlines)
-                let numberOfLines = lines.count
-                if (text.count == 0 || text.count < Const.lyricsMaxTextLength) && numberOfLines > maxLineCount {
-                  let truncatedText = lines.dropLast().joined(separator: "\n")
-                  lyricsTextView.text = truncatedText
-                } else if text.count > Const.lyricsMaxTextLength {
-                  lyricsTextView.text = String(text.prefix(Const.lyricsMaxTextLength))
-                } else if lyricsTextView.isThirdLineExceedingWidth() {
-                  lyricsTextView.text = String(text.dropLast(2))
-                } else {
-                  setupLyricsTextviewTextCenterVertically(lyricsTextView)
-                  if text != Const.lyricsPlaceholder {
-                    updateCharacterCountForLyrics()
-                  }
-                }
-              }
-              .store(in: &cancellables)
+        let tapGesture = UITapGestureRecognizer()
+        lyricsTextView.addGestureRecognizer(tapGesture)
 
-        lyricsTextView.shouldBeginEditingPublisher
+        tapGesture.publisher
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 if self?.searchLyricsButton.isEnabled == false {
                     self?.showAlert(
                         title: "곡을 추가한 후,\n가사를 작성하실 수 있어요.",
                         message: nil,
-                        singleActionTitle: "확인",
-                        actionCompletion: {
-                            self?.lyricsTextView.resignFirstResponder()
-                            self?.noteTextView.resignFirstResponder()
-                        }
+                        singleActionTitle: "확인"
                     )
                 } else {
-                    /// 가사 작성 가능
+                    self?.lyricsTextView.becomeFirstResponder()
                 }
             }
             .store(in: &cancellables)
@@ -419,7 +426,12 @@ public final class PostNoteViewController: UIViewController {
     private func updateCharacterCountForLyrics() {
         let count = lyricsTextView.text.count <= 50 ? lyricsTextView.text.count : 50
         lyricsCharCountLabel.text = "\(count)/\(Const.lyricsMaxTextLength)"
-        lyricsCharCountLabel.textColor = Colors.gray06.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
+        
+        if count < 1 {
+            lyricsCharCountLabel.textColor = Colors.gray04
+        } else {
+            lyricsCharCountLabel.textColor = Colors.gray08.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
+        }
     }
 
     private func updateNoteSpacerView() {
@@ -449,27 +461,27 @@ public final class PostNoteViewController: UIViewController {
     }
 
     private func setupLyricsTextviewTextCenterVertically(_ textView: UITextView) {
-        let textSize = textView.sizeThatFits(CGSize(width: textView.frame.width, height: CGFloat.greatestFiniteMagnitude))
-        let topCorrection = (textView.frame.size.height - textSize.height * textView.zoomScale) / 2.0
-        let topInset = max(0, topCorrection)
-
-        let lineCount = textView.numberOfLine()
-
-        if lineCount <= 1 || textView.text.isEmpty {
-            textView.textContainerInset = UIEdgeInsets(
-                top: 56,
-                left: 52,
-                bottom: 0,
-                right: 52
-            )
-        } else {
-            textView.textContainerInset = UIEdgeInsets(
-                top: topInset + 30,
-                left: 52,
-                bottom: 0,
-                right: 52
-            )
+        let defaultInsets = UIEdgeInsets(
+            top: 56,
+            left: 52,
+            bottom: 0,
+            right: 52
+        )
+        
+        guard !textView.text.isEmpty,
+              textView.numberOfLine() > 1 else {
+            textView.textContainerInset = defaultInsets
+            return
         }
+        
+        let multilineInsets = UIEdgeInsets(
+            top: 30,
+            left: 52,
+            bottom: 0,
+            right: 52
+        )
+        
+        textView.textContainerInset = multilineInsets
     }
 }
 
@@ -494,6 +506,10 @@ extension PostNoteViewController {
         return postNoteView.lyricsTextView
     }
 
+    var lyricsTextPlaceholder: UILabel {
+        return postNoteView.lyricsTextPlaceholder
+    }
+
     var lyricsCharCountLabel: UILabel {
         return postNoteView.lyricsCharCountLabel
     }
@@ -508,6 +524,10 @@ extension PostNoteViewController {
 
     var noteTextView: UITextView {
         return postNoteView.noteTextView
+    }
+    
+    var noteTextPlaceholder: UILabel {
+        return postNoteView.noteTextPlaceholder
     }
     
     var noteCharCountContainerView: UIView {

@@ -13,7 +13,7 @@ import Shared
 
 public final class LyricsBackgroundViewController: BottomSheetViewController<LyricsBackgroundView> {
     private var selectedBackgroundIndex: Int = 0
-    public let backgroundPublisher = CurrentValueSubject<LyricsBackground?, Never>(.default)
+    public let backgroundImageSubject = CurrentValueSubject<LyricsBackground?, Never>(.default)
 
     private var cancellables = Set<AnyCancellable>()
 
@@ -25,18 +25,28 @@ public final class LyricsBackgroundViewController: BottomSheetViewController<Lyr
 
     private func bind() {
         // 외부에서 전달된 backgroundPublisher 값을 기반으로 초기 설정
-          backgroundPublisher
+          backgroundImageSubject
               .receive(on: DispatchQueue.main)
               .sink { [weak self] selectedBackground in
-                  guard let self = self, let selectedBackground = selectedBackground else { return }
-
+                  guard let self = self else { return }
+                  
+                  // 기존 선택된 모든 항목 해제
+                  self.lyricsBackgroundCollectionView.indexPathsForSelectedItems?.forEach {
+                      self.lyricsBackgroundCollectionView.deselectItem(at: $0, animated: false)
+                      if let cell = self.lyricsBackgroundCollectionView.cellForItem(at: $0) as? LyricsBackgroundCollectionViewCell {
+                          cell.setSelected(false)
+                      }
+                  }
+                  
+                  guard let selectedBackground = selectedBackground else { return }
+                  
                   if let selectedIndex = LyricsBackground.allCases.firstIndex(of: selectedBackground) {
                       self.selectedBackgroundIndex = selectedIndex
                       let indexPath = IndexPath(item: selectedIndex, section: 0)
-
-                      // 선택된 항목을 collectionView에서 미리 선택 상태로 설정
+                      
+                      // 새로운 항목 선택
                       self.lyricsBackgroundCollectionView.selectItem(at: indexPath, animated: false, scrollPosition: .top)
-
+                      
                       if let cell = self.lyricsBackgroundCollectionView.cellForItem(at: indexPath) as? LyricsBackgroundCollectionViewCell {
                           cell.setSelected(true)
                       }
@@ -53,7 +63,7 @@ public final class LyricsBackgroundViewController: BottomSheetViewController<Lyr
         confirmButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in
                 guard let self = self else { return }
-                backgroundPublisher.send(LyricsBackground.allCases[selectedBackgroundIndex])
+                backgroundImageSubject.send(LyricsBackground.allCases[selectedBackgroundIndex])
                 dismiss(animated: true)
             }
             .store(in: &cancellables)

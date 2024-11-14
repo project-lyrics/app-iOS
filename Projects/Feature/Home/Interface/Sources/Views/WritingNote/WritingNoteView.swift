@@ -101,15 +101,22 @@ public final class WritingNoteView: UIView {
 
         return view
     }()
+    
+    public let lyricsTextPlaceholder: UILabel = {
+        let label = UILabel()
+        label.text = "좋아하는 가사를 적어주세요 (선택)"
+        label.textColor = Colors.gray02.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
+        
+        return label
+    }()
 
     public let lyricsTextView: UITextView = {
         let textView = UITextView()
-        textView.text = "좋아하는 가사를 적어주세요 (선택)"
         textView.layer.cornerRadius = 4.0
         textView.textAlignment = .center
         textView.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 16)
         textView.tintColor = Colors.gray08.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
-        textView.textColor = Colors.gray02.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
+        textView.textColor = Colors.gray08.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
         textView.isScrollEnabled = false
         textView.backgroundColor = UIColor(patternImage: FeelinImages.image00Default)
         textView.textContainer.maximumNumberOfLines = 3
@@ -133,15 +140,23 @@ public final class WritingNoteView: UIView {
 
     public let noteTextView: UITextView = {
         let textView = UITextView()
-        textView.text = "생각을 남겨보세요."
         textView.textAlignment = .left
         textView.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 14)
         textView.tintColor = Colors.gray08
-        textView.textColor = Colors.gray04
+        textView.textColor = Colors.gray08
         textView.isScrollEnabled = false
         textView.backgroundColor = .clear
 
         return textView
+    }()
+    
+    public let noteTextPlaceholder: UILabel = {
+        let label = UILabel()
+        label.text = "생각을 남겨보세요."
+        label.textColor = Colors.gray04
+        label.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 14)
+        
+        return label
     }()
 
     public let noteCharCountLabel: UILabel = {
@@ -228,9 +243,17 @@ public final class WritingNoteView: UIView {
                                 artistInfoHeaderView(contentFlex)
                                 lyricsTextBodyView(contentFlex)
 
-                                contentFlex.addItem(noteTextView)
-                                    .marginTop(24)
-                                    .width(100%)
+                                contentFlex.addItem()
+                                    .define { flex in
+                                        flex.addItem(noteTextView)
+                                            .marginTop(24)
+                                            .width(100%)
+                                        
+                                        flex.addItem(noteTextPlaceholder)
+                                            .position(.absolute)
+                                            .top(24 + 8)
+                                            .left(6)
+                                    }
 
                                 contentFlex.addItem(noteCharCountContainerView)
                                     .maxHeight((UIScreen.main.bounds.height * 0.435) + 17)
@@ -312,7 +335,10 @@ public final class WritingNoteView: UIView {
                         flex.addItem(lyricsTextView)
                             .height(132)
                             .width(100%)
+                            .justifyContent(.center)
                             .define { flex in
+                                flex.addItem(lyricsTextPlaceholder)
+                                    .alignSelf(.center)
                                 flex.addItem(lyricsCharCountLabel)
                                     .position(.absolute)
                                     .bottom(16)
