@@ -24,8 +24,6 @@ public final class EditNoteViewController: UIViewController {
         static let noteMaxTextLength = 1000
         static let lyricsMaxTextLength = 50
         static let maxTextViewHeight: CGFloat = 132
-        static let lyricsPlaceholder = "좋아하는 가사를 적어주세요 (선택)"
-        static let notePlaceholder = "생각을 남겨보세요."
     }
     private var keyboardHeight = 0.0
     private let lyricsBackgroundViewController = LyricsBackgroundViewController(
@@ -60,6 +58,7 @@ public final class EditNoteViewController: UIViewController {
         super.viewDidLoad()
 
         editNoteView.naviTitleLabel.text = "노트 수정"
+        setUpDefault()
         bind()
         setUpTextView()
         configure(viewModel.note)
@@ -68,7 +67,6 @@ public final class EditNoteViewController: UIViewController {
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        setupLyricsTextviewTextCenterVertically(lyricsTextView)
     }
 
     public override func viewDidLayoutSubviews() {
@@ -79,6 +77,12 @@ public final class EditNoteViewController: UIViewController {
 
     public func addSelectedSong(_ item: Song) {
         selectedSongPublisher.send(item)
+    }
+    
+    private func setUpDefault() {
+        self.lyricsTextPlaceholder.isHidden = self.viewModel.note.lyrics?.content.isNotEmpty ?? false
+        self.noteTextPlaceholder.isHidden = self.viewModel.note.content.isNotEmpty
+        self.setupLyricsTextviewTextCenterVertically(lyricsTextView)
     }
 
     private func bind() {
@@ -121,11 +125,11 @@ public final class EditNoteViewController: UIViewController {
             .store(in: &cancellables)
 
         let lyricsTextViewTypePublisher = lyricsTextView.textPublisher(for: [.didBeginEditing, .didChange])
-            .compactMap { [weak self] _ in self?.lyricsTextView.text }
+            .map { text -> String in return text ?? "" }
             .prepend(viewModel.note.lyrics?.content ?? "")
             .eraseToAnyPublisher()
 
-        let lyricsBackgroundSelectPublisher = lyricsBackgroundViewController.backgroundPublisher.prepend(viewModel.note.lyrics?.background).eraseToAnyPublisher()
+        let lyricsBackgroundSelectPublisher = lyricsBackgroundViewController.backgroundImageSubject.prepend(viewModel.note.lyrics?.background).eraseToAnyPublisher()
 
         selectLyricsBackgroundButton.tapPublisher
             .receive(on: DispatchQueue.main)
@@ -137,7 +141,7 @@ public final class EditNoteViewController: UIViewController {
             .store(in: &cancellables)
 
         let noteTextViewTypePublisher = noteTextView.textPublisher(for: [.didBeginEditing, .didChange])
-            .compactMap { [weak self] _ in self?.noteTextView.text }
+            .map { $0 ?? "" }
             .prepend(viewModel.note.content)
             .eraseToAnyPublisher()
 
@@ -172,7 +176,7 @@ public final class EditNoteViewController: UIViewController {
                 let backgroundImage = background?.image ?? LyricsBackground.default.image
                 self?.lyricsTextView.backgroundColor = UIColor(patternImage: backgroundImage)
 
-                guard let text = self?.lyricsTextView.text, !text.isEmpty, text != Const.lyricsPlaceholder else { return }
+                guard let text = self?.lyricsTextView.text, !text.isEmpty else { return }
 
                 var textViewColor: UIColor
 
@@ -233,18 +237,28 @@ public final class EditNoteViewController: UIViewController {
     }
 
     private func setUpTextView() {
-        noteTextView.textPublisher(for: [.didBeginEditing, .didEndEditing])
+        noteTextView.textPublisher(for: [.didBeginEditing])
             .sink { [weak self] text in
-                guard let self = self else { return }
-
-                if text?.isEmpty == true {
-                    noteTextView.setUpTextView(text: Const.notePlaceholder, textColor: Colors.gray04)
-                    noteCharCountLabel.textColor = Colors.gray04
-                    updateNoteSpacerView()
-                } else if text == Const.notePlaceholder {
-                    noteTextView.setUpTextView(text: "", textColor: Colors.gray08)
-                } else {
-                    // 텍스트 작성 중 상태
+                guard let text = text else {
+                    self?.updateNoteSpacerView()
+                    return
+                }
+                self?.noteTextPlaceholder.isHidden = true
+                if text.isEmpty {
+                    self?.updateNoteSpacerView()
+                }
+            }
+            .store(in: &cancellables)
+        
+        noteTextView.textPublisher(for: [.didEndEditing])
+            .sink { [weak self] text in
+                guard let text = text else {
+                    self?.updateNoteSpacerView()
+                    return
+                }
+                self?.noteTextPlaceholder.isHidden = !text.isEmpty
+                if text.isEmpty {
+                    self?.updateNoteSpacerView()
                 }
             }
             .store(in: &cancellables)
@@ -252,98 +266,97 @@ public final class EditNoteViewController: UIViewController {
         noteTextView.textPublisher(for: [.didChange])
             .sink { [weak self] text in
                 guard let self = self, let text = text else { return }
+                
+                self.noteTextPlaceholder.isHidden = true
 
                 self.noteTextView.flex.markDirty()
 
                 // contentView 레이아웃 재배치
-                contentView.flex.layout(mode: .adjustHeight)
+                self.contentView.flex.layout(mode: .adjustHeight)
                 self.rootScrollView.contentSize = self.contentView.frame.size
 
                 // 텍스트 뷰가 키보드에 의해 가려지는 경우를 방지하기 위해 스크롤 위치를 조정
-                guard let end = self.noteTextView.selectedTextRange?.end else { return }
-                let caretRect = self.noteTextView.caretRect(for: end)
-                self.rootScrollView.scrollRectToVisible(caretRect, animated: true)
+                guard let end = noteTextView.selectedTextRange?.end else { return }
+                let caretRect = noteTextView.caretRect(for: end)
+                rootScrollView.scrollRectToVisible(caretRect, animated: true)
 
-                if text != Const.notePlaceholder {
-                    self.updateCharacterCountForNote()
+                if text.count > Const.noteMaxTextLength {
+                    noteTextView.text = String(text.prefix(Const.noteMaxTextLength))
+                } else {
+                    updateCharacterCountForNote()
+                    updateNoteSpacerView()
                 }
-                self.updateNoteSpacerView()
             }
             .store(in: &cancellables)
 
-        lyricsTextView.textPublisher(for: [.didBeginEditing, .didEndEditing])
+        lyricsTextView.textPublisher(for: [.didBeginEditing])
+            .combineLatest(lyricsBackgroundViewController.backgroundImageSubject)
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] text in
+            .sink { [weak self] (text, background) in
                 guard let self = self else {
                     return
                 }
-
-                let background = lyricsBackgroundViewController.backgroundPublisher.value
-
-                let defaultCountLabelTextColor = Colors.gray02.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
-
-                if text?.isEmpty == true {
-                    let textViewColor = Colors.gray02.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
-
-                    updateTextViewAndCountLabelTextColor(
-                        text: Const.lyricsPlaceholder,
-                        textViewTextColor: textViewColor,
-                        labelTextColor: defaultCountLabelTextColor
-                    )
-                } else if text == Const.lyricsPlaceholder {
-                    var textViewColor: UIColor
-
-                    switch background {
-                    case .red, .black:
-                        textViewColor = Colors.fixedModal.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
-                    default:
-                        textViewColor = Colors.gray08.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
-                    }
-                    let defaultCountLabelTextColor = Colors.gray06.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
-                    updateTextViewAndCountLabelTextColor(
-                        text: "",
-                        textViewTextColor: textViewColor,
-                        labelTextColor: defaultCountLabelTextColor
-                    )
-                    setupLyricsTextviewTextCenterVertically(lyricsTextView)
+                
+                lyricsTextPlaceholder.isHidden = true
+                var textViewColor: UIColor
+                
+                switch background {
+                case .red, .black:
+                    textViewColor = Colors.fixedModal.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
+                default:
+                    textViewColor = Colors.gray08.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
                 }
+                
+                lyricsTextView.textColor = textViewColor
+            }
+            .store(in: &cancellables)
+        
+        lyricsTextView.textPublisher(for: [.didEndEditing])
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] text in
+                guard let text = text else { return }
+                self?.lyricsTextPlaceholder.isHidden = !text.isEmpty
             }
             .store(in: &cancellables)
 
         lyricsTextView.textPublisher(for: [.didChange])
-              .receive(on: DispatchQueue.main)
-              .sink { [weak self] text in
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] text in
                 guard let self = self,
-                   let text = text,
-                   searchLyricsButton.isEnabled == true else {
-                     let defaultCountLabelTextColor = Colors.gray02.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
-                     let textViewColor = Colors.gray02.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
-                     self?.updateTextViewAndCountLabelTextColor(
-                       text: Const.lyricsPlaceholder,
-                       textViewTextColor: textViewColor,
-                       labelTextColor: defaultCountLabelTextColor
-                     )
-                     self?.lyricsTextView.resignFirstResponder()
-                  return
+                      let text = text,
+                      searchLyricsButton.isEnabled else {
+                    self?.lyricsTextPlaceholder.isHidden = false
+                    self?.lyricsTextView.resignFirstResponder()
+                    return
                 }
+                
+                // 만약 가사값이 비어있는 경우 lyricsBackgroundImage .default세팅
+                if text.isEmpty {
+                    self.lyricsBackgroundViewController.backgroundImageSubject.send(.default)
+                }
+                
                 let maxLineCount = 3
                 let lines = text.components(separatedBy: .newlines)
                 let numberOfLines = lines.count
+                
                 if (text.count == 0 || text.count < Const.lyricsMaxTextLength) && numberOfLines > maxLineCount {
-                  let truncatedText = lines.dropLast().joined(separator: "\n")
-                  lyricsTextView.text = truncatedText
-                } else if text.count > Const.lyricsMaxTextLength {
-                  lyricsTextView.text = String(text.prefix(Const.lyricsMaxTextLength))
-                } else if lyricsTextView.isThirdLineExceedingWidth() {
-                  lyricsTextView.text = String(text.dropLast(2))
-                } else {
-                  setupLyricsTextviewTextCenterVertically(lyricsTextView)
-                  if text != Const.lyricsPlaceholder {
+                    let truncatedText = lines.dropLast().joined(separator: "\n")
+                    lyricsTextView.text = truncatedText
                     updateCharacterCountForLyrics()
-                  }
+                    
+                } else if text.count > Const.lyricsMaxTextLength {
+                    lyricsTextView.text = String(text.prefix(Const.lyricsMaxTextLength))
+                    
+                } else if lyricsTextView.isThirdLineExceedingWidth() {
+                    lyricsTextView.text = String(text.dropLast(2))
+                    
+                } else {
+                    updateCharacterCountForLyrics()
                 }
-              }
-              .store(in: &cancellables)
+                
+                setupLyricsTextviewTextCenterVertically(lyricsTextView)
+            }
+            .store(in: &cancellables)
         
         setupLyricsTextviewTextCenterVertically(lyricsTextView)
     }
@@ -351,7 +364,11 @@ public final class EditNoteViewController: UIViewController {
     private func updateCharacterCountForLyrics() {
         let count = lyricsTextView.text.count <= 50 ? lyricsTextView.text.count : 50
         lyricsCharCountLabel.text = "\(count)/\(Const.lyricsMaxTextLength)"
-        lyricsCharCountLabel.textColor = Colors.gray06.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
+        if count < 1 {
+            lyricsCharCountLabel.textColor = Colors.gray04
+        } else {
+            lyricsCharCountLabel.textColor = Colors.gray08.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
+        }
     }
 
     private func updateNoteSpacerView() {
@@ -384,13 +401,15 @@ public final class EditNoteViewController: UIViewController {
     }
 
     private func configure(_ model: Note) {
-        guard let lyricsBackground = model.lyrics?.background,
-              let lyricsContent = model.lyrics?.content
-        else { return }
-
         selectedSongPublisher.send(model.song)
-        lyricsTextView.setUpTextView(text: lyricsContent, textColor: Colors.gray08)
-        lyricsBackgroundViewController.backgroundPublisher.send(lyricsBackground)
+        if let lyrics = model.lyrics {
+            lyricsTextView.setUpTextView(
+                text: lyrics.content,
+                textColor: Colors.gray08
+            )
+            
+            lyricsBackgroundViewController.backgroundImageSubject.send(lyrics.background)
+        }
         noteTextView.setUpTextView(text: model.content, textColor: Colors.gray08)
         searchLyricsButton.isEnabled = true
         
@@ -399,27 +418,27 @@ public final class EditNoteViewController: UIViewController {
     }
 
     private func setupLyricsTextviewTextCenterVertically(_ textView: UITextView) {
-        let textSize = textView.sizeThatFits(CGSize(width: textView.frame.width, height: CGFloat.greatestFiniteMagnitude))
-        let topCorrection = (textView.frame.size.height - textSize.height * textView.zoomScale) / 2.0
-        let topInset = max(0, topCorrection)
-
-        let lineCount = textView.numberOfLine()
-
-        if lineCount <= 1 || textView.text.isEmpty {
-            textView.textContainerInset = UIEdgeInsets(
-                top: 56,
-                left: 52,
-                bottom: 0,
-                right: 52
-            )
-        } else {
-            textView.textContainerInset = UIEdgeInsets(
-                top: topInset + 30,
-                left: 52,
-                bottom: 0,
-                right: 52
-            )
+        let defaultInsets = UIEdgeInsets(
+            top: 56,
+            left: 52,
+            bottom: 0,
+            right: 52
+        )
+        
+        guard !textView.text.isEmpty,
+              textView.numberOfLine() > 1 else {
+            textView.textContainerInset = defaultInsets
+            return
         }
+        
+        let multilineInsets = UIEdgeInsets(
+            top: 30,
+            left: 52,
+            bottom: 0,
+            right: 52
+        )
+        
+        textView.textContainerInset = multilineInsets
     }
 }
 
@@ -439,6 +458,10 @@ extension EditNoteViewController {
     var lyricsTextView: UITextView {
         return editNoteView.lyricsTextView
     }
+    
+    var lyricsTextPlaceholder: UILabel {
+        return editNoteView.lyricsTextPlaceholder
+    }
 
     var lyricsCharCountLabel: UILabel {
         return editNoteView.lyricsCharCountLabel
@@ -454,6 +477,10 @@ extension EditNoteViewController {
 
     var noteTextView: UITextView {
         return editNoteView.noteTextView
+    }
+    
+    var noteTextPlaceholder: UILabel {
+        return editNoteView.noteTextPlaceholder
     }
 
     var noteCharCountContainerView: UIView {

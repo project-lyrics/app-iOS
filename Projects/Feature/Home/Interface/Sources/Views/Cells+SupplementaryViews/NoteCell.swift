@@ -233,25 +233,30 @@ public final class NoteCell: UICollectionViewCell, Reusable {
 
 
             // 좋아요 & 댓글 row
-            flex.addItem().direction(.row).define { flex in
-                flex.addItem(likeNoteButton)
-                    .marginRight(4)
-
-                flex.addItem(likeAmountLabel)
-
-                flex.addItem().width(16)
-
-                flex.addItem(commentButton)
-                    .marginRight(4)
-
-                flex.addItem(commentAmountLabel)
-
-                flex.addItem().grow(1)
-
-                flex.addItem(bookmarkButton)
-            }
-            .paddingTop(24)
-            .paddingBottom(24)
+            flex.addItem()
+                .direction(.row)
+                .justifyContent(.spaceBetween)
+                .define { flex in
+                    flex.addItem()
+                        .direction(.row)
+                        .define { flex in
+                            flex.addItem(likeNoteButton)
+                                .marginRight(4)
+                            
+                            flex.addItem(likeAmountLabel)
+                                .marginRight(16)
+                            
+                            flex.addItem(commentButton)
+                                .marginRight(4)
+                            
+                            flex.addItem(commentAmountLabel)
+                            
+                        }
+                    
+                    flex.addItem(bookmarkButton)
+                }
+                .paddingTop(24)
+                .paddingBottom(24)
         }
     }
 

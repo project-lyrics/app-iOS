@@ -29,6 +29,7 @@ public final class PostSelectButton: UIView {
 
     public var isEnabled: Bool = false {
         didSet {
+            self.isUserInteractionEnabled = isEnabled
             updateUI(isEnabled)
         }
     }

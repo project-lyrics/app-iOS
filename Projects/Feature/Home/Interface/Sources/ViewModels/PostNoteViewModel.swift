@@ -14,11 +14,6 @@ import Core
 public final class PostNoteViewModel {
     typealias PostNoteResult = Result<FeelinSuccessResponse, NoteError>
 
-    private enum Const {
-        static let lyricsPlaceholder = "좋아하는 가사를 적어주세요 (선택)"
-        static let notePlaceholder = "생각을 남겨보세요."
-    }
-
     struct Input {
         let songTapPublisher: AnyPublisher<Song, Never>
         let lyricsTextViewTypePublisher: AnyPublisher<String?, Never>
@@ -68,7 +63,7 @@ private extension PostNoteViewModel {
             input.postNoteStatusPublisher
         )
         .map { song, noteContent, status in
-            return !noteContent.isEmpty && noteContent != Const.notePlaceholder && status == .draft
+            return !noteContent.isEmpty && status == .draft
         }
         .eraseToAnyPublisher()
     }
@@ -92,7 +87,7 @@ private extension PostNoteViewModel {
     func checkLyricsText(_ input: Input) -> AnyPublisher<Bool, Never> {
         return input.lyricsTextViewTypePublisher
             .map { text in
-                return text?.isEmpty == false && text != Const.lyricsPlaceholder
+                return text?.isNotEmpty ?? false
             }
             .eraseToAnyPublisher()
     }
@@ -105,7 +100,7 @@ private extension PostNoteViewModel {
                 input.postNoteStatusPublisher
             )
             .filter({ (song, noteContent, status) in
-                return !noteContent.isEmpty && noteContent != Const.notePlaceholder
+                return !noteContent.isEmpty
             })
             .eraseToAnyPublisher()
 
@@ -128,8 +123,8 @@ private extension PostNoteViewModel {
 
                 return PostNoteValue(
                     id: song.id,
-                    lyrics: lyrics != Const.lyricsPlaceholder ? lyrics : nil,
-                    background: lyricsBackground,
+                    lyrics: lyrics ?? nil,
+                    background: lyrics?.isNotEmpty == true ? lyricsBackground : nil,
                     content: noteContent,
                     status: status
                 )

@@ -14,11 +14,6 @@ import Core
 public final class EditNoteViewModel {
     typealias EditNoteResult = Result<FeelinSuccessResponse, NoteError>
     
-    private enum Const {
-        static let lyricsPlaceholder = "좋아하는 가사를 적어주세요 (선택)"
-        static let notePlaceholder = "생각을 남겨보세요."
-    }
-
     struct Input {
         let lyricsTextViewTypePublisher: AnyPublisher<String, Never>
         let lyricsBackgroundSelectPublisher: AnyPublisher<LyricsBackground?, Never>
@@ -60,52 +55,49 @@ public final class EditNoteViewModel {
 
 private extension EditNoteViewModel {
     func isEnabledCompleteButton(_ input: Input) -> AnyPublisher<Bool, Never> {
-        let hasWrittenNotePublisher = input.noteTextViewTypePublisher
-            .map { noteContent in
-                return self.note.content != noteContent && noteContent != Const.notePlaceholder
-            }
-
-        let hasWrittenLyricsNotePublisher = input.lyricsTextViewTypePublisher
-            .map { lyricsContent in
-                return self.note.lyrics?.content != lyricsContent && lyricsContent != Const.lyricsPlaceholder
-            }
-
-        let hasSelectedLyricsBackgroundPublisher = input.lyricsBackgroundSelectPublisher
-            .map { lyricsBackground in
-                return self.note.lyrics?.background != lyricsBackground
-            }
-
-        return Publishers
-            .Merge3(
-                hasWrittenNotePublisher,
-                hasWrittenLyricsNotePublisher,
-                hasSelectedLyricsBackgroundPublisher
-            )
-            .map { isEnable in
-                return isEnable
+        // 노트 내용 변경 확인 (비어있지 않고 이전과 다른 경우)
+        
+        let isNoteNotEmpty = input.noteTextViewTypePublisher
+            .map { $0.isNotEmpty }
+            .eraseToAnyPublisher()
+        
+        let hasValidNoteChanges = input.noteTextViewTypePublisher
+            .map { [weak self] noteContent in
+                return self?.note.content != noteContent
             }
             .eraseToAnyPublisher()
-    }
-
-    func isEnabledCompleteButton(lyricsContent: String, background: LyricsBackground?, noteContent: String) -> Bool {
-        return (self.note.lyrics?.content != lyricsContent && lyricsContent != Const.lyricsPlaceholder)
-        || self.note.lyrics?.background != background
-        || (self.note.content != noteContent && noteContent != Const.notePlaceholder)
+        
+        let hasOptionalChanges = Publishers.CombineLatest(
+            input.lyricsTextViewTypePublisher,
+            input.lyricsBackgroundSelectPublisher
+        )
+            .map { [weak self] (updatedLyricsContent, updatedLyricsBackground) in
+                
+                let originalLyricsText = self?.note.lyrics?.content ?? ""
+                
+                return originalLyricsText != updatedLyricsContent ||
+                self?.note.lyrics?.background != updatedLyricsBackground
+            }
+            .eraseToAnyPublisher()
+        
+        return Publishers.CombineLatest3(
+            isNoteNotEmpty,
+            hasValidNoteChanges,
+            hasOptionalChanges
+        )
+        .map { isNoteNotEmpty, hasNoteChanges, hasOptionalChanges in
+            return isNoteNotEmpty && (hasNoteChanges || hasOptionalChanges)
+        }
+        .eraseToAnyPublisher()
     }
 
     func isSelectLyricsBackground(_ input: Input) -> AnyPublisher<LyricsBackground?, Never> {
         return input.lyricsBackgroundSelectPublisher
-            .map { background in
-                return background
-            }
-            .eraseToAnyPublisher()
     }
 
     func checkLyricsText(_ input: Input) -> AnyPublisher<Bool, Never> {
         return input.lyricsTextViewTypePublisher
-            .map { text in
-                return text.isEmpty == false && text != Const.lyricsPlaceholder
-            }
+            .map { text in return text.isNotEmpty }
             .eraseToAnyPublisher()
     }
 
@@ -116,13 +108,10 @@ private extension EditNoteViewModel {
                 input.lyricsBackgroundSelectPublisher,
                 input.noteTextViewTypePublisher
             )
-            .filter { (lyricsContent, background, noteContent) in
-                return self.isEnabledCompleteButton(lyricsContent: lyricsContent, background: background, noteContent: noteContent)
-            }
             .map { (lyrics, background, noteContent) in
                 PatchNoteValue(
-                    lyrics: lyrics != Const.lyricsPlaceholder ? lyrics : nil,
-                    background: background,
+                    lyrics: lyrics.isNotEmpty ? lyrics : nil,
+                    background: lyrics.isNotEmpty ? background : nil,
                     content: noteContent,
                     status: self.note.status
                 )
@@ -136,7 +125,6 @@ private extension EditNoteViewModel {
                 guard let self = self else {
                     return Empty().eraseToAnyPublisher()
                 }
-
                 return self.editNote(
                     noteID: self.note.id,
                     with: value

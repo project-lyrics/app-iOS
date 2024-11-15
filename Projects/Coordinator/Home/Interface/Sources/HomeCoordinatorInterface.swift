@@ -264,10 +264,6 @@ extension HomeCoordinator {
         @KeychainWrapper<UserInformation>(.userInfo)
         var userInfo
 
-        // TODO: 제거필요
-        // 테스트용 유저 아이디
-        // userInfo = .init(userID: 1)
-
         let getNoteUseCase = GetFavoriteArtistsRelatedNotesUseCase(
             noteAPIService: noteAPIService,
             notePaginationService: notePaginationService

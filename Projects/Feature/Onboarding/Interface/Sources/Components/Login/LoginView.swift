@@ -28,7 +28,7 @@ final class LoginView: UIView {
         let label = UILabel()
         label.textColor = Colors.gray05
         label.textAlignment = .center
-        label.text = "이야기로 음악을 느끼다, 이야기로 음악을 채우다"
+        label.text = "모두의 이야기로 채우는 우리의 음악 공간"
         label.font = SharedDesignSystemFontFamily.Pretendard.medium.font(size: 16)
 
         return label

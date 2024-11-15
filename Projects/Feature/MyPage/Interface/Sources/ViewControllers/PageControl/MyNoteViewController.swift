@@ -243,7 +243,10 @@ public final class MyNoteViewController: UIViewController,
     }
 
     private func createDataSource() -> MyNoteDataSource {
-        let emptyNoteCellRegistration = UICollectionView.CellRegistration<EmptyNoteCell, Void> { cell, indexPath, item in }
+        let emptyNoteCellRegistration = UICollectionView.CellRegistration<EmptyNoteCell, Void> { cell, indexPath, item in
+            
+            cell.configure(title: "작성한 노트가 없어요")
+        }
 
         let requiredLoginCellRegistration = UICollectionView.CellRegistration<RequiredLoginNoteCell, Void> { cell, indexPath, item in
 
@@ -292,8 +295,6 @@ public final class MyNoteViewController: UIViewController,
                 .sink { [unowned self] _ in
                     if let noteMenuViewController = self?.makeNoteMenuViewController(checking: note) {
                         self?.present(noteMenuViewController, animated: false)
-                    } else {
-                        // TODO: - 비회원 알림을 추후 보여줘야 한다.
                     }
                 }
                 .store(in: &cell.cancellables)

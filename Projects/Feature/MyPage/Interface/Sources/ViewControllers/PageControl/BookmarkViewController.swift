@@ -241,7 +241,10 @@ public final class BookmarkViewController: UIViewController,
     }
 
     private func createDataSource() -> MyNoteDataSource {
-        let emptyNoteCellRegistration = UICollectionView.CellRegistration<EmptyNoteCell, Void> { cell, indexPath, item in }
+        let emptyNoteCellRegistration = UICollectionView.CellRegistration<EmptyNoteCell, Void> { cell, indexPath, item in
+            
+            cell.configure(title: "북마크한 글이 없어요")
+        }
 
         let requiredLoginCellRegistration = UICollectionView.CellRegistration<RequiredLoginNoteCell, Void> { cell, indexPath, item in
 
@@ -290,8 +293,6 @@ public final class BookmarkViewController: UIViewController,
                 .sink { [unowned self] _ in
                     if let noteMenuViewController = self?.makeNoteMenuViewController(checking: note) {
                         self?.present(noteMenuViewController, animated: false)
-                    } else {
-                        // TODO: - 비회원 알림을 추후 보여줘야 한다.
                     }
                 }
                 .store(in: &cell.cancellables)
