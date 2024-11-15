@@ -38,9 +38,6 @@ final class MyNoteContentView: UIView {
             collectionViewLayout: compositionalLayout
         )
 
-        let refreshControl = UIRefreshControl()
-        collectionView.refreshControl = refreshControl
-
         collectionView.backgroundColor = Colors.background
         collectionView.showsVerticalScrollIndicator = false
         collectionView.register(cellType: RequiredLoginNoteCell.self)
