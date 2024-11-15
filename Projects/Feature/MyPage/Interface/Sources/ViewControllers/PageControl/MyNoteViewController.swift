@@ -295,8 +295,6 @@ public final class MyNoteViewController: UIViewController,
                 .sink { [unowned self] _ in
                     if let noteMenuViewController = self?.makeNoteMenuViewController(checking: note) {
                         self?.present(noteMenuViewController, animated: false)
-                    } else {
-                        // TODO: - 비회원 알림을 추후 보여줘야 한다.
                     }
                 }
                 .store(in: &cell.cancellables)
