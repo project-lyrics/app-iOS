@@ -243,7 +243,10 @@ public final class MyNoteViewController: UIViewController,
     }
 
     private func createDataSource() -> MyNoteDataSource {
-        let emptyNoteCellRegistration = UICollectionView.CellRegistration<EmptyNoteCell, Void> { cell, indexPath, item in }
+        let emptyNoteCellRegistration = UICollectionView.CellRegistration<EmptyNoteCell, Void> { cell, indexPath, item in
+            
+            cell.configure(title: "작성한 노트가 없어요")
+        }
 
         let requiredLoginCellRegistration = UICollectionView.CellRegistration<RequiredLoginNoteCell, Void> { cell, indexPath, item in
 

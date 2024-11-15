@@ -63,4 +63,9 @@ public final class EmptyNoteCell: UICollectionViewCell, Reusable {
                     .marginTop(8)
             }
     }
+    
+    public func configure(title: String) {
+        self.titleLabel.text = title
+        self.titleLabel.flex.markDirty()
+    }
 }

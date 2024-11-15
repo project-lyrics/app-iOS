@@ -241,7 +241,10 @@ public final class BookmarkViewController: UIViewController,
     }
 
     private func createDataSource() -> MyNoteDataSource {
-        let emptyNoteCellRegistration = UICollectionView.CellRegistration<EmptyNoteCell, Void> { cell, indexPath, item in }
+        let emptyNoteCellRegistration = UICollectionView.CellRegistration<EmptyNoteCell, Void> { cell, indexPath, item in
+            
+            cell.configure(title: "북마크한 글이 없어요")
+        }
 
         let requiredLoginCellRegistration = UICollectionView.CellRegistration<RequiredLoginNoteCell, Void> { cell, indexPath, item in
 
