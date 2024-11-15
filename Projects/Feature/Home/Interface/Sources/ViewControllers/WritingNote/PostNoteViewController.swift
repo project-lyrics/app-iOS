@@ -342,8 +342,6 @@ public final class PostNoteViewController: UIViewController {
                     return
                 }
                 
-                let defaultCountLabelTextColor = Colors.gray06.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
-                
                 lyricsTextPlaceholder.isHidden = true
                 var textViewColor: UIColor
                 
