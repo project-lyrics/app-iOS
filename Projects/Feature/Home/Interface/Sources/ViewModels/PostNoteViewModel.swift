@@ -132,15 +132,16 @@ private extension PostNoteViewModel {
             .eraseToAnyPublisher()
 
         return input.completeButtonTapPublisher
-              .combineLatest(combinedPublisher)
-              .throttle(for: .seconds(2), scheduler: RunLoop.main, latest: false)
-              .flatMap { [weak self] (_, value) -> AnyPublisher<PostNoteResult, Never> in
-                  guard let self = self else {
-                      return Empty().eraseToAnyPublisher()
-                  }
-                  return self.postNote(value)
-              }
-              .eraseToAnyPublisher()
+            .throttle(for: .seconds(2), scheduler: RunLoop.main, latest: false)
+            .withLatestFrom(combinedPublisher)
+            .flatMap { [weak self] (_, value) -> AnyPublisher<PostNoteResult, Never> in
+                guard let self = self else {
+                    return Empty().eraseToAnyPublisher()
+                }
+                print("post note count: \(value.content.count)")
+                return self.postNote(value)
+            }
+            .eraseToAnyPublisher()
     }
 
     func postNote(_ requestValue: PostNoteValue) -> AnyPublisher<PostNoteResult, Never> {

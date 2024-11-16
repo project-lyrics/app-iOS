@@ -119,8 +119,8 @@ private extension EditNoteViewModel {
             .eraseToAnyPublisher()
 
         return input.completeButtonTapPublisher
-            .combineLatest(validNotePublisher)
             .throttle(for: .seconds(2), scheduler: RunLoop.main, latest: false)
+            .withLatestFrom(validNotePublisher)
             .flatMap { [weak self] (_, value) -> AnyPublisher<EditNoteResult, Never> in
                 guard let self = self else {
                     return Empty().eraseToAnyPublisher()
