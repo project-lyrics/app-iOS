@@ -138,7 +138,6 @@ private extension PostNoteViewModel {
                 guard let self = self else {
                     return Empty().eraseToAnyPublisher()
                 }
-                print("post note count: \(value.content.count)")
                 return self.postNote(value)
             }
             .eraseToAnyPublisher()
