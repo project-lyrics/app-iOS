@@ -53,7 +53,7 @@ public extension Coordinator {
             switch errorCode {
             case FeelinAPIError.ErrorType.authInfoNotFound.errorCode,
                  FeelinAPIError.ErrorType.duplicatedLogin.errorCode:
-                self.navigationController.topViewController?.showAlert(
+                self.navigationController.topViewController?.topMostPresented.showAlert(
                     title: errorMessage,
                     message: "에러코드(\(errorCode))",
                     singleActionTitle: "확인") { [weak self] in
@@ -62,7 +62,7 @@ public extension Coordinator {
                     }
                 
             case FeelinAPIError.ErrorType.updateRequired.errorCode:
-                self.navigationController.topViewController?.showAlert(
+                self.navigationController.topViewController?.topMostPresented.showAlert(
                     title: errorMessage,
                     message: "원활한 서비스 이용을 위해 업데이트가 필요해요.",
                     singleActionTitle: "확인") { [weak self] in
@@ -70,14 +70,14 @@ public extension Coordinator {
                     }
                 
             default:
-                self.navigationController.topViewController?.showAlert(
+                self.navigationController.topViewController?.topMostPresented.showAlert(
                     title: errorMessage,
                     message: "에러코드(\(errorCode))",
                     singleActionTitle: "확인"
                 )
             }
         } else {
-            self.navigationController.topViewController?.showAlert(
+            self.navigationController.topViewController?.topMostPresented.showAlert(
                 title: errorMessage,
                 message: nil,
                 singleActionTitle: "확인"

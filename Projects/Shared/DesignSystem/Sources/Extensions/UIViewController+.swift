@@ -182,3 +182,12 @@ extension UIViewController {
         }
     }
 }
+
+public extension UIViewController {
+    var topMostPresented: UIViewController {
+        if let presented = presentedViewController {
+            return presented.topMostPresented
+        }
+        return self
+    }
+}
