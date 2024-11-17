@@ -112,7 +112,7 @@ public extension Project {
                 [
                     "NSPrivacyCollectedDataType": "Customer support",
                     "NSPrivacyCollectedDataTypeLinked": true,
-                    "NSPrivacyCollectedDataTypeTracking": true,
+                    "NSPrivacyCollectedDataTypeTracking": false,
                     "NSPrivacyCollectedDataTypePurposes": [
                         "NSPrivacyCollectedDataTypeCustomerSupport",
                     ],
@@ -122,11 +122,11 @@ public extension Project {
                     ],
                 ],
                 [
-                    "NSPrivacyCollectedDataType": "Emails or text messages",
+                    "NSPrivacyCollectedDataType": "Other user content",
                     "NSPrivacyCollectedDataTypeLinked": true,
-                    "NSPrivacyCollectedDataTypeTracking": true,
+                    "NSPrivacyCollectedDataTypeTracking": false,
                     "NSPrivacyCollectedDataTypePurposes": [
-                        "NSPrivacyCollectedDataTypeCustomerSupport",
+                        "NSPrivacyCollectedDataTypeOtherUserContent",
                     ],
                 ],
             ],
@@ -135,7 +135,6 @@ public extension Project {
                     "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryUserDefaults",
                     "NSPrivacyAccessedAPITypeReasons": [
                         "User Defaults - CA92.1: Access info from same app, per documentation",
-                        "User Defaults - 1C8F.1: Used to read and write app-specific information that is exclusively accessible within an App Clip environment",
                     ],
                 ],
             ]
