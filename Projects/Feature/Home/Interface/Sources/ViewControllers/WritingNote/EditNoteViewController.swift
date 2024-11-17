@@ -358,7 +358,6 @@ public final class EditNoteViewController: UIViewController {
             }
             .store(in: &cancellables)
         
-        setupLyricsTextviewTextCenterVertically(lyricsTextView)
     }
 
     private func updateCharacterCountForLyrics() {
@@ -432,13 +431,25 @@ public final class EditNoteViewController: UIViewController {
         }
         
         let multilineInsets = UIEdgeInsets(
-            top: 30,
+            top: 36,
             left: 52,
             bottom: 0,
             right: 52
         )
         
-        textView.textContainerInset = multilineInsets
+        let twoLineInsets = UIEdgeInsets(
+            top: 46,
+            left: 52,
+            bottom: 0,
+            right: 52
+        )
+        
+        if textView.numberOfLine() > 2 {
+            textView.textContainerInset = multilineInsets
+        } else {
+            textView.textContainerInset = twoLineInsets
+        }
+        textView.flex.markDirty()
     }
 }
 

@@ -9,11 +9,11 @@ import Core
 import DomainSharedInterface
 
 public struct PostNoteValue {
-    let id: Int
-    let lyrics: String?
-    let background: LyricsBackground?
-    let content: String
-    let status: NoteStatus
+    public let id: Int
+    public let lyrics: String?
+    public let background: LyricsBackground?
+    public let content: String
+    public let status: NoteStatus
 
     public init(
         id: Int,

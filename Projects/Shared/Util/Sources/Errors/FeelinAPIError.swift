@@ -143,17 +143,17 @@ public struct FeelinAPIError: LocalizedError, Equatable {
                  .invalidRequestInput,
                  .someFieldMissing,
                  .someFieldEmpty:
-                return "잘못된 요청입니다. 다시 시도해 주세요."
+                return "잘못된 요청입니다.\n다시 시도해 주세요."
                 
             case .invalidURLFormat,
                  .invalidEmail:
-                return "유효한 형식이 아닙니다. 다시 시도해 주세요."
+                return "유효한 형식이 아닙니다.\n다시 시도해 주세요."
                 
             case .wrongTokenTypePassed,
                  .invalidToken,
                  .tokenNotFound,
                  .notBearerFormat:
-                return "인증 정보를 찾을 수 없어요. 다시 시도해 주세요."
+                return "인증 정보를 찾을 수 없어요.\n다시 시도해 주세요."
                 
             case .updateRequired:
                 return "최신 버전의 앱이 있어요."
@@ -168,7 +168,7 @@ public struct FeelinAPIError: LocalizedError, Equatable {
                 return "로그인이 제한된 계정입니다."
                 
             case .invalidPublicKey:
-                return "로그인에 실패했습니다. 다시 시도해 주세요."
+                return "로그인에 실패했습니다.\n다시 시도해 주세요."
                 
             case .notAgreedToTerms:
                 return "약관 동의 후 다시 가입을 진행해 주세요."
@@ -192,34 +192,34 @@ public struct FeelinAPIError: LocalizedError, Equatable {
                 return "해당 북마크를 찾을 수 없어요."
                 
             case .failedDeleteNote:
-                return "노트를 삭제할 수 없어요. 다시 시도해 주세요."
+                return "노트를 삭제할 수 없어요.\n다시 시도해 주세요."
                 
             case .restrictedAccess:
                 return "서비스 이용이 일시적으로 제한되었어요.\n 알림을 확인해 주세요."
                 
             case .failedGetSong:
-                return "해당 곡을 찾을 수 없습니다. 다시 시도해 주세요."
+                return "해당 곡을 찾을 수 없습니다.\n다시 시도해 주세요."
                 
             case .invalidNoteBackground:
-                return "노트 배경이 올바르지 않습니다. 다시 시도해 주세요."
+                return "노트 배경이 올바르지 않습니다.\n다시 시도해 주세요."
                 
             case .invalidNoteState:
-                return "노트가 올바르지 않습니다. 다시 시도해 주세요."
+                return "노트가 올바르지 않습니다.\n다시 시도해 주세요."
                 
             case .failedEditNote:
-                return "노트를 수정할 수 없습니다. 다시 시도해 주세요."
+                return "노트를 수정할 수 없습니다.\n다시 시도해 주세요."
                 
             case .failedGetChat:
                 return "해당 댓글을 찾을 수 없어요."
             
             case .missingReportData:
-                return "신고 대상을 찾을 수 없어요. 다시 시도해 주세요."
+                return "신고 대상을 찾을 수 없어요.\n다시 시도해 주세요."
                 
             case .alreadyReported:
                 return "이미 신고가 완료 되었어요."
                 
             default:
-                return "서비스 오류입니다. 다시 시도해 주세요."
+                return "서비스 오류입니다.\n다시 시도해 주세요."
                 
             }
         }
