@@ -116,7 +116,8 @@ public extension Target {
     static func app(
         implements module: ModulePath.App,
         deploymentTarget: ProjectDeploymentTarget,
-        factory: TargetFactory
+        factory: TargetFactory,
+        privacyManifest: PrivacyManifest? = nil
     ) -> Self {
         var newFactory = factory
         newFactory.name = ModulePath.App.name + module.rawValue
@@ -130,6 +131,7 @@ public extension Target {
             newFactory.productName = Project.Environment.appName
             newFactory.scripts = [.SwiftLintString]
             newFactory.dependencies = factory.dependencies
+            newFactory.resources?.privacyManifest = privacyManifest
         }
         
         return make(factory: newFactory)

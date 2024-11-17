@@ -50,7 +50,8 @@ let appTargets: [Target] = [
                 .coordinator
             ],
             settings: Project.Environment.prodTargetSettings
-        )
+        ),
+        privacyManifest: Project.Environment.privacyManifest
     )
 ]
 

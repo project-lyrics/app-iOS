@@ -88,6 +88,59 @@ public extension Project {
                 .build(.prod)
             ]
         )
+        // TODO: 나중에 Firebase analytics, Crashlytics 등의 광고 추척이 필요한 경우 변경해야함 - dk
+        public static let privacyManifest: PrivacyManifest = .privacyManifest(
+            tracking: false,
+            trackingDomains: [],
+            collectedDataTypes: [
+                [
+                    "NSPrivacyCollectedDataType": "User ID",
+                    "NSPrivacyCollectedDataTypeLinked": true,
+                    "NSPrivacyCollectedDataTypeTracking": false,
+                    "NSPrivacyCollectedDataTypePurposes": [
+                        "NSPrivacyCollectedDataTypePurposeAppFunctionality",
+                    ],
+                ],
+                [
+                    "NSPrivacyCollectedDataType": "Device ID",
+                    "NSPrivacyCollectedDataTypeLinked": true,
+                    "NSPrivacyCollectedDataTypeTracking": false,
+                    "NSPrivacyCollectedDataTypePurposes": [
+                        "NSPrivacyCollectedDataTypePurposeAppFunctionality",
+                    ],
+                ],
+                [
+                    "NSPrivacyCollectedDataType": "Customer support",
+                    "NSPrivacyCollectedDataTypeLinked": true,
+                    "NSPrivacyCollectedDataTypeTracking": true,
+                    "NSPrivacyCollectedDataTypePurposes": [
+                        "NSPrivacyCollectedDataTypeCustomerSupport",
+                    ],
+                    "AdditionalInfo": [
+                        "PhoneNumber",
+                        "Email",
+                    ],
+                ],
+                [
+                    "NSPrivacyCollectedDataType": "Emails or text messages",
+                    "NSPrivacyCollectedDataTypeLinked": true,
+                    "NSPrivacyCollectedDataTypeTracking": true,
+                    "NSPrivacyCollectedDataTypePurposes": [
+                        "NSPrivacyCollectedDataTypeCustomerSupport",
+                    ],
+                ],
+            ],
+            accessedApiTypes: [
+                [
+                    "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryUserDefaults",
+                    "NSPrivacyAccessedAPITypeReasons": [
+                        "User Defaults - CA92.1: Access info from same app, per documentation",
+                        "User Defaults - 1C8F.1: Used to read and write app-specific information that is exclusively accessible within an App Clip environment",
+                    ],
+                ],
+            ]
+        )
+
         public static func appInfoPlist(deploymentTarget: ProjectDeploymentTarget) -> InfoPlist {
             var kakaoNativeAppKey: String = ""
             var baseServerURL: String = ""
