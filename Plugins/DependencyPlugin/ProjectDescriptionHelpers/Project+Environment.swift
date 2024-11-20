@@ -94,7 +94,7 @@ public extension Project {
             trackingDomains: [],
             collectedDataTypes: [
                 [
-                    "NSPrivacyCollectedDataType": "User ID",
+                    "NSPrivacyCollectedDataType": "NSPrivacyCollectedDataTypeUserID",
                     "NSPrivacyCollectedDataTypeLinked": true,
                     "NSPrivacyCollectedDataTypeTracking": false,
                     "NSPrivacyCollectedDataTypePurposes": [
@@ -102,7 +102,7 @@ public extension Project {
                     ],
                 ],
                 [
-                    "NSPrivacyCollectedDataType": "Device ID",
+                    "NSPrivacyCollectedDataType": "NSPrivacyCollectedDataTypeDeviceID",
                     "NSPrivacyCollectedDataTypeLinked": true,
                     "NSPrivacyCollectedDataTypeTracking": false,
                     "NSPrivacyCollectedDataTypePurposes": [
@@ -110,7 +110,7 @@ public extension Project {
                     ],
                 ],
                 [
-                    "NSPrivacyCollectedDataType": "Customer support",
+                    "NSPrivacyCollectedDataType": "NSPrivacyCollectedDataTypeCustomerSupport",
                     "NSPrivacyCollectedDataTypeLinked": true,
                     "NSPrivacyCollectedDataTypeTracking": false,
                     "NSPrivacyCollectedDataTypePurposes": [
@@ -122,7 +122,7 @@ public extension Project {
                     ],
                 ],
                 [
-                    "NSPrivacyCollectedDataType": "Other user content",
+                    "NSPrivacyCollectedDataType": "NSPrivacyCollectedDataTypeOtherUserContent",
                     "NSPrivacyCollectedDataTypeLinked": true,
                     "NSPrivacyCollectedDataTypeTracking": false,
                     "NSPrivacyCollectedDataTypePurposes": [
@@ -134,7 +134,7 @@ public extension Project {
                 [
                     "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryUserDefaults",
                     "NSPrivacyAccessedAPITypeReasons": [
-                        "User Defaults - CA92.1: Access info from same app, per documentation",
+                        "CA92.1",
                     ],
                 ],
             ]
