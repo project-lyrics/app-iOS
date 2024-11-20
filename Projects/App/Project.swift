@@ -21,7 +21,7 @@ let appTargets: [Target] = [
         deploymentTarget: .dev,
         factory: .init(
             infoPlist: Project.Environment.appInfoPlist(deploymentTarget: .dev), 
-            entitlements: "Feelin.entitlements",
+            entitlements: "Feelin-DEV.entitlements",
             dependencies: [
                 .coordinator
             ],
@@ -33,7 +33,7 @@ let appTargets: [Target] = [
         deploymentTarget: .qa,
         factory: .init(
             infoPlist: Project.Environment.appInfoPlist(deploymentTarget: .qa),
-            entitlements: "Feelin.entitlements",
+            entitlements: "Feelin-QA.entitlements",
             dependencies: [
                 .coordinator
             ],
@@ -45,7 +45,7 @@ let appTargets: [Target] = [
         deploymentTarget: .prod,
         factory: .init(
             infoPlist: Project.Environment.appInfoPlist(deploymentTarget: .prod),
-            entitlements: "Feelin.entitlements",
+            entitlements: "Feelin-PROD.entitlements",
             dependencies: [
                 .coordinator
             ],
