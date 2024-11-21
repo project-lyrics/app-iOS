@@ -152,8 +152,9 @@ public final class WritingNoteView: UIView {
     
     public let noteTextPlaceholder: UILabel = {
         let label = UILabel()
-        label.text = "생각을 남겨보세요."
+        label.text = "생각을 남겨보세요.\n(부적절하거나 불쾌감을 주는 내용 작성 시, 서비스 이용이 제한될 수 있습니다.)"
         label.textColor = Colors.gray04
+        label.numberOfLines = 0
         label.font = SharedDesignSystemFontFamily.Pretendard.regular.font(size: 14)
         
         return label
@@ -253,6 +254,7 @@ public final class WritingNoteView: UIView {
                                             .position(.absolute)
                                             .top(24 + 8)
                                             .left(6)
+                                            .width(100%)
                                     }
 
                                 contentFlex.addItem(noteCharCountContainerView)

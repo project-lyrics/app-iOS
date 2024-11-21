@@ -109,7 +109,7 @@ public final class ReportViewController: UIViewController {
             .sink { [weak self] result in
                 switch result {
                 case .success:
-                    self?.showAlert(title: "신고가 접수되었어요.", message: nil, singleActionTitle: "확인", actionCompletion: {
+                    self?.showAlert(title: "신고가 접수되었어요.", message: "접수된 신고는 24시간 내로 관리자가 검토할 예정입니다", singleActionTitle: "확인", actionCompletion: {
                         self?.coordinator?.popViewController()
                     })
                 case .failure(let error):
