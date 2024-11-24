@@ -53,6 +53,9 @@ public enum FeelinAPI<R> {
     case getHasUncheckedNotification
     case getUserProfile
     case patchUserProfile(request: UserProfileRequest)
+    case postBlockUserProfile(userID: Int)
+    case deleteBlockUserProfile(userID: Int)
+    case getBlockedUsers
     case deleteUser
     case checkFirstVisitor
 }
@@ -196,6 +199,12 @@ extension FeelinAPI: HTTPNetworking {
              .deleteFavoriteArtist(let id):
             return [
                 "artistId": id
+            ]
+            
+        case .postBlockUserProfile(let userID),
+             .deleteBlockUserProfile(let userID):
+            return [
+                "userId": userID
             ]
             
         default:
@@ -364,6 +373,13 @@ extension FeelinAPI: HTTPNetworking {
 
         case .checkFirstVisitor:
             return "/api/v1/users/first-time"
+            
+        case .postBlockUserProfile,
+             .deleteBlockUserProfile:
+            return "/api/v1/blocks"
+            
+        case .getBlockedUsers:
+            return "/api/v1/users/blocks"
         }
     }
 
@@ -378,7 +394,8 @@ extension FeelinAPI: HTTPNetworking {
              .postNote,
              .postComment, 
              .reportNote,
-             .postFavoriteArtist:
+             .postFavoriteArtist,
+             .postBlockUserProfile:
             return .post
 
         case .checkUserValidity, 
@@ -402,7 +419,8 @@ extension FeelinAPI: HTTPNetworking {
              .getMyNotes,
              .getUserProfile,
              .checkFirstVisitor,
-             .getMyNotesByBookmark:
+             .getMyNotesByBookmark,
+             .getBlockedUsers:
             return .get
             
         case .deleteLikes, 
@@ -410,7 +428,8 @@ extension FeelinAPI: HTTPNetworking {
              .deleteNote,
              .deleteComment,
              .deleteFavoriteArtist,
-             .deleteUser :
+             .deleteUser,
+             .deleteBlockUserProfile:
             return .delete
             
         case .checkNotification,

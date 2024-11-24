@@ -106,7 +106,6 @@ final class ReportView: UIView {
 
         rootFlexContainer
             .flex
-            .direction(.column)
             .define { rootFlex in
                 rootFlex.addItem(navigationBar)
                     .height(44)

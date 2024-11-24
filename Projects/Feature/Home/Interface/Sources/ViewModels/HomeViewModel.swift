@@ -21,6 +21,7 @@ final public class HomeViewModel {
     @Published private (set) var hasUncheckedNotification: Bool = false
     @Published private (set) var isFirstVisitor: Bool = false
     @Published private (set) var deleteNoteResult: DeleteNoteResult = .none
+    @Published private (set) var blockUserResult: BlockUserResult<HomeError> = .none
 
     private let getNotesUseCase: GetNotesUseCaseInterface
     private let getFavoriteArtistsUseCase: GetFavoriteArtistsUseCaseInterface
@@ -29,6 +30,7 @@ final public class HomeViewModel {
     private let deleteNoteUseCase: DeleteNoteUseCaseInterface
     private let getHasUncheckedNotificationUseCase: GetHasUncheckedNotificationUseCaseInterface
     private let checkFirstVisitorUseCase: CheckFirstVisitorUseCaseInterface
+    private let blockUserUseCase: BlockUserUseCaseInterface
 
     private var cancellables: Set<AnyCancellable> = .init()
     
@@ -39,7 +41,8 @@ final public class HomeViewModel {
         setBookmarkUseCase: SetBookmarkUseCaseInterface,
         deleteNoteUseCase: DeleteNoteUseCaseInterface,
         getHasUncheckedNotificationUseCase: GetHasUncheckedNotificationUseCaseInterface,
-        checkFirstVisitorUseCase: CheckFirstVisitorUseCaseInterface
+        checkFirstVisitorUseCase: CheckFirstVisitorUseCaseInterface,
+        blockUserUseCase: BlockUserUseCaseInterface
     ) {
         self.getNotesUseCase = getNotesUseCase
         self.setNoteLikeUseCase = setNoteLikeUseCase
@@ -47,6 +50,7 @@ final public class HomeViewModel {
         self.setBookmarkUseCase = setBookmarkUseCase
         self.deleteNoteUseCase = deleteNoteUseCase
         self.getHasUncheckedNotificationUseCase = getHasUncheckedNotificationUseCase
+        self.blockUserUseCase = blockUserUseCase
         self.checkFirstVisitorUseCase = checkFirstVisitorUseCase
     }
     
@@ -311,5 +315,29 @@ extension HomeViewModel {
                 }
             }
             .store(in: &cancellables)
+    }
+}
+
+// MARK: - Block user
+
+extension HomeViewModel {
+    func blockUser(id: Int) {
+        self.blockUserUseCase.execute(
+            shouldBlock: true,
+            userID: id
+        )
+        .receive(on: DispatchQueue.main)
+        .mapToResult()
+        .sink { [weak self] result in
+            switch result {
+            case .success(let success):
+                self?.fetchedNotes.removeAll(where: { $0.publisher.id == id })
+                self?.blockUserResult = .success
+                
+            case .failure(let error):
+                self?.blockUserResult = .failure(.userProfileError(error))
+            }
+        }
+        .store(in: &cancellables)
     }
 }

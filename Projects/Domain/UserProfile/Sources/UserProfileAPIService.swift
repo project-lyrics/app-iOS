@@ -50,4 +50,29 @@ public struct UserProfileAPIService: UserProfileAPIServiceInterface {
             .mapError(UserProfileError.init)
             .eraseToAnyPublisher()
     }
+    
+    public func postBlockUserProfile(userID: Int) -> AnyPublisher<FeelinSuccessResponse, UserProfileError> {
+        let endpoint = FeelinAPI<FeelinSuccessResponse>.postBlockUserProfile(userID: userID)
+        
+        return networkProvider.request(endpoint)
+            .mapError(UserProfileError.init)
+            .eraseToAnyPublisher()
+    }
+    
+    
+    public func deleteBlockUserProfile(userID: Int) -> AnyPublisher<FeelinSuccessResponse, UserProfileError> {
+        let endpoint = FeelinAPI<FeelinSuccessResponse>.deleteBlockUserProfile(userID: userID)
+        
+        return networkProvider.request(endpoint)
+            .mapError(UserProfileError.init)
+            .eraseToAnyPublisher()
+    }
+    
+    public func fetchBlockedUsers() -> AnyPublisher<[UserDTO], UserProfileError> {
+        let endpoint = FeelinAPI<[UserDTO]>.getBlockedUsers
+        
+        return networkProvider.request(endpoint)
+            .mapError(UserProfileError.init)
+            .eraseToAnyPublisher()
+    }
 }

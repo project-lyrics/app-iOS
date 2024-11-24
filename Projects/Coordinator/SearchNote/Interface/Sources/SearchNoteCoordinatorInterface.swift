@@ -41,6 +41,11 @@ public final class SearchNoteCoordinator: Coordinator {
             let networkProvider = try resolver.resolve(.networkProvider)
             return NoteAPIService(networkProvider: networkProvider)
         }
+        DIContainer.standard.register(.userProfileAPIService) { resolver in
+            let networkProvider = try resolver.resolve(.networkProvider)
+            
+            return UserProfileAPIService(networkProvider: networkProvider)
+        }
 
         DIContainer.registerReportNoteService()
     }
@@ -130,6 +135,7 @@ private extension SearchNoteCoordinator {
 
     func noteDetailDependencies(selectedNote: SearchedNote) -> NoteDetailViewModel {
         @Injected(.noteAPIService) var noteAPIService: NoteAPIServiceInterface
+        @Injected(.userProfileAPIService) var userProfileAPIService: UserProfileAPIServiceInterface
         let tokenStorage = TokenStorage()
         
         let getSongDetailUseCase = GetSongDetailUseCase(noteAPIService: noteAPIService)
@@ -146,6 +152,8 @@ private extension SearchNoteCoordinator {
         let deleteNoteUseCase = DeleteNoteUseCase(noteAPIService: noteAPIService)
         
         let logoutUseCase = LogoutUseCase(tokenStorage: tokenStorage)
+        
+        let blockUserUseCase = BlockUserUseCase(userProfileAPIService: userProfileAPIService)
 
         let viewModel = NoteDetailViewModel(
             songID: selectedNote.songID,
@@ -154,7 +162,8 @@ private extension SearchNoteCoordinator {
             setNoteLikeUseCase: setNoteLikeUseCase,
             setBookmarkUseCase: setBookmarkUseCase,
             deleteNoteUseCase: deleteNoteUseCase,
-            logoutUseCase: logoutUseCase
+            logoutUseCase: logoutUseCase,
+            blockUserUseCase: blockUserUseCase
         )
 
         return viewModel
@@ -181,6 +190,7 @@ private extension SearchNoteCoordinator {
 
         @Injected(.noteAPIService) var noteAPIService: NoteAPIServiceInterface
         @Injected(.commentAPIService) var commentAPIService: CommentAPIServiceInterface
+        @Injected(.userProfileAPIService) var userProfileAPIService: UserProfileAPIServiceInterface
         let tokenStorage = TokenStorage()
 
         let setNoteLikeUseCase = SetNoteLikeUseCase(noteAPIService: noteAPIService)
@@ -190,6 +200,7 @@ private extension SearchNoteCoordinator {
         let writeCommentUseCase = WriteCommentUseCase(commentAPIService: commentAPIService)
         let deleteCommentUseCase = DeleteCommentUseCase(commentAPIService: commentAPIService)
         let logoutUseCase = LogoutUseCase(tokenStorage: tokenStorage)
+        let blockUserUseCase = BlockUserUseCase(userProfileAPIService: userProfileAPIService)
 
         let viewModel = NoteCommentsViewModel(
             noteID: noteID,
@@ -199,7 +210,8 @@ private extension SearchNoteCoordinator {
             getNoteWithCommentsUseCase: getNoteWithCommentsUseCase,
             writeCommentUseCase: writeCommentUseCase,
             deleteCommentUseCase: deleteCommentUseCase, 
-            logoutUseCase: logoutUseCase
+            logoutUseCase: logoutUseCase,
+            blockUserUseCase: blockUserUseCase
         )
 
         return viewModel

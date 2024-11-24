@@ -18,6 +18,7 @@ final public class NoteDetailViewModel {
     @Published private (set) var logoutResult: LogoutResult = .none
     @Published private (set) var refreshState: RefreshState<NoteError> = .idle
     @Published private (set) var deleteNoteResult: DeleteNoteResult = .none
+    @Published private (set) var blockUserResult: BlockUserResult<CommunityError> = .none
 
     private var cancellables: Set<AnyCancellable> = .init()
     
@@ -29,6 +30,7 @@ final public class NoteDetailViewModel {
     private let setBookmarkUseCase: SetBookmarkUseCaseInterface
     private let deleteNoteUseCase: DeleteNoteUseCaseInterface
     private let logoutUseCase: LogoutUseCaseInterface
+    private let blockUserUseCase: BlockUserUseCaseInterface
     
     public init(
         songID: Int,
@@ -37,7 +39,8 @@ final public class NoteDetailViewModel {
         setNoteLikeUseCase: SetNoteLikeUseCaseInterface,
         setBookmarkUseCase: SetBookmarkUseCaseInterface,
         deleteNoteUseCase: DeleteNoteUseCaseInterface,
-        logoutUseCase: LogoutUseCaseInterface
+        logoutUseCase: LogoutUseCaseInterface,
+        blockUserUseCase: BlockUserUseCaseInterface
     ) {
         self.songID = songID
         self.getSongDetailUseCase = getSongDetailUseCase
@@ -46,6 +49,7 @@ final public class NoteDetailViewModel {
         self.setBookmarkUseCase = setBookmarkUseCase
         self.deleteNoteUseCase = deleteNoteUseCase
         self.logoutUseCase = logoutUseCase
+        self.blockUserUseCase = blockUserUseCase
         
         
         // mustHaveLyrics가 변경될 때 데이터를 새로 가져오는 로직
@@ -237,5 +241,29 @@ extension NoteDetailViewModel {
                 }
             }
             .store(in: &cancellables)
+    }
+}
+
+// MARK: - Block user
+
+extension NoteDetailViewModel {
+    func blockUser(id: Int) {
+        self.blockUserUseCase.execute(
+            shouldBlock: true,
+            userID: id
+        )
+        .receive(on: DispatchQueue.main)
+        .mapToResult()
+        .sink { [weak self] result in
+            switch result {
+            case .success(let success):
+                self?.fetchedNotes.removeAll(where: { $0.publisher.id == id })
+                self?.blockUserResult = .success
+                
+            case .failure(let error):
+                self?.blockUserResult = .failure(.userProfileError(error))
+            }
+        }
+        .store(in: &cancellables)
     }
 }

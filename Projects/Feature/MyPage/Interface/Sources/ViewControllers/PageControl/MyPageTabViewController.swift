@@ -49,6 +49,11 @@ public final class MyPageTabViewController: ButtonBarPagerTabStripViewController
         DIContainer.standard.register(.notePaginationService) { _ in
             return NotePaginationService()
         }
+        DIContainer.standard.register(.userProfileAPIService) { resolver in
+            let networkProvider = try resolver.resolve(.networkProvider)
+            
+            return UserProfileAPIService(networkProvider: networkProvider)
+        }
 
         changeCurrentIndexProgressive = { (oldCell: ButtonBarViewCell?, newCell: ButtonBarViewCell?, progressPercentage: CGFloat, changeCurrentIndex: Bool, animated: Bool) -> Void in
             guard changeCurrentIndex == true else { return }
@@ -153,6 +158,7 @@ private extension MyPageTabViewController {
 
     func bookmarkDependencies() -> BookmarkViewModel {
         @Injected(.noteAPIService) var noteAPIService: NoteAPIServiceInterface
+        @Injected(.userProfileAPIService) var userProfileAPIService: UserProfileAPIServiceInterface
         let notePaginationService: NotePaginationServiceInterface = NotePaginationService()
 
         let setNoteLikeUseCase = SetNoteLikeUseCase(noteAPIService: noteAPIService)
@@ -163,13 +169,15 @@ private extension MyPageTabViewController {
             noteAPIService: noteAPIService,
             notePaginationService: notePaginationService
         )
+        let blockUserUseCase = BlockUserUseCase(userProfileAPIService: userProfileAPIService)
 
         let viewModel = BookmarkViewModel(
             setNoteLikeUseCase: setNoteLikeUseCase,
             setBookmarkUseCase: setBookmarkUseCase,
             deleteNoteUseCase: deleteNoteUseCase,
             getFavoriteArtistsBookmarkedUseCase: getFavoriteArtistsBookmarkedUseCase,
-            getMyNotesByBookmarkUseCase: getMyNotesByBookmarkUseCase
+            getMyNotesByBookmarkUseCase: getMyNotesByBookmarkUseCase, 
+            blockUserUseCase: blockUserUseCase
         )
         return viewModel
     }

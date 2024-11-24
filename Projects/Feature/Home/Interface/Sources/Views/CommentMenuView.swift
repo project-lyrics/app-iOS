@@ -69,6 +69,16 @@ public final class CommentMenuView: UIView {
         return button
     }()
     
+    private (set) var blockUserButton: NoteMenuItemButton = {
+        let button = NoteMenuItemButton(
+            image: FeelinImages.prohibit,
+            description: "차단하기"
+        )
+        button.setBackgroundImage(Colors.gray01.image(), for: .highlighted)
+        
+        return button
+    }()
+    
     // MARK: - Layout
     
     public override func layoutSubviews() {
@@ -95,6 +105,10 @@ public final class CommentMenuView: UIView {
                 switch menuType {
                 case .other:
                     flex.addItem(reportButton)
+                        .height(50)
+                        .width(100%)
+                    
+                    flex.addItem(blockUserButton)
                         .height(50)
                         .width(100%)
                     

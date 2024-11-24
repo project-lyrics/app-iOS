@@ -41,12 +41,13 @@ public final class NoteCommentsViewController: UIViewController, CommentMenuHand
 
     // MARK: - Menu Subjects
     
-    public var onReportNote: PassthroughSubject<Int, Never> = .init()
-    public var onEditNote: PassthroughSubject<Note, Never> = .init()
-    public var onDeleteNote: PassthroughSubject<Int, Never> = .init()
-    
-    public var onReportComment: PassthroughSubject<Int, Never> = .init()
-    public var onDeleteComment: PassthroughSubject<Int, Never> = .init()
+    public let onReportNote: PassthroughSubject<Int, Never> = .init()
+    public let onEditNote: PassthroughSubject<Note, Never> = .init()
+    public let onDeleteNote: PassthroughSubject<Int, Never> = .init()
+    public let onBlockNotePublisher: PassthroughSubject<User, Never> = .init()
+    public let onReportComment: PassthroughSubject<Int, Never> = .init()
+    public let onDeleteComment: PassthroughSubject<Int, Never> = .init()
+    public let onBlockCommentPublisher: PassthroughSubject<User, Never> = .init()
     
     // MARK: - UI Components
     
@@ -410,6 +411,27 @@ private extension NoteCommentsViewController {
                 }
             }
             .store(in: &cancellables)
+        
+        viewModel.$blockUserResult
+            .sink { [weak self] result in
+                switch result {
+                case .success:
+                    self?.showBlockPublisherResultAlert(onConfirm: {
+                        self?.coordinator?.popViewController()
+                    })
+                    
+                case .failure(let error):
+                    self?.coordinator?.handleError(
+                        errorCode: error.errorCode,
+                        errorMessage: error.userMessage,
+                        errorData: error.data
+                    )
+                    
+                default:
+                    return
+                }
+            }
+            .store(in: &cancellables)
     }
     
     func bindAction() {
@@ -463,6 +485,22 @@ private extension NoteCommentsViewController {
                     rightActionCompletion: {
                         self?.viewModel.deleteNote(id: noteID)
                     })
+            }
+            .store(in: &cancellables)
+        
+        onBlockNotePublisher.eraseToAnyPublisher()
+            .sink { [weak self] publisher in
+                self?.showBlockPublisherAlert(onConfirm: {
+                    self?.viewModel.blockUser(id: publisher.id)
+                })
+            }
+            .store(in: &cancellables)
+        
+        onBlockCommentPublisher.eraseToAnyPublisher()
+            .sink { [weak self] publisher in
+                self?.showBlockPublisherAlert(onConfirm: {
+                    self?.viewModel.blockUser(id: publisher.id)
+                })
             }
             .store(in: &cancellables)
         

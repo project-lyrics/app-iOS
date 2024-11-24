@@ -19,6 +19,7 @@ public class NoteMenuViewConroller: BottomSheetViewController<NoteMenuView> {
     private var onReport: PassthroughSubject<Int, Never>
     private var onEdit: PassthroughSubject<Note, Never>
     private var onDelete: PassthroughSubject<Int, Never>
+    private var onBlockNotePublisher: PassthroughSubject<User, Never>
     
     public init(
         note: Note,
@@ -26,12 +27,14 @@ public class NoteMenuViewConroller: BottomSheetViewController<NoteMenuView> {
         bottomSheetView: NoteMenuView,
         onReport: PassthroughSubject<Int, Never>,
         onEdit: PassthroughSubject<Note, Never>,
-        onDelete: PassthroughSubject<Int, Never>
+        onDelete: PassthroughSubject<Int, Never>,
+        onBlockNotePublisher: PassthroughSubject<User, Never>
     ) {
         self.note = note
         self.onReport = onReport
         self.onEdit = onEdit
         self.onDelete = onDelete
+        self.onBlockNotePublisher = onBlockNotePublisher
         
         super.init(
             bottomSheetHeight: bottomSheetHeight,
@@ -72,6 +75,15 @@ public class NoteMenuViewConroller: BottomSheetViewController<NoteMenuView> {
                 self.onDelete.send(note.id)
             }
             .store(in: &cancellable)
+        
+        bottomSheetView.blockUserButton.publisher(for: .touchUpInside)
+            .flatMap({ [unowned self] _ -> AnyPublisher<Void, Never> in
+                return self.dismissPublisher(animated: true)
+            })
+            .sink { [note, unowned self] _ in
+                self.onBlockNotePublisher.send(note.publisher)
+            }
+            .store(in: &cancellable)
     }
 }
 
@@ -87,7 +99,8 @@ struct NoteMenuViewConroller_Preview: PreviewProvider {
             frame: .zero),
             onReport: .init(),
             onEdit: .init(),
-            onDelete: .init()
+            onDelete: .init(),
+            onBlockNotePublisher: .init()
         )
         .asPreview()
     }

@@ -15,4 +15,7 @@ public protocol UserProfileAPIServiceInterface {
     func patchUserProfile(requestValue: UserProfileRequestValue) -> AnyPublisher<FeelinSuccessResponse, UserProfileError>
     func deleteUser() -> AnyPublisher<FeelinDefaultResponse, UserProfileError>
     func checkFirstVisitor() -> AnyPublisher<FirstVisitorResponse, UserProfileError>
+    func postBlockUserProfile(userID: Int) -> AnyPublisher<FeelinSuccessResponse, UserProfileError>
+    func deleteBlockUserProfile(userID: Int) -> AnyPublisher<FeelinSuccessResponse, UserProfileError>
+    func fetchBlockedUsers() -> AnyPublisher<[UserDTO], UserProfileError>
 }

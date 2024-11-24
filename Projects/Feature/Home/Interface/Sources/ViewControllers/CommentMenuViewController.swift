@@ -5,29 +5,33 @@
 //  Created by 황인우 on 9/10/24.
 //
 
+import Domain
 import Shared
 
 import Combine
 import UIKit
 
 public class CommentMenuViewConroller: BottomSheetViewController<CommentMenuView> {
-    private let commentID: Int
+    private let comment: Comment
     
     private var cancellable: Set<AnyCancellable> = .init()
     
     private var onReport: PassthroughSubject<Int, Never>
     private var onDelete: PassthroughSubject<Int, Never>
+    private var onBlockPublisher: PassthroughSubject<User, Never>
     
     public init(
-        commentID: Int,
+        comment: Comment,
         bottomSheetHeight: CGFloat = 130,
         bottomSheetView: CommentMenuView,
         onReport: PassthroughSubject<Int, Never>,
-        onDelete: PassthroughSubject<Int, Never>
+        onDelete: PassthroughSubject<Int, Never>,
+        onBlockPublisher: PassthroughSubject<User, Never>
     ) {
-        self.commentID = commentID
+        self.comment = comment
         self.onReport = onReport
         self.onDelete = onDelete
+        self.onBlockPublisher = onBlockPublisher
         
         super.init(
             bottomSheetHeight: bottomSheetHeight,
@@ -46,8 +50,8 @@ public class CommentMenuViewConroller: BottomSheetViewController<CommentMenuView
             .flatMap({ [unowned self] _ -> AnyPublisher<Void, Never> in
                 return self.dismissPublisher(animated: true)
             })
-            .sink { [commentID, unowned self] _ in
-                self.onReport.send(commentID)
+            .sink { [comment, unowned self] _ in
+                self.onReport.send(comment.id)
             }
             .store(in: &cancellable)
         
@@ -55,8 +59,17 @@ public class CommentMenuViewConroller: BottomSheetViewController<CommentMenuView
             .flatMap({ [unowned self] _ -> AnyPublisher<Void, Never> in
                 return self.dismissPublisher(animated: true)
             })
-            .sink { [commentID, unowned self] _ in
-                self.onDelete.send(commentID)
+            .sink { [comment, unowned self] _ in
+                self.onDelete.send(comment.id)
+            }
+            .store(in: &cancellable)
+        
+        bottomSheetView.blockUserButton.publisher(for: .touchUpInside)
+            .flatMap({ [unowned self] _ -> AnyPublisher<Void, Never> in
+                return self.dismissPublisher(animated: true)
+            })
+            .sink { [comment, unowned self] _ in
+                self.onBlockPublisher.send(comment.writer)
             }
             .store(in: &cancellable)
     }

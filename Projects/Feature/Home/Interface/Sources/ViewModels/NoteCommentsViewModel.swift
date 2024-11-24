@@ -18,6 +18,7 @@ public final class NoteCommentsViewModel {
     @Published private (set) var commentsCount = 0
     @Published private (set) var logoutResult: LogoutResult = .none
     @Published private (set) var deleteNoteResult: DeleteNoteResult = .none
+    @Published private (set) var blockUserResult: BlockUserResult<UserProfileError> = .none
 
     private var cancellables: Set<AnyCancellable> = .init()
     private let noteID: Int
@@ -28,6 +29,7 @@ public final class NoteCommentsViewModel {
     private let writeCommentUseCase: WriteCommentUseCaseInterface
     private let deleteCommentUseCase: DeleteCommentUseCaseInterface
     private let logoutUseCase: LogoutUseCaseInterface
+    private let blockUserUseCase: BlockUserUseCaseInterface
     
     public init(
         noteID: Int,
@@ -37,7 +39,8 @@ public final class NoteCommentsViewModel {
         getNoteWithCommentsUseCase: GetNoteWithCommentsUseCaseInterface,
         writeCommentUseCase: WriteCommentUseCaseInterface,
         deleteCommentUseCase: DeleteCommentUseCaseInterface,
-        logoutUseCase: LogoutUseCaseInterface
+        logoutUseCase: LogoutUseCaseInterface,
+        blockUserUseCase: BlockUserUseCaseInterface
     ) {
         self.noteID = noteID
         self.setNoteLikeUseCase = setNoteLikeUseCase
@@ -47,6 +50,7 @@ public final class NoteCommentsViewModel {
         self.writeCommentUseCase = writeCommentUseCase
         self.deleteCommentUseCase = deleteCommentUseCase
         self.logoutUseCase = logoutUseCase
+        self.blockUserUseCase = blockUserUseCase
     }
     
     func fetchNoteWithComments() {
@@ -254,5 +258,28 @@ extension NoteCommentsViewModel {
                 }
             }
             .store(in: &cancellables)
+    }
+}
+
+// MARK: - Block User
+
+extension NoteCommentsViewModel {
+    func blockUser(id: Int) {
+        self.blockUserUseCase.execute(
+            shouldBlock: true,
+            userID: id
+        )
+        .receive(on: DispatchQueue.main)
+        .mapToResult()
+        .sink { [weak self] result in
+            switch result {
+            case .success(let success):
+                self?.blockUserResult = .success
+                
+            case .failure(let error):
+                self?.blockUserResult = .failure(error)
+            }
+        }
+        .store(in: &cancellables)
     }
 }

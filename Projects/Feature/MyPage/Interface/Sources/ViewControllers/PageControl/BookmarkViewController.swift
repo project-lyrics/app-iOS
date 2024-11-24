@@ -47,6 +47,7 @@ public final class BookmarkViewController: UIViewController,
     public let onReportNote: PassthroughSubject<Int, Never> = .init()
     public let onEditNote: PassthroughSubject<Note, Never> = .init()
     public let onDeleteNote: PassthroughSubject<Int, Never> = .init()
+    public let onBlockNotePublisher: PassthroughSubject<User, Never> = .init()
 
     // MARK: - Diffable DataSource
 
@@ -142,6 +143,25 @@ public final class BookmarkViewController: UIViewController,
                 }
             })
             .store(in: &cancellables)
+        
+        viewModel.$blockUserResult
+            .sink { [weak self] result in
+                switch result {
+                case .success:
+                    self?.showBlockPublisherResultAlert()
+                    
+                case .failure(let error):
+                    self?.coordinator?.handleError(
+                        errorCode: error.errorCode,
+                        errorMessage: error.userMessage,
+                        errorData: error.data
+                    )
+                    
+                default:
+                    break
+                }
+            }
+            .store(in: &cancellables)
     }
 
     func bindAction() {
@@ -161,6 +181,14 @@ public final class BookmarkViewController: UIViewController,
             .sink { [weak self] noteID in
                 self?.coordinator?.presentDeleteNoteAlert({
                     self?.viewModel.deleteNote(id: noteID)
+                })
+            }
+            .store(in: &cancellables)
+        
+        onBlockNotePublisher.eraseToAnyPublisher()
+            .sink { [weak self] publisher in
+                self?.showBlockPublisherAlert(onConfirm: {
+                    self?.viewModel.blockUser(id: publisher.id)
                 })
             }
             .store(in: &cancellables)
