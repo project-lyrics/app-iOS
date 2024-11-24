@@ -143,20 +143,26 @@ public extension Project {
         public static func appInfoPlist(deploymentTarget: ProjectDeploymentTarget) -> InfoPlist {
             var kakaoNativeAppKey: String = ""
             var baseServerURL: String = ""
+            var displayName: String = ""
+            
             switch deploymentTarget {
             case .dev:
                 kakaoNativeAppKey = "${KAKAO_NATIVE_APP_KEY_DEV}"
                 baseServerURL = "${BASE_SERVER_URL_DEV}"
+                displayName = "\(Environment.appName)-\(deploymentTarget.rawValue)"
             case .qa:
                 kakaoNativeAppKey =  "${KAKAO_NATIVE_APP_KEY_QA}"
                 baseServerURL = "${BASE_SERVER_URL_QA}"
+                displayName = "\(Environment.appName)-\(deploymentTarget.rawValue)"
             case .prod:
                 kakaoNativeAppKey =  "${KAKAO_NATIVE_APP_KEY_PROD}"
                 baseServerURL = "${BASE_SERVER_URL_PROD}"
+                displayName = Environment.appName
             }
             
             return .extendingDefault(with: [
                 "CFBundleShortVersionString": "\(currentAppVersion)",
+                "CFBundleDisplayName": "\(displayName)",
                 "CFBundleVersion": "1",
                 "UILaunchStoryboardName": "LaunchScreen",
                 "NSAppTransportSecurity": ["NSAllowsArbitraryLoads": true],
