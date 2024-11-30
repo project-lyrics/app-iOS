@@ -9,6 +9,7 @@ import Foundation
 
 public enum ServiceInfoRow: CaseIterable, Hashable {
     case userInfo
+    case blockedUsers
     case serviceUsage
     case personalInfo
     case serviceInquiry
@@ -17,6 +18,8 @@ public enum ServiceInfoRow: CaseIterable, Hashable {
         switch self {
         case .userInfo:
             return "회원 정보"
+        case .blockedUsers:
+            return "차단된 유저 관리"
         case .serviceUsage:
             return "서비스 이용 약관"
         case .personalInfo:
@@ -31,9 +34,6 @@ public enum ServiceInfoRow: CaseIterable, Hashable {
 
     public var url: String {
         switch self {
-        case .userInfo:
-            return ""
-
         case .serviceUsage:
             return "https://www.notion.so/Feelin-424aa52fb951444fa95f3966672ec670?pvs=4"
 
@@ -42,6 +42,8 @@ public enum ServiceInfoRow: CaseIterable, Hashable {
 
         case .serviceInquiry:
             return "https://docs.google.com/forms/d/1ottTpPuoiDfQnZaMYwwi75WXdEInq6KHN8jY4L9Qc00/edit"
+        default:
+            return ""
         }
     }
 }

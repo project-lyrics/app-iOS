@@ -159,7 +159,7 @@ public struct FeelinAPIError: LocalizedError, Equatable {
                 return "최신 버전의 앱이 있어요."
                 
             case .duplicatedLogin:
-                return "타 기기에서 로그인했거나\n 등록되지 않은 기기입니다."
+                return "다른 기기에서 로그인되어\n자동으로 로그아웃 되었어요."
                 
             case .authInfoNotFound:
                 return "장기간 서비스를 이용하지 않아\n로그인 정보가 만료되었어요."

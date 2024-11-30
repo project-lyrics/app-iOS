@@ -84,7 +84,8 @@ extension MyPageCoordinator: MyPageViewControllerDelegate,
                              InternalWebViewControllerDelegate,
                              DeleteUserViewControllerDelegate,
                              UserProfileViewControllerDelegate,
-                             UserLinkedWebViewControllerDelegate {
+                             UserLinkedWebViewControllerDelegate,
+                             BlockedUsersViewControllerDelegate {
     public func didFinish() {
         didFinish(childCoordinator: self)
     }
@@ -194,6 +195,13 @@ extension MyPageCoordinator: MyPageViewControllerDelegate,
         viewController.coordinator = self
         navigationController.pushViewController(viewController, animated: true)
     }
+    
+    public func pushBlockedUsersViewController() {
+        let viewModel = blockedUsersDependencies()
+        let viewController = BlockedUsersViewController(viewModel: viewModel)
+        viewController.coordinator = self
+        navigationController.pushViewController(viewController, animated: true)
+    }
 
     public func pushEditUserInfoViewController(model: UserProfile) {
         let viewModel = editUserDependencies(model: model)
@@ -216,6 +224,7 @@ private extension MyPageCoordinator {
         @Injected(.noteAPIService) var noteAPIService: NoteAPIServiceInterface
         @Injected(.commentAPIService) var commentAPIService: CommentAPIServiceInterface
         let tokenStorage = TokenStorage()
+        @Injected(.userProfileAPIService) var userProfileAPIService: UserProfileAPIServiceInterface
 
         let setNoteLikeUseCase = SetNoteLikeUseCase(noteAPIService: noteAPIService)
         let setBookmarkUseCase = SetBookmarkUseCase(noteAPIService: noteAPIService)
@@ -224,6 +233,7 @@ private extension MyPageCoordinator {
         let writeCommentUseCase = WriteCommentUseCase(commentAPIService: commentAPIService)
         let deleteCommentUseCase = DeleteCommentUseCase(commentAPIService: commentAPIService)
         let logoutUseCase = LogoutUseCase(tokenStorage: tokenStorage)
+        let blockUserUseCase = BlockUserUseCase(userProfileAPIService: userProfileAPIService)
 
         let viewModel = NoteCommentsViewModel(
             noteID: noteID,
@@ -233,7 +243,8 @@ private extension MyPageCoordinator {
             getNoteWithCommentsUseCase: getNoteWithCommentsUseCase,
             writeCommentUseCase: writeCommentUseCase,
             deleteCommentUseCase: deleteCommentUseCase, 
-            logoutUseCase: logoutUseCase
+            logoutUseCase: logoutUseCase,
+            blockUserUseCase: blockUserUseCase
         )
 
         return viewModel
@@ -353,6 +364,20 @@ private extension MyPageCoordinator {
             artistID: artistID
         )
 
+        return viewModel
+    }
+    
+    func blockedUsersDependencies() -> BlockedUsersViewModel {
+        @Injected(.userProfileAPIService) var userProfileAPIService: UserProfileAPIServiceInterface
+        
+        let blockUserUseCase = BlockUserUseCase(userProfileAPIService: userProfileAPIService)
+        let fetchBlockedUsersUseCase = FetchBlockedUsersUseCase(userProfileAPIService: userProfileAPIService)
+        
+        let viewModel = BlockedUsersViewModel(
+            blockUserUseCase: blockUserUseCase,
+            fetchBlockedUsersUseCase: fetchBlockedUsersUseCase
+        )
+        
         return viewModel
     }
 }

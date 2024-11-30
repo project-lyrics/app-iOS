@@ -77,6 +77,12 @@ public final class HomeCoordinator: Coordinator {
 
             return NotificationAPIService(networkProvider: networkProvider)
         }
+        
+        DIContainer.standard.register(.userProfileAPIService) { resolver in
+            let networkProvider = try resolver.resolve(.networkProvider)
+            
+            return UserProfileAPIService(networkProvider: networkProvider)
+        }
 
         DIContainer.registerUserProfileService()
     }
@@ -279,6 +285,7 @@ extension HomeCoordinator {
         let deleteNoteUseCase = DeleteNoteUseCase(noteAPIService: noteAPIService)
         let getHasUncheckedNotificationUseCase = GetHasUncheckedNotificationUseCase(notificationAPIService: notificationAPIService)
         let checkFirstVisitorUseCase = CheckFirstVisitorUseCase(userProfileAPIService: userProfileAPIService)
+        let blockUserUseCase = BlockUserUseCase(userProfileAPIService: userProfileAPIService)
 
         let viewModel =  HomeViewModel(
             getNotesUseCase: getNoteUseCase,
@@ -287,7 +294,8 @@ extension HomeCoordinator {
             setBookmarkUseCase: setBookmarkUseCase,
             deleteNoteUseCase: deleteNoteUseCase,
             getHasUncheckedNotificationUseCase: getHasUncheckedNotificationUseCase,
-            checkFirstVisitorUseCase: checkFirstVisitorUseCase
+            checkFirstVisitorUseCase: checkFirstVisitorUseCase,
+            blockUserUseCase: blockUserUseCase
         )
 
         return viewModel
@@ -348,6 +356,7 @@ extension HomeCoordinator {
 
         @Injected(.noteAPIService) var noteAPIService: NoteAPIServiceInterface
         @Injected(.commentAPIService) var commentAPIService: CommentAPIServiceInterface
+        @Injected(.userProfileAPIService) var userProfileAPIService: UserProfileAPIServiceInterface
         let tokenStorage = TokenStorage()
 
         let setNoteLikeUseCase = SetNoteLikeUseCase(noteAPIService: noteAPIService)
@@ -357,6 +366,7 @@ extension HomeCoordinator {
         let writeCommentUseCase = WriteCommentUseCase(commentAPIService: commentAPIService)
         let deleteCommentUseCase = DeleteCommentUseCase(commentAPIService: commentAPIService)
         let logoutUseCase = LogoutUseCase(tokenStorage: tokenStorage)
+        let blockUserUseCase = BlockUserUseCase(userProfileAPIService: userProfileAPIService)
 
         let viewModel = NoteCommentsViewModel(
             noteID: noteID,
@@ -366,7 +376,8 @@ extension HomeCoordinator {
             getNoteWithCommentsUseCase: getNoteWithCommentsUseCase,
             writeCommentUseCase: writeCommentUseCase,
             deleteCommentUseCase: deleteCommentUseCase, 
-            logoutUseCase: logoutUseCase
+            logoutUseCase: logoutUseCase,
+            blockUserUseCase: blockUserUseCase
         )
 
         return viewModel
@@ -377,6 +388,7 @@ extension HomeCoordinator {
         @Injected(.notePaginationService) var notePaginationService: NotePaginationServiceInterface
         @Injected(.artistAPIService) var artistAPIService: ArtistAPIServiceInterface
         @Injected(.notificationAPIService) var notificationAPIService: NotificationAPIServiceInterface
+        @Injected(.userProfileAPIService) var userProfileAPIService: UserProfileAPIServiceInterface
         let tokenStorage = TokenStorage()
         
         let getArtistUseCase = GetArtistUseCase(artistAPIService: artistAPIService)
@@ -390,6 +402,7 @@ extension HomeCoordinator {
         let setFavoriteArtistUseCase = SetFavoriteArtistUseCase(artistAPIService: artistAPIService)
         let getHasUncheckedNotificationUseCase = GetHasUncheckedNotificationUseCase(notificationAPIService: notificationAPIService)
         let logoutUseCase = LogoutUseCase(tokenStorage: tokenStorage)
+        let blockUserUseCase = BlockUserUseCase(userProfileAPIService: userProfileAPIService)
 
         let viewModel = CommunityMainViewModel(
             artistID: artistID,
@@ -400,7 +413,8 @@ extension HomeCoordinator {
             deleteNoteUseCase: deleteNoteUseCase,
             setFavoriteArtistUseCase: setFavoriteArtistUseCase,
             getHasUncheckedNotificationUseCase: getHasUncheckedNotificationUseCase, 
-            logoutUseCase: logoutUseCase
+            logoutUseCase: logoutUseCase,
+            blockUserUseCase: blockUserUseCase
         )
         return viewModel
     }

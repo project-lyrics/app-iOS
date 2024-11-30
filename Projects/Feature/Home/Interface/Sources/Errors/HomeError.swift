@@ -10,9 +10,10 @@ import Shared
 
 import Foundation
 
-public enum HomeError: LocalizedError {
+public enum HomeError: LocalizedError, Equatable {
     case noteError(NoteError)
     case artistError(ArtistError)
+    case userProfileError(UserProfileError)
     case unknownError(description: String)
     
     public init(error: Error) {
@@ -20,6 +21,8 @@ public enum HomeError: LocalizedError {
             self = .artistError(artistError)
         } else if let noteError = error as? NoteError {
             self = .noteError(noteError)
+        } else if let userProfileError = error as? UserProfileError {
+            self = .userProfileError(userProfileError)
         } else {
             self = .unknownError(description: error.localizedDescription)
         }
@@ -32,6 +35,9 @@ public enum HomeError: LocalizedError {
             
         case .artistError(let artistError):
             return artistError.errorMessage + "에러코드: \(artistError.errorCode ?? "nil")"
+            
+        case .userProfileError(let userProfileError):
+            return userProfileError.errorMessage + "에러코드: \(userProfileError.errorCode ?? "nil")"
             
         case .unknownError(let description):
             return description
@@ -50,6 +56,9 @@ public enum HomeError: LocalizedError {
         case .artistError(let artistError):
             return artistError.userMessage
             
+        case .userProfileError(let userProfileError):
+            return userProfileError.userMessage
+            
         case .unknownError(let unknownError):
             return unknownError
         }
@@ -62,6 +71,9 @@ public enum HomeError: LocalizedError {
         
         case .artistError(let artistError):
             return artistError.data
+            
+        case .userProfileError(let userProfileError):
+            return userProfileError.data
         
         default:
             return nil
@@ -74,6 +86,8 @@ public enum HomeError: LocalizedError {
             return noteError.errorCode
         case .artistError(let artistError):
             return artistError.errorCode
+        case .userProfileError(let userProfileError):
+            return userProfileError.errorCode
         case .unknownError:
             return nil
         }

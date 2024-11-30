@@ -15,6 +15,7 @@ public protocol CommentMenuHandling where Self: UIViewController {
     var userInfo: UserInformation? { get }
     var onReportComment: PassthroughSubject<Int, Never> { get }
     var onDeleteComment: PassthroughSubject<Int, Never> { get }
+    var onBlockCommentPublisher: PassthroughSubject<User, Never> { get }
     
     func makeCommentMenuViewController(checking comment: Comment) -> CommentMenuViewConroller?
 }
@@ -22,15 +23,19 @@ public protocol CommentMenuHandling where Self: UIViewController {
 public extension CommentMenuHandling {
     func makeCommentMenuViewController(checking comment: Comment) -> CommentMenuViewConroller? {
         if let userId = self.userInfo?.userID {
+            let bottomSheetHeight: CGFloat = userId == comment.id ? 130 : 180
+            
             let menuType = userId == comment.writer.id
             ? CommentMenuType.me
             : CommentMenuType.other
             
             let commentMenuViewController = CommentMenuViewConroller(
-                commentID: comment.id,
+                comment: comment,
+                bottomSheetHeight: bottomSheetHeight,
                 bottomSheetView: CommentMenuView(menuType: menuType),
                 onReport: self.onReportComment,
-                onDelete: self.onDeleteComment
+                onDelete: self.onDeleteComment,
+                onBlockPublisher: self.onBlockCommentPublisher
             )
             commentMenuViewController.modalPresentationStyle = .overFullScreen
             

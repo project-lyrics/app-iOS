@@ -14,6 +14,7 @@ public enum CommunityError: LocalizedError, Equatable {
     case noteError(NoteError)
     case artistError(ArtistError)
     case feelinAPIError(FeelinAPIError)
+    case userProfileError(UserProfileError)
     case unknownError(description: String)
     
     public init(error: Error) {
@@ -29,7 +30,13 @@ public enum CommunityError: LocalizedError, Equatable {
             } else {
                 self = .noteError(noteError)
             }
-        } else {
+        } else if let userProfileError = error as? UserProfileError {
+            if case let .feelinAPIError(feelinAPIError) = userProfileError {
+                self = .feelinAPIError(feelinAPIError)
+            } else {
+                self = .userProfileError(userProfileError)
+            }
+        }else {
             self = .unknownError(description: error.localizedDescription)
         }
     }
@@ -41,6 +48,9 @@ public enum CommunityError: LocalizedError, Equatable {
             
         case .artistError(let artistError):
             return artistError.errorMessage
+            
+        case .userProfileError(let userProfileError):
+            return userProfileError.errorMessage
             
         case .feelinAPIError(let feelinAPIError):
             return feelinAPIError.errorMessage
@@ -60,6 +70,8 @@ public enum CommunityError: LocalizedError, Equatable {
             return noteError.errorCode
         case .artistError(let artistError):
             return artistError.errorCode
+        case .userProfileError(let userProfileError):
+            return userProfileError.errorCode
         case .feelinAPIError(let feelinAPiError):
             return feelinAPiError.errorCode
         case .unknownError:

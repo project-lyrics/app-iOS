@@ -1,54 +1,49 @@
 //
-//  EmptyNotificationCell.swift
-//  FeatureHomeInterface
+//  EmptyBlockedUserCell.swift
+//  FeatureMyPageInterface
 //
-//  Created by 황인우 on 9/29/24.
+//  Created by 황인우 on 11/23/24.
 //
-
-import Shared
 
 import UIKit
 
-class EmptyNotificationCell: UICollectionViewCell, Reusable {
-    
-    // MARK: - UI
-    
+import FlexLayout
+import PinLayout
+import Shared
+
+class EmptyBlockedUserCell: UICollectionViewCell, Reusable {
     private let flexContainer = UIView()
-    
+
     private var titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "새로운 알림이 없어요"
+        label.text = "차단된 유저가 없어요"
         label.font = SharedDesignSystemFontFamily.Pretendard.medium.font(size: 14)
         label.textColor = Colors.gray04
-        
+
         return label
     }()
-    
-    // MARK: - Init
-    
-    override init(frame: CGRect) {
+
+    public override init(frame: CGRect) {
         super.init(frame: frame)
         self.setUpLayout()
     }
-    
+
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         super.init(coder: coder)
     }
-    
-    // MARK: - Layout
-    
-    override func layoutSubviews() {
+
+    public override func layoutSubviews() {
         super.layoutSubviews()
-        
+
         flexContainer.pin.all()
         flexContainer.flex.layout()
     }
-    
+
     private func setUpLayout() {
         contentView.addSubview(flexContainer)
         contentView.backgroundColor = Colors.background
-        
+
         flexContainer.flex
             .justifyContent(.center)
             .alignItems(.center)

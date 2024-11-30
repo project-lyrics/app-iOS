@@ -124,7 +124,7 @@ final class SettingView: UIView {
 
                 flex.addItem(tableView)
                     .marginTop(40)
-                    .height(240)
+                    .minHeight(240)
 
                 flex.addItem()
                     .marginHorizontal(20)

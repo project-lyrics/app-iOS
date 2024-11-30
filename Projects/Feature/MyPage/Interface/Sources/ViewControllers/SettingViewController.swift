@@ -15,6 +15,7 @@ public protocol SettingViewControllerDelegate: AnyObject {
     func pushUserInfoViewController()
     func presentInternalWebViewController(url: String)
     func pushDeleteUserViewController()
+    func pushBlockedUsersViewController()
     func didFinish()
     func handleError(
         errorCode: String?,
@@ -32,6 +33,10 @@ public final class SettingViewController: UIViewController {
 
     @KeychainWrapper<UserInformation>(.userInfo)
     var userInfo
+    
+    private var isLoggedIn: Bool {
+        return userInfo != nil
+    }
 
     // MARK: - Diffable DataSource
 
@@ -175,8 +180,18 @@ public final class SettingViewController: UIViewController {
     }
 
     private func updateSettingInfoTableView(with data: [ServiceInfoRow]) {
-        let userInfoSectionData = [data[0]]
-        let serviceInfoData = data[1...].map { $0 }
+        var userInfoSectionData: [ServiceInfoRow] = []
+        var serviceInfoData: [ServiceInfoRow] = []
+        
+        if isLoggedIn {
+            // 로그인 된 상황인 경우 해당 섹션에서는 총 두개 아이템: 회원 정보, 차단된 유저 관리
+            userInfoSectionData = data[0...1].map { $0 }
+            serviceInfoData = data[2...].map { $0 }
+        } else {
+            // 로그인하지 않은 유저인 경우 해당 섹션에는 총 한개 아이템: 로그인, 차단된 유저 관리 cell은 무시
+            userInfoSectionData = [data[0]]
+            serviceInfoData = data[2...].map { $0 }
+        }
 
         var snapshot = SettingListSnapshot()
         snapshot.appendSections([.userInfo, .serviceInfo])
@@ -224,11 +239,13 @@ extension SettingViewController: UITableViewDelegate {
 
         switch item {
         case .userInfo:
-            if userInfo != nil {
+            if isLoggedIn {
                 coordinator?.pushUserInfoViewController()
             } else {
                 coordinator?.didFinish()
             }
+        case .blockedUsers:
+            coordinator?.pushBlockedUsersViewController()
 
         case .serviceUsage,
                 .personalInfo:

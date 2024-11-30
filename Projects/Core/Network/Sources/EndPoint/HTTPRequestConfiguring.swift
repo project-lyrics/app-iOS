@@ -39,6 +39,21 @@ public extension HTTPRequestConfiguring {
         }
         
         urlRequest.httpMethod = httpMethod.rawValue
+        
+        // Request 디버깅 필요시 주석 해제하여 사용
+//        AppLogger.log(tag: .network, """
+//               🌐 HTTP Request
+//               [\(httpMethod.rawValue)] \(url.absoluteString)
+//               
+//               📋 Headers:
+//               \(headers?.description ?? "없음")
+//               
+//               📦 Query Parameters:
+//               \(urlComponent.queryItems?.description ?? "없음")
+//               
+//               📝 Body:
+//               \(String(data: urlRequest.httpBody ?? Data(), encoding: .utf8) ?? "없음")
+//               """)
 
         return urlRequest
     }

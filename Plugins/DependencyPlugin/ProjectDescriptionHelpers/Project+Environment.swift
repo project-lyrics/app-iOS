@@ -11,7 +11,7 @@ import ProjectDescription
 // 두 번째 자리1은 기능 리뉴얼과 기능 중규모 업데이트
 // 세 번째 자리는 자잘한 디버깅 및 소소한 수정 업데이트
 
-private let currentAppVersion: String = "0.0.1"
+private let currentAppVersion: String = "1.0.0"
 
 public extension Project {
     enum Environment {
@@ -94,7 +94,7 @@ public extension Project {
             trackingDomains: [],
             collectedDataTypes: [
                 [
-                    "NSPrivacyCollectedDataType": "User ID",
+                    "NSPrivacyCollectedDataType": "NSPrivacyCollectedDataTypeUserID",
                     "NSPrivacyCollectedDataTypeLinked": true,
                     "NSPrivacyCollectedDataTypeTracking": false,
                     "NSPrivacyCollectedDataTypePurposes": [
@@ -102,7 +102,7 @@ public extension Project {
                     ],
                 ],
                 [
-                    "NSPrivacyCollectedDataType": "Device ID",
+                    "NSPrivacyCollectedDataType": "NSPrivacyCollectedDataTypeDeviceID",
                     "NSPrivacyCollectedDataTypeLinked": true,
                     "NSPrivacyCollectedDataTypeTracking": false,
                     "NSPrivacyCollectedDataTypePurposes": [
@@ -110,9 +110,9 @@ public extension Project {
                     ],
                 ],
                 [
-                    "NSPrivacyCollectedDataType": "Customer support",
+                    "NSPrivacyCollectedDataType": "NSPrivacyCollectedDataTypeCustomerSupport",
                     "NSPrivacyCollectedDataTypeLinked": true,
-                    "NSPrivacyCollectedDataTypeTracking": true,
+                    "NSPrivacyCollectedDataTypeTracking": false,
                     "NSPrivacyCollectedDataTypePurposes": [
                         "NSPrivacyCollectedDataTypeCustomerSupport",
                     ],
@@ -122,11 +122,11 @@ public extension Project {
                     ],
                 ],
                 [
-                    "NSPrivacyCollectedDataType": "Emails or text messages",
+                    "NSPrivacyCollectedDataType": "NSPrivacyCollectedDataTypeOtherUserContent",
                     "NSPrivacyCollectedDataTypeLinked": true,
-                    "NSPrivacyCollectedDataTypeTracking": true,
+                    "NSPrivacyCollectedDataTypeTracking": false,
                     "NSPrivacyCollectedDataTypePurposes": [
-                        "NSPrivacyCollectedDataTypeCustomerSupport",
+                        "NSPrivacyCollectedDataTypeOtherUserContent",
                     ],
                 ],
             ],
@@ -134,8 +134,7 @@ public extension Project {
                 [
                     "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryUserDefaults",
                     "NSPrivacyAccessedAPITypeReasons": [
-                        "User Defaults - CA92.1: Access info from same app, per documentation",
-                        "User Defaults - 1C8F.1: Used to read and write app-specific information that is exclusively accessible within an App Clip environment",
+                        "CA92.1",
                     ],
                 ],
             ]
@@ -144,20 +143,26 @@ public extension Project {
         public static func appInfoPlist(deploymentTarget: ProjectDeploymentTarget) -> InfoPlist {
             var kakaoNativeAppKey: String = ""
             var baseServerURL: String = ""
+            var displayName: String = ""
+            
             switch deploymentTarget {
             case .dev:
                 kakaoNativeAppKey = "${KAKAO_NATIVE_APP_KEY_DEV}"
                 baseServerURL = "${BASE_SERVER_URL_DEV}"
+                displayName = "\(Environment.appName)-\(deploymentTarget.rawValue)"
             case .qa:
                 kakaoNativeAppKey =  "${KAKAO_NATIVE_APP_KEY_QA}"
                 baseServerURL = "${BASE_SERVER_URL_QA}"
+                displayName = "\(Environment.appName)-\(deploymentTarget.rawValue)"
             case .prod:
                 kakaoNativeAppKey =  "${KAKAO_NATIVE_APP_KEY_PROD}"
                 baseServerURL = "${BASE_SERVER_URL_PROD}"
+                displayName = Environment.appName
             }
             
             return .extendingDefault(with: [
                 "CFBundleShortVersionString": "\(currentAppVersion)",
+                "CFBundleDisplayName": "\(displayName)",
                 "CFBundleVersion": "1",
                 "UILaunchStoryboardName": "LaunchScreen",
                 "NSAppTransportSecurity": ["NSAllowsArbitraryLoads": true],

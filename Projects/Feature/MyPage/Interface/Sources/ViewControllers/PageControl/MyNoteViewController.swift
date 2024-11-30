@@ -47,6 +47,7 @@ public final class MyNoteViewController: UIViewController,
     public let onReportNote: PassthroughSubject<Int, Never> = .init()
     public let onEditNote: PassthroughSubject<Note, Never> = .init()
     public let onDeleteNote: PassthroughSubject<Int, Never> = .init()
+    public let onBlockNotePublisher: PassthroughSubject<User, Never> = .init()
 
     // MARK: - Diffable DataSource
 
