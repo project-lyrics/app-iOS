@@ -92,7 +92,12 @@ public final class ProfileView: UIView {
     public override func layoutSubviews() {
         super.layoutSubviews()
 
-        flexContainer.pin.all(pin.safeArea)
+        flexContainer.pin
+            .top(pin.safeArea.top)
+            .left(pin.safeArea.left)
+            .right(pin.safeArea.right)
+            .bottom(21 + 12)
+
         flexContainer.flex.layout()
     }
 
@@ -141,7 +146,7 @@ public final class ProfileView: UIView {
                         flex.addItem(nextButton)
                             .minHeight(56)
                             .cornerRadius(8)
-                            .marginBottom(23)
+                            .marginBottom(pin.safeArea.bottom + 2)
                     }
             }
     }
