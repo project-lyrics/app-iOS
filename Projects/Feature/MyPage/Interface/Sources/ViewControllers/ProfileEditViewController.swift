@@ -122,6 +122,7 @@ public final class ProfileEditViewController: UIViewController {
     private func setUpProfilePlaceHolder() {
         nicknameTextField.textField.placeholder = viewModel.userProfile.nickname
         profileEditButton.setProfileImage(with: viewModel.userProfile.profileCharacterType.image)
+        profileSelectionIndexPublisher.send(viewModel.userProfile.profileCharacterType.index)
     }
 }
 
