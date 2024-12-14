@@ -96,7 +96,7 @@ public final class ProfileView: UIView {
             .top(pin.safeArea.top)
             .left(pin.safeArea.left)
             .right(pin.safeArea.right)
-            .bottom(21 + 12)
+            .bottom(21 + 23)
 
         flexContainer.flex.layout()
     }
@@ -146,7 +146,6 @@ public final class ProfileView: UIView {
                         flex.addItem(nextButton)
                             .minHeight(56)
                             .cornerRadius(8)
-                            .marginBottom(pin.safeArea.bottom + 2)
                     }
             }
     }
