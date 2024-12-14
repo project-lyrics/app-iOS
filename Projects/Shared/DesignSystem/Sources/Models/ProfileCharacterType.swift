@@ -31,19 +31,6 @@ public enum ProfileCharacterType: String, CaseIterable {
         }
     }
 
-    public var index: Int {
-        switch self {
-        case .shortHair:
-            return 0
-        case .braidedHair:
-            return 1
-        case .partedHair:
-            return 2
-        case .poopHair:
-            return 3
-        }
-    }
-
     public static let defaultImage = FeelinImages.profileShortHair
     public static let defaultCharacter = ProfileCharacterType.shortHair.character
 }

@@ -74,8 +74,8 @@ public final class ProfileEditViewController: UIViewController {
             }
             .store(in: &cancellables)
 
-        let profileSelectionPublisher = profileSelectionIndexPublisher
-            .map { ProfileCharacterType.allCases[$0].character }
+        let selectedProfilePublisher = selectedProfileTypePublisher
+            .map { $0.rawValue }
             .eraseToAnyPublisher()
 
         let nicknameTextPublisher = nicknameTextField.textField.textPublisher
@@ -86,7 +86,7 @@ public final class ProfileEditViewController: UIViewController {
 
         let input = ProfileEditViewModel.Input(
             nicknameTextPublisher: nicknameTextPublisher,
-            profileImagePublisher: profileSelectionPublisher,
+            profileImagePublisher: selectedProfilePublisher,
             saveButtonTapPublisher: saveButtonTapPublisher
         )
 
@@ -122,7 +122,7 @@ public final class ProfileEditViewController: UIViewController {
     private func setUpProfilePlaceHolder() {
         nicknameTextField.textField.placeholder = viewModel.userProfile.nickname
         profileEditButton.setProfileImage(with: viewModel.userProfile.profileCharacterType.image)
-        profileSelectionIndexPublisher.send(viewModel.userProfile.profileCharacterType.index)
+        selectedProfileTypePublisher.send(viewModel.userProfile.profileCharacterType)
     }
 }
 
@@ -151,7 +151,7 @@ private extension ProfileEditViewController {
         return profileView.saveProfileButton
     }
 
-    var profileSelectionIndexPublisher: CurrentValueSubject<Int, Never> {
-        return editProfileViewController.profileSelectionIndexPublisher
+    var selectedProfileTypePublisher: CurrentValueSubject<ProfileCharacterType, Never> {
+        return editProfileViewController.selectedProfileTypePublisher
     }
 }
