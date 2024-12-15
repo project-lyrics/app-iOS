@@ -57,8 +57,9 @@ public extension Coordinator {
                     title: errorMessage,
                     message: "에러코드(\(errorCode))",
                     singleActionTitle: "확인") { [weak self] in
-                        self?.appErrorHandler.deleteUserData()
-                        self?.finish()
+                        guard let self = self else { return }
+                        appErrorHandler.deleteUserData()
+                        delegate?.didFinish(childCoordinator: self)
                     }
                 
             case FeelinAPIError.ErrorType.updateRequired.errorCode:
