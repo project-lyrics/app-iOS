@@ -89,7 +89,12 @@ final class UserInformationView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        flexContainer.pin.all(pin.safeArea)
+        flexContainer.pin
+            .top(pin.safeArea.top)
+            .left(pin.safeArea.left)
+            .right(pin.safeArea.right)
+            .bottom(21 + 23)
+
         flexContainer.flex.layout()
     }
 
@@ -138,7 +143,7 @@ final class UserInformationView: UIView {
                         flex.addItem(nextButton)
                             .minHeight(56)
                             .cornerRadius(8)
-                            .marginBottom(23)
+                            .marginBottom(pin.safeArea.bottom + 2)
                     }
             }
     }

@@ -31,11 +31,13 @@ final class AppCoordinator: Coordinator {
     }
 
     func start() {
-        let viewModel = splashDependencies()
-        let viewController = SplashViewController(viewModel: viewModel)
-        viewController.coordinator = self
-        navigationController.setNavigationBarHidden(true, animated: false)
-        navigationController.pushViewController(viewController, animated: false)
+        let splashCoordinator = SplashCoordinator(
+            navigationController: navigationController
+        )
+
+        splashCoordinator.delegate = self
+        splashCoordinator.start()
+        childCoordinators.append(splashCoordinator)
     }
 }
 

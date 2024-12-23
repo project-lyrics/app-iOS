@@ -54,15 +54,12 @@ public final class ProfileEditViewModel {
 
 private extension ProfileEditViewModel {
     func isEnabledSaveButton(_ nickname: String?, _ profileCharacter: String) -> Bool {
-        let count = nickname?.count ?? 0
+        let nicknameWordCount = nickname?.count ?? 0
 
-        if let nickname = nickname {
-            return nickname.isEmpty == false && count <= 10 && userProfile.nickname != nickname && nickname.containsOnlyAllowedCharacters == true
-        } else if !profileCharacter.isEmpty {
-            return !profileCharacter.isEmpty && profileCharacter != userProfile.profileCharacterType.rawValue
-        }
+        let nicknameCondition = nickname?.isEmpty == false && nicknameWordCount <= 10 && userProfile.nickname != nickname && nickname?.containsOnlyAllowedCharacters == true
 
-        return false
+        let profileCondition = !profileCharacter.isEmpty && profileCharacter != userProfile.profileCharacterType.rawValue
+        return nicknameCondition || profileCondition
     }
 
     func isEnabledSaveButton(input: Input) -> AnyPublisher<Bool, Never> {

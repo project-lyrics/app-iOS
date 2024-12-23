@@ -77,7 +77,12 @@ public final class UseAgreementViewController: UIViewController {
     public override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        rootFlexContainer.pin.all(self.view.pin.safeArea)
+        rootFlexContainer.pin
+            .top(self.view.pin.safeArea.top)
+            .left(self.view.pin.safeArea.left)
+            .right(self.view.pin.safeArea.right)
+            .bottom(21 + 23)
+
         rootFlexContainer.flex.layout()
     }
 

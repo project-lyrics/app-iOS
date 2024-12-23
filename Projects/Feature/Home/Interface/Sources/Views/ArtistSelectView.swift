@@ -126,7 +126,7 @@ final class ArtistSelectView: UIView {
     }
     
     private func setUpArtistCollectionViewLayout() {
-        let totalHorizontalSpacing = flowLayout.minimumInteritemSpacing * 2 + 27 * 2
+        let totalHorizontalSpacing = (flowLayout.minimumInteritemSpacing * 2) + (28 * 2)
         let cellWidth: CGFloat = (self.frame.width - totalHorizontalSpacing) / 3
         let cellHeight: CGFloat = 146
         
