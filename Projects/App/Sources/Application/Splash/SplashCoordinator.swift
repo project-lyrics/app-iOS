@@ -53,7 +53,7 @@ private extension SplashCoordinator {
 
 extension SplashCoordinator: CoordinatorDelegate, SplashViewControllerDelegate {
     public func didFinish(childCoordinator: Coordinator) {
-        didFinish()
+        self.delegate?.didFinish(childCoordinator: childCoordinator)
     }
     
     func connectTabBarFlow() {
