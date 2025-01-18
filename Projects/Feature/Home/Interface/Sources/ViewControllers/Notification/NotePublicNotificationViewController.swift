@@ -155,16 +155,31 @@ extension NotePublicNotificationViewController: UICollectionViewDelegate {
     }
 }
 
+// MARK: - UICollectionViewDelegateFlowLayout
+
 extension NotePublicNotificationViewController: UICollectionViewDelegateFlowLayout {
     public func collectionView(
         _ collectionView: UICollectionView,
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        return .init(
-            width: self.view.frame.width,
-            height: 500
-        )
+        guard let item = noteNotificationListDataSource.itemIdentifier(for: indexPath) else {
+            return .zero
+        }
+        
+        switch item {
+        case .noteNotification:
+            return .init(
+                width: collectionView.frame.width,
+                height: 390
+            )
+            
+        case .emptyNotification:
+            return CGSize(
+                width: collectionView.frame.width,
+                height: collectionView.frame.height
+            )
+        }
     }
 }
 

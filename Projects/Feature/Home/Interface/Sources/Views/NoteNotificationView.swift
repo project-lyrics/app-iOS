@@ -15,12 +15,12 @@ class NoteNotificationView: UIView {
     
     private (set) lazy var noteNotificationCollectionView: UICollectionView = {
         let flowLayout = UICollectionViewFlowLayout()
-        flowLayout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
         
         let collectionView = UICollectionView(
             frame: .zero,
             collectionViewLayout: flowLayout
         )
+        collectionView.backgroundColor = Colors.background
         collectionView.refreshControl = .init()
         collectionView.showsVerticalScrollIndicator = false
         collectionView.register(cellType: NoteNotificationCell.self)
