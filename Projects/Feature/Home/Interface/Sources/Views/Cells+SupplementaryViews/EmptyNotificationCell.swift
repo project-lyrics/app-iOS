@@ -54,6 +54,9 @@ class EmptyNotificationCell: UICollectionViewCell, Reusable {
             .alignItems(.center)
             .define { flex in
                 flex.addItem(titleLabel)
+                
+                flex.addItem()
+                    .height(160)
             }
     }
 }

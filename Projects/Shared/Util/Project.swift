@@ -22,6 +22,12 @@ let targets: [Target] = [
                 )
             ]
         )
+    ),
+    .shared(
+        tests: .Util,
+        factory: .init(dependencies: [
+            .shared(implements: .Util)
+        ])
     )
 ]
 
