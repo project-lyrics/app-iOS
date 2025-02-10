@@ -15,6 +15,7 @@ class NoteNotificationView: UIView {
     
     private (set) lazy var noteNotificationCollectionView: UICollectionView = {
         let flowLayout = UICollectionViewFlowLayout()
+        flowLayout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
         
         let collectionView = UICollectionView(
             frame: .zero,
