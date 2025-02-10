@@ -37,10 +37,9 @@ public class AppErrorHandler: AppErrorHandlerInterface {
            let appStoreURL = URL(string: appStoreURLResponse.appStoreUrl) {
             self.openAppStore(url: appStoreURL)
         } else {
-            guard let bundleID = Bundle.main.bundleIdentifier,
-                  let appStoreURL = URL(string:"http://itunes.apple.com/kr/lookup?bundleId=\(bundleID)")
+            guard let appStoreURL = URL(string:"https://apps.apple.com/kr/app/6738319829")
             else {
-                AppLogger.log(tag: .error, "missing BundleID or invalidAppStoreURL: \(String(describing: Bundle.main.bundleIdentifier))")
+                AppLogger.log(tag: .error, "invalidAppStoreURL: \(String(describing: Bundle.main.bundleIdentifier))")
                 return
             }
             
