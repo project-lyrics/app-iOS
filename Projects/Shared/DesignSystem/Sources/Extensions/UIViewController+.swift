@@ -125,7 +125,7 @@ extension UIViewController {
         return topMostViewController
     }
 
-    private var isFeelinAlertAlreadyPresented: Bool {
+    fileprivate var isFeelinAlertAlreadyPresented: Bool {
         return getTopMostViewController() is FeelinAlertViewController
     }
 }
@@ -189,5 +189,75 @@ public extension UIViewController {
             return presented.topMostPresented
         }
         return self
+    }
+}
+
+// MARK: - Event PopUp
+
+extension UIViewController {
+    fileprivate var isFeelinPopUpAlreadyPresented: Bool {
+        return getTopMostViewController() is FeelinAlertViewController
+    }
+    
+    private func showPopUp(
+        contentImageUrl: URL,
+        leftTopActionTitle: String?,
+        leftTopActionImage: UIImage?,
+        rightTopActionTitle: String?,
+        rightTopActionImage: UIImage?,
+        leftTopActionCompletion: (() -> Void)?,
+        rightTopActionCompletion: (() -> Void)?,
+        bottomActionTitle: String,
+        bottomActionCompletion: (() -> Void)?
+    ) {
+        let eventView = FeelinEventView()
+        eventView.loadImage(from: contentImageUrl)
+        eventView.setButton(
+            title: bottomActionTitle,
+            onTap: bottomActionCompletion
+        )
+        
+        let popUpViewController = FeelinPopUpViewController(popUpContentView: eventView)
+        
+        popUpViewController.setLeftTopButton(
+            title: leftTopActionTitle,
+            image: leftTopActionImage,
+            onTap: leftTopActionCompletion
+        )
+        
+        popUpViewController.setRightTopButton(
+            title: rightTopActionTitle,
+            image: rightTopActionImage,
+            onTap: rightTopActionCompletion
+        )
+        
+        guard !isFeelinAlertAlreadyPresented || !isFeelinPopUpAlreadyPresented else {
+            print("is feelin alert pres: \(isFeelinAlertAlreadyPresented), is feelin popup : \(isFeelinPopUpAlreadyPresented)")
+            return
+        }
+        
+        present(popUpViewController, animated: false)
+    }
+    
+    public func showEventPopUp(
+        contentImageUrl: URL,
+        leftTopActionTitle: String = "오늘 하루 보지 않기",
+        rightTopActionImage: UIImage = FeelinImages.x.withTintColor(.white),
+        leftTopActionCompletion: (() -> Void)?,
+        rightTopActionCompletion: (() -> Void)?,
+        bottomActionTitle: String,
+        bottomActionCompletion: (() -> Void)?
+    ) {
+        self.showPopUp(
+            contentImageUrl: contentImageUrl,
+            leftTopActionTitle: leftTopActionTitle,
+            leftTopActionImage: nil,
+            rightTopActionTitle: nil,
+            rightTopActionImage: rightTopActionImage,
+            leftTopActionCompletion: leftTopActionCompletion,
+            rightTopActionCompletion: rightTopActionCompletion,
+            bottomActionTitle: bottomActionTitle,
+            bottomActionCompletion: bottomActionCompletion
+        )
     }
 }
