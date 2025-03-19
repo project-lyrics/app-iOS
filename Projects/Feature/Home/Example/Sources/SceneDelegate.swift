@@ -345,6 +345,10 @@ extension SceneDelegate {
 }
 
 extension SceneDelegate: PostNoteViewControllerDelegate, SearchSongViewControllerDelegate {
+    func handleError(errorCode: String?, errorMessage: String, errorData: SharedUtil.AnyType?) {
+        
+    }
+    
     func popRootViewController() {
         
     }

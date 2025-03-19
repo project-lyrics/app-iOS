@@ -205,3 +205,14 @@ public extension DIContainer {
         }
     }
 }
+
+// MARK: Report && Notification
+
+public extension DIContainer {
+    static func registerEventAPIService() {
+        standard.register(.eventAPIService) { resolver in
+            let networkProvider = try resolver.resolve(.networkProvider)
+            return EventAPIService(networkProvider: networkProvider)
+        }
+    }
+}

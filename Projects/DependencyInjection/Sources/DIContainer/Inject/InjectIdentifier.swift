@@ -108,6 +108,13 @@ public extension InjectIdentifier {
     static var userProfileAPIService: InjectIdentifier<UserProfileAPIServiceInterface> {
         .by(type: UserProfileAPIServiceInterface.self, key: "userProfileAPIService")
     }
+    
+    static var eventAPIService: InjectIdentifier<EventAPIServiceInterface> {
+        .by(
+            type: EventAPIServiceInterface.self,
+            key: "eventAPIService"
+        )
+    }
 }
 
 extension InjectIdentifier: Hashable {

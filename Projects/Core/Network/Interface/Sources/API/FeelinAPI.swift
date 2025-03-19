@@ -58,6 +58,8 @@ public enum FeelinAPI<R> {
     case getBlockedUsers
     case deleteUser
     case checkFirstVisitor
+    case getEvents
+    case postEventRefuse(eventID: Int)
 }
 
 extension FeelinAPI: HTTPNetworking {
@@ -205,6 +207,11 @@ extension FeelinAPI: HTTPNetworking {
              .deleteBlockUserProfile(let userID):
             return [
                 "userId": userID
+            ]
+            
+        case .postEventRefuse(let eventID):
+            return [
+                "eventId": eventID
             ]
             
         default:
@@ -380,6 +387,12 @@ extension FeelinAPI: HTTPNetworking {
             
         case .getBlockedUsers:
             return "/api/v1/users/blocks"
+            
+        case .getEvents:
+            return "/api/v1/events"
+            
+        case .postEventRefuse:
+            return "/api/v1/events/refuse"
         }
     }
 
@@ -395,7 +408,8 @@ extension FeelinAPI: HTTPNetworking {
              .postComment, 
              .reportNote,
              .postFavoriteArtist,
-             .postBlockUserProfile:
+             .postBlockUserProfile,
+             .postEventRefuse:
             return .post
 
         case .checkUserValidity, 
@@ -420,7 +434,8 @@ extension FeelinAPI: HTTPNetworking {
              .getUserProfile,
              .checkFirstVisitor,
              .getMyNotesByBookmark,
-             .getBlockedUsers:
+             .getBlockedUsers,
+             .getEvents:
             return .get
             
         case .deleteLikes, 

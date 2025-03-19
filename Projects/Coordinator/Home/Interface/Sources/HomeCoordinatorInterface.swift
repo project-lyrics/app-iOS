@@ -77,14 +77,9 @@ public final class HomeCoordinator: Coordinator {
 
             return NotificationAPIService(networkProvider: networkProvider)
         }
-        
-        DIContainer.standard.register(.userProfileAPIService) { resolver in
-            let networkProvider = try resolver.resolve(.networkProvider)
-            
-            return UserProfileAPIService(networkProvider: networkProvider)
-        }
 
         DIContainer.registerUserProfileService()
+        DIContainer.registerEventAPIService()
     }
 
     private func registerNoteCommentDI() {
@@ -266,6 +261,7 @@ extension HomeCoordinator {
         @Injected(.artistPaginationService) var artistPaginationService: KeywordPaginationServiceInterface
         @Injected(.notificationAPIService) var notificationAPIService: NotificationAPIServiceInterface
         @Injected(.userProfileAPIService) var userProfileAPIService: UserProfileAPIServiceInterface
+        @Injected(.eventAPIService) var eventAPIService: EventAPIServiceInterface
 
         @KeychainWrapper<UserInformation>(.userInfo)
         var userInfo
@@ -286,6 +282,8 @@ extension HomeCoordinator {
         let getHasUncheckedNotificationUseCase = GetHasUncheckedNotificationUseCase(notificationAPIService: notificationAPIService)
         let checkFirstVisitorUseCase = CheckFirstVisitorUseCase(userProfileAPIService: userProfileAPIService)
         let blockUserUseCase = BlockUserUseCase(userProfileAPIService: userProfileAPIService)
+        let fetchSingleEventUseCase = FetchSingleEventUseCase(eventAPIService: eventAPIService)
+        let refuseEventUseCase = RefuseEventUseCase(eventAPIService: eventAPIService)
 
         let viewModel =  HomeViewModel(
             getNotesUseCase: getNoteUseCase,
@@ -295,7 +293,9 @@ extension HomeCoordinator {
             deleteNoteUseCase: deleteNoteUseCase,
             getHasUncheckedNotificationUseCase: getHasUncheckedNotificationUseCase,
             checkFirstVisitorUseCase: checkFirstVisitorUseCase,
-            blockUserUseCase: blockUserUseCase
+            blockUserUseCase: blockUserUseCase,
+            fetchSingleEventUseCase: fetchSingleEventUseCase,
+            refuseEventUseCase: refuseEventUseCase
         )
 
         return viewModel

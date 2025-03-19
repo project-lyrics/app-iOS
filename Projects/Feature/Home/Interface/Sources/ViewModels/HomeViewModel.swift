@@ -22,6 +22,7 @@ final public class HomeViewModel {
     @Published private (set) var isFirstVisitor: Bool = false
     @Published private (set) var deleteNoteResult: DeleteNoteResult = .none
     @Published private (set) var blockUserResult: BlockUserResult<HomeError> = .none
+    @Published private (set) var feelinEvent: FeelinEvent?
 
     private let getNotesUseCase: GetNotesUseCaseInterface
     private let getFavoriteArtistsUseCase: GetFavoriteArtistsUseCaseInterface
@@ -31,6 +32,8 @@ final public class HomeViewModel {
     private let getHasUncheckedNotificationUseCase: GetHasUncheckedNotificationUseCaseInterface
     private let checkFirstVisitorUseCase: CheckFirstVisitorUseCaseInterface
     private let blockUserUseCase: BlockUserUseCaseInterface
+    private let fetchSingleEventUseCase: FetchSingleEventUseCaseInterface
+    private let refuseEventUseCase: RefuseEventUseCaseInterface
 
     private var cancellables: Set<AnyCancellable> = .init()
     
@@ -42,7 +45,9 @@ final public class HomeViewModel {
         deleteNoteUseCase: DeleteNoteUseCaseInterface,
         getHasUncheckedNotificationUseCase: GetHasUncheckedNotificationUseCaseInterface,
         checkFirstVisitorUseCase: CheckFirstVisitorUseCaseInterface,
-        blockUserUseCase: BlockUserUseCaseInterface
+        blockUserUseCase: BlockUserUseCaseInterface,
+        fetchSingleEventUseCase: FetchSingleEventUseCaseInterface,
+        refuseEventUseCase: RefuseEventUseCaseInterface
     ) {
         self.getNotesUseCase = getNotesUseCase
         self.setNoteLikeUseCase = setNoteLikeUseCase
@@ -52,6 +57,8 @@ final public class HomeViewModel {
         self.getHasUncheckedNotificationUseCase = getHasUncheckedNotificationUseCase
         self.blockUserUseCase = blockUserUseCase
         self.checkFirstVisitorUseCase = checkFirstVisitorUseCase
+        self.fetchSingleEventUseCase = fetchSingleEventUseCase
+        self.refuseEventUseCase = refuseEventUseCase
     }
     
     func fetchArtistsAndNotes(
@@ -330,7 +337,7 @@ extension HomeViewModel {
         .mapToResult()
         .sink { [weak self] result in
             switch result {
-            case .success(let success):
+            case .success:
                 self?.fetchedNotes.removeAll(where: { $0.publisher.id == id })
                 self?.blockUserResult = .success
                 
@@ -339,5 +346,47 @@ extension HomeViewModel {
             }
         }
         .store(in: &cancellables)
+    }
+}
+
+// MARK: - Event
+
+extension HomeViewModel {
+    func fetchFeelinEvent() {
+        self.fetchSingleEventUseCase.execute()
+            .mapToResult()
+            .sink { [weak self] result in
+                switch result {
+                case .success(let event):
+                    self?.feelinEvent = event
+                    
+                case .failure(let error):
+                    self?.error = .eventError(error)
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    func refuseEvent(eventId: Int) {
+        if let feelinEvent = feelinEvent {
+            self.refuseEventUseCase.execute(eventID: feelinEvent.id)
+                .mapToResult()
+                .sink { [weak self] result in
+                    switch result {
+                    case .success(let didRefuse):
+                        if !didRefuse {
+                            self?.error = .eventError(.unknown(errorDescription: "이벤트 거부 실패."))
+                        }
+                        
+                        
+                    case .failure(let error):
+                        self?.error = .eventError(error)
+                    }
+                }
+                .store(in: &cancellables)
+            
+        } else {
+            self.error = .eventError(.unknown(errorDescription: "이벤트 id를 찾을 수 없습니다."))
+        }
     }
 }

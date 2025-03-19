@@ -325,6 +325,8 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.checkFeelinEvent()
+        
         if self.isLoggedIn {
             self.updateInitialHomeData()
             self.checkForUnReadNotification()
@@ -359,6 +361,12 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
 
     private func checkFirstVisitor() {
         self.viewModel.checkFirstVisitor()
+    }
+    
+    // MARK: - Event Check
+    
+    private func checkFeelinEvent() {
+        self.viewModel.fetchFeelinEvent()
     }
 }
 
@@ -468,6 +476,24 @@ private extension HomeViewController {
                 default:
                     break
                 }
+            }
+            .store(in: &cancellables)
+        
+        viewModel.$feelinEvent
+            .compactMap { $0 }
+            .sink { [weak self] event in
+                self?.showEventPopUp(
+                    contentImageUrl: event.imageURL,
+                    leftTopActionTitle: event.eventExtraInfo.refusalText,
+                    leftTopActionCompletion: {
+                        self?.viewModel.refuseEvent(eventId: event.id)
+                    },
+                    rightTopActionCompletion: nil,
+                    bottomActionTitle: event.eventExtraInfo.buttonTitle,
+                    bottomActionCompletion: {
+                        UIApplication.shared.open(event.redirectURL)
+                    }
+                )
             }
             .store(in: &cancellables)
             
