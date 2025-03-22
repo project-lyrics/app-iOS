@@ -23,6 +23,7 @@ final public class HomeViewModel {
     @Published private (set) var deleteNoteResult: DeleteNoteResult = .none
     @Published private (set) var blockUserResult: BlockUserResult<HomeError> = .none
     @Published private (set) var feelinEvent: FeelinEvent?
+    @Published private (set) var fetchedBanners: [Banner] = []
 
     private let getNotesUseCase: GetNotesUseCaseInterface
     private let getFavoriteArtistsUseCase: GetFavoriteArtistsUseCaseInterface
@@ -34,6 +35,7 @@ final public class HomeViewModel {
     private let blockUserUseCase: BlockUserUseCaseInterface
     private let fetchSingleEventUseCase: FetchSingleEventUseCaseInterface
     private let refuseEventUseCase: RefuseEventUseCaseInterface
+    private let fetchBannersUseCase: FetchBannersUseCaseInterface
 
     private var cancellables: Set<AnyCancellable> = .init()
     
@@ -47,7 +49,8 @@ final public class HomeViewModel {
         checkFirstVisitorUseCase: CheckFirstVisitorUseCaseInterface,
         blockUserUseCase: BlockUserUseCaseInterface,
         fetchSingleEventUseCase: FetchSingleEventUseCaseInterface,
-        refuseEventUseCase: RefuseEventUseCaseInterface
+        refuseEventUseCase: RefuseEventUseCaseInterface,
+        fetchBannersUseCase: FetchBannersUseCaseInterface
     ) {
         self.getNotesUseCase = getNotesUseCase
         self.setNoteLikeUseCase = setNoteLikeUseCase
@@ -59,12 +62,17 @@ final public class HomeViewModel {
         self.checkFirstVisitorUseCase = checkFirstVisitorUseCase
         self.fetchSingleEventUseCase = fetchSingleEventUseCase
         self.refuseEventUseCase = refuseEventUseCase
+        self.fetchBannersUseCase = fetchBannersUseCase
     }
     
-    func fetchArtistsAndNotes(
+    func fetchHomeData(
         notesPerPage: Int = 10,
         artistsPerPage: Int = 30
     ) {
+        let getBanners = self.fetchBannersUseCase.execute()
+            .mapError(HomeError.init)
+            .eraseToAnyPublisher()
+        
         let getFavoriteArtists = self.getFavoriteArtistsUseCase.execute(
             isInitial: true,
             perPage: artistsPerPage
@@ -80,12 +88,13 @@ final public class HomeViewModel {
         .mapError(HomeError.init)
         .eraseToAnyPublisher()
         
-        Publishers.Zip(getFavoriteArtists, getRelatedNotes)
+        Publishers.Zip3(getBanners, getFavoriteArtists, getRelatedNotes)
             .receive(on: DispatchQueue.main)
             .mapToResult()
             .sink { [weak self] result in
                 switch result {
-                case .success(let (favoriteArtists, relatedNotes)):
+                case .success(let (banners, favoriteArtists, relatedNotes)):
+                    self?.fetchedBanners = banners
                     self?.fetchedFavoriteArtists = favoriteArtists
                     self?.fetchedNotes = relatedNotes
                 case .failure(let error):
@@ -388,5 +397,20 @@ extension HomeViewModel {
         } else {
             self.error = .eventError(.unknown(errorDescription: "이벤트 id를 찾을 수 없습니다."))
         }
+    }
+    
+    func fetchBanners() {
+        self.fetchBannersUseCase.execute()
+            .mapToResult()
+            .sink { [weak self] result in
+                switch result {
+                case .success(let banners):
+                    self?.fetchedBanners = banners
+                    
+                case .failure(let error):
+                    self?.error = .eventError(error)
+                }
+            }
+            .store(in: &cancellables)
     }
 }

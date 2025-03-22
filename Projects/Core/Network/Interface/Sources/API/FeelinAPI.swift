@@ -60,6 +60,7 @@ public enum FeelinAPI<R> {
     case checkFirstVisitor
     case getEvents
     case postEventRefuse(eventID: Int)
+    case getBanners
 }
 
 extension FeelinAPI: HTTPNetworking {
@@ -393,6 +394,9 @@ extension FeelinAPI: HTTPNetworking {
             
         case .postEventRefuse:
             return "/api/v1/events/refuse"
+            
+        case .getBanners:
+            return "/api/v1/banners"
         }
     }
 
@@ -435,7 +439,8 @@ extension FeelinAPI: HTTPNetworking {
              .checkFirstVisitor,
              .getMyNotesByBookmark,
              .getBlockedUsers,
-             .getEvents:
+             .getEvents,
+             .getBanners:
             return .get
             
         case .deleteLikes, 

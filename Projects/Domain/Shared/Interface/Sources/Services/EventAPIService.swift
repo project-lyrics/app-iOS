@@ -13,6 +13,7 @@ import Foundation
 public protocol EventAPIServiceInterface {
     func getEvents() -> AnyPublisher<GetEventInfoResponse, EventError>
     func postEventRefuse(eventID: Int) -> AnyPublisher<FeelinSuccessResponse, EventError>
+    func getBanners() -> AnyPublisher<[GetBannerResponse], EventError>
 }
 
 public struct EventAPIService: EventAPIServiceInterface {
@@ -32,6 +33,14 @@ public struct EventAPIService: EventAPIServiceInterface {
     
     public func postEventRefuse(eventID: Int) -> AnyPublisher<FeelinSuccessResponse, EventError> {
         let endpoint = FeelinAPI<FeelinSuccessResponse>.postEventRefuse(eventID: eventID)
+        
+        return networkProvider.request(endpoint)
+            .mapError(EventError.init)
+            .eraseToAnyPublisher()
+    }
+    
+    public func getBanners() -> AnyPublisher<[GetBannerResponse], EventError> {
+        let endpoint = FeelinAPI<[GetBannerResponse]>.getBanners
         
         return networkProvider.request(endpoint)
             .mapError(EventError.init)

@@ -284,6 +284,7 @@ extension HomeCoordinator {
         let blockUserUseCase = BlockUserUseCase(userProfileAPIService: userProfileAPIService)
         let fetchSingleEventUseCase = FetchSingleEventUseCase(eventAPIService: eventAPIService)
         let refuseEventUseCase = RefuseEventUseCase(eventAPIService: eventAPIService)
+        let fetchBannersUseCase = FetchBannersUseCase(eventAPIService: eventAPIService)
 
         let viewModel =  HomeViewModel(
             getNotesUseCase: getNoteUseCase,
@@ -295,7 +296,8 @@ extension HomeCoordinator {
             checkFirstVisitorUseCase: checkFirstVisitorUseCase,
             blockUserUseCase: blockUserUseCase,
             fetchSingleEventUseCase: fetchSingleEventUseCase,
-            refuseEventUseCase: refuseEventUseCase
+            refuseEventUseCase: refuseEventUseCase,
+            fetchBannersUseCase: fetchBannersUseCase
         )
 
         return viewModel
