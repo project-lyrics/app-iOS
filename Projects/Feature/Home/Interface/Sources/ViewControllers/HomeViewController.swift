@@ -213,13 +213,22 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
         var snapshot = homeDataSource.snapshot()
         
         let newItems = banners.map { CollectionContent.Item.banner($0) }
-
-        // 배너 섹션이 없는 경우 추가
-        if !snapshot.sectionIdentifiers.contains(.banner) {
+        
+        // 배너 섹션이 있는지 확인
+        if snapshot.sectionIdentifiers.contains(.banner) {
+            // 기존 아이템 삭제
+            let existingItems = snapshot.itemIdentifiers(inSection: .banner)
+            snapshot.deleteItems(existingItems)
+        } else {
+            // 섹션이 없으면 추가
             snapshot.appendSections([.banner])
         }
+        
+        // 새로운 아이템 추가
         snapshot.appendItems(newItems, toSection: .banner)
-        homeDataSource.applySnapshotUsingReloadData(snapshot)
+        
+        // 스냅샷 적용
+        homeDataSource.apply(snapshot)
     }
 
     private func updateFavoriteArtists(_ favoriteArtists: [Artist]) {
