@@ -53,9 +53,9 @@ public final class FeelinEventView: UIView {
         setupView()
     }
     
+    @available(*, unavailable)
     required public init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setupView()
+        fatalError()
     }
     
     public override func layoutSubviews() {
