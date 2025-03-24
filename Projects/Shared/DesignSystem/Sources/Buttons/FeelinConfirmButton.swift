@@ -39,7 +39,7 @@ public class FeelinConfirmButton: UIButton {
         super.init(coder: coder)
     }
 
-    private func setupButton(title: String) {
+    func setupButton(title: String) {
         updateAppearance()
 
         self.setTitle(title, for: .normal)

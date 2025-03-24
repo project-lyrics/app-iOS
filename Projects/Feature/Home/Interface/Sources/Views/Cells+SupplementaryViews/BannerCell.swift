@@ -16,8 +16,9 @@ final class BannerCell: UICollectionViewCell, Reusable {
     
     private var bannerImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = FeelinImages.feedbackBanner
         imageView.contentMode = .scaleAspectFill
+        imageView.layer.cornerRadius = 8
+        imageView.clipsToBounds = true
         
         return imageView
     }()
@@ -42,8 +43,28 @@ final class BannerCell: UICollectionViewCell, Reusable {
     }
     
     private func setUpLayout() {
+        self.layer.cornerRadius = 8
         self.addSubview(flexContainer)
 
         flexContainer.flex.addItem(bannerImageView)
+    }
+    
+    public func configure(imageURL: URL) {
+        self.bannerImageView.kf.indicatorType = .activity
+        self.bannerImageView.kf.setImage(with: imageURL) { [weak self] result in
+            guard case .success = result else {
+                return
+            }
+            self?.bannerImageView.flex.markDirty()
+            
+            // 레이아웃 업데이트를 강제하여 최초 viewWillAppear 시점에도 이미지가 업데이트 될 수 있도록 하기 위해 호출
+            self?.flexContainer.flex.layout()
+        }
+    }
+    
+    public override func prepareForReuse() {
+        super.prepareForReuse()
+        bannerImageView.kf.cancelDownloadTask()
+        bannerImageView.image = nil
     }
 }

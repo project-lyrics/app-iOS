@@ -60,7 +60,10 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
     private typealias HomeDataSource = UICollectionViewDiffableDataSource<CollectionContent.Section, CollectionContent.Item>
     
     private lazy var homeDataSource: HomeDataSource = {
-        let bannerCellRegistration = UICollectionView.CellRegistration<BannerCell, Void> { cell, indexPath, item in }
+        let bannerCellRegistration = UICollectionView.CellRegistration<BannerCell, Banner> { cell, indexPath, item in
+            cell.configure(imageURL: item.imageUrl)
+        }
+        
         let searchArtistCellRegistration = UICollectionView.CellRegistration<SearchArtistCell, Void> { cell, indexPath, item in }
         let favoriteArtistCellRegistration = UICollectionView.CellRegistration<FeelinArtistCell, Artist> { cell, indexPath, artist in
             cell.configure(artistName: artist.name, artistImageURL: try? artist.imageSource?.asURL())
@@ -206,15 +209,26 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
         self.view = homeView
     }
 
-    private func updateBanner() {
+    private func updateBanner(_ banners: [Banner]) {
         var snapshot = homeDataSource.snapshot()
-
-        // 배너 섹션이 없는 경우 추가
-        if !snapshot.sectionIdentifiers.contains(.banner) {
+        
+        let newItems = banners.map { CollectionContent.Item.banner($0) }
+        
+        // 배너 섹션이 있는지 확인
+        if snapshot.sectionIdentifiers.contains(.banner) {
+            // 기존 아이템 삭제
+            let existingItems = snapshot.itemIdentifiers(inSection: .banner)
+            snapshot.deleteItems(existingItems)
+        } else {
+            // 섹션이 없으면 추가
             snapshot.appendSections([.banner])
-            snapshot.appendItems([.banner], toSection: .banner)
         }
-        homeDataSource.apply(snapshot, animatingDifferences: false)
+        
+        // 새로운 아이템 추가
+        snapshot.appendItems(newItems, toSection: .banner)
+        
+        // 스냅샷 적용
+        homeDataSource.apply(snapshot)
     }
 
     private func updateFavoriteArtists(_ favoriteArtists: [Artist]) {
@@ -325,10 +339,10 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if self.isLoggedIn {
-            self.updateInitialHomeData()
-            self.checkForUnReadNotification()
-        }
+        
+        self.checkFeelinEvent()
+        self.checkForUnReadNotification()
+        self.updateInitialHomeData()
     }
     
     private func setUpDefault() {
@@ -340,7 +354,11 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
     // MARK: - Favorite Artists
     
     public func updateInitialHomeData() {
-        self.viewModel.fetchArtistsAndNotes()
+        if self.isLoggedIn {
+            self.viewModel.fetchHomeData()
+        } else {
+            self.viewModel.fetchBanners()
+        }
     }
     
     private func showSelectArtistListIfNeeded() {
@@ -352,13 +370,25 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
     // MARK: - Notification Check
     
     private func checkForUnReadNotification() {
-        self.viewModel.checkForUnReadNotification()
+        if self.isLoggedIn {
+            self.viewModel.checkForUnReadNotification()
+        }
     }
 
     // MARK: - First Visitor Check
 
     private func checkFirstVisitor() {
         self.viewModel.checkFirstVisitor()
+    }
+    
+    // MARK: - Event Check
+    
+    private func checkFeelinEvent() {
+        self.viewModel.fetchFeelinEvent()
+    }
+    
+    private func updateBanners() {
+        self.viewModel.fetchBanners()
     }
 }
 
@@ -367,8 +397,6 @@ private extension HomeViewController {
     // MARK: - Bindings
 
     func bindUI() {
-        self.updateBanner()
-
         viewModel.$error
             .compactMap { $0 }
             .sink { [weak self] error in
@@ -398,6 +426,12 @@ private extension HomeViewController {
                     return
                 }
             })
+            .store(in: &cancellables)
+        
+        viewModel.$fetchedBanners
+            .sink { [weak self] banners in
+                self?.updateBanner(banners)
+            }
             .store(in: &cancellables)
 
         viewModel.$fetchedFavoriteArtists
@@ -432,13 +466,9 @@ private extension HomeViewController {
             .sink { [weak self] result in
                 switch result {
                 case .success:
-                    if self?.isLoggedIn == true {
-                        self?.updateInitialHomeData()
-                        self?.checkForUnReadNotification()
-                    } else {
-                        // 로그아웃 된 상태에서는 올 수 없음
-                    }
-
+                    self?.checkForUnReadNotification()
+                    self?.updateInitialHomeData()
+                    
                 case .failure(let error):
                     self?.coordinator?.handleError(
                         errorCode: error.errorCode,
@@ -470,6 +500,24 @@ private extension HomeViewController {
                 }
             }
             .store(in: &cancellables)
+        
+        viewModel.$feelinEvent
+            .compactMap { $0 }
+            .sink { [weak self] event in
+                self?.showEventPopUp(
+                    contentImageUrl: event.imageURL,
+                    leftTopActionTitle: event.eventExtraInfo.refusalText,
+                    leftTopActionCompletion: {
+                        self?.viewModel.refuseEvent(eventId: event.id)
+                    },
+                    rightTopActionCompletion: nil,
+                    bottomActionTitle: event.eventExtraInfo.buttonTitle,
+                    bottomActionCompletion: {
+                        UIApplication.shared.open(event.redirectURL)
+                    }
+                )
+            }
+            .store(in: &cancellables)
             
     }
 
@@ -490,8 +538,8 @@ private extension HomeViewController {
                 guard let item = self.homeDataSource.itemIdentifier(for: indexPath) else { return }
 
                 switch item {
-                case .banner:
-                    self.openWebBrowser(urlStr: "https://docs.google.com/forms/d/1eoPqnYLfwlgmOeCSKrPWUb7qCPnX6QrLJx8r34WAUwk/edit")
+                case .banner(let banner):
+                    self.openWebBrowser(url: banner.redirectUrl)
 
                 case .searchArtist:
                     coordinator?.presentSearchMoreFavoriteArtistViewController()
@@ -555,10 +603,7 @@ private extension HomeViewController {
             .store(in: &cancellables)
     }
     
-    private func openWebBrowser(urlStr: String) {
-        guard let url = URL(string: urlStr) else {
-            return
-        }
+    private func openWebBrowser(url: URL) {
         if UIApplication.shared.canOpenURL(url) {
             UIApplication.shared.open(url)
         }
@@ -585,7 +630,7 @@ struct CollectionContent {
     }
     
     enum Item: Hashable {
-        case banner
+        case banner(Banner)
         case favoriteArtist(Artist)
         case searchArtist
         case note(Note)
@@ -596,7 +641,7 @@ struct CollectionContent {
 extension CollectionContent.Item {
     func dequeueConfiguredReusableCell(
         collectionView: UICollectionView,
-        bannerCellRegistration: UICollectionView.CellRegistration<BannerCell, Void>,
+        bannerCellRegistration: UICollectionView.CellRegistration<BannerCell, Banner>,
         searchArtistCellRegistration: UICollectionView.CellRegistration<SearchArtistCell, Void>,
         favoriteArtistCellRegistration: UICollectionView.CellRegistration<FeelinArtistCell, Artist>,
         emptyNoteCellRegistration: UICollectionView.CellRegistration<EmptyNoteCell, Void>,
@@ -604,11 +649,11 @@ extension CollectionContent.Item {
         indexPath: IndexPath
     ) -> UICollectionViewCell {
         switch self {
-        case .banner:
+        case .banner(let banner):
             return collectionView.dequeueConfiguredReusableCell(
                 using: bannerCellRegistration,
                 for: indexPath,
-                item: ()
+                item: banner
             )
         case .favoriteArtist(let artist):
             return collectionView.dequeueConfiguredReusableCell(

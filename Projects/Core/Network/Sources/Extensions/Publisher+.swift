@@ -17,6 +17,10 @@ public extension Publisher where Output == DataTaskResult {
                 throw NetworkError.noResponseError
             }
             
+            // 응답 로그 출력
+//            let responseString = String(data: data, encoding: .utf8) ?? " 데이터를 문자열로 변환할 수 없음"
+//            AppLogger.log("🔹 [Response Body]: \(responseString)")
+            
             if let feelinServerFailResponse = try? decoder.decode(APIFailResponse.self, from: data) {
                 throw NetworkError.feelinAPIError(
                     .init(apiFailResponse: feelinServerFailResponse)

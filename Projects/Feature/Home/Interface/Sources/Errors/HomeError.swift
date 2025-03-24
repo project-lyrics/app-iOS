@@ -14,6 +14,7 @@ public enum HomeError: LocalizedError, Equatable {
     case noteError(NoteError)
     case artistError(ArtistError)
     case userProfileError(UserProfileError)
+    case eventError(EventError)
     case unknownError(description: String)
     
     public init(error: Error) {
@@ -23,6 +24,8 @@ public enum HomeError: LocalizedError, Equatable {
             self = .noteError(noteError)
         } else if let userProfileError = error as? UserProfileError {
             self = .userProfileError(userProfileError)
+        } else if let eventError = error as? EventError {
+            self = .eventError(eventError)
         } else {
             self = .unknownError(description: error.localizedDescription)
         }
@@ -38,6 +41,9 @@ public enum HomeError: LocalizedError, Equatable {
             
         case .userProfileError(let userProfileError):
             return userProfileError.errorMessage + "에러코드: \(userProfileError.errorCode ?? "nil")"
+        
+        case .eventError(let eventError):
+            return eventError.errorMessage + "에러코드: \(eventError.errorCode ?? "nil")"
             
         case .unknownError(let description):
             return description
@@ -59,6 +65,9 @@ public enum HomeError: LocalizedError, Equatable {
         case .userProfileError(let userProfileError):
             return userProfileError.userMessage
             
+        case .eventError(let eventError):
+            return eventError.userMessage
+            
         case .unknownError(let unknownError):
             return unknownError
         }
@@ -74,6 +83,9 @@ public enum HomeError: LocalizedError, Equatable {
             
         case .userProfileError(let userProfileError):
             return userProfileError.data
+            
+        case .eventError(let eventError):
+            return eventError.data
         
         default:
             return nil
@@ -88,6 +100,8 @@ public enum HomeError: LocalizedError, Equatable {
             return artistError.errorCode
         case .userProfileError(let userProfileError):
             return userProfileError.errorCode
+        case .eventError(let eventError):
+            return eventError.errorCode
         case .unknownError:
             return nil
         }
