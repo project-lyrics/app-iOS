@@ -36,8 +36,7 @@ Feelin은 음악 가사에 대한 자신의 생각과 감정을 공유하는 iOS
 - **로그인**: 소셜 로그인 (카카오, 애플로그인)
 
 ## Tuist 의존성 그래프 
-
-![graph](https://hackmd.io/_uploads/H1IiC2qpJg.png)
+![graph](https://github.com/user-attachments/assets/499b0c71-ef38-4fa3-9b5a-da5815068ac4)
 <details>
 <summary>구조도</summary>
 
