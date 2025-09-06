@@ -31,10 +31,7 @@ public extension DIContainer {
                 requestInterceptor = TokenInterceptor(tokenStorage: tokenStorage)
             }
 
-            let networkSession = NetworkSession(
-                urlSession: URLSession.shared,
-                requestInterceptor: requestInterceptor
-            )
+            let networkSession = NetworkSession(requestInterceptor: requestInterceptor)
             return NetworkProvider(networkSession: networkSession)
         }
     }
@@ -109,10 +106,7 @@ public extension DIContainer {
     
     static func registerDependenciesForHomeView() {
         standard.register(.networkProvider) { _ in
-            let networkSession = NetworkSession(
-                urlSession: .shared,
-                requestInterceptor: TokenInterceptor(tokenStorage: TokenStorage())
-            )
+            let networkSession = NetworkSession(requestInterceptor: TokenInterceptor(tokenStorage: TokenStorage()))
             
             return NetworkProvider(networkSession: networkSession)
         }

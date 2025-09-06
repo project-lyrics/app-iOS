@@ -9,6 +9,7 @@ import Combine
 import CoreLocalStorageInterface
 import CoreNetworkInterface
 import Shared
+import Pulse
 
 import Foundation
 
@@ -48,7 +49,7 @@ extension TokenInterceptor: URLRequestInterceptor {
     }
     
     public func retry(
-        with session: URLSession,
+        with session: URLSessionProtocol,
         dueTo error: NetworkError
     ) -> AnyPublisher<RetryResult, Never> {
         guard case let .feelinAPIError(feelinAPIError) = error,
@@ -97,7 +98,7 @@ extension TokenInterceptor: URLRequestInterceptor {
     
     private func reissueToken(
         request: URLRequest,
-        with session: URLSession
+        with session: URLSessionProtocol
     ) -> AnyPublisher<RetryResult, Never> {
         return session
             .dataTaskPublisher(for: request)
