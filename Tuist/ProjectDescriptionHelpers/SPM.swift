@@ -18,6 +18,8 @@ public extension TargetDependency.SPM {
     static let KakaoSDKCommon = Self.package(product: "KakaoSDKCommon")
     static let KakaoSDKAuth = Self.package(product: "KakaoSDKAuth")
     static let KakaoSDKUser = Self.package(product: "KakaoSDKUser")
+    static let Pulse = Self.package(product: "Pulse")
+    static let PulseUI = Self.package(product: "PulseUI")
 
     private static func external(_ name: String) -> TargetDependency {
         return TargetDependency.external(name: name)
