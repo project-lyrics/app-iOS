@@ -9,41 +9,72 @@ import Combine
 import UIKit
 
 public extension UITapGestureRecognizer {
-    // UITapGestureRecognizer를 Combine 퍼블리셔로 확장
     var publisher: AnyPublisher<UITapGestureRecognizer, Never> {
         GesturePublisher(gesture: self).eraseToAnyPublisher()
     }
 }
 
-struct GesturePublisher: Publisher {
-    typealias Output = UITapGestureRecognizer
-    typealias Failure = Never
+public extension UIPanGestureRecognizer {
+    var publisher: AnyPublisher<UIPanGestureRecognizer, Never> {
+        GesturePublisher(gesture: self).eraseToAnyPublisher()
+    }
+}
 
-    let gesture: UITapGestureRecognizer
+public extension UILongPressGestureRecognizer {
+    var publisher: AnyPublisher<UILongPressGestureRecognizer, Never> {
+        GesturePublisher(gesture: self).eraseToAnyPublisher()
+    }
+}
 
-    func receive<S>(subscriber: S) where S: Subscriber, Failure == S.Failure, Output == S.Input {
-        let subscription = GestureSubscription(subscriber: subscriber, gesture: gesture)
+public extension UIPinchGestureRecognizer {
+    var publisher: AnyPublisher<UIPinchGestureRecognizer, Never> {
+        GesturePublisher(gesture: self).eraseToAnyPublisher()
+    }
+}
+
+public extension UISwipeGestureRecognizer {
+    var publisher: AnyPublisher<UISwipeGestureRecognizer, Never> {
+        GesturePublisher(gesture: self).eraseToAnyPublisher()
+    }
+}
+
+// MARK: - Gesture Publisher
+
+public struct GesturePublisher<Gesture: UIGestureRecognizer>: Publisher {
+    public typealias Output = Gesture
+    public typealias Failure = Never
+
+    let gesture: Gesture
+
+    public func receive<S>(subscriber: S) where S: Subscriber, Failure == S.Failure, Output == S.Input {
+        let subscription = GestureSubscription(
+            subscriber: subscriber,
+            gesture: gesture
+        )
         subscriber.receive(subscription: subscription)
     }
 }
 
-final class GestureSubscription<S: Subscriber>: Subscription where S.Input == UITapGestureRecognizer {
+public final class GestureSubscription<S: Subscriber, Gesture: UIGestureRecognizer>: Subscription
+where S.Input == Gesture, S.Failure == Never {
     private var subscriber: S?
-    private weak var gesture: UITapGestureRecognizer?
+    private weak var gesture: Gesture?
 
-    init(subscriber: S, gesture: UITapGestureRecognizer) {
+    init(subscriber: S, gesture: Gesture) {
         self.subscriber = subscriber
         self.gesture = gesture
         gesture.addTarget(self, action: #selector(handleGesture))
     }
 
-    func request(_ demand: Subscribers.Demand) { }
+    public func request(_ demand: Subscribers.Demand) { }
 
-    func cancel() {
+    public func cancel() {
         subscriber = nil
+        gesture?.removeTarget(self, action: #selector(handleGesture))
     }
 
     @objc private func handleGesture() {
-        _ = subscriber?.receive(gesture!)
+        guard let gesture = gesture else { return }
+        _ = subscriber?.receive(gesture)
     }
 }
