@@ -8,32 +8,8 @@
 import Combine
 import UIKit
 
-public extension UITapGestureRecognizer {
-    var publisher: AnyPublisher<UITapGestureRecognizer, Never> {
-        GesturePublisher(gesture: self).eraseToAnyPublisher()
-    }
-}
-
-public extension UIPanGestureRecognizer {
-    var publisher: AnyPublisher<UIPanGestureRecognizer, Never> {
-        GesturePublisher(gesture: self).eraseToAnyPublisher()
-    }
-}
-
-public extension UILongPressGestureRecognizer {
-    var publisher: AnyPublisher<UILongPressGestureRecognizer, Never> {
-        GesturePublisher(gesture: self).eraseToAnyPublisher()
-    }
-}
-
-public extension UIPinchGestureRecognizer {
-    var publisher: AnyPublisher<UIPinchGestureRecognizer, Never> {
-        GesturePublisher(gesture: self).eraseToAnyPublisher()
-    }
-}
-
-public extension UISwipeGestureRecognizer {
-    var publisher: AnyPublisher<UISwipeGestureRecognizer, Never> {
+public extension UIGestureRecognizer {
+    var publisher: AnyPublisher<UIGestureRecognizer, Never> {
         GesturePublisher(gesture: self).eraseToAnyPublisher()
     }
 }

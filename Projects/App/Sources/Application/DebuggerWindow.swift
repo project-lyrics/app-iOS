@@ -115,7 +115,7 @@ public final class DebuggerWindow: UIWindow {
             .store(in: &cancellables)
     }
     
-    private func handlePanGesture(_ gesture: UIPanGestureRecognizer) {
+    private func handlePanGesture(_ gesture: UIGestureRecognizer) {
         switch gesture.state {
         case .began:
             isMoving = true
