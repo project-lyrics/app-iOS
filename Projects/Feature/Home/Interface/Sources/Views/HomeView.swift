@@ -223,7 +223,7 @@ extension HomeView {
 
         let headerSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0),
-            heightDimension: .absolute(48)
+            heightDimension: .absolute(48 + 16 + 32)
         )
         let header = NSCollectionLayoutBoundarySupplementaryItem(
             layoutSize: headerSize,
