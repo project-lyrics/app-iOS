@@ -7,10 +7,13 @@
 
 import CoordinatorAppInterface
 import KakaoSDKAuth
+
+import SwiftUI
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
+    var debuggerWindow: UIWindow?
     var coordinator: Coordinator?
 
     func scene(
@@ -29,6 +32,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
+        
+        #if DEV || QA
+        debuggerWindow = DebuggerWindow(windowScene: windowScene)
+        debuggerWindow?.windowLevel = .alert
+        debuggerWindow?.makeKeyAndVisible()
+        #endif
 
         coordinator?.start()
     }

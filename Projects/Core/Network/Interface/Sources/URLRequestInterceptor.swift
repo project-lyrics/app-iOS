@@ -8,6 +8,8 @@
 import Combine
 import Foundation
 
+import Pulse
+
 public enum RetryResult {
     case retry
     case doNotRetry
@@ -17,7 +19,7 @@ public enum RetryResult {
 public protocol URLRequestInterceptor: AnyObject {
     func adapt(_ urlRequest: URLRequest) -> AnyPublisher<URLRequest, Error>
     func retry(
-        with session: URLSession,
+        with session: URLSessionProtocol,
         dueTo error: NetworkError
     ) -> AnyPublisher<RetryResult, Never>
 }

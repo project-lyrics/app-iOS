@@ -16,7 +16,7 @@ extension Configuration {
             return .debug(
                 name: type.configurationName,
                 settings: [
-                    "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "$(inherited) MOCKING",
+                    "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "$(inherited) MOCKING \(type.rawValue)",
                     "ENABLE_TESTABILITY": true
                 ],
                 xcconfig: .relativeToXCConfig(target: .dev)
@@ -25,7 +25,7 @@ extension Configuration {
             return .debug(
                 name: type.configurationName,
                 settings: [
-                    "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "$(inherited) MOCKING",
+                    "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "$(inherited) MOCKING \(type.rawValue)",
                     "ENABLE_TESTABILITY": true
                 ],
                 xcconfig: .relativeToXCConfig(target: .qa)
@@ -34,6 +34,7 @@ extension Configuration {
             return .release(
                 name: type.configurationName,
                 settings: [
+                    "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "$(inherited) MOCKING \(type.rawValue)",
                     "ENABLE_TESTABILITY": true
                 ],
                 xcconfig: .relativeToXCConfig(target: .prod)
