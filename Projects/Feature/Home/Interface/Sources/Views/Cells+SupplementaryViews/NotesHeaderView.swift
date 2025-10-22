@@ -52,7 +52,9 @@ class NotesHeaderView: UICollectionReusableView, Reusable {
             
             flex.addItem(titleLabel)
             flex.addItem().height(16)
+            #if MOCKING
             flex.addItem(filter)
+            #endif
         }
     }
 }

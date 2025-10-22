@@ -119,6 +119,14 @@ extension HomeView {
     static let favoriteArtistSectionIndex = 1
     static let notesSectionIndex = 2
 
+    enum Metric {
+        enum NoteSection {
+            enum Header {
+                static let height: CGFloat = 96
+            }
+        }
+    }
+
     static func createBannerSection() -> NSCollectionLayoutSection {
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0),
@@ -223,7 +231,7 @@ extension HomeView {
 
         let headerSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0),
-            heightDimension: .absolute(48 + 16 + 32)
+            heightDimension: .absolute(Metric.NoteSection.Header.height)
         )
         let header = NSCollectionLayoutBoundarySupplementaryItem(
             layoutSize: headerSize,
