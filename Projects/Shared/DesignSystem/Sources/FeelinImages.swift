@@ -41,6 +41,7 @@ public struct FeelinImages {
     public static let notificationOn = SharedDesignSystemAsset.Images.notificationOn.image
     public static let pencil = SharedDesignSystemAsset.Images.pencil.image
     public static let pencilEdit = SharedDesignSystemAsset.Images.pencilEdit.image
+    public static let popular = SharedDesignSystemAsset.Images.popular.image
     public static let reload = SharedDesignSystemAsset.Images.reload.image
     public static let replyActive = SharedDesignSystemAsset.Images.replyActive.image
     public static let replyInactive = SharedDesignSystemAsset.Images.replyInactive.image

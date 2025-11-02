@@ -22,6 +22,7 @@ class NotesHeaderView: UICollectionReusableView, Reusable {
         
         return label
     }()
+    let filter = NotesFilterView()
     
     // MARK: - Init
     
@@ -50,6 +51,10 @@ class NotesHeaderView: UICollectionReusableView, Reusable {
             flex.addItem().height(24)
             
             flex.addItem(titleLabel)
+            flex.addItem().height(16)
+            #if MOCKING
+            flex.addItem(filter)
+            #endif
         }
     }
 }

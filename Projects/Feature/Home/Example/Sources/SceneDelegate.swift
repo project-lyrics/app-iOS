@@ -28,11 +28,60 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         window = UIWindow(windowScene: windowScene)
 
-        let navigationController = UINavigationController(rootViewController: presentPostNoteViewController(artistID: 12))
+        DIContainer.standard.register(.networkProvider) { resolver in
+            return NetworkProvider(
+                networkSession: .init(requestInterceptor: MockTokenInterceptor())
+            )
+        }
+        DIContainer.standard.register(.notePaginationService) { _ in
+            return NotePaginationService()
+        }
+        DIContainer.standard.register(.artistPaginationService) { resolver in
+            return ArtistPaginationService()
+        }
+        DIContainer.standard.register(.noteAPIService.self) { resolver in
+            let networkProvider = try resolver.resolve(.networkProvider)
+            return NoteAPIService(networkProvider: networkProvider)
+        }
+        DIContainer.standard.register(.artistAPIService) { resolver in
+            let networkProvider = try resolver.resolve(.networkProvider)
+            return ArtistAPIService(networkProvider: networkProvider)
+        }
+        DIContainer.standard.register(.notificationAPIService) { resolver in
+            let networkProvider = try resolver.resolve(.networkProvider)
+            return NotificationAPIService(networkProvider: networkProvider)
+        }
+        DIContainer.registerUserProfileService()
+        DIContainer.registerEventAPIService()
+        
+        @Injected(.notificationAPIService) var notificationAPIService: NotificationAPIServiceInterface
+        @Injected(.userProfileAPIService) var userProfileAPIService: UserProfileAPIServiceInterface
+        @Injected(.eventAPIService) var eventAPIService: EventAPIServiceInterface
+        @KeychainWrapper<UserInformation>(.userInfo)
+        var userInfo
+        
+        let getHasUncheckedNotificationUseCase = GetHasUncheckedNotificationUseCase(notificationAPIService: notificationAPIService)
+        let checkFirstVisitorUseCase = CheckFirstVisitorUseCase(userProfileAPIService: userProfileAPIService)
+        let blockUserUseCase = BlockUserUseCase(userProfileAPIService: userProfileAPIService)
+        let fetchSingleEventUseCase = FetchSingleEventUseCase(eventAPIService: eventAPIService)
+        let refuseEventUseCase = RefuseEventUseCase(eventAPIService: eventAPIService)
+        let fetchBannersUseCase = FetchBannersUseCase(eventAPIService: eventAPIService)
+        let homeVM = HomeViewModel(getNotesUseCase: MockGetNotesUseCase(),
+                                   setNoteLikeUseCase: MockSetNoteLikeUseCase(),
+                                   getFavoriteArtistsUseCase: MockGetFavoriteArtistsUseCase(),
+                                   setBookmarkUseCase: MockSetBookmarkUseCase(),
+                                   deleteNoteUseCase: MockDeleteNoteUseCase(),
+                                   getHasUncheckedNotificationUseCase: getHasUncheckedNotificationUseCase,
+                                   checkFirstVisitorUseCase: checkFirstVisitorUseCase,
+                                   blockUserUseCase: blockUserUseCase,
+                                   fetchSingleEventUseCase: fetchSingleEventUseCase,
+                                   refuseEventUseCase: refuseEventUseCase,
+                                   fetchBannersUseCase: fetchBannersUseCase)
+        
+        let navigationController = UINavigationController(rootViewController: HomeViewController(viewModel: homeVM))
         navigationController.navigationBar.isHidden = true
-//        window?.rootViewController = navigationController
-//        window?.makeKeyAndVisible()
-        artistDependencies()
+        window?.rootViewController = navigationController
+        window?.makeKeyAndVisible()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) { }

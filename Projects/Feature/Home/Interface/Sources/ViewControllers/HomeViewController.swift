@@ -47,6 +47,7 @@ public class HomeViewController: UIViewController, NoteMenuHandling, NoteMusicHa
     // MARK: - UI Components
 
     private var homeView: HomeView = .init()
+    private var notesHeaderView = NotesHeaderView()
 
     // MARK: - NoteMenu Subjects
 
