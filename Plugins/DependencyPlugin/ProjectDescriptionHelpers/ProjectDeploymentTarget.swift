@@ -11,8 +11,13 @@ public enum ProjectDeploymentTarget: String {
 	case dev = "DEV"
 	case qa = "QA"
 	case prod = "PROD"
-    
+
     public var configurationName: ConfigurationName {
-        return ConfigurationName.configuration(self.rawValue)
+        switch self {
+        case .dev, .qa:
+            return ConfigurationName.configuration("Debug")
+        case .prod:
+            return ConfigurationName.configuration("Release")
+        }
     }
 }

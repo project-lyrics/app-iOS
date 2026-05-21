@@ -12,21 +12,22 @@ import DependencyPlugin
 let targets: [Target] = [
     .shared(
         implements: .Util,
+        factory: .init()
+    ),
+    .shared(
+        testing: .Util,
         factory: .init(
             dependencies: [
-                .sdk(
-                    name: "XCTest",
-                    type: .framework,
-                    status: .optional,
-                    condition: nil
-                )
+                .shared(implements: .Util),
+                .sdk(name: "XCTest", type: .framework, status: .optional, condition: nil)
             ]
         )
     ),
     .shared(
         tests: .Util,
         factory: .init(dependencies: [
-            .shared(implements: .Util)
+            .shared(implements: .Util),
+            .shared(testing: .Util)
         ])
     )
 ]

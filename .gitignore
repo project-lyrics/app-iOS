@@ -131,3 +131,10 @@ Projects/App/xcconfigs/Secrets.xcconfig
 # Add this line if you want to avoid checking in source code from Carthage dependencies.
 Carthage/Checkouts/
 Carthage/Build/
+
+### Claude Code ###
+# Keep Claude Code documentation and skills local only
+CLAUDE.md
+.claude/
+.agents/
+skills-lock.json

@@ -18,74 +18,100 @@ public extension Project {
         public static let appName = "Feelin"
         public static let deploymentTargets = DeploymentTargets.iOS("15.0")
         public static let bundleId = "com.project.feelin"
+        private static let standardConfigurations: [Configuration] = [
+            .debugConfiguration(),
+            .releaseConfiguration()
+        ]
+
         public static let projectSettings: Settings = .settings(
             base: [
                 "ENABLE_USER_SCRIPT_SANDBOXING": "YES"
             ],
-            configurations: [
-                .build(.dev),
-                .build(.qa),
-                .build(.prod)
-            ]
+            configurations: standardConfigurations
         )
         public static let defaultTargetSettings: Settings = .settings(
             base: [
-                "ENABLE_USER_SCRIPT_SANDBOXING": "YES"
+                "ENABLE_USER_SCRIPT_SANDBOXING": "YES",
+                "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "$(inherited) MOCKING DEV"
             ],
-            configurations: [
-                .build(.dev),
-                .build(.qa),
-                .build(.prod)
-            ]
+            configurations: standardConfigurations
         )
         public static let testsAppDefaultSettings: Settings = .settings(
             base: [
                 "TEST_HOST": "",
                 "BUNDLE_LOADER": "$(BUILT_PRODUCTS_DIR)/$(TEST_TARGET_NAME).app/$(TEST_TARGET_NAME)",
-                "ENABLE_USER_SCRIPT_SANDBOXING": "YES"
+                "ENABLE_USER_SCRIPT_SANDBOXING": "YES",
+                "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "$(inherited) MOCKING DEV"
             ],
-            configurations: [
-                .build(.dev),
-                .build(.qa),
-                .build(.prod)
-            ]
+            configurations: standardConfigurations
         )
         public static let exampleAppDefaultSettings: Settings = .settings(
             base: [
                 "DEVELOPMENT_TEAM": "${DEVELOPMENT_TEAM_ID}",
-                "ENABLE_USER_SCRIPT_SANDBOXING": "YES"
+                "ENABLE_USER_SCRIPT_SANDBOXING": "YES",
+                "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "$(inherited) MOCKING DEV"
             ],
-            configurations: [
-                .build(.dev),
-                .build(.qa),
-                .build(.prod)
-            ]
+            configurations: standardConfigurations
         )
         public static let devTargetSettings: Settings = .settings(
             base: [
                 "DEVELOPMENT_TEAM": "${DEVELOPMENT_TEAM_ID}",
-                "ENABLE_USER_SCRIPT_SANDBOXING": "YES"
+                "ENABLE_USER_SCRIPT_SANDBOXING": "YES",
+                "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "$(inherited) MOCKING DEV",
+                "ENABLE_TESTABILITY": "YES"
             ],
-            configurations: [
-                .build(.dev)
-            ]
+            configurations: standardConfigurations
         )
         public static let qaTargetSettings: Settings = .settings(
             base: [
                 "DEVELOPMENT_TEAM": "${DEVELOPMENT_TEAM_ID}",
-                "ENABLE_USER_SCRIPT_SANDBOXING": "YES"
+                "ENABLE_USER_SCRIPT_SANDBOXING": "YES",
+                "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "$(inherited) MOCKING QA",
+                "ENABLE_TESTABILITY": "YES"
             ],
-            configurations: [
-                .build(.dev)
-            ]
+            configurations: standardConfigurations
         )
         public static let prodTargetSettings: Settings = .settings(
             base: [
                 "DEVELOPMENT_TEAM": "${DEVELOPMENT_TEAM_ID}",
-                "ENABLE_USER_SCRIPT_SANDBOXING": "YES"
+                "ENABLE_USER_SCRIPT_SANDBOXING": "YES",
+                "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "$(inherited) PROD"
+            ],
+            configurations: standardConfigurations
+        )
+        public static let devAppTargetSettings: Settings = .settings(
+            base: [
+                "DEVELOPMENT_TEAM": "${DEVELOPMENT_TEAM_ID}",
+                "ENABLE_USER_SCRIPT_SANDBOXING": "YES",
+                "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "$(inherited) MOCKING DEV",
+                "ENABLE_TESTABILITY": "YES"
             ],
             configurations: [
-                .build(.prod)
+                .debugConfiguration(xcconfig: "xcconfigs/DEV.xcconfig"),
+                .releaseConfiguration(xcconfig: "xcconfigs/DEV.xcconfig")
+            ]
+        )
+        public static let qaAppTargetSettings: Settings = .settings(
+            base: [
+                "DEVELOPMENT_TEAM": "${DEVELOPMENT_TEAM_ID}",
+                "ENABLE_USER_SCRIPT_SANDBOXING": "YES",
+                "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "$(inherited) MOCKING QA",
+                "ENABLE_TESTABILITY": "YES"
+            ],
+            configurations: [
+                .debugConfiguration(xcconfig: "xcconfigs/QA.xcconfig"),
+                .releaseConfiguration(xcconfig: "xcconfigs/QA.xcconfig")
+            ]
+        )
+        public static let prodAppTargetSettings: Settings = .settings(
+            base: [
+                "DEVELOPMENT_TEAM": "${DEVELOPMENT_TEAM_ID}",
+                "ENABLE_USER_SCRIPT_SANDBOXING": "YES",
+                "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "$(inherited) PROD"
+            ],
+            configurations: [
+                .debugConfiguration(xcconfig: "xcconfigs/PROD.xcconfig"),
+                .releaseConfiguration(xcconfig: "xcconfigs/PROD.xcconfig")
             ]
         )
         // TODO: 나중에 Firebase analytics, Crashlytics 등의 광고 추척이 필요한 경우 변경해야함 - dk

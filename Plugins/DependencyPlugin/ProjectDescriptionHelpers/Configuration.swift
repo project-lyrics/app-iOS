@@ -8,37 +8,11 @@
 import ProjectDescription
 
 extension Configuration {
-    public static func build(
-        _ type: ProjectDeploymentTarget
-    ) -> Self {
-        switch type {
-        case .dev:
-            return .debug(
-                name: type.configurationName,
-                settings: [
-                    "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "$(inherited) MOCKING \(type.rawValue)",
-                    "ENABLE_TESTABILITY": true
-                ],
-                xcconfig: .relativeToXCConfig(target: .dev)
-            )
-        case .qa:
-            return .debug(
-                name: type.configurationName,
-                settings: [
-                    "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "$(inherited) MOCKING \(type.rawValue)",
-                    "ENABLE_TESTABILITY": true
-                ],
-                xcconfig: .relativeToXCConfig(target: .qa)
-            )
-        case .prod:
-            return .release(
-                name: type.configurationName,
-                settings: [
-                    "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "$(inherited) MOCKING \(type.rawValue)",
-                    "ENABLE_TESTABILITY": true
-                ],
-                xcconfig: .relativeToXCConfig(target: .prod)
-            )
-        }
+    public static func debugConfiguration(xcconfig: Path? = nil) -> Self {
+        return .debug(name: "Debug", xcconfig: xcconfig)
+    }
+
+    public static func releaseConfiguration(xcconfig: Path? = nil) -> Self {
+        return .release(name: "Release", xcconfig: xcconfig)
     }
 }

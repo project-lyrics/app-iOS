@@ -12,10 +12,6 @@
 #include "./TokenKeys.xcconfig"
 #include "./Secrets.xcconfig"
 
-OTHER_SWIFT_FLAGS[config=DEV][sdk=*] = $(inherited) -DDEV
-OTHER_SWIFT_FLAGS[config=QA][sdk=*] = $(inherited) -DQA
-OTHER_SWIFT_FLAGS[config=PROD][sdk=*] = $(inherited) -DPROD
-
 SIMPLE_SLASH=/
 
 BASE_SERVER_URL_DEV = http:$(SIMPLE_SLASH)/dev.feelinapp.com

@@ -25,7 +25,7 @@ let appTargets: [Target] = [
             dependencies: [
                 .coordinator
             ],
-            settings: Project.Environment.devTargetSettings
+            settings: Project.Environment.devAppTargetSettings
         )
     ),
     .app(
@@ -37,7 +37,7 @@ let appTargets: [Target] = [
             dependencies: [
                 .coordinator
             ],
-            settings: Project.Environment.qaTargetSettings
+            settings: Project.Environment.qaAppTargetSettings
         )
     ),
     .app(
@@ -49,7 +49,7 @@ let appTargets: [Target] = [
             dependencies: [
                 .coordinator
             ],
-            settings: Project.Environment.prodTargetSettings
+            settings: Project.Environment.prodAppTargetSettings
         ),
         privacyManifest: Project.Environment.privacyManifest
     )
