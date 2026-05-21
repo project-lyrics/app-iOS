@@ -34,7 +34,8 @@ let targets: [Target] = [
         dependencies: [
             .core(testing: .Network),
             .core,
-            .domain
+            .domain,
+            .shared(testing: .Util)
         ],
         settings: Project.Environment.devTargetSettings
     )

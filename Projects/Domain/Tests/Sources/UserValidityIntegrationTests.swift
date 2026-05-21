@@ -13,6 +13,7 @@
 @testable import CoreNetwork
 @testable import CoreNetworkTesting
 @testable import SharedUtil
+@testable import SharedUtilTesting
 
 import Combine
 import XCTest

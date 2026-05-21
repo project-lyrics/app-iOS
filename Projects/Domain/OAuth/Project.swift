@@ -34,7 +34,8 @@ let targets: [Target] = [
             dependencies: [
                 .domain(testing: .OAuth),
                 .domain(implements: .OAuth),
-                .domain(interface: .OAuth)
+                .domain(interface: .OAuth),
+                .shared(testing: .Util)
             ]
         )
     )

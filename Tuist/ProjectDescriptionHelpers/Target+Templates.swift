@@ -379,6 +379,15 @@ public extension Target {
         return make(factory: newFactory)
     }
     
+    static func shared(testing module: ModulePath.Shared, factory: TargetFactory) -> Self {
+        var newFactory = factory
+        newFactory.name = ModulePath.Shared.name + module.rawValue + "Testing"
+        newFactory.sources = .testing
+        newFactory.product = .staticLibrary
+
+        return make(factory: newFactory)
+    }
+
     static func shared(tests module: ModulePath.Shared, factory: TargetFactory) -> Self {
         var newFactory = factory
         newFactory.name = ModulePath.Shared.name + module.rawValue + "Tests"

@@ -10,6 +10,7 @@ import XCTest
 @testable import CoreLocalStorageInterface
 @testable import CoreNetworkInterface
 @testable import SharedUtil
+@testable import SharedUtilTesting
 
 final class JWTDecoderTests: XCTestCase {
     private var sut: JWTDecoder!

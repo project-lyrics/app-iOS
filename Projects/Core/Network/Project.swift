@@ -41,7 +41,8 @@ let targets: [Target] = [
             dependencies: [
                 .core(interface: .Network),
                 .core(implements: .Network),
-                .core(testing: .Network)
+                .core(testing: .Network),
+                .shared(testing: .Util)
             ]
         )
     )

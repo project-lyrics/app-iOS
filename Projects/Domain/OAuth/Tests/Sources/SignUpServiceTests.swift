@@ -14,6 +14,7 @@ import XCTest
 @testable import DomainOAuthInterface
 @testable import DomainOAuthTesting
 @testable import SharedUtil
+@testable import SharedUtilTesting
 
 final class SignUpServiceTests: XCTestCase {
     var sut: SignUpService!

@@ -13,6 +13,7 @@ import XCTest
 @testable import CoreNetworkInterface
 @testable import CoreNetworkTesting
 @testable import SharedUtil
+@testable import SharedUtilTesting
 
 final class RequestInterceptTest: XCTestCase {
     var sut: NetworkProviderInterface!

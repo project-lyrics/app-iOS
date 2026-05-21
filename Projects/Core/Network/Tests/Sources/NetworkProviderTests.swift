@@ -12,7 +12,7 @@ import Combine
 @testable import CoreNetworkTesting
 @testable import CoreNetworkInterface
 @testable import CoreNetwork
-@testable import SharedUtil
+@testable import SharedUtilTesting
 
 final class NetworkProviderTests: XCTestCase {
     var networkProvider: NetworkProviderInterface!
