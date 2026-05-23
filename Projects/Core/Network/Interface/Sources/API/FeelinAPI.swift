@@ -112,13 +112,15 @@ extension FeelinAPI: HTTPNetworking {
                 return [
                     "cursor": "\(cursor)",
                     "size": "\(size)",
-                    "hasLyrics": "\(hasLyrics)"
+                    "hasLyrics": "\(hasLyrics)",
+                    "isFavoriteArtistsOnly": "true"
                 ]
             }
-            
+
             return [
                 "size": "\(size)",
-                "hasLyrics": "\(hasLyrics)"
+                "hasLyrics": "\(hasLyrics)",
+                "isFavoriteArtistsOnly": "true"
             ]
             
         case .postLikes(let noteID),
@@ -309,7 +311,7 @@ extension FeelinAPI: HTTPNetworking {
             return "/api/v1/favorite-artists"
 
         case .getFavoriteArtistsRelatedNotes:
-            return "/api/v1/notes/favorite-artists"
+            return "/api/v1/notes"
             
         case .getFavoriteArtistsHavingNotes:
             return "/api/v1/favorite-artists/having-notes"
