@@ -11,7 +11,7 @@ import ProjectDescription
 // 두 번째 자리1은 기능 리뉴얼과 기능 중규모 업데이트
 // 세 번째 자리는 자잘한 디버깅 및 소소한 수정 업데이트
 
-private let currentAppVersion: String = "1.0.3"
+private let currentAppVersion: String = "1.0.4"
 
 public extension Project {
     enum Environment {
