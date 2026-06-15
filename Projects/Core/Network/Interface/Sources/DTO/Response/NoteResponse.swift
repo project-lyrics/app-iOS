@@ -26,6 +26,12 @@ public enum NoteStatusDTO: String, Codable {
     case published = "PUBLISHED"
 }
 
+public enum NoteTypeDTO: String, Codable {
+    case free = "FREE"
+    case question = "QUESTION"
+    case lyricsAnalysis = "LYRICS_ANALYSIS"
+}
+
 public struct LyricsDTO: Codable {
     public let lyrics: String
     public let background: LyricsBackgroundDTO

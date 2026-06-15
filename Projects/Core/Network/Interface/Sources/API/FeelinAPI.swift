@@ -326,8 +326,11 @@ extension FeelinAPI: HTTPNetworking {
         case .postBookmarks, .deleteBookmarks:
             return "/api/v1/bookmarks"
             
-        case .postNote, .getMyNotes:
+        case .postNote:
 		    return "/api/v1/notes"
+
+        case .getMyNotes:
+            return "/api/v1/users/notes"
         
         case .patchNote(let noteID, _):
             return "/api/v1/notes/\(noteID)"

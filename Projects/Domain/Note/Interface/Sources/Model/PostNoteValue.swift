@@ -14,19 +14,22 @@ public struct PostNoteValue {
     public let background: LyricsBackground?
     public let content: String
     public let status: NoteStatus
+    public let noteType: NoteType
 
     public init(
         id: Int,
         lyrics: String?,
         background: LyricsBackground?,
         content: String,
-        status: NoteStatus
+        status: NoteStatus,
+        noteType: NoteType = .free
     ) {
         self.id = id
         self.lyrics = lyrics
         self.background = background
         self.content = content
         self.status = status
+        self.noteType = noteType
     }
 
     public func toDTO() -> PostNoteRequest {
@@ -35,6 +38,7 @@ public struct PostNoteValue {
             lyrics: lyrics,
             background: background?.toDTO,
             status: status.toDTO,
+            noteType: noteType.toDTO,
             songId: id
         )
     }
